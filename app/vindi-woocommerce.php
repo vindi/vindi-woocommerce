@@ -24,6 +24,7 @@ class WC_Vindi_Payment extends AbstractInstance
 
     protected function __construct()
     {
+
         $this->includes();
 
         $this->content = new MentoresContents();
