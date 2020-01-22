@@ -51,10 +51,14 @@ class WC_Vindi_Payment extends AbstractInstance {
   public function dependencies_notices() {
     if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
       include_once 'views/woocommerce-missing.php';
+
+      deactivate_plugins( '/vindi-plugin/index.php', true );
     }
 
     if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
       include_once '/views/ecfb-missing.php';
+
+      deactivate_plugins( '/vindi-plugin/index.php', true );
     }
   }
 
