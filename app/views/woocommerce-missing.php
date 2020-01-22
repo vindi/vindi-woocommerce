@@ -17,5 +17,5 @@ if ( current_user_can( 'install_plugins' ) ) {
 ?>
 
 <div class="error">
-	<p><strong><?php _e( 'vindi disabled', 'vindi-woocommerce' ); ?></strong>: <?php printf( __( 'WooCommerce vindi requires the latest version of %s to work!', 'vindi-woocommerce' ), '<a href="' . esc_url( $url ) . '">' . __( 'WooCommerce', 'vindi-woocommerce' ) . '</a>' ); ?></p>
+	<p><strong><?php _e( 'Vindi Disabled', 'vindi-woocommerce' ); ?></strong>: <?php printf( __( 'WooCommerce vindi requires the latest version of %s to work!', 'vindi-woocommerce' ), '<a href="' . esc_url( $url ) . '">' . __( 'WooCommerce', 'vindi-woocommerce' ) . '</a>' ); ?></p>
 </div>
