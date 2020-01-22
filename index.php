@@ -23,3 +23,5 @@ $path = plugin_dir_path( __FILE__ ) . 'app/';
 */
 
 require_once 'app/vindi-woocommerce.php';
+
+$GLOBALS['vindi'] = WC_Vindi_Payment::instance();
