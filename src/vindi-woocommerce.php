@@ -56,7 +56,7 @@ class WC_Vindi_Payment extends AbstractInstance {
     }
 
     if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
-      include_once '/views/ecfb-missing.php';
+      include_once 'views/ecfb-missing.php';
 
       deactivate_plugins( '/vindi-plugin/index.php', true );
     }
