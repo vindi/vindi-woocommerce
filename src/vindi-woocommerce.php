@@ -1,8 +1,6 @@
 <?php
 
-global $path;
-
-require_once $path . 'includes/utils/AbstractInstance.php';
+require_once plugin_dir_path( __FILE__ ) . 'utils/AbstractInstance.php';
 
 class WC_Vindi_Payment extends AbstractInstance {
 
@@ -24,15 +22,22 @@ class WC_Vindi_Payment extends AbstractInstance {
 
 	protected static $instance = null;
 
-  public function __construct() {
-
+  function __construct() {
 
     // Checks if Woocommerce is installed and activated
     if ( class_exists( 'WC_Payment_Gateway' ) && class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
 
       $this->includes();
 
+
       $this->languages = new VindiLanguages();
+      $this->supports = new SupportSubscriptions();
+
+
+    /**
+     * Add Gateway to Woocommerce
+     */
+      add_filter( 'woocommerce_payment_gateways', array( $this, 'add_gateway' ) );
 
     } else {
 
@@ -43,12 +48,14 @@ class WC_Vindi_Payment extends AbstractInstance {
 
   private function includes() {
     require_once $this->getPath() . '/includes/Languages.php';
+    require_once $this->getPath() . '/SupportSubscriptions.php';
   }
 
   /**
    * Dependencies notices.
-   */
-  public function dependencies_notices() {
+  */
+  
+  function dependencies_notices() {
     if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
       include_once 'views/woocommerce-missing.php';
 
@@ -62,8 +69,23 @@ class WC_Vindi_Payment extends AbstractInstance {
     }
   }
 
-  public function getPath() {
-    return $path;
+	/**
+	 * Add the gateway to WooCommerce.
+	 *
+	 * @param  array $methods WooCommerce payment methods.
+	 *
+	 * @return array Payment methods with Iugu.
+	 */
+
+  public function add_gateway( $methods ) {
+
+    $methods[] = 'WC_Vindi_Credit_Gateway';
+
+		return $methods;
+	}
+
+  public static function getPath() {
+    return plugin_dir_path( __FILE__ );
   }
 
   public static function get_instance() {

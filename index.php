@@ -14,18 +14,16 @@
  * License: GPLv3 or later
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
-	global $path;
 
 if ( ! defined( 'ABSPATH' ) || class_exists( 'WC_Vindi_Payment' )  ) {
 	exit;
 }
-
-$path = plugin_dir_path( __FILE__ ) . 'src/';
 
 /**
  * WooCommerce Vindi Require Main Class.
 */
 
 require_once 'src/vindi-woocommerce.php';
+
 
 $GLOBALS['vindi'] = WC_Vindi_Payment::instance();
