@@ -1,23 +1,23 @@
 {
-  "name": "vindi-woocommerce",
-  "description": "Testes do módulo Vindi para Woocommerce",
-  "keywords": [
-    "vindi"
+  "name": "matheuskindrazki/vindi-plugin",
+  "description": "Plugin de pagamento para Woocommerce",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Matheus Kindrazki",
+      "email": "matheus@mentores.com.br"
+    },
+    {
+      "name": "Pedro Bueno",
+      "email": "pedro@mentores.com.br"
+    }
   ],
-  "homepage": "https://vindi.com.br",
-  "license": "GPL-3.0",
-  "authors": [],
+  "require": {},
   "require-dev": {
-    "lucatume/wp-browser": "^2.2",
-    "codeception/specify": "^1.0",
-    "codeception/verify": "^1.0"
+    "phpunit/phpunit": "^8",
+    "spatie/phpunit-watcher": "^1.22"
   },
   "scripts": {
-    "test": [
-      "codecept run -g activation --steps",
-      "codecept run -g registration --steps",
-      "codecept run -g credit_card_configuration --steps",
-      "codecept run -g purchase_by_credit_card --steps"
-    ]
+    "test": "./vendor/bin/phpunit-watcher watch --debug --colors __tests__/."
   }
 }

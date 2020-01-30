@@ -54,7 +54,7 @@ class WC_Vindi_Payment extends AbstractInstance {
   /**
    * Dependencies notices.
   */
-  
+
   function dependencies_notices() {
     if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
       include_once 'views/woocommerce-missing.php';
