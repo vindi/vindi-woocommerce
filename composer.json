@@ -6,6 +6,10 @@
     {
       "name": "Matheus Kindrazki",
       "email": "matheus@mentores.com.br"
+    },
+    {
+      "name": "Pedro Bueno",
+      "email": "pedro@mentores.com.br"
     }
   ],
   "autoload": {
@@ -15,9 +19,10 @@
   },
   "require": {},
   "require-dev": {
-    "phpunit/phpunit": "^8"
+    "phpunit/phpunit": "^8",
+    "spatie/phpunit-watcher": "^1.22"
   },
   "scripts": {
-    "test": "./vendor/bin/phpunit --bootstrap=vendor/autoload.php"
+    "test": "./vendor/bin/phpunit-watcher watch --debug --colors __tests__/."
   }
 }

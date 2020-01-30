@@ -5,10 +5,10 @@ use PHPUnit\Framework\TestCase;
 
 final class EmailTest extends TestCase
 {
-  public function testeCanBeMessage(): void
+  public function testeCanBeMessage()
   {
         $this->assertEquals(
-            'testes',
+            'asdasd',
             'testes'
         );
     }
