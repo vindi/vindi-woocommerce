@@ -5,7 +5,7 @@ final class ExampleTest extends TestCase
 {
   public function testCanBeMessage()
   {
-        $this->assertEquals(1,  1);
+        $this->assertEquals(3,  1);
 
     }
 }
