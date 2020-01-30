@@ -1,0 +1,23 @@
+{
+  "name": "matheuskindrazki/vindi-plugin",
+  "description": "Plugin de pagamento para Woocommerce",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Matheus Kindrazki",
+      "email": "matheus@mentores.com.br"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "SON\\": "src/"
+    }
+  },
+  "require": {},
+  "require-dev": {
+    "phpunit/phpunit": "^8"
+  },
+  "scripts": {
+    "test": "./vendor/bin/phpunit --bootstrap=vendor/autoload.php"
+  }
+}
