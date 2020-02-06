@@ -1,5 +1,5 @@
 <phpunit
-		bootstrap="__tests__/bootstrap.php"
+		bootstrap="tests/bootstrap.php"
 		backupGlobals="false"
 		colors="true"
 		convertErrorsToExceptions="true"
@@ -7,12 +7,12 @@
 		convertWarningsToExceptions="true"
 >
 	<php>
-		<env name="PLUGIN_FILE" value="index.php"/>
+		<env name="PLUGIN_FILE" value="vindi.php"/>
 	</php>
 
 	<testsuites>
 		<testsuite name="vindi">
-			<directory prefix="test-" suffix=".php">./__tests__/phpunit/</directory>
+			<directory prefix="test-" suffix=".php">./tests/phpunit/</directory>
 		</testsuite>
 	</testsuites>
 
@@ -21,9 +21,14 @@
 			<directory suffix=".php">./</directory>
 			<exclude>
 				<directory>.github</directory>
-				<directory>src</directory>
+				<directory>assets</directory>
+				<directory>bin</directory>
+				<directory>build</directory>
+				<directory>docs</directory>
 				<directory>node_modules</directory>
-				<directory>__tests__</directory>
+				<directory>tests</directory>
+				<directory>src/includes</directory>
+				<directory>vendor</directory>
 			</exclude>
 		</whitelist>
 	</filter>

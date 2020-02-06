@@ -9,7 +9,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: wordpress_test
 
-  wordpress_phpunit:
+  vindi_wp_phpunit:
     image: pojome/phpunit-local
     environment:
       PHPUNIT_DB_HOST: mysql
