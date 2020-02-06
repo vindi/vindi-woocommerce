@@ -1,0 +1,31 @@
+<phpunit
+		bootstrap="__tests__/bootstrap.php"
+		backupGlobals="false"
+		colors="true"
+		convertErrorsToExceptions="true"
+		convertNoticesToExceptions="true"
+		convertWarningsToExceptions="true"
+>
+	<php>
+		<env name="PLUGIN_FILE" value="index.php"/>
+	</php>
+
+	<testsuites>
+		<testsuite name="vindi">
+			<directory prefix="test-" suffix=".php">./__tests__/phpunit/</directory>
+		</testsuite>
+	</testsuites>
+
+	<filter>
+		<whitelist>
+			<directory suffix=".php">./</directory>
+			<exclude>
+				<directory>.github</directory>
+				<directory>src</directory>
+				<directory>node_modules</directory>
+				<directory>__tests__</directory>
+			</exclude>
+		</whitelist>
+	</filter>
+
+</phpunit>
