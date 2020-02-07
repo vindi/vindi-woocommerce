@@ -49,8 +49,6 @@ if (!version_compare(PHP_VERSION, VINDI_MININUM_PHP_VERSION, '>=')) {
 
     require VINDI_PATH . 'src/vindi-woocommerce.php';
 
-    $GLOBALS['vindi'] = WC_Vindi_Payment::instance();
-
 }
 
 /**

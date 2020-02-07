@@ -43,7 +43,7 @@ if is_windows; then
 	WP_TESTS_DIR=../tmp/wordpress-tests-lib
 	WP_CORE_DIR=../tmp/wordpress
 fi
-docker-compose ${DOCKER_COMPOSE_FILE_OPTIONS} run --rm vindi_wp_phpunit dockerize -wait tcp://mysql:3306 -timeout 30s bash ./bin/install-wp-tests.sh vindi_test_unit root password mysql $WP_VERSION false> /dev/null
+docker-compose ${DOCKER_COMPOSE_FILE_OPTIONS} run --rm wordpress_phpunit dockerize -wait tcp://mysql:3306 -timeout 30s bash ./bin/install-wp-tests.sh vindi_test_unit root password mysql $WP_VERSION false> /dev/null
 
 # Finished Installing!
 echo -e "\nTests environment is up!\n"

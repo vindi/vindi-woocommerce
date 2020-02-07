@@ -1,8 +1,8 @@
 <?php
 
-require_once plugin_dir_path(__FILE__) . 'utils/AbstractInstance.php';
+namespace Vindi;
 
-class WC_Vindi_Payment extends AbstractInstance
+class WC_Vindi_Payment
 {
 
     /**
@@ -82,15 +82,25 @@ class WC_Vindi_Payment extends AbstractInstance
         return plugin_dir_path(__FILE__);
     }
 
-    public static function get_instance()
-    {
-        // If the single instance hasn't been set, set it now.
-        if (null == self::$instance) {
-            self::$instance = new self;
-        }
+    public static function instance() {
+      if ( is_null( self::$instance ) ) {
+        self::$instance = new self();
 
-        return self::$instance;
+        /**
+         * Vindi loaded.
+         *
+         * Fires when Vindi was fully loaded and instantiated.
+         *
+         * @since 1.0.0
+         */
+        do_action( 'vindi/loaded' );
+      }
+
+      return self::$instance;
     }
 }
 
-add_action('plugins_loaded', array('WC_Vindi_Payment', 'get_instance'));
+if ( ! defined( 'VINDI_TESTS' ) ) {
+	// In tests we run the instance manually.
+	WC_Vindi_Payment::instance();
+}

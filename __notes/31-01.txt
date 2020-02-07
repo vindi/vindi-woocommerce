@@ -1,0 +1,3 @@
+- Pontos de evolução em relação do plugin hoje:
+  - API possibilita que multiplas assinaturas sejam feitas?
+   - Verificar API e funcionalidade, talvez uma sugestão??
