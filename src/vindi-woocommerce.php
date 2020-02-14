@@ -19,8 +19,10 @@ class WC_Vindi_Payment
 
       $this->includes();
 
+
       $this->languages = new VindiLanguages();
       $this->supports = new SupportSubscriptions();
+
 
       /**
        * Add Gateway to Woocommerce
@@ -97,3 +99,5 @@ class WC_Vindi_Payment
     return self::$instance;
   }
 }
+
+add_action('plugins_loaded', array('WC_Vindi_Payment', 'instance'));
