@@ -44,6 +44,11 @@ if (!version_compare(PHP_VERSION, VINDI_MININUM_PHP_VERSION, '>=')) {
 } else {
 
   require VINDI_PATH . 'src/vindi-woocommerce.php';
+
+  if (!defined('VINDI_TESTS')) {
+    // In tests we run the instance manually.
+    $GLOBALS['vindi'] = WC_Vindi_Payment::instance();
+  }
 }
 
 /**

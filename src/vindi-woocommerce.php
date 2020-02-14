@@ -96,8 +96,3 @@ class WC_Vindi_Payment
     return self::$instance;
   }
 }
-
-if (!defined('VINDI_TESTS')) {
-  // In tests we run the instance manually.
-  WC_Vindi_Payment::instance();
-}
