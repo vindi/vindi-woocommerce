@@ -11,12 +11,14 @@ if (!defined('ABSPATH')) {
  * @class   WC_Vindi_Credit_Gateway
  * @extends WC_Payment_Gateway
  */
+
 class WC_Vindi_Credit_Gateway extends WC_Payment_Gateway
 {
 
   /**
    * Constructor for the gateway.
    */
+
   public function __construct()
   {
 

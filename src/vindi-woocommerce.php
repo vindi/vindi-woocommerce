@@ -34,8 +34,8 @@ class WC_Vindi_Payment
 
   private function includes()
   {
-    require_once $this->getPath() . '/includes/Languages.php';
-    require_once $this->getPath() . '/SupportSubscriptions.php';
+    require_once $this->getPath() . '/includes/languages.php';
+    require_once $this->getPath() . '/support-subscriptions.php';
   }
 
   /**
@@ -72,6 +72,7 @@ class WC_Vindi_Payment
 
     return $methods;
   }
+
 
   public static function getPath()
   {

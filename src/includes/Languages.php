@@ -12,4 +12,4 @@
       load_plugin_textdomain( 'vindi-woocommerce', false, plugin_dir_path( __FILE__ ) . '/languages/' );
     }
   }
-; ?>
+;
