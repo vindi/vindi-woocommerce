@@ -1,7 +1,13 @@
 <?php
 
-class WC_Vindi_Payment
+require_once plugin_dir_path(__FILE__) . 'utils/AbstractInstance.php';
+
+class WC_Vindi_Payment extends AbstractInstance
 {
+  /**
+   * @var string
+   */
+  const TEMPLATE_DIR = '/templates/';
 
   /**
    * Instance of this class.
@@ -22,6 +28,7 @@ class WC_Vindi_Payment
 
       $this->languages = new VindiLanguages();
       $this->supports = new SupportSubscriptions();
+      $this->settings = new VindiSettings();
 
 
       /**
@@ -36,8 +43,9 @@ class WC_Vindi_Payment
 
   private function includes()
   {
-    require_once $this->getPath() . '/includes/languages.php';
-    require_once $this->getPath() . '/support-subscriptions.php';
+    require_once $this->getPath() . '/includes/Languages.php';
+    require_once $this->getPath() . '/includes/admin/Settings.php';
+    require_once $this->getPath() . '/SupportSubscriptions.php';
   }
 
   /**
@@ -64,7 +72,7 @@ class WC_Vindi_Payment
    *
    * @param  array $methods WooCommerce payment methods.
    *
-   * @return array Payment methods with Iugu.
+   * @return array Payment methods with Vindi.
    */
 
   public function add_gateway($methods)
@@ -75,29 +83,20 @@ class WC_Vindi_Payment
     return $methods;
   }
 
-
   public static function getPath()
   {
     return plugin_dir_path(__FILE__);
   }
 
-  public static function instance()
+  public static function get_instance()
   {
-    if (is_null(self::$instance)) {
-      self::$instance = new self();
-
-      /**
-       * Vindi loaded.
-       *
-       * Fires when Vindi was fully loaded and instantiated.
-       *
-       * @since 1.0.0
-       */
-      do_action('vindi/loaded');
+    // If the single instance hasn't been set, set it now.
+    if (null == self::$instance) {
+      self::$instance = new self;
     }
 
     return self::$instance;
   }
 }
 
-add_action('plugins_loaded', array('WC_Vindi_Payment', 'instance'));
+add_action('plugins_loaded', array('WC_Vindi_Payment', 'get_instance'));
