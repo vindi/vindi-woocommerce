@@ -1,7 +1,9 @@
 <?php
-namespace Vindi\Testing;
 
-trait Vindi_Test {
+namespace Elementor\Testing;
+
+trait Vindi_Test
+{
 
 	private static $local_factory;
 	private static $elementor;
@@ -11,8 +13,9 @@ trait Vindi_Test {
 	 */
 	abstract protected function getSelf();
 
-	public function __get( $name ) {
-		switch ( $name ) {
+	public function __get($name)
+	{
+		switch ($name) {
 			case 'factory':
 				return self::factory();
 				break;
@@ -22,8 +25,9 @@ trait Vindi_Test {
 		}
 	}
 
-	protected static function factory() {
-		if ( ! self::$local_factory ) {
+	protected static function factory()
+	{
+		if (!self::$local_factory) {
 			self::$local_factory = Manager::$instance->get_local_factory();
 		}
 
@@ -32,11 +36,12 @@ trait Vindi_Test {
 
 
 	/**
-	 * @return \Vindi\Plugin
+	 * @return \Elementor\Plugin
 	 */
-	protected static function elementor() {
-		if ( ! self::$elementor ) {
-			self::$elementor = \Vindi\Plugin::instance();
+	protected static function elementor()
+	{
+		if (!self::$elementor) {
+			self::$elementor = \Elementor\Plugin::instance();
 		}
 
 		return self::$elementor;
@@ -49,16 +54,17 @@ trait Vindi_Test {
 	 * @param array|\ArrayAccess $array
 	 * @param string $message
 	 */
-	public function assertArrayHaveKeys( $keys, $array, $message = '' ) {
-		if ( ! is_array( $keys ) ) {
+	public function assertArrayHaveKeys($keys, $array, $message = '')
+	{
+		if (!is_array($keys)) {
 			throw \PHPUnit_Util_InvalidArgumentHelper::factory(
 				1,
 				'only array'
 			);
 		}
 
-		foreach ( $keys as $key ) {
-			$this->getSelf()->assertArrayHasKey( $key, $array, $message );
+		foreach ($keys as $key) {
+			$this->getSelf()->assertArrayHasKey($key, $array, $message);
 		}
 	}
 
@@ -68,27 +74,29 @@ trait Vindi_Test {
 	 * @param string $tag
 	 * @param false|callable $function_to_check
 	 */
-	public function assertHasHook( $tag, $function_to_check = false ) {
-		if ( ! is_string( $tag ) ) {
+	public function assertHasHook($tag, $function_to_check = false)
+	{
+		if (!is_string($tag)) {
 			throw \PHPUnit_Util_InvalidArgumentHelper::factory(
 				1,
 				'only string'
 			);
 		}
 
-		if ( ! ( is_callable( $function_to_check ) || ( ! $function_to_check ) ) ) {
+		if (!(is_callable($function_to_check) || (!$function_to_check))) {
 			throw \PHPUnit_Util_InvalidArgumentHelper::factory(
 				1,
 				'only callback of false'
 			);
 		}
 
-		$this->getSelf()->assertNotFalse( has_filter( $tag, $function_to_check ) );
+		$this->getSelf()->assertNotFalse(has_filter($tag, $function_to_check));
 	}
 
-	public function define_doing_ajax() {
-		if ( ! wp_doing_ajax() ) {
-			define( 'DOING_AJAX', true );
+	public function define_doing_ajax()
+	{
+		if (!wp_doing_ajax()) {
+			define('DOING_AJAX', true);
 		}
 	}
 }

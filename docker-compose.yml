@@ -11,13 +11,15 @@ services:
 
   wordpress_phpunit:
     image: pojome/phpunit-local
+    restart: on-failure
     environment:
       PHPUNIT_DB_HOST: mysql
     volumes:
+      - "./:/var/www/html/wp-content/plugins/vindi-plugin"
       - .:/app
-      - testsuite:/tmp
+      - vinditestsuite:/tmp
     depends_on:
       - mysql
 
 volumes:
-  testsuite:
+  vinditestsuite:

@@ -1,7 +1,7 @@
 <?php
-namespace Vindi\Testing;
 
-class Local_Factory extends \WP_UnitTestCase {
+class Local_Factory extends \WP_UnitTestCase
+{
 
 	private $default_post;
 	private $custom_post;
@@ -16,8 +16,9 @@ class Local_Factory extends \WP_UnitTestCase {
 	/**
 	 * @return \WP_Post
 	 */
-	public function get_default_post() {
-		if ( ! $this->default_post ) {
+	public function get_default_post()
+	{
+		if (!$this->default_post) {
 			$this->default_post = $this->factory()->post->create_and_get();
 		}
 
@@ -27,7 +28,8 @@ class Local_Factory extends \WP_UnitTestCase {
 	/**
 	 * @return \WP_Post
 	 */
-	public function create_and_get_default_post() {
+	public function create_and_get_default_post()
+	{
 		return $this->factory()->post->create_and_get();
 	}
 
@@ -36,10 +38,11 @@ class Local_Factory extends \WP_UnitTestCase {
 	 *
 	 * @return \WP_Post
 	 */
-	public function get_custom_post( $args ) {
+	public function get_custom_post($args)
+	{
 		$this->custom_post = clone $this->get_default_post();
 
-		$this->factory()->post->update_object( $this->custom_post->ID, $args );
+		$this->factory()->post->update_object($this->custom_post->ID, $args);
 
 		return $this->custom_post;
 	}
@@ -49,15 +52,17 @@ class Local_Factory extends \WP_UnitTestCase {
 	 *
 	 * @return array|null|\WP_Post
 	 */
-	public function create_and_get_custom_post( $args ) {
-		return $this->factory()->post->create_and_get( $args );
+	public function create_and_get_custom_post($args)
+	{
+		return $this->factory()->post->create_and_get($args);
 	}
 
 	/**
 	 * @return array parent_id | int; child_id | int; user_id | int.
 	 */
-	public function create_and_get_parent_and_child_posts() {
-		$user_id = $this->factory()->user->create( [ 'display_name' => 'elementor' ] );
+	public function create_and_get_parent_and_child_posts()
+	{
+		$user_id = $this->factory()->user->create(['display_name' => 'elementor']);
 		$post_id = $this->factory()->post->create(
 			[
 				'post_author' => $user_id,
@@ -86,8 +91,9 @@ class Local_Factory extends \WP_UnitTestCase {
 	/**
 	 * @return int|\WP_Error
 	 */
-	public function get_local_template_id() {
-		if ( ! $this->local_template_id ) {
+	public function get_local_template_id()
+	{
+		if (!$this->local_template_id) {
 			$this->local_template_id = $this->create_template();
 		}
 
@@ -101,15 +107,17 @@ class Local_Factory extends \WP_UnitTestCase {
 	 *
 	 * @return int|\WP_Error template id
 	 */
-	public function create_and_get_template_id( $rags ) {
-		return $this->create_template( $rags );
+	public function create_and_get_template_id($rags)
+	{
+		return $this->create_template($rags);
 	}
 
 	/**
 	 * @return \WP_User
 	 */
-	public function create_and_get_administrator_user() {
-		$this->administrator_user = $this->factory()->user->create_and_get( [ 'role' => 'administrator' ] );
+	public function create_and_get_administrator_user()
+	{
+		$this->administrator_user = $this->factory()->user->create_and_get(['role' => 'administrator']);
 
 		return $this->administrator_user;
 	}
@@ -117,9 +125,10 @@ class Local_Factory extends \WP_UnitTestCase {
 	/**
 	 * @return \WP_User
 	 */
-	public function get_administrator_user() {
-		if ( ! $this->administrator_user ) {
-			$this->administrator_user = $this->factory()->user->create_and_get( [ 'role' => 'administrator' ] );
+	public function get_administrator_user()
+	{
+		if (!$this->administrator_user) {
+			$this->administrator_user = $this->factory()->user->create_and_get(['role' => 'administrator']);
 		}
 
 		return $this->administrator_user;
@@ -128,25 +137,12 @@ class Local_Factory extends \WP_UnitTestCase {
 	/**
 	 * @return \WP_User
 	 */
-	public function get_subscriber_user() {
-		if ( ! $this->subscriber_user ) {
-			$this->subscriber_user = $this->factory()->user->create_and_get( [ 'role' => 'subscriber' ] );
+	public function get_subscriber_user()
+	{
+		if (!$this->subscriber_user) {
+			$this->subscriber_user = $this->factory()->user->create_and_get(['role' => 'subscriber']);
 		}
 
 		return $this->subscriber_user;
-	}
-
-	private function create_template( $template_data = [ 'title' => 'new template' ] ) {
-		$template_id = $this->factory()->post->create(
-			[
-				'post_title' => ! empty( $template_data['title'] ) ? $template_data['title'] : __( '(no title)', 'elementor' ),
-				'post_status' => current_user_can( 'publish_posts' ) ? 'publish' : 'pending',
-				'post_type' => \Vindi\TemplateLibrary\Source_Local::CPT,
-				'post_content' => '<ul><li title="Edit">Edit</li></ul><h3>This is the heading</h3>Lorem ipsum dolor sit amet consectetur adipiscing elit dolor<h3>This is the heading</h3>Lorem ipsum dolor sit amet consectetur adipiscing elit dolor<a href="#">Click Here</a>',
-			]
-		);
-		update_post_meta( $template_id, '_Vindi_data', '["type":"bla"]' );
-
-		return $template_id;
 	}
 }

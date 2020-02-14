@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: Vindi WooCommerce
  * Plugin URI: #!
@@ -16,7 +17,7 @@
  */
 
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly.
+  exit; // Exit if accessed directly.
 }
 
 define('VINDI_VERSION', '1.0.0');
@@ -30,25 +31,19 @@ define('VINDI__FILE__', __FILE__);
 define('VINDI_PLUGIN_BASE', plugin_basename(VINDI__FILE__));
 define('VINDI_PATH', plugin_dir_path(VINDI__FILE__));
 
-// define('VINDI_ASSETS_PATH', VINDI_PATH . 'src/assets/');
-// define('VINDI_ASSETS_URL', URL_URL . 'src/assets/');
-
 if (defined('VINDI_TESTS') && VINDI_TESTS) {
-    define('VINDI_URL', 'file://' . VINDI_PATH);
+  define('VINDI_URL', 'file://' . VINDI_PATH);
 } else {
-    define('VINDI_URL', plugins_url('/', VINDI__FILE__));
+  define('VINDI_URL', plugins_url('/', VINDI__FILE__));
 }
 
 if (!version_compare(PHP_VERSION, VINDI_MININUM_PHP_VERSION, '>=')) {
-    add_action('admin_notices', 'vindi_fail_php_version');
-
+  add_action('admin_notices', 'vindi_fail_php_version');
 } elseif (!version_compare(get_bloginfo('version'), VINDI_MININUM_WP_VERSION, '>=')) {
-    add_action('admin_notices', 'vindi_fail_wp_version');
-
+  add_action('admin_notices', 'vindi_fail_wp_version');
 } else {
 
-    require VINDI_PATH . 'src/vindi-woocommerce.php';
-
+  require VINDI_PATH . 'src/vindi-woocommerce.php';
 }
 
 /**
@@ -62,7 +57,7 @@ if (!version_compare(PHP_VERSION, VINDI_MININUM_PHP_VERSION, '>=')) {
  */
 function vindi_fail_php_version()
 {
-    include_once VINDI_PATH . 'src/views/php-version-missing.php';
+  include_once VINDI_PATH . 'src/views/php-version-missing.php';
 }
 
 /**
@@ -76,5 +71,5 @@ function vindi_fail_php_version()
  */
 function vindi_fail_wp_version()
 {
-    include_once VINDI_PATH . 'src/views/wp-version-missing.php';
+  include_once VINDI_PATH . 'src/views/wp-version-missing.php';
 }
