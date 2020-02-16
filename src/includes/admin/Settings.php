@@ -1,6 +1,6 @@
 <?php
 
-class VindiSettings extends WC_Settings_API
+class VindiSettings extends WC_Gateway_Paypal
 {
 
   /**
@@ -30,8 +30,8 @@ class VindiSettings extends WC_Settings_API
 
     $this->token = sanitize_file_name(wp_hash(VINDI));
 
-    $this->init_form_fields();
     $this->init_settings();
+    $this->init_form_fields();
 
     $this->woocommerce = $woocommerce;
 
@@ -39,8 +39,9 @@ class VindiSettings extends WC_Settings_API
     if (is_admin()) {
 
       add_filter('woocommerce_settings_tabs_array', array($this, 'add_settings_tab'), 50);
-      add_action('woocommerce_settings_tabs_settings_vindi', array($this, 'settings_tab'));
-      add_action('woocommerce_update_options_settings_vindi', array($this, 'process_admin_options'));
+      add_action('woocommerce_settings_tabs_settings_vindi', array(&$this, 'settings_tab'));
+      add_action('woocommerce_update_options_settings_vindi', array(&$this, 'process_admin_options'));
+      // add_action('woocommerce_update_options_shipping_methods', array(&$this, 'process_admin_options'));
     }
   }
 
@@ -54,7 +55,6 @@ class VindiSettings extends WC_Settings_API
     return $settings_tabs;
   }
 
-
   /**
    * Include Settings View
    */
@@ -63,16 +63,10 @@ class VindiSettings extends WC_Settings_API
     $this->get_template('admin-settings.html.php', array('settings' => $this));
   }
 
-
   /**
-   * Initialize Gateway Settings Form Fields
+   * Initialise Gateway Settings Form Fields
    */
-  public function init_form_fields()
-  {
-
-    echo '<pre>';
-    print_r($this);
-    echo '</pre>';
+  function init_form_fields() {
 
     $prospects_url = '<a href="https://app.vindi.com.br/prospects/new" target="_blank">' . __('Don\'t have an account?', VINDI) . '</a>';
 
@@ -85,7 +79,6 @@ class VindiSettings extends WC_Settings_API
       ),
     );
   }
-
 
   /**
    * WC Get Template helper.
