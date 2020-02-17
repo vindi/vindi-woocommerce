@@ -15,11 +15,11 @@ services:
     environment:
       PHPUNIT_DB_HOST: mysql
     volumes:
-      - "./:/var/www/html/wp-content/plugins/vindi-plugin"
+      - "/tmp/woocommerce:/var/www/html/wp-content/plugins/woocommerce"
       - .:/app
-      - vinditestsuite:/tmp
+      - tmp:/tmp
     depends_on:
       - mysql
 
 volumes:
-  vinditestsuite:
+  tmp:

@@ -33,9 +33,14 @@ docker-compose ${DOCKER_COMPOSE_FILE_OPTIONS} down --remove-orphans >/dev/null 2
 echo -e $(status_message "Downloading Docker image updates...")
 docker-compose ${DOCKER_COMPOSE_FILE_OPTIONS} pull
 
+# Cloning wocoomerce on the local machine and referencing the docker
+echo -e $(status_message "Cloning woocommerce...")
+. "$(dirname "$0")/install-wc.sh"
+
 # Launch the containers.
 echo -e $(status_message "Starting Docker containers...")
 docker-compose ${DOCKER_COMPOSE_FILE_OPTIONS} up -d >/dev/null
+
 
 # Install the PHPUnit test scaffolding.
 echo -e $(status_message "Installing PHPUnit test scaffolding...")

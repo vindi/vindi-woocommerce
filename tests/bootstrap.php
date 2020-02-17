@@ -11,7 +11,7 @@
  * Class Vindi_Unit_Tests_Bootstrap
  */
 
-define('Vindi_TESTS', true);
+define('VINDI_TESTS', true);
 /**
  * change PLUGIN_FILE env in phpunit.xml
  */
@@ -48,36 +48,32 @@ class Vindi_Unit_Tests_Bootstrap
 
     $this->tests_dir    = dirname(__FILE__);
     $this->plugin_dir   = dirname($this->tests_dir);
+    $this->wc_dir       = '/var/www/html/wp-content/plugins/';
     $this->wp_tests_dir = getenv('WP_TESTS_DIR') ? getenv('WP_TESTS_DIR') : '/tmp/wordpress-tests-lib';
 
 
     // load test function so tests_add_filter() is available.
     require_once $this->wp_tests_dir . '/includes/functions.php';
 
-
     // load Vindi.
-    tests_add_filter('muplugins_loaded', function () {
-      // Manually load plugin
+    function _manually_load_plugin() {
+
+      require $this->wc_dir . 'woocommerce/woocommerce.php';
       require dirname(__DIR__) . '/' . PLUGIN_FILE;
-    });
+    }
 
-    // Activates this plugin in WordPress so it can be tested.
-    $GLOBALS['wp_tests_options'] = [
-      'active_plugins' => [PLUGIN_PATH],
-      'template' => 'twentysixteen',
-      'stylesheet' => 'twentysixteen',
-    ];
-
-    // Removes all sql tables on shutdown
-    // Do this action last
-    tests_add_filter('shutdown', 'drop_tables', 999999);
+    tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
     // load the WP testing environment.
     require_once $this->wp_tests_dir . '/includes/bootstrap.php';
 
-
     // load Vindi testing framework.
+    $this->includes_wc();
     $this->includes();
+
+    // Removes all sql tables on shutdown
+    // Do this action last
+    tests_add_filter('shutdown', 'drop_tables', 999999);
   }
 
   /**
@@ -94,6 +90,19 @@ class Vindi_Unit_Tests_Bootstrap
     require_once $this->tests_dir . '/phpunit/base-class.php';
     require_once $this->tests_dir . '/phpunit/ajax-class.php';
     require_once $this->tests_dir . '/phpunit/manager.php';
+  }
+
+  public function includes_wc()
+  {
+    $wc_tests_framework_base_dir = require $this->wc_dir . 'woocommerce/tests/framework/';
+    require_once( $wc_tests_framework_base_dir . 'class-wc-mock-session-handler.php' );
+    //require_once( $wc_tests_framework_base_dir . 'class-wc-unit-test-case.php' );
+    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-product.php' );
+    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-coupon.php' );
+    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-fee.php' );
+    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-shipping.php' );
+    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-customer.php' );
+    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-order.php' );
   }
 
   /**
