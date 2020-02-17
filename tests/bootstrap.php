@@ -48,7 +48,6 @@ class Vindi_Unit_Tests_Bootstrap
 
     $this->tests_dir    = dirname(__FILE__);
     $this->plugin_dir   = dirname($this->tests_dir);
-    $this->wc_dir       = '/var/www/html/wp-content/plugins/';
     $this->wp_tests_dir = getenv('WP_TESTS_DIR') ? getenv('WP_TESTS_DIR') : '/tmp/wordpress-tests-lib';
 
 
@@ -56,13 +55,14 @@ class Vindi_Unit_Tests_Bootstrap
     require_once $this->wp_tests_dir . '/includes/functions.php';
 
     // load Vindi.
-    function _manually_load_plugin() {
+    function _manually_load_plugin()
+    {
 
-      require $this->wc_dir . 'woocommerce/woocommerce.php';
+      require '/var/www/html/wp-content/plugins/woocommerce/woocommerce.php';
       require dirname(__DIR__) . '/' . PLUGIN_FILE;
     }
 
-    tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+    tests_add_filter('muplugins_loaded', '_manually_load_plugin');
 
     // load the WP testing environment.
     require_once $this->wp_tests_dir . '/includes/bootstrap.php';
@@ -94,15 +94,15 @@ class Vindi_Unit_Tests_Bootstrap
 
   public function includes_wc()
   {
-    $wc_tests_framework_base_dir = require $this->wc_dir . 'woocommerce/tests/framework/';
-    require_once( $wc_tests_framework_base_dir . 'class-wc-mock-session-handler.php' );
+    $wc_tests_framework_base_dir = '/var/www/html/wp-content/plugins/woocommerce/tests/framework/';
+    require_once($wc_tests_framework_base_dir . 'class-wc-mock-session-handler.php');
     //require_once( $wc_tests_framework_base_dir . 'class-wc-unit-test-case.php' );
-    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-product.php' );
-    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-coupon.php' );
-    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-fee.php' );
-    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-shipping.php' );
-    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-customer.php' );
-    require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-order.php' );
+    require_once($wc_tests_framework_base_dir . 'helpers/class-wc-helper-product.php');
+    require_once($wc_tests_framework_base_dir . 'helpers/class-wc-helper-coupon.php');
+    require_once($wc_tests_framework_base_dir . 'helpers/class-wc-helper-fee.php');
+    require_once($wc_tests_framework_base_dir . 'helpers/class-wc-helper-shipping.php');
+    require_once($wc_tests_framework_base_dir . 'helpers/class-wc-helper-customer.php');
+    require_once($wc_tests_framework_base_dir . 'helpers/class-wc-helper-order.php');
   }
 
   /**
