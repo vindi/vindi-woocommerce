@@ -18,10 +18,11 @@ define('VINDI_TESTS', true);
 define('PLUGIN_FILE', getenv('PLUGIN_FILE'));
 define('PLUGIN_FOLDER', basename(dirname(__DIR__)));
 define('PLUGIN_PATH', PLUGIN_FOLDER . '/' . PLUGIN_FILE);
+
 class Vindi_Unit_Tests_Bootstrap
 {
 
-  /** @var Vindi_Unit_Tests_Bootstrap instance */
+  // /** @var Vindi_Unit_Tests_Bootstrap instance */
   protected static $instance = null;
 
   /** @var string testing directory */
@@ -38,8 +39,8 @@ class Vindi_Unit_Tests_Bootstrap
   public function __construct()
   {
 
-    ini_set('display_errors', 'on');
-    error_reporting(E_ALL);
+    // ini_set('display_errors', 'on');
+    // error_reporting(E_ALL);
 
 
     if (!isset($_SERVER['SERVER_NAME'])) {
@@ -95,8 +96,11 @@ class Vindi_Unit_Tests_Bootstrap
   public function includes_wc()
   {
     $wc_tests_framework_base_dir = '/var/www/html/wp-content/plugins/woocommerce/tests/framework/';
+
     require_once($wc_tests_framework_base_dir . 'class-wc-mock-session-handler.php');
-    //require_once( $wc_tests_framework_base_dir . 'class-wc-unit-test-case.php' );
+    require_once($wc_tests_framework_base_dir . 'class-wc-mock-wc-data.php');
+    // require_once($wc_tests_framework_base_dir . 'class-wc-mock-payment-gateway.php');
+    require_once($wc_tests_framework_base_dir . 'class-wc-unit-test-case.php');
     require_once($wc_tests_framework_base_dir . 'helpers/class-wc-helper-product.php');
     require_once($wc_tests_framework_base_dir . 'helpers/class-wc-helper-coupon.php');
     require_once($wc_tests_framework_base_dir . 'helpers/class-wc-helper-fee.php');

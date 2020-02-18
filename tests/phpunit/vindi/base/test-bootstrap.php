@@ -20,10 +20,6 @@ class Vindi_Test_Bootstrap extends Vindi_Test_Base
     do_action('plugins_loaded');
   }
 
-  public function test_plugin_activated()
-  {
-    $this->assertTrue(is_plugin_active(PLUGIN_PATH));
-  }
 
   public function test_getInstance()
   {

@@ -23,7 +23,7 @@ class WC_Vindi_Payment extends AbstractInstance
     // Checks if Woocommerce is installed and activated
     if (class_exists('WC_Payment_Gateway') && class_exists('Extra_Checkout_Fields_For_Brazil')) {
 
-      $this->includes();
+      $this->init();
 
 
       $this->languages = new VindiLanguages();
@@ -41,8 +41,16 @@ class WC_Vindi_Payment extends AbstractInstance
     }
   }
 
-  private function includes()
+  /**
+   * Init the plugin after plugins_loaded so environment variables are set.
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   */
+  public function init()
   {
+    require_once $this->getPath() . '/helpers/VindiHelpers.php';
+
     require_once $this->getPath() . '/includes/Languages.php';
     require_once $this->getPath() . '/includes/admin/Settings.php';
     require_once $this->getPath() . '/SupportSubscriptions.php';
@@ -57,13 +65,13 @@ class WC_Vindi_Payment extends AbstractInstance
     if (!class_exists('WC_Payment_Gateway')) {
       include_once 'views/woocommerce-missing.php';
 
-      deactivate_plugins('/vindi-plugin/index.php', true);
+      deactivate_plugins(VINDI_PATH . '/' . PLUGIN_FILE, true);
     }
 
     if (!class_exists('Extra_Checkout_Fields_For_Brazil')) {
       include_once 'views/ecfb-missing.php';
 
-      deactivate_plugins('/vindi-plugin/index.php', true);
+      deactivate_plugins(VINDI_PATH . '/' . PLUGIN_FILE, true);
     }
   }
 

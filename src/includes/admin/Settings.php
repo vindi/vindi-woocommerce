@@ -1,6 +1,6 @@
 <?php
 
-class VindiSettings extends WC_Gateway_Paypal
+class VindiSettings extends WC_Settings_API
 {
 
   /**
@@ -66,7 +66,9 @@ class VindiSettings extends WC_Gateway_Paypal
   /**
    * Initialise Gateway Settings Form Fields
    */
-  function init_form_fields() {
+  function init_form_fields()
+  {
+
 
     $prospects_url = '<a href="https://app.vindi.com.br/prospects/new" target="_blank">' . __('Don\'t have an account?', VINDI) . '</a>';
 
