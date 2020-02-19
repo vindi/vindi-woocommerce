@@ -4,7 +4,7 @@ class VindiHelpers
   /**
    * Sanitize statement descriptor text.
    *
-   * Stripe requires max of 22 characters and no
+   * Vindi requires max of 22 characters and no
    * special characters with ><"'.
    *
    * @since 1.0.0
@@ -23,7 +23,6 @@ class VindiHelpers
     return $statement_descriptor;
   }
 
-
   /**
    * Get Vindi amount to pay
    *
@@ -39,10 +38,19 @@ class VindiHelpers
       $currency = get_woocommerce_currency();
     }
 
-    // if (in_array(strtolower($currency), self::no_decimal_currencies())) {
-    // return absint($total);
-    // } else {
     return absint(wc_format_decimal(((float) $total * 100), wc_get_price_decimals())); // In cents.
-    // }
+
+  }
+
+  /**
+   * Checks if WC version is less than passed in version.
+   *
+   * @since 1.0.0
+   * @param string $version Version to check against.
+   * @return bool
+   */
+  public static function is_wc_lt($version)
+  {
+    return version_compare(WC_VERSION, $version, '<');
   }
 };

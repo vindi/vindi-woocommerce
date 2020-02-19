@@ -1,6 +1,6 @@
 <?php
 
-include_once VINDI_PATH . 'src/vindi-woocommerce.php';
+include_once VINDI_PATH . 'src/VindiWoocommerce.php';
 
 class Vindi_Test_Bootstrap extends Vindi_Test_Base
 {

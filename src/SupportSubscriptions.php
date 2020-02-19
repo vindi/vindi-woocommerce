@@ -7,11 +7,11 @@ class SupportSubscriptions
   {
     $this->includes();
 
-    $this->credit = new WC_Vindi_Credit_Gateway();
+    // $this->credit = new WC_Vindi_Credit_Gateway();
   }
 
   public function includes()
   {
-    require_once WC_Vindi_Payment::getPath() . '/includes/gateways/CreditPayment.php';
+    // require_once WC_Vindi_Payment::getPath() . '/includes/gateways/CreditPayment.php';
   }
 };

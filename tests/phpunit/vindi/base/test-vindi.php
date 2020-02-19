@@ -56,10 +56,7 @@ class Vindi_Test extends Vindi_Test_Base
    */
   public function test_price_conversion_before_send_to_vindi()
   {
-    $this->assertEquals(10050, VindiHelpers::get_vindi_amount(100.50, 'USD'));
-    $this->assertEquals(10050, VindiHelpers::get_vindi_amount(10050, 'JPY'));
-    $this->assertEquals(100, VindiHelpers::get_vindi_amount(100.50, 'JPY'));
-    $this->assertEquals(10050, VindiHelpers::get_vindi_amount(100.50));
-    $this->assertInternalType('int', VindiHelpers::get_vindi_amount(100.50, 'USD'));
+    $this->assertEquals(10050, VindiHelpers::get_vindi_amount(100.50, 'BRL'));
+    $this->assertInternalType('int', VindiHelpers::get_vindi_amount(100.50, 'BRL'));
   }
 }; ?>
