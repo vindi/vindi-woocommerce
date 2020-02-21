@@ -4,6 +4,17 @@
   "version": "1.0.0",
   "author": "Mentores Team",
   "homepage": "https://mentores.com.br/",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.php": [
+      "npm run test:php",
+      "git add"
+    ]
+  },
   "scripts": {
     "unit": "sh bin/setup-phpunit-env.sh",
     "pretest:php": "grunt check",
@@ -12,6 +23,8 @@
   },
   "devDependencies": {
     "grunt": "^1.0.4",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.7",
     "phplint": "^2.0.1"
   }
 }
