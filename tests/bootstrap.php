@@ -106,7 +106,6 @@ class Vindi_Unit_Tests_Bootstrap
     $wc_tests_framework_base_dir = '/var/www/html/wp-content/plugins/woocommerce/tests/framework/';
     $wc_tests_includes_base_dir  = '/var/www/html/wp-content/plugins/woocommerce/';
 
-
     // framework
     require_once $wc_tests_framework_base_dir . 'class-wc-unit-test-factory.php';
     require_once $wc_tests_framework_base_dir . 'class-wc-mock-session-handler.php';
