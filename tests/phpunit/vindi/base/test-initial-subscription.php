@@ -1,7 +1,8 @@
 <?php
 
 include_once VINDI_PATH . 'src/helpers/VindiHelpers.php';
-include_once VINDI_PATH . 'src/utils/PaymentGateway.php';
+require_once VINDI_PATH . 'src/utils/PaymentGateway.php';
+include_once VINDI_PATH . 'src/includes/gateways/CreditPayment.php';
 
 
 /**
@@ -46,6 +47,7 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
     // 2) The same product added several times.
     // 3) A valid BR ZIP code
     $order = new WC_Order();
+
     $order->set_shipping_postcode('82540014');
     $order->add_product($product_1, 1); // Add one item of the first product variation
     $order->add_product($product_2, 2); // Add two items of the second product variation
@@ -54,10 +56,50 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
     $order->calculate_totals();
 
     // Act: Call get_level3_data_from_order().
-    $gateway = new VindiPaymentGateway();
+    $gateway = new VindiCreditGateway();
     $result = $gateway->get_level3_data_from_order($order);
 
 
-    print_r($result);
+    // Assert.
+    $this->assertEquals(
+      array(
+        'merchant_reference' => $order->get_id(),
+        'shipping_address_zip' => $order->get_shipping_postcode(),
+        'shipping_from_zip' => $store_postcode,
+        'shipping_amount' => 0,
+        'line_items' => array(
+          (object) array(
+            'product_code'        => (string) $product_1->get_id(),
+            'product_description' => substr($product_1->get_name(), 0, 26),
+            'unit_cost'           => 1183,
+            'quantity'            => 1,
+            'tax_amount'          => 0,
+            'discount_amount'     => 0,
+          ),
+          (object) array(
+            'product_code'        => (string) $product_2->get_id(),
+            'product_description' => substr($product_2->get_name(), 0, 26),
+            'unit_cost'           => 2005,
+            'quantity'            => 2,
+            'tax_amount'          => 0,
+            'discount_amount'     => 0,
+          ),
+        ),
+      ),
+      $result
+    );
+  }
+
+  public function test_pre_30_postal_code_omission()
+  {
+    if (!VindiHelpers::is_wc_lt('3.0')) {
+      // Dummy assertion.
+      $this->assertEquals(VindiHelpers::is_wc_lt('3.0'), false);
+      return;
+    }
+
+    $order = new WC_Order();
+    $gateway = new VindiHelpers();
+    $this->assertEquals(array(), $gateway->get_level3_data_from_order($order));
   }
 };

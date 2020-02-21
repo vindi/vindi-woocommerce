@@ -61,18 +61,29 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
       'line_items'           => $vindi_line_items,
     );
 
-    // The customer’s U.S. shipping ZIP code.
     $shipping_address_zip = $order->get_shipping_postcode();
-    if ($this->is_valid_us_zip_code($shipping_address_zip)) {
+
+    if ($this->is_valid_br_zip_code($shipping_address_zip)) {
+
       $level3_data['shipping_address_zip'] = $shipping_address_zip;
     }
 
-    // The merchant’s U.S. shipping ZIP code.
     $store_postcode = get_option('woocommerce_store_postcode');
-    if ($this->is_valid_us_zip_code($store_postcode)) {
+    if ($this->is_valid_br_zip_code($store_postcode)) {
       $level3_data['shipping_from_zip'] = $store_postcode;
     }
 
     return $level3_data;
+  }
+
+  /**
+   * Verifies whether a certain ZIP code is valid for the BRL, incl. 8-digit extensions.
+   *
+   * @param string $zip The ZIP code to verify.
+   * @return boolean
+   */
+  public function is_valid_br_zip_code($zip)
+  {
+    return !empty($zip) && preg_match('/^[0-9]{5,5}([- ]?[0-9]{3,3})?$/', $zip);
   }
 };
