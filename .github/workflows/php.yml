@@ -1,16 +1,22 @@
-# name: PHP Composer
+name: PHP UNIT - Run tests
 
-# on: [push]
+on: [push]
+  pull_request:
+    branches:
+      - develop
+      - master
 
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
-#     steps:
-#       - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: yarn unit
 
-#       - name: Install dependencies
-#         run: composer install --prefer-dist --no-progress --no-suggest
+      - name: CHECKING SYNTAX ERROR...
+        run: yarn pretest:php
 
-#       - name: Run tests
-#         run: ./vendor/bin/phpunit --bootstrap vendor/autoload.php __tests__/.
+      - name: Run tests
+        run: docker-compose run --rm wordpress_phpunit phpunit
