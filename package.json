@@ -7,11 +7,11 @@
   "husky": {
     "hooks": {
       "pre-push": "yarn test:php",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
     }
   },
   "scripts": {
-    "commit": "git-cz",
     "unit": "sh bin/setup-phpunit-env.sh",
     "pretest:php": "grunt check",
     "test:php": "docker-compose run --rm wordpress_phpunit phpunit",
