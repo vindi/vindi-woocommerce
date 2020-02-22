@@ -6,14 +6,9 @@
   "homepage": "https://mentores.com.br/",
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-push": "yarn test:php",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
-  },
-  "lint-staged": {
-    "*.php": [
-      "npm run test:php",
-      "git add"
-    ]
   },
   "scripts": {
     "unit": "sh bin/setup-phpunit-env.sh",
@@ -22,9 +17,10 @@
     "test:php_multisite": "docker-compose run -e WP_MULTISITE=1 --rm wordpress_phpunit phpunit"
   },
   "devDependencies": {
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
     "grunt": "^1.0.4",
     "husky": "^4.2.3",
-    "lint-staged": "^10.0.7",
     "phplint": "^2.0.1"
   }
 }
