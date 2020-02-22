@@ -55,6 +55,8 @@ class Vindi_Unit_Tests_Bootstrap
       $_SERVER['SERVER_NAME'] = 'localhost';
     }
 
+
+
     $this->tests_dir    = dirname(__FILE__);
     $this->plugin_dir   = dirname($this->tests_dir);
     $this->wp_tests_dir = getenv('WP_TESTS_DIR') ? getenv('WP_TESTS_DIR') : '/tmp/wordpress-tests-lib';
@@ -105,7 +107,6 @@ class Vindi_Unit_Tests_Bootstrap
   {
     $wc_tests_framework_base_dir = '/var/www/html/wp-content/plugins/woocommerce/tests/framework/';
     $wc_tests_includes_base_dir  = '/var/www/html/wp-content/plugins/woocommerce/';
-
 
     // framework
     require_once $wc_tests_framework_base_dir . 'class-wc-unit-test-factory.php';

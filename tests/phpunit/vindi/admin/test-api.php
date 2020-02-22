@@ -8,6 +8,6 @@ class Vindi_Test_Admin extends Vindi_Test_Base
 
   public function test_has_token()
   {
-    $this->assertTrue(true);
+    $this->assertTrue(false);
   }
 }
