@@ -69,7 +69,7 @@ class Vindi_Unit_Tests_Bootstrap
     function _manually_load_plugin()
     {
 
-      require '/var/www/html/wp-content/plugins/woocommerce/woocommerce.php';
+      require '/tmp/woocommerce/woocommerce.php';
       require dirname(__DIR__) . '/' . PLUGIN_FILE;
     }
 
@@ -105,8 +105,8 @@ class Vindi_Unit_Tests_Bootstrap
 
   public function includes_wc()
   {
-    $wc_tests_framework_base_dir = '/var/www/html/wp-content/plugins/woocommerce/tests/framework/';
-    $wc_tests_includes_base_dir  = '/var/www/html/wp-content/plugins/woocommerce/';
+    $wc_tests_framework_base_dir = '/tmp/woocommerce/tests/framework/';
+    $wc_tests_includes_base_dir  = '/tmp/woocommerce/';
 
     // framework
     require_once $wc_tests_framework_base_dir . 'class-wc-unit-test-factory.php';
