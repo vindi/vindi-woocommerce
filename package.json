@@ -1,0 +1,34 @@
+{
+  "name": "vindi-plugin",
+  "slug": "vindi",
+  "version": "1.0.0",
+  "author": "Mentores Team",
+  "homepage": "https://mentores.com.br/",
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn test:php",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
+    }
+  },
+  "scripts": {
+    "unit": "sh bin/setup-phpunit-env.sh",
+    "pretest:php": "grunt check",
+    "test:php": "docker-compose run --rm wordpress_phpunit phpunit",
+    "test:php_multisite": "docker-compose run -e WP_MULTISITE=1 --rm wordpress_phpunit phpunit"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "3.1.0",
+    "grunt": "^1.0.4",
+    "husky": "^4.2.3",
+    "phplint": "^2.0.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
