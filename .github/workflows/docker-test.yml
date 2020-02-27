@@ -16,8 +16,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # env:
+    #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v2
@@ -27,14 +27,11 @@ jobs:
 
       - name: Build image
         run: docker-compose run --rm wordpress_phpunit phpunit
-
-      - name: Set up Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-
-      - name: Install dependencies node_modules
-        run: yarn
-
-      - name: Check commit message
-        uses: wagoid/commitlint-github-action@v1
+      # - name: Set up Node
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: 12
+      # - name: Install dependencies node_modules
+      #   run: yarn
+      # - name: Check commit message
+      #   uses: wagoid/commitlint-github-action@v1
