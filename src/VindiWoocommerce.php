@@ -53,8 +53,10 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/utils/WcAddGateway.php';
 
     // Helpers and Languages
-    require_once $this->getPath() . '/helpers/VindiHelpers.php';
+    require_once $this->getPath() . '/helpers/Api.php';
+    require_once $this->getPath() . '/helpers/Logger.php';
     require_once $this->getPath() . '/i18n/Languages.php';
+    require_once $this->getPath() . '/helpers/VindiHelpers.php';
 
     // Loading Abstract Method
     require_once $this->getPath() . '/utils/PaymentGateway.php';
