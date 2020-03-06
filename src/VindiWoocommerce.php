@@ -1,5 +1,4 @@
 <?php
-
 require_once VINDI_SRC . '/utils/AbstractInstance.php';
 
 class WC_Vindi_Payment extends AbstractInstance
@@ -19,6 +18,8 @@ class WC_Vindi_Payment extends AbstractInstance
 
   public function __construct()
   {
+
+
 
     // Checks if Woocommerce is installed and activated
     if (class_exists('WC_Payment_Gateway') && class_exists('Extra_Checkout_Fields_For_Brazil')) {

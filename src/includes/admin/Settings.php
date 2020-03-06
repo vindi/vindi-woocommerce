@@ -243,11 +243,11 @@ class VindiSettings extends WC_Settings_API
     if (!$api_key) {
       return;
     }
-    if ('unauthorized' === $this->api->test_api_key($api_key)) {
+    if ('unauthorized' == $this->api->test_api_key($api_key)) {
 
       $this->invalidToken = true;
 
-      include_once VINDI_SRC . 'views/ecfb-missing.php';
+      include_once VINDI_SRC . 'views/invalid-token.php';
     }
   }
 }
