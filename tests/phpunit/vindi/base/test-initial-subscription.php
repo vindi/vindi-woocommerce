@@ -121,13 +121,13 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
 
     // Arrange: Set up an order with a non-US postcode.
     $order = new WC_Order();
-    $order->set_shipping_postcode('82540014');
+    $order->set_shipping_postcode('1050');
     $order->add_product($product, 1);
     $order->save();
     $order->calculate_totals();
 
     // Act: Call get_level3_data_from_order().
-    $store_postcode = '82540014';
+    $store_postcode = '1100';
     $gateway = new VindiCreditGateway();
     $result = $gateway->get_level3_data_from_order($order);
 

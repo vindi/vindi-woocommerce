@@ -1,6 +1,8 @@
 <?php
 
-include_once VINDI_PATH . 'src/VindiWoocommerce.php';
+include_once VINDI_PATH . 'src/helpers/Logger.php';
+include_once VINDI_PATH . 'src/helpers/Api.php';
+
 
 class Vindi_Test_Api extends Vindi_Test_Base
 {
@@ -8,7 +10,7 @@ class Vindi_Test_Api extends Vindi_Test_Base
    * Este teste valida os dados utilizados para a criação
    * de usuário, pedidos dentro da API da Vindi
    */
-  public function test_create_info_customer_within_vindi()
+  public function test_api_token()
   {
     if (!defined('API_TEST') || !API_TEST) {
 
@@ -16,7 +18,19 @@ class Vindi_Test_Api extends Vindi_Test_Base
       return;
     }
 
-    $this->assertNotContains('unauthorized', VindiApi::test_api_key(API_TOKEN));
+    $logger = new VindiLogger(VINDI, false);
+
+    $api = new VindiApi('', $logger, '');
+
+    $this->assertEquals('1', $api->test_api_key(API_TOKEN));
+  }
+
+  /**
+   * Este teste valida os dados utilizados para a criação
+   * de usuário, pedidos dentro da API da Vindi
+   */
+  public function test_create_customer_within_vindi()
+  {
   }
 
   /**
