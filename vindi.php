@@ -20,8 +20,8 @@ if (!defined('ABSPATH')) {
   exit; // Exit if accessed directly.
 }
 
-// Adding the development variables``
-// include plugin_dir_path(__FILE__) . '.env.php';
+// Adding the development variables
+include plugin_dir_path(__FILE__) . '.env.php';
 // Adding the variables
 require plugin_dir_path(__FILE__) . '/src/utils/DefinitionVariables.php';
 

@@ -1,7 +1,7 @@
 
 <?php
 
-include_once VINDI_PATH . 'src/helpers/VindiHelpers.php';
+include_once VINDI_PATH . 'src/services/VindiHelpers.php';
 
 class Vindi_Test extends Vindi_Test_Base
 {

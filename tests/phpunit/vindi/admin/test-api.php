@@ -1,7 +1,7 @@
 <?php
 
-include_once VINDI_PATH . 'src/helpers/Logger.php';
-include_once VINDI_PATH . 'src/helpers/Api.php';
+include_once VINDI_PATH . 'src/services/Logger.php';
+include_once VINDI_PATH . 'src/services/Api.php';
 
 
 class Vindi_Test_Api extends Vindi_Test_Base

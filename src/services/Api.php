@@ -18,7 +18,7 @@ class VindiApi
   private $accept_bank_slip;
 
   /**
-   * @var Vindi_Logger
+   * @var VindiLogger
    */
   private $logger;
 
@@ -28,7 +28,7 @@ class VindiApi
   private $recentRequest;
 
   /**
-   * @var Vindi_Plan
+   * @var VindiPlan
    */
   public $current_plan;
 
