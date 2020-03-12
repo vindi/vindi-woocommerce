@@ -23,13 +23,17 @@ class VindiSettings extends WC_Settings_API
    **/
   public $logger;
 
+  /**
+   * @var VindiApi
+   **/
+  public $api;
 
   /**
    * @var boolean
    **/
   private $debug;
 
-  public function __construct()
+  function __construct()
   {
     add_action('admin_notices', array($this, 'api_key_field'));
     global $woocommerce;

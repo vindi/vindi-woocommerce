@@ -65,6 +65,9 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/includes/admin/Settings.php';
     require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
 
+    // Routes import
+    require_once $this->getPath() . '/routes/index.php';
+
     // Controllers
     require_once $this->getPath() . '/controllers/PlansController.php';
   }

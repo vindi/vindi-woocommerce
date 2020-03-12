@@ -72,6 +72,21 @@ class VindiApi
     $this->sandbox      = $sandbox;
   }
 
+  /**
+   * @param array $data
+   *
+   * @return mixed
+   */
+  private function build_body($data)
+  {
+    $body = null;
+
+    if (!empty($data)) {
+      $body = json_encode($data);
+    }
+
+    return $body;
+  }
 
   /**
    * @param array $data
@@ -201,5 +216,62 @@ class VindiApi
 
     set_transient('vindi_merchant', $response_body_array['merchant'], 1 * HOUR_IN_SECONDS);
     return true;
+  }
+
+  /**
+   * @param string $endpoint
+   * @param string $method
+   * @param array  $data
+   * @param null   $data_to_log
+   *
+   * @return array|bool|mixed
+   */
+  private function request($endpoint, $method = 'POST', $data = array(), $data_to_log = null)
+  {
+    $url  = sprintf('%s%s', $this->base_path(), $endpoint);
+    $body = $this->build_body($data);
+
+    $request_id = rand();
+
+    $data_to_log = null !== $data_to_log ? $this->build_body($data_to_log) : $body;
+
+    $this->logger->log(sprintf("[Request #%s]: Novo Request para a API.\n%s %s\n%s", $request_id, $method, $url, $data_to_log));
+
+    $response = wp_remote_post($url, array(
+      'headers' => array(
+        'Authorization' => $this->get_auth_header(),
+        'Content-Type'  => 'application/json',
+        'User-Agent'    => sprintf(VINDI . '/%s; %s', VINDI_VERSION, get_bloginfo('url')),
+      ),
+      'method'    => $method,
+      'timeout'   => 60,
+      'sslverify' => true,
+      'body'      => $body,
+    ));
+
+    if (is_wp_error($response)) {
+      $this->logger->log(sprintf("[Request #%s]: Erro ao fazer request! %s", $request_id, print_r($response, true)));
+
+      return false;
+    }
+
+    $status = sprintf('%s %s', $response['response']['code'], $response['response']['message']);
+    $this->logger->log(sprintf("[Request #%s]: Nova Resposta da API.\n%s\n%s", $request_id, $status, print_r($response['body'], true)));
+
+    $response_body = wp_remote_retrieve_body($response);
+
+    if (!$response_body) {
+      $this->logger->log(sprintf('[Request #%s]: Erro ao recuperar corpo do request! %s', $request_id, print_r($response, true)));
+
+      return false;
+    }
+
+    $response_body_array = json_decode($response_body, true);
+
+    if (!$this->check_response($response_body_array)) {
+      return false;
+    }
+
+    return $response_body_array;
   }
 }
