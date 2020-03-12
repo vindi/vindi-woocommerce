@@ -20,6 +20,6 @@ if (defined('VINDI_TESTS') && VINDI_TESTS) {
   define('VINDI_URL', plugins_url('/', VINDI__FILE__));
 }
 
-define('PREFIX_PRODUCT', '[ WC-Produto ]');
+define('PREFIX_PRODUCT', '[WC] ');
 
-define('PREFIX_PLAN', '[ WC-Plano ]');
+define('PREFIX_PLAN', '[WC] ');

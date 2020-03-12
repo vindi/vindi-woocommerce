@@ -19,8 +19,6 @@ class WC_Vindi_Payment extends AbstractInstance
   public function __construct()
   {
 
-
-
     // Checks if Woocommerce is installed and activated
     if (class_exists('WC_Payment_Gateway') && class_exists('Extra_Checkout_Fields_For_Brazil')) {
 
@@ -66,7 +64,7 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
 
     // Routes import
-    require_once $this->getPath() . '/routes/index.php';
+    require_once $this->getPath() . '/routes/RoutesApi.php';
 
     // Controllers
     require_once $this->getPath() . '/controllers/PlansController.php';

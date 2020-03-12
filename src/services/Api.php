@@ -226,7 +226,7 @@ class VindiApi
    *
    * @return array|bool|mixed
    */
-  private function request($endpoint, $method = 'POST', $data = array(), $data_to_log = null)
+  public function request($endpoint, $method = 'POST', $data = array(), $data_to_log = null)
   {
     $url  = sprintf('%s%s', $this->base_path(), $endpoint);
     $body = $this->build_body($data);

@@ -21,11 +21,32 @@ class VindiRoutes
     $this->api = $this->settings->api;
   }
 
+  /**
+   * Post method for creating plan in the Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
   public function createPlan($data)
   {
 
     $response = $this->api->request('plans', 'POST', $data);
 
+    return $response;
+  }
+
+  /**
+   * Post method for creating product in the Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function createProduct($data)
+  {
+
+    $response = $this->api->request('products', 'POST', $data);
     return $response;
   }
 }
