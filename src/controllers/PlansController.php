@@ -41,12 +41,16 @@ class PlansController extends WC_Subscriptions
   {
 
     // Check if the post is of the signature type
-
     if (!in_array($product->get_type(), $this->types)) {
       return;
     }
 
     $data = $product->get_data();
+
+    VindiHelpers::wc_post_meta($data['id'], array(
+      'vindi_product_id' => 11,
+      'vindi_plan_id' => 10,
+    ));
 
     // Checks whether it is a new product or not
     $created_at = strtotime($product->get_date_created()->format('Y-m-d H:i:s'));
@@ -55,7 +59,6 @@ class PlansController extends WC_Subscriptions
     if ($update_at < $created_at) {
       return $this->update($post_id, $post);
     }
-
 
     $subscription = $this->get_product(33);
   }
