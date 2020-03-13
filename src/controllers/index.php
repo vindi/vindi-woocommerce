@@ -1,13 +1,11 @@
 <?php
 
 /**
- * Junção de todos os controllers necessários para
- * a comunicação entre a API da Vindi.
+ * Merging all the controllers needed to
+ * communication between the Vindi API.
  *
  * @return void;
  */
-
-
 
 class VindiControllers
 {
@@ -20,15 +18,16 @@ class VindiControllers
 
   function __construct()
   {
-    $this->path = WC_Vindi_Payment::getPath();
-
     $this->includes();
+
+    $this->plans = new PlansController();
+    $this->customers = new CostumerController();
   }
 
 
   function includes()
   {
-
-    print_r($this->path);
+    require_once WC_Vindi_Payment::getPath() . '/controllers/PlansController.php';
+    require_once WC_Vindi_Payment::getPath() . '/controllers/CustomerController.php';
   }
 }

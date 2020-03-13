@@ -25,9 +25,11 @@ class WC_Vindi_Payment extends AbstractInstance
       $this->init();
 
 
-      $this->languages = new VindiLanguages();
+      $this->languages   = new VindiLanguages();
       // $this->gateways = new VindiGateways();
-      $this->settings = new VindiSettings();
+
+      $this->settings    = new VindiSettings();
+      $this->controllers = new VindiControllers();
 
 
       /**
@@ -67,7 +69,7 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/routes/RoutesApi.php';
 
     // Controllers
-    require_once $this->getPath() . '/controllers/PlansController.php';
+    require_once $this->getPath() . '/controllers/index.php';
   }
 
   public static function getPath()

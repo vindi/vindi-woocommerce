@@ -1,7 +1,5 @@
 <?php
 
-global $woocommerce;
-
 class PlansController
 {
 
@@ -101,5 +99,3 @@ class PlansController
     $subscription = $this->get_product(33);
   }
 }
-
-$plans = new PlansController();

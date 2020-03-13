@@ -49,5 +49,19 @@ class VindiRoutes
     $response = $this->api->request('products', 'POST', $data);
     return $response;
   }
+
+  /**
+   * Post method for creating customer in the Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function createCustomer($data)
+  {
+
+    $response = $this->api->request('customers', 'POST', $data);
+    return $response;
+  }
 }
 ?>
