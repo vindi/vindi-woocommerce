@@ -1,5 +1,4 @@
 <?php
-
 require_once VINDI_SRC . '/utils/AbstractInstance.php';
 
 class WC_Vindi_Payment extends AbstractInstance
@@ -26,9 +25,11 @@ class WC_Vindi_Payment extends AbstractInstance
       $this->init();
 
 
-      $this->languages = new VindiLanguages();
+      $this->languages   = new VindiLanguages();
       // $this->gateways = new VindiGateways();
-      $this->settings = new VindiSettings();
+
+      $this->settings    = new VindiSettings();
+      $this->controllers = new VindiControllers();
 
 
       /**
@@ -53,14 +54,22 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/utils/WcAddGateway.php';
 
     // Helpers and Languages
-    require_once $this->getPath() . '/helpers/VindiHelpers.php';
+    require_once $this->getPath() . '/services/Api.php';
+    require_once $this->getPath() . '/services/Logger.php';
     require_once $this->getPath() . '/i18n/Languages.php';
+    require_once $this->getPath() . '/services/VindiHelpers.php';
 
     // Loading Abstract Method
     require_once $this->getPath() . '/utils/PaymentGateway.php';
 
     require_once $this->getPath() . '/includes/admin/Settings.php';
     require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
+
+    // Routes import
+    require_once $this->getPath() . '/routes/RoutesApi.php';
+
+    // Controllers
+    require_once $this->getPath() . '/controllers/index.php';
   }
 
   public static function getPath()

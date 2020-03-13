@@ -1,6 +1,14 @@
 <?php
 class VindiHelpers
 {
+
+
+  function __construct()
+  {
+
+    add_action('woocommerce_process_product_meta', array($this, 'wc_post_meta'));
+  }
+
   /**
    * Sanitize statement descriptor text.
    *
@@ -52,5 +60,33 @@ class VindiHelpers
   public static function is_wc_lt($version)
   {
     return version_compare(WC_VERSION, $version, '<');
+  }
+
+  /**
+   * Save Woocommerce custom attributes
+   *
+   * @since 1.0.0
+   * @param string $version Version to check against.
+   * @return null
+   */
+
+  public static function wc_post_meta($post_id, $custom_attributes)
+  {
+
+    // Get product
+    $product = wc_get_product($post_id);
+
+    $i = 0;
+
+    // Loop through the attributes array
+    foreach ($custom_attributes as $name => $value) {
+
+      // Check meta value exists
+      $product->update_meta_data($name, $value);
+
+      $i++;
+    }
+
+    $product->save();
   }
 };

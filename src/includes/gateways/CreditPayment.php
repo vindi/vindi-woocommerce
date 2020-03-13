@@ -72,7 +72,7 @@ class VindiCreditGateway extends VindiPaymentGateway
     $this->form_fields = array(
       'enabled' => array(
         'title'       => 'Enable/Disable',
-        'label'       => 'Enable Misha Gateway',
+        'label'       => 'Enable Vindi Gateway',
         'type'        => 'checkbox',
         'description' => '',
         'default'     => 'no'

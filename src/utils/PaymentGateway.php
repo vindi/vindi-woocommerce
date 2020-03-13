@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
   exit;
 }
 
-include_once VINDI_PATH . 'src/helpers/VindiHelpers.php';
+include_once VINDI_PATH . 'src/services/VindiHelpers.php';
 
 /**
  * Abstract class that will be inherited by all payment methods.

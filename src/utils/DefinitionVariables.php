@@ -19,3 +19,7 @@ if (defined('VINDI_TESTS') && VINDI_TESTS) {
 } else {
   define('VINDI_URL', plugins_url('/', VINDI__FILE__));
 }
+
+define('PREFIX_PRODUCT', '[WC] ');
+
+define('PREFIX_PLAN', '[WC] ');
