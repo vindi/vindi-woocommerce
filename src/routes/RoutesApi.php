@@ -63,5 +63,44 @@ class VindiRoutes
     $response = $this->api->request('customers', 'POST', $data);
     return $response;
   }
+
+  /**
+   * Update method for update profile customer in the Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function updateCustomer($user_id, $data)
+  {
+
+    $response = $this->api->request(sprintf(
+      'customers/%s',
+      $user_id
+    ), 'PUT', $data);
+
+    return $response;
+  }
+
+
+  /**
+   * Check if exists user in Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function findCustomerByid($id)
+  {
+
+    $response = $this->api->request(sprintf(
+      'customers/%s',
+      $id
+    ), 'GET');
+
+    $userExists = isset($response['customers'][0]['id']);
+
+    return $userExists;
+  }
 }
 ?>
