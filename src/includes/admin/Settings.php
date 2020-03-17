@@ -35,7 +35,7 @@ class VindiSettings extends WC_Settings_API
 
   function __construct()
   {
-    add_action('admin_notices', array($this, 'api_key_field'));
+    add_action('woocommerce_update_options_settings_vindi', array($this, 'api_key_field'));
     global $woocommerce;
 
     $this->token = sanitize_file_name(wp_hash(VINDI));
