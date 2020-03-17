@@ -56,7 +56,22 @@ class VindiSettings extends WC_Settings_API
       add_action('woocommerce_settings_tabs_settings_vindi', array(&$this, 'settings_tab'));
       add_action('woocommerce_update_options_settings_vindi', array(&$this, 'process_admin_options'));
       // add_action('woocommerce_update_options_shipping_methods', array(&$this, 'process_admin_options'));
+
+     /**
+      * Adicionar campos adicionais no Cupom
+      */
+      add_action('add_meta_boxes', array($this, 'update_coupons_meta_box'), 40);
+      add_action('woocommerce_process_shop_coupon_meta', 'CouponsMetaBox::save', 10, 2);
     }
+  }
+
+  /**
+   * Recreate coupons meta box
+   */
+  public static function update_coupons_meta_box()
+  {
+    remove_meta_box('woocommerce-coupon-data', 'shop_coupon', 'normal');
+    add_meta_box('woocommerce-coupon-data', __('Coupon data', 'woocommerce'), 'CouponsMetaBox::output', 'shop_coupon', 'normal', 'high');
   }
 
   /**
