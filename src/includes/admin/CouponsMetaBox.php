@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WC_Meta_Box_Coupon_Data Class update with custom fields.
+ * WC_Meta_Box_Coupon_Data Class updated with custom fields.
  */
 class CouponsMetaBox {
 
