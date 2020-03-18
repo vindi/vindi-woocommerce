@@ -66,6 +66,7 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/includes/admin/CouponsMetaBox.php';
     require_once $this->getPath() . '/includes/admin/Settings.php';
     require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
+    require_once $this->getPath() . '/includes/gateways/BankSlipPayment.php';
     require_once $this->getPath() . '/includes/FrontendFilesLoader.php';
 
     // Routes import

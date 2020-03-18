@@ -12,7 +12,7 @@ function add_gateway($methods)
 {
 
   $methods[] = 'VindiCreditGateway';
-  // $methods[] = 'VindiDebitGateway';
+  $methods[] = 'VindiBankSlipGateway';
 
   return $methods;
 };
