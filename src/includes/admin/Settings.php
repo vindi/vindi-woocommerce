@@ -33,9 +33,15 @@ class VindiSettings extends WC_Settings_API
    **/
   private $debug;
 
+  /**
+   * @var boolean
+   **/
+  private $invalidToken;
+
   function __construct()
   {
     add_action('woocommerce_update_options_settings_vindi', array($this, 'api_key_field'));
+    add_action('woocommerce_settings_tabs_settings_vindi', array($this, 'is_api_key_valid'));
     global $woocommerce;
 
     $this->token = sanitize_file_name(wp_hash(VINDI));
@@ -47,7 +53,7 @@ class VindiSettings extends WC_Settings_API
     $this->logger = new VindiLogger(VINDI, $this->debug);
     $this->api = new VindiApi($this->get_api_key(), $this->logger, $this->get_is_active_sandbox());
     $this->woocommerce = $woocommerce;
-
+    $this->invalidToken = get_option( 'vindi_invalid_token', false );
 
     if (is_admin()) {
 
@@ -263,9 +269,16 @@ class VindiSettings extends WC_Settings_API
       return;
     }
     if ('unauthorized' == $this->api->test_api_key($api_key)) {
+      update_option('vindi_invalid_token', true);
 
-      $this->invalidToken = true;
-
+      include_once VINDI_SRC . 'views/invalid-token.php';
+    } else {
+      update_option('vindi_invalid_token', false);
+    }
+  }
+  public function is_api_key_valid()
+  {
+    if($this->invalidToken) {
       include_once VINDI_SRC . 'views/invalid-token.php';
     }
   }
