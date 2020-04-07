@@ -265,6 +265,7 @@ class VindiSettings extends WC_Settings_API
     if ('unauthorized' == $this->api->test_api_key($api_key)) {
 
       $this->invalidToken = true;
+      // $this->woocommerce->WC_Admin_Notices::wc_add_notice( _e( 'Invalid Token', 'vindi-woocommerce' ), 'error' );
 
       include_once VINDI_SRC . 'views/invalid-token.php';
     }
