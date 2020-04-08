@@ -268,12 +268,14 @@ class VindiSettings extends WC_Settings_API
     if (!$api_key) {
       return;
     }
-    if ('unauthorized' == $this->api->test_api_key($api_key)) {
+    if ('unauthorized' === $this->api->test_api_key($api_key)) {
       update_option('vindi_invalid_token', true);
+      $this->invalidToken = true;
 
       include_once VINDI_SRC . 'views/invalid-token.php';
     } else {
       update_option('vindi_invalid_token', false);
+      $this->invalidToken = false;
     }
   }
   public function is_api_key_valid()
