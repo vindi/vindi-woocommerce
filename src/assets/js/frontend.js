@@ -1,22 +1,22 @@
 /* global wcbcf_public_params */
-jQuery(function($) {
+jQuery(function ($) {
   const vindi_plugin = {
-    init: function() {
+    init: function () {
       /* woocommerce-extra-checkout-fields-for-brazil input mask toggle value
       if (wcbcf_public_params.maskedinput === "yes")
        */
       vindi_plugin.maskCC();
     },
-    maskCC: function() {
-      $("#misha_ccNo").mask("0000 0000 0000 0000");
-      $("#misha_expdate").mask("00/00");
-      $("#misha_cvv").mask("000");
+    maskCC: function () {
+      $("#vindi_ccNo").mask("0000 0000 0000 0000");
+      $("#vindi_expdate").mask("00/00");
+      $("#vindi_cvv").mask("000");
     },
-    unmaskCC: function() {
-      $("#misha_ccNo").unmask();
-      $("#misha_expdate").unmask();
-      $("#misha_cvv").unmask();
-    }
+    unmaskCC: function () {
+      $("#vindi_ccNo").unmask();
+      $("#vindi_expdate").unmask();
+      $("#vindi_cvv").unmask();
+    },
   };
 
   vindi_plugin.init();
