@@ -13,7 +13,7 @@ class FrontendFilesLoader {
 
   public static function registerFiles()
   {
-    wp_register_script( 'vindi_woocommerce_frontend_js', plugins_url( '/assets/js/frontend.js', plugin_dir_path( __FILE__ ) ), array( 'jquery', 'jquery-mask' ), VINDI_VERSION, true );
+    wp_register_script( 'vindi_woocommerce_frontend_js', plugins_url( '/assets/js/frontend.js', plugin_dir_path( __FILE__ ) ), array( 'jquery', 'jquery-payment' ), VINDI_VERSION, true );
     wp_enqueue_script ( 'vindi_woocommerce_frontend_js' );
   }
 }
