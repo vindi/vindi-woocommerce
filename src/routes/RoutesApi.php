@@ -98,7 +98,7 @@ class VindiRoutes
       $id
     ), 'GET');
 
-    $userExists = isset($response['customers'][0]['id']);
+    $userExists = isset($response['customer']['id']) ? $response['customer'] : false;
 
     return $userExists;
   }

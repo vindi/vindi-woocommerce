@@ -53,7 +53,11 @@ class CostumerController
         'phones' => array(
           array(
             'phone_type' => 'mobile',
-            'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '554199999999',
+            'number' => ($customer->get_meta('billing_cellphone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone')) : '5599999999999',
+          ),
+          array(
+            'phone_type' => 'landline',
+            'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '559999999999',
           )
         )
       )
@@ -79,18 +83,23 @@ class CostumerController
     // Check meta Vindi ID
     if (empty($vindi_customer_id)) {
 
-      return create($user_id);
+      return $this->create($user_id);
     }
 
     // Check user exists in Vindi
-    if ($this->routes->findCustomerByid($vindi_customer_id)) {
+    $vindiUser = $this->routes->findCustomerByid($vindi_customer_id);
+    if (!$vindiUser) {
 
-      return create($user_id);
+      return $this->create($user_id);
     }
 
     $customer = new WC_Customer($user_id);
 
     $user = $customer->get_data();
+    $phones = array();
+    foreach($vindiUser['phones'] as $phone):
+      $phones[$phone['phone_type']] = $phone['id'];
+    endforeach;
 
     // Update customer profile
     $updateUser = $this->routes->updateCustomer(
@@ -112,9 +121,14 @@ class CostumerController
         ),
         'phones' => array(
           array(
-            'id' => 4719248,
+            'id' => $phones['mobile'],
             'phone_type' => 'mobile',
-            'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '554199999999',
+            'number' => ($customer->get_meta('billing_cellphone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone')) : '5599999999999',
+          ),
+          array(
+            'id' => $phones['landline'],
+            'phone_type' => 'landline',
+            'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '559999999999',
           )
         )
       )
