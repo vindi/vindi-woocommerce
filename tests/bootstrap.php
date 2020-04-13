@@ -118,8 +118,8 @@ class Vindi_Unit_Tests_Bootstrap
     require_once $wc_tests_framework_base_dir . 'vendor/class-wp-test-spy-rest-server.php';
 
 
-    // test case
-    require_once $wc_tests_framework_base_dir . 'class-wc-unit-test-case.php';
+    // // test case
+    // require_once $wc_tests_framework_base_dir . 'class-wc-unit-test-case.php';
 
     // Helpers
     require_once $wc_tests_framework_base_dir . 'helpers/class-wc-helper-product.php';
