@@ -13,7 +13,7 @@ WP_VERSION=${5-latest}
 
 WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib}
 WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
-WC_CORE_DIR=${WC_CORE_DIR-/tmp/woocommerce/}
+WC_CORE_DIR=${WC_CORE_DIR-/tmp/woocommerce}
 
 download() {
     if [ `which curl` ]; then
@@ -120,10 +120,13 @@ install_jshint() {
 }
 
 install_wc(){
-  mkdir -p $WC_CORE_DIR
 
-  wget https://gist.github.com/MatheusKindrazki/95bdac1c77a1d05b4b3e7694031bad5c/raw/ba91d7b542e86da0aed6b5265c98ff864026997a/woo.tar.gz -O /tmp/woo.tar.gz
-  tar --strip-components=1 -zxmf /tmp/woo.tar.gz -C $WC_CORE_DIR
+  wget https://gist.github.com/MatheusKindrazki/46a20f3d386fb2c098fd9f23e564e84d/raw/acce9a9dbd7cc50b127eeddceb7fb2332063cacb/woo.tar.gz -O /tmp/woo.tar.gz
+
+  mkdir -p /tmp/woocommerce
+
+  # tar --strip-components=1 -zxmf /tmp/woo.tar.gz -C $WC_CORE_DIR
+  tar --strip-components=1 -zxmf /tmp/woo.tar.gz -C /tmp/woocommerce
 }
 
 install_wp
