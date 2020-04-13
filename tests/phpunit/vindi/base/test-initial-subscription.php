@@ -4,8 +4,9 @@ include_once VINDI_PATH . 'src/services/VindiHelpers.php';
 require_once VINDI_PATH . 'src/utils/PaymentGateway.php';
 include_once VINDI_PATH . 'src/includes/gateways/CreditPayment.php';
 
+include_once VINDI_PATH . 'src/includes/admin/Settings.php';
+
 /**
- * These tests assert various things about processing an initial payment
  * for a WooCommerce Subscriptions.
  *
  * The responses from HTTP requests are mocked using the WP filter
@@ -42,8 +43,7 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
     $product_2->save();
 
     // Arrange: Set up an order with:
-    // 1) A variation product.
-    // 2) The same product added several times.
+    // 1) A variation product.    // 2) The same product added several times.
     // 3) A valid BR ZIP code
     $order = new WC_Order();
 
@@ -55,7 +55,10 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
     $order->calculate_totals();
 
     // Act: Call get_level3_data_from_order().
-    $gateway = new VindiCreditGateway();
+
+    $settings = new VindiSettings();
+
+    $gateway = new VindiCreditGateway($settings);
     $result = $gateway->get_level3_data_from_order($order);
 
 
@@ -128,7 +131,10 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
 
     // Act: Call get_level3_data_from_order().
     $store_postcode = '1100';
-    $gateway = new VindiCreditGateway();
+
+    $settings = new VindiSettings();
+
+    $gateway = new VindiCreditGateway($settings);
     $result = $gateway->get_level3_data_from_order($order);
 
     // Assert.

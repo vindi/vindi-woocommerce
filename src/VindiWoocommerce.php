@@ -36,7 +36,7 @@ class WC_Vindi_Payment extends AbstractInstance
       /**
        * Add Gateway to Woocommerce
        */
-      add_filter('woocommerce_payment_gateways', 'add_gateway');
+      add_filter('woocommerce_payment_gateways', array($this->settings, 'add_gateway'));
     } else {
 
       add_action('admin_notices', 'dependencies_notices');
@@ -51,9 +51,6 @@ class WC_Vindi_Payment extends AbstractInstance
    */
   public function init()
   {
-    // Loading Methods in the WC
-    require_once $this->getPath() . '/utils/WcAddGateway.php';
-
     // Helpers and Languages
     require_once $this->getPath() . '/services/Api.php';
     require_once $this->getPath() . '/services/Logger.php';

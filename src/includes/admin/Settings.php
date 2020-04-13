@@ -268,18 +268,39 @@ class VindiSettings extends WC_Settings_API
     if (!$api_key) {
       return;
     }
-    if ('unauthorized' == $this->api->test_api_key($api_key)) {
+    if ('unauthorized' === $this->api->test_api_key($api_key)) {
       update_option('vindi_invalid_token', true);
+      $this->invalidToken = true;
 
       include_once VINDI_SRC . 'views/invalid-token.php';
     } else {
       update_option('vindi_invalid_token', false);
+      $this->invalidToken = false;
     }
   }
+
+  /**
+   * Check if invalidToken is true
+   * @return mixed includes the invalid-token view
+   */
   public function is_api_key_valid()
   {
     if($this->invalidToken) {
       include_once VINDI_SRC . 'views/invalid-token.php';
     }
+  }
+
+  /**
+   * Add the gateway to WooCommerce.
+   * @param  array $methods WooCommerce payment methods.
+   * @return array Payment methods with Vindi.
+   */
+  public function add_gateway($methods)
+  {
+
+    $methods[] = new VindiCreditGateway($this);
+    $methods[] = new VindiBankSlipGateway($this);
+
+    return $methods;
   }
 }
