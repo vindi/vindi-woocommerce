@@ -19,6 +19,7 @@ class CustomerController
     // Fires immediately after an existing user is updated.
     add_action('woocommerce_customer_save_address', array($this, 'update'), 10, 4);
     add_action('woocommerce_save_account_details', array($this, 'update'), 10, 4);
+    add_action('delete_user', array($this, 'delete'), 10, 2);
   }
 
   /**
@@ -132,6 +133,38 @@ class CustomerController
           )
         )
       )
+    )['customer'];
+  }
+
+
+  /**
+   * When a user is deleted within the WP, it is reflected in the Vindi.
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   */
+
+  function delete($user_id, $reassign)
+  {
+
+    $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id')[0];
+
+    // Check meta Vindi ID
+    if (empty($vindi_customer_id)) {
+
+      return;
+    }
+
+    // Check user exists in Vindi
+    $vindiUser = $this->routes->findCustomerByid($vindi_customer_id);
+    if (!$vindiUser) {
+
+      return;
+    }
+
+    // Delete customer profile
+    $deletedUser = $this->routes->deleteCustomer(
+      $vindi_customer_id,
     )['customer'];
   }
 }

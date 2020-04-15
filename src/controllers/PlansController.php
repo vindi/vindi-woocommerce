@@ -103,7 +103,7 @@ class PlansController
   }
 
   /**
-   * When the user trashes a product in Woocomerce, it is deactivated in Vindi.
+   * When the user trashes a product in Woocomerce, it is deactivated in the Vindi.
    *
    * @since 1.0.1
    * @version 1.0.1
@@ -129,18 +129,18 @@ class PlansController
     }
 
     // Changes the product status within the Vindi
-    $createProduct = $this->routes->updateProduct($vindi_product_id, array(
+    $inactiveProduct = $this->routes->updateProduct($vindi_product_id, array(
       'status' => 'inactive',
     ))['product'];
 
     // Changes the plan status within the Vindi
-    $createPlan = $this->routes->updatePlan($vindi_plan_id, array(
+    $inactivePlan = $this->routes->updatePlan($vindi_plan_id, array(
       'status' => 'inactive',
     ))['plan'];
   }
 
   /**
-   * When the user untrashes a product in Woocomerce, it is activated in Vindi.
+   * When the user untrashes a product in Woocomerce, it is activated in the Vindi.
    *
    * @since 1.0.01
    * @version 1.0.0
@@ -166,12 +166,12 @@ class PlansController
     }
 
     // Changes the product status within the Vindi
-    $createProduct = $this->routes->updateProduct($vindi_product_id, array(
+    $activeProduct = $this->routes->updateProduct($vindi_product_id, array(
       'status' => 'active',
     ))['product'];
 
     // Changes the plan status within the Vindi
-    $createPlan = $this->routes->updatePlan($vindi_plan_id, array(
+    $activePlan = $this->routes->updatePlan($vindi_plan_id, array(
       'status' => 'active',
     ))['plan'];
   }

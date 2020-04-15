@@ -117,6 +117,24 @@ class VindiRoutes
     return $response;
   }
 
+  /**
+   * Delete method to disable the customer in the Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function deleteCustomer($user_id)
+  {
+
+    $response = $this->api->request(sprintf(
+      'customers/%s',
+      $user_id
+    ), 'delete');
+
+    return $response;
+  }
+
 
   /**
    * Check if exists user in Vindi
