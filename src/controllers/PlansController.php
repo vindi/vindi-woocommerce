@@ -20,7 +20,7 @@ class PlansController
 
     $this->types = array('variable-subscription', 'subscription');
 
-    add_action('updated_post_meta', array($this, 'create'), 10, 4);
+    add_action('wp_insert_post', array($this, 'create'), 10, 3);
   }
 
   /**
@@ -29,15 +29,16 @@ class PlansController
    * @since 1.0.0
    * @version 1.0.0
    */
-  function create($meta_id, $post_id, $meta_key)
+  function create($post_id, $post, $update)
   {
-
-    if ($meta_key != '_edit_lock') { // editing the post
+    // Check if the post is product
+    if (get_post_type($post_id) != 'product') {
       return;
     }
 
-    // Check if the post is product
-    if (get_post_type($post_id) != 'product') {
+    // Check if it's a new post
+    // The $update value is unreliable because of the auto_draft functionality
+    if(get_post_status($post_id) != 'publish' && empty(get_post_meta($post_id, 'vindi_product_created'))) {
       return;
     }
 
@@ -91,6 +92,8 @@ class PlansController
       'vindi_product_id' => $createProduct['id'],
       'vindi_plan_id' => $createPlan['id'],
     ));
+
+    update_post_meta( $post_id, 'vindi_product_created', true );
   }
 
   function update($post_id, $post)
