@@ -13,14 +13,17 @@ class PlansController
    */
   private $routes;
 
-  function __construct()
+  function __construct(VindiSettings $vindi_settings)
   {
 
-    $this->routes = new VindiRoutes();
+    $this->routes = new VindiRoutes($vindi_settings);
+    $this->logger = $vindi_settings->logger;
 
     $this->types = array('variable-subscription', 'subscription');
 
-    add_action('updated_post_meta', array($this, 'create'), 10, 4);
+    add_action('wp_insert_post', array($this, 'create'), 10, 3);
+    add_action('wp_trash_post', array($this, 'trash'), 10, 1);
+    add_action('untrash_post', array($this, 'untrash'), 10, 1);
   }
 
   /**
@@ -29,15 +32,16 @@ class PlansController
    * @since 1.0.0
    * @version 1.0.0
    */
-  function create($meta_id, $post_id, $meta_key)
+  function create($post_id, $post, $update)
   {
-
-    if ($meta_key != '_edit_lock') { // editing the post
+    // Check if the post is product
+    if (get_post_type($post_id) != 'product') {
       return;
     }
 
-    // Check if the post is product
-    if (get_post_type($post_id) != 'product') {
+    // Check if it's a new post
+    // The $update value is unreliable because of the auto_draft functionality
+    if(get_post_status($post_id) != 'publish' || !empty(get_post_meta($post_id, 'vindi_product_created', true))) {
       return;
     }
 
@@ -49,9 +53,6 @@ class PlansController
     }
 
     $data = $product->get_data();
-
-    // Checks whether it is a new product or not
-    // --- Not Worked
 
     // Creates the product within the Vindi
     $createProduct = $this->routes->createProduct(array(
@@ -91,11 +92,87 @@ class PlansController
       'vindi_product_id' => $createProduct['id'],
       'vindi_plan_id' => $createPlan['id'],
     ));
+
+    update_post_meta( $post_id, 'vindi_product_created', true );
   }
 
   function update($post_id, $post)
   {
 
     $subscription = $this->get_product(33);
+  }
+
+  /**
+   * When the user trashes a product in Woocomerce, it is deactivated in the Vindi.
+   *
+   * @since 1.0.1
+   * @version 1.0.1
+   */
+  function trash($post_id)
+  {
+    // Check if the post is product
+    if (get_post_type($post_id) != 'product') {
+      return;
+    }
+
+    $product = wc_get_product($post_id);
+    // Check if the post is of the signature type
+    if (!in_array($product->get_type(), $this->types)) {
+      return;
+    }
+
+    $vindi_product_id = $product->get_meta('vindi_product_id');
+    $vindi_plan_id = $product->get_meta('vindi_plan_id');
+
+    if(!empty($vindi_product_id) || !empty($vindi_plan_id)) {
+      return;
+    }
+
+    // Changes the product status within the Vindi
+    $inactiveProduct = $this->routes->updateProduct($vindi_product_id, array(
+      'status' => 'inactive',
+    ))['product'];
+
+    // Changes the plan status within the Vindi
+    $inactivePlan = $this->routes->updatePlan($vindi_plan_id, array(
+      'status' => 'inactive',
+    ))['plan'];
+  }
+
+  /**
+   * When the user untrashes a product in Woocomerce, it is activated in the Vindi.
+   *
+   * @since 1.0.01
+   * @version 1.0.0
+   */
+  function untrash($post_id)
+  {
+    // Check if the post is product
+    if (get_post_type($post_id) != 'product') {
+      return;
+    }
+
+    $product = wc_get_product($post_id);
+    // Check if the post is of the signature type
+    if (!in_array($product->get_type(), $this->types)) {
+      return;
+    }
+
+    $vindi_product_id = $product->get_meta('vindi_product_id');
+    $vindi_plan_id = $product->get_meta('vindi_plan_id');
+
+    if(!empty($vindi_product_id) || !empty($vindi_plan_id)) {
+      return;
+    }
+
+    // Changes the product status within the Vindi
+    $activeProduct = $this->routes->updateProduct($vindi_product_id, array(
+      'status' => 'active',
+    ))['product'];
+
+    // Changes the plan status within the Vindi
+    $activePlan = $this->routes->updatePlan($vindi_plan_id, array(
+      'status' => 'active',
+    ))['plan'];
   }
 }

@@ -14,17 +14,21 @@ if (!defined('ABSPATH')) {
 
 class VindiCreditGateway extends VindiPaymentGateway
 {
-
+  /**
+   * @var VindiSettings
+   */
+   private $vindi_settings;
+ 
   /**
    * Constructor for the gateway.
    */
 
-  public function __construct(VindiSettings $vindiSettings)
+  public function __construct(VindiSettings $vindi_settings)
   {
 
     global $woocommerce;
 
-    $this->vindiSettings = $vindiSettings;
+    $this->vindi_settings = $vindi_settings;
 
     $this->id                   = 'vindi-credit-card';
     $this->icon                 = apply_filters('vindi_woocommerce_credit_card_icon', '');
@@ -161,7 +165,7 @@ class VindiCreditGateway extends VindiPaymentGateway
     $id = $this->id;
     $description = $this->description;
     $testmode = $this->testmode;
-    $this->vindiSettings->get_template('creditcard-checkout.html.php', compact('id', 'description', 'testmode'));
+    $this->vindi_settings->get_template('creditcard-checkout.html.php', compact('id', 'description', 'testmode'));
   }
 
 
