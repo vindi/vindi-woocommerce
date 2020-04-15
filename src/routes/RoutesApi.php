@@ -37,6 +37,24 @@ class VindiRoutes
   }
 
   /**
+   * Update method for updating plan in the Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function updatePlan($plan_id, $data)
+  {
+
+    $response = $this->api->request(sprintf(
+      'plans/%s',
+      $plan_id
+    ), 'PUT', $data);
+
+    return $response;
+  }
+
+  /**
    * Post method for creating product in the Vindi
    *
    * @since 1.0.0
@@ -47,6 +65,23 @@ class VindiRoutes
   {
 
     $response = $this->api->request('products', 'POST', $data);
+    return $response;
+  }
+
+  /**
+   * Update method for updating product in the Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function updateProduct($product_id, $data)
+  {
+
+    $response = $this->api->request(sprintf(
+      'products/%s',
+      $product_id
+    ), 'PUT', $data);
     return $response;
   }
 
