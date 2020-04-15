@@ -1,6 +1,6 @@
 <?php
 
-class CostumerController
+class CustomerController
 {
 
   /**
@@ -8,10 +8,10 @@ class CostumerController
    */
   private $routes;
 
-  function __construct()
+  function __construct(VindiSettings $vindi_settings)
   {
 
-    $this->routes = new VindiRoutes();
+    $this->routes = new VindiRoutes($vindi_settings);
 
     // Fires immediately after a new user is registered.
     add_action('user_register', array($this, 'create'), 10, 4);

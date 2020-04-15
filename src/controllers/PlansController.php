@@ -13,10 +13,10 @@ class PlansController
    */
   private $routes;
 
-  function __construct()
+  function __construct(VindiSettings $vindi_settings)
   {
 
-    $this->routes = new VindiRoutes();
+    $this->routes = new VindiRoutes($vindi_settings);
 
     $this->types = array('variable-subscription', 'subscription');
 

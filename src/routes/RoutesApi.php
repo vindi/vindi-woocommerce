@@ -7,17 +7,17 @@ class VindiRoutes
   /**
    * @var VindiSettings
    */
-  private $settings;
+  private $vindi_settings;
 
   /**
    * @var void
    */
   private $api;
 
-  function __construct()
+  function __construct(VindiSettings $vindi_settings)
   {
 
-    $this->settings = new VindiSettings();
+    $this->settings = $vindi_settings;
     $this->api = $this->settings->api;
   }
 
