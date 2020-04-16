@@ -124,7 +124,7 @@ class PlansController
     $vindi_product_id = $product->get_meta('vindi_product_id');
     $vindi_plan_id = $product->get_meta('vindi_plan_id');
 
-    if(!empty($vindi_product_id) || !empty($vindi_plan_id)) {
+    if(empty($vindi_product_id) || empty($vindi_plan_id)) {
       return;
     }
 
@@ -161,7 +161,7 @@ class PlansController
     $vindi_product_id = $product->get_meta('vindi_product_id');
     $vindi_plan_id = $product->get_meta('vindi_plan_id');
 
-    if(!empty($vindi_product_id) || !empty($vindi_plan_id)) {
+    if(empty($vindi_product_id) || empty($vindi_plan_id)) {
       return;
     }
 
