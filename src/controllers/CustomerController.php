@@ -1,6 +1,6 @@
 <?php
 
-class CostumerController
+class CustomerController
 {
 
   /**
@@ -8,10 +8,10 @@ class CostumerController
    */
   private $routes;
 
-  function __construct()
+  function __construct(VindiSettings $vindi_settings)
   {
 
-    $this->routes = new VindiRoutes();
+    $this->routes = new VindiRoutes($vindi_settings);
 
     // Fires immediately after a new user is registered.
     add_action('user_register', array($this, 'create'), 10, 4);
@@ -19,6 +19,7 @@ class CostumerController
     // Fires immediately after an existing user is updated.
     add_action('woocommerce_customer_save_address', array($this, 'update'), 10, 4);
     add_action('woocommerce_save_account_details', array($this, 'update'), 10, 4);
+    add_action('delete_user', array($this, 'delete'), 10, 2);
   }
 
   /**
@@ -53,7 +54,11 @@ class CostumerController
         'phones' => array(
           array(
             'phone_type' => 'mobile',
-            'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '554199999999',
+            'number' => ($customer->get_meta('billing_cellphone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone')) : '5599999999999',
+          ),
+          array(
+            'phone_type' => 'landline',
+            'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '559999999999',
           )
         )
       )
@@ -79,18 +84,23 @@ class CostumerController
     // Check meta Vindi ID
     if (empty($vindi_customer_id)) {
 
-      return create($user_id);
+      return $this->create($user_id);
     }
 
     // Check user exists in Vindi
-    if ($this->routes->findCustomerByid($vindi_customer_id)) {
+    $vindiUser = $this->routes->findCustomerByid($vindi_customer_id);
+    if (!$vindiUser) {
 
-      return create($user_id);
+      return $this->create($user_id);
     }
 
     $customer = new WC_Customer($user_id);
 
     $user = $customer->get_data();
+    $phones = array();
+    foreach($vindiUser['phones'] as $phone):
+      $phones[$phone['phone_type']] = $phone['id'];
+    endforeach;
 
     // Update customer profile
     $updateUser = $this->routes->updateCustomer(
@@ -112,12 +122,49 @@ class CostumerController
         ),
         'phones' => array(
           array(
-            'id' => 4719248,
+            'id' => $phones['mobile'],
             'phone_type' => 'mobile',
-            'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '554199999999',
+            'number' => ($customer->get_meta('billing_cellphone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone')) : '5599999999999',
+          ),
+          array(
+            'id' => $phones['landline'],
+            'phone_type' => 'landline',
+            'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '559999999999',
           )
         )
       )
+    )['customer'];
+  }
+
+
+  /**
+   * When a user is deleted within the WP, it is reflected in the Vindi.
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   */
+
+  function delete($user_id, $reassign)
+  {
+
+    $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id')[0];
+
+    // Check meta Vindi ID
+    if (empty($vindi_customer_id)) {
+
+      return;
+    }
+
+    // Check user exists in Vindi
+    $vindiUser = $this->routes->findCustomerByid($vindi_customer_id);
+    if (!$vindiUser) {
+
+      return;
+    }
+
+    // Delete customer profile
+    $deletedUser = $this->routes->deleteCustomer(
+      $vindi_customer_id,
     )['customer'];
   }
 }

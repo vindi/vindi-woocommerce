@@ -29,7 +29,7 @@ class WC_Vindi_Payment extends AbstractInstance
       // $this->gateways = new VindiGateways();
 
       $this->settings    = new VindiSettings();
-      $this->controllers = new VindiControllers();
+      $this->controllers = new VindiControllers($this->settings);
       $this->frontendLoader    = new FrontendFilesLoader();
 
 

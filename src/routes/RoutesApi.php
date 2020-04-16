@@ -7,17 +7,17 @@ class VindiRoutes
   /**
    * @var VindiSettings
    */
-  private $settings;
+  private $vindi_settings;
 
   /**
    * @var void
    */
   private $api;
 
-  function __construct()
+  function __construct(VindiSettings $vindi_settings)
   {
 
-    $this->settings = new VindiSettings();
+    $this->settings = $vindi_settings;
     $this->api = $this->settings->api;
   }
 
@@ -37,6 +37,24 @@ class VindiRoutes
   }
 
   /**
+   * Update method for updating plan in the Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function updatePlan($plan_id, $data)
+  {
+
+    $response = $this->api->request(sprintf(
+      'plans/%s',
+      $plan_id
+    ), 'PUT', $data);
+
+    return $response;
+  }
+
+  /**
    * Post method for creating product in the Vindi
    *
    * @since 1.0.0
@@ -47,6 +65,23 @@ class VindiRoutes
   {
 
     $response = $this->api->request('products', 'POST', $data);
+    return $response;
+  }
+
+  /**
+   * Update method for updating product in the Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function updateProduct($product_id, $data)
+  {
+
+    $response = $this->api->request(sprintf(
+      'products/%s',
+      $product_id
+    ), 'PUT', $data);
     return $response;
   }
 
@@ -82,6 +117,24 @@ class VindiRoutes
     return $response;
   }
 
+  /**
+   * Delete method to disable the customer in the Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function deleteCustomer($user_id)
+  {
+
+    $response = $this->api->request(sprintf(
+      'customers/%s',
+      $user_id
+    ), 'delete');
+
+    return $response;
+  }
+
 
   /**
    * Check if exists user in Vindi
@@ -98,7 +151,7 @@ class VindiRoutes
       $id
     ), 'GET');
 
-    $userExists = isset($response['customers'][0]['id']);
+    $userExists = isset($response['customer']['id']) ? $response['customer'] : false;
 
     return $userExists;
   }
