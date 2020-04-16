@@ -67,7 +67,8 @@ class VindiSettings extends WC_Settings_API
       * Add custom input fields in coupon 'General' tab
       */
       add_action('woocommerce_coupon_options', 'CouponsMetaBox::output', 40, 2);
-      add_action('woocommerce_process_shop_coupon_meta', 'CouponsMetaBox::save', 10, 2);
+      add_action('woocommerce_coupon_options_save', 'CouponsMetaBox::save', 10, 2);
+      add_action('woocommerce_coupon_discount_types', 'CouponsMetaBox::remove_ws_recurring_discount', 10, 1);
     }
   }
 
