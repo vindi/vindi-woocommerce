@@ -98,7 +98,7 @@ class CustomerController
 
     $user = $customer->get_data();
     $phones = array();
-    foreach($vindiUser['phones'] as $phone):
+    foreach ($vindiUser['phones'] as $phone) :
       $phones[$phone['phone_type']] = $phone['id'];
     endforeach;
 
@@ -164,7 +164,7 @@ class CustomerController
 
     // Delete customer profile
     $deletedUser = $this->routes->deleteCustomer(
-      $vindi_customer_id,
+      $vindi_customer_id
     )['customer'];
   }
 }

@@ -7,17 +7,17 @@ define('VINDI_MININUM_PHP_VERSION', '5.6');
 
 define('VINDI', 'vindi-woocommerce');
 
-define('VINDI__FILE__', dirname(dirname(__FILE__)));
-define('VINDI_PLUGIN_BASE', plugin_basename(VINDI__FILE__));
-define('VINDI_PATH', plugin_dir_path(VINDI__FILE__));
+define('VINDI_FILE', dirname(dirname(__FILE__)));
+define('VINDI_PLUGIN_BASE', plugin_basename(VINDI_FILE));
+define('VINDI_PATH', plugin_dir_path(VINDI_FILE));
 
-define('VINDI_SRC', plugin_dir_path(VINDI__FILE__) . '/src/');
+define('VINDI_SRC', plugin_dir_path(VINDI_FILE) . '/src/');
 
 
 if (defined('VINDI_TESTS') && VINDI_TESTS) {
   define('VINDI_URL', 'file://' . VINDI_PATH);
 } else {
-  define('VINDI_URL', plugins_url('/', VINDI__FILE__));
+  define('VINDI_URL', plugins_url('/', VINDI_FILE));
 }
 
 define('PREFIX_PRODUCT', '[WC] ');

@@ -26,7 +26,6 @@ class WC_Vindi_Payment extends AbstractInstance
 
 
       $this->languages   = new VindiLanguages();
-      // $this->gateways = new VindiGateways();
 
       $this->settings    = new VindiSettings();
       $this->controllers = new VindiControllers($this->settings);
