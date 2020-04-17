@@ -17,8 +17,8 @@ class VindiBankSlipGateway extends VindiPaymentGateway
   /**
    * @var VindiSettings
    */
-   private $vindi_settings;
- 
+  private $vindi_settings;
+
   /**
    * Constructor for the gateway.
    */
