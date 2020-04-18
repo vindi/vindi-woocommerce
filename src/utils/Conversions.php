@@ -15,6 +15,7 @@ class VindiConversions {
  */
   public static function convertTriggerToDay($number, $type = 'month') {
     $types = array(
+      "day" => 1,
       "month" => 30,
       "week" => 7,
       "year" => 365,

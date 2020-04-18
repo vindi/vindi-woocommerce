@@ -47,6 +47,9 @@ class PlansController
       return;
     }
 
+    $product = wc_get_product($post_id);
+
+
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
     if(get_post_status($post_id) != 'publish' || !empty(get_post_meta($post_id, 'vindi_product_created', true))) {
@@ -60,7 +63,7 @@ class PlansController
       return;
     }
 
-    // Check if the post is Variable
+    // Checks if the plan is a variation and creates it
     if($product->get_type() == 'variable-subscription') {
 
       $variations = $product->get_available_variations();
@@ -70,12 +73,10 @@ class PlansController
 
         $data = $data->get_data();
 
-        // print_r($product->get_meta('_subscription_trial_length'));
-
-        $conversion = VindiConversions::convertTriggerToDay($product->get_meta('_subscription_trial_length'));
-
-        print_r($conversion);
-        die();
+        $trigger_day = VindiConversions::convertTriggerToDay(
+                        $product->get_meta('_subscription_trial_length'),
+                        $product->get_meta('_subscription_trial_period')
+                      );
 
         // Creates the product within the Vindi
         $createProduct = $this->routes->createProduct(array(
@@ -96,7 +97,7 @@ class PlansController
           'interval' => $product->get_meta('_subscription_period') . 's',
           'interval_count' => intval($product->get_meta('_subscription_period_interval')),
           'billing_trigger_type' => 'beginning_of_period',
-          'billing_trigger_day' => $product->get_meta('_subscription_trial_length'),
+          'billing_trigger_day' => $trigger_day,
           'billing_cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
           'code' => 'WC-' . $data['id'],
           'description' => $data['description'],
@@ -104,7 +105,7 @@ class PlansController
           'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
           'plan_items' => array(
             array(
-              'cycles' => $product->get_meta('_subscription_length'),
+              'cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
               'product_id' => $createProduct['id']
             ),
           ),
@@ -120,7 +121,7 @@ class PlansController
 
       }
 
-      die();
+      return;
     }
 
     $data = $product->get_data();
