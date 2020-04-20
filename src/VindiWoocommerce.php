@@ -9,6 +9,11 @@ class WC_Vindi_Payment extends AbstractInstance
   const TEMPLATE_DIR = '/templates/';
 
   /**
+   * @var string
+   */
+  const MODE = 'development';
+
+  /**
    * Instance of this class.
    *
    * @var object
@@ -71,6 +76,8 @@ class WC_Vindi_Payment extends AbstractInstance
 
     // Controllers
     require_once $this->getPath() . '/controllers/index.php';
+
+    require_once $this->getPath() . '/utils/PaymentProcessor.php';
   }
 
   public static function getPath()

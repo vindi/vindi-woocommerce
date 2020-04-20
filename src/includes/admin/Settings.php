@@ -67,7 +67,8 @@ class VindiSettings extends WC_Settings_API
       * Add custom input fields in coupon 'General' tab
       */
       add_action('woocommerce_coupon_options', 'CouponsMetaBox::output', 40, 2);
-      add_action('woocommerce_process_shop_coupon_meta', 'CouponsMetaBox::save', 10, 2);
+      add_action('woocommerce_coupon_options_save', 'CouponsMetaBox::save', 10, 2);
+      add_action('woocommerce_coupon_discount_types', 'CouponsMetaBox::remove_ws_recurring_discount', 10, 1);
     }
   }
 
@@ -238,7 +239,6 @@ class VindiSettings extends WC_Settings_API
    */
   public static function check_ssl()
   {
-
     if (WC_Vindi_Payment::MODE != 'development') {
       return false;
     } else {
@@ -293,5 +293,23 @@ class VindiSettings extends WC_Settings_API
     $methods[] = new VindiBankSlipGateway($this);
 
     return $methods;
+  }
+
+  /**
+   * Get Vindi Shipping and Tax config
+   * @return string
+   */
+  public function get_shipping_and_tax_config()
+  {
+    return 'yes' === $this->settings['shipping_and_tax_config'];
+  }
+
+  public function get_return_status()
+  {
+    if(isset($this->settings['return_status'])) {
+      return $this->settings['return_status'];
+    } else {
+      return 'processing';
+    }
   }
 }

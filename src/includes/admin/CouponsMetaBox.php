@@ -48,14 +48,30 @@ class CouponsMetaBox {
 	 */
   public static function save($post_id, $post)
   {
-    $coupon_code  = wc_format_coupon_code( $post->post_title );
-    $id_from_code = wc_get_coupon_id_by_code( $coupon_code, $post_id );
-
-		if ( $id_from_code ) {
-			WC_Admin_Meta_Boxes::add_error( __( 'Coupon code already exists - customers will use the latest coupon with this code.', 'woocommerce' ) );
-    }
+    // Check the nonce (again).
+		if ( empty( $_POST['woocommerce_meta_nonce'] ) || ! wp_verify_nonce( $_POST['woocommerce_meta_nonce'], 'woocommerce_save_data' ) ) {
+			return;
+		}
 		$coupon = new WC_Coupon( $post_id );
 		$coupon->update_meta_data('cicle_count', intval($_POST['cicle_count']));
 		$coupon->save();
+  }
+
+  /**
+	 * Remove Woocommerce Subscriptions recurring discount options.
+	 * This is done to force the user to select a vindi cicle count discount
+	 *
+	 * @param int     $post_id
+	 * @param WP_Post $post
+	 */
+  public static function remove_ws_recurring_discount($discount_types)
+  {
+    return array_diff(
+			$discount_types,
+			array(
+				'recurring_fee'       => __( 'Recurring Product Discount', 'woocommerce-subscriptions' ),
+				'recurring_percent'   => __( 'Recurring Product % Discount', 'woocommerce-subscriptions' ),
+			)
+		);
   }
 }

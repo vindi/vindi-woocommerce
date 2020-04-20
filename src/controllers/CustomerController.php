@@ -62,7 +62,7 @@ class CustomerController
           )
         )
       )
-    )['customer'];
+    );
 
     // Saving customer in the user meta WP
     update_user_meta($user_id, 'vindi_customer_id', $createUser['id']);
@@ -133,7 +133,7 @@ class CustomerController
           )
         )
       )
-    )['customer'];
+    );
   }
 
 
@@ -165,6 +165,6 @@ class CustomerController
     // Delete customer profile
     $deletedUser = $this->routes->deleteCustomer(
       $vindi_customer_id,
-    )['customer'];
+    );
   }
 }

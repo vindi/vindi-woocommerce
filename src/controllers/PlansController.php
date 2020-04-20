@@ -65,7 +65,7 @@ class PlansController
         'price' => ($data['price']) ? $data['price'] : 0,
         'schema_type' => 'flat',
       )
-    ))['product'];
+    ));
 
     // Creates the plan within the Vindi
     $createPlan = $this->routes->createPlan(array(
@@ -85,7 +85,7 @@ class PlansController
           'product_id' => $createProduct['id']
         ),
       ),
-    ))['plan'];
+    ));
 
     // Saving product id and plan in the WC goal
     VindiHelpers::wc_post_meta($data['id'], array(
@@ -131,12 +131,12 @@ class PlansController
     // Changes the product status within the Vindi
     $inactiveProduct = $this->routes->updateProduct($vindi_product_id, array(
       'status' => 'inactive',
-    ))['product'];
+    ));
 
     // Changes the plan status within the Vindi
     $inactivePlan = $this->routes->updatePlan($vindi_plan_id, array(
       'status' => 'inactive',
-    ))['plan'];
+    ));
   }
 
   /**
@@ -168,11 +168,11 @@ class PlansController
     // Changes the product status within the Vindi
     $activeProduct = $this->routes->updateProduct($vindi_product_id, array(
       'status' => 'active',
-    ))['product'];
+    ));
 
     // Changes the plan status within the Vindi
     $activePlan = $this->routes->updatePlan($vindi_plan_id, array(
       'status' => 'active',
-    ))['plan'];
+    ));
   }
 }
