@@ -37,7 +37,7 @@ class VindiRoutes
     ), 'GET');
 
 
-    return $response;
+    return $response['product'];
   }
 
 

@@ -165,6 +165,6 @@ class CustomerController
     // Delete customer profile
     $deletedUser = $this->routes->deleteCustomer(
       $vindi_customer_id
-    )['customer'];
+    );
   }
 }
