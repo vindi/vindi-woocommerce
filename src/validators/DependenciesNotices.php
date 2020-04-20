@@ -14,13 +14,13 @@ function dependencies_notices()
   if (!class_exists('WC_Payment_Gateway')) {
     include_once VINDI_SRC . 'views/woocommerce-missing.php';
 
-    deactivate_plugins(VINDI_PATH . '/' . PLUGIN_FILE, true);
+    deactivate_plugins(VINDI_PATH . '/' . VINDI_FILE, true);
   }
 
   if (!class_exists('Extra_Checkout_Fields_For_Brazil')) {
     include_once VINDI_SRC . 'views/ecfb-missing.php';
 
-    deactivate_plugins(VINDI_PATH . '/' . PLUGIN_FILE, true);
+    deactivate_plugins(VINDI_PATH . '/' . VINDI_FILE, true);
   }
 };
 
