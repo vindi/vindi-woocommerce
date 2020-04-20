@@ -40,34 +40,35 @@ class VindiSettings extends WC_Settings_API
 
   function __construct()
   {
-    add_action('woocommerce_update_options_settings_vindi', array($this, 'api_key_field'));
-    add_action('woocommerce_settings_tabs_settings_vindi', array($this, 'is_api_key_valid'));
     global $woocommerce;
-
+    
     $this->token = sanitize_file_name(wp_hash(VINDI));
-
+    
     $this->init_settings();
     $this->init_form_fields();
-
+    
     $this->debug = $this->get_option('debug') == 'yes' ? true : false;
     $this->logger = new VindiLogger(VINDI, $this->debug);
     $this->api = new VindiApi($this->get_api_key(), $this->logger, $this->get_is_active_sandbox());
     $this->woocommerce = $woocommerce;
     $this->invalidToken = get_option( 'vindi_invalid_token', false );
-
+    
     if (is_admin()) {
-
-
+      
+      
       add_filter('woocommerce_settings_tabs_array', array($this, 'add_settings_tab'), 50);
       add_action('woocommerce_settings_tabs_settings_vindi', array(&$this, 'settings_tab'));
-      add_action('woocommerce_update_options_settings_vindi', array(&$this, 'process_admin_options'));
+      add_action('woocommerce_update_options_settings_vindi', array(&$this, 'process_admin_options'), 10);
+      add_action('woocommerce_update_options_settings_vindi', array($this, 'api_key_field'), 11);
+      add_action('woocommerce_settings_tabs_settings_vindi', array($this, 'is_api_key_valid'));
       // add_action('woocommerce_update_options_shipping_methods', array(&$this, 'process_admin_options'));
 
      /**
       * Add custom input fields in coupon 'General' tab
       */
       add_action('woocommerce_coupon_options', 'CouponsMetaBox::output', 40, 2);
-      add_action('woocommerce_process_shop_coupon_meta', 'CouponsMetaBox::save', 10, 2);
+      add_action('woocommerce_coupon_options_save', 'CouponsMetaBox::save', 10, 2);
+      add_action('woocommerce_coupon_discount_types', 'CouponsMetaBox::remove_ws_recurring_discount', 10, 1);
     }
   }
 
@@ -238,7 +239,6 @@ class VindiSettings extends WC_Settings_API
    */
   public static function check_ssl()
   {
-
     if (WC_Vindi_Payment::MODE != 'development') {
       return false;
     } else {
@@ -293,5 +293,23 @@ class VindiSettings extends WC_Settings_API
     $methods[] = new VindiBankSlipGateway($this);
 
     return $methods;
+  }
+
+  /**
+   * Get Vindi Shipping and Tax config
+   * @return string
+   */
+  public function get_shipping_and_tax_config()
+  {
+    return 'yes' === $this->settings['shipping_and_tax_config'];
+  }
+
+  public function get_return_status()
+  {
+    if(isset($this->settings['return_status'])) {
+      return $this->settings['return_status'];
+    } else {
+      return 'processing';
+    }
   }
 }

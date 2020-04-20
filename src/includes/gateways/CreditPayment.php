@@ -17,25 +17,23 @@ class VindiCreditGateway extends VindiPaymentGateway
   /**
    * @var VindiSettings
    */
-   private $vindi_settings;
- 
-  /**
-   * Constructor for the gateway.
-   */
+  public $vindi_settings;
 
+  /**
+   * @var int
+   */
+  private $max_installments = 12;
+ 
   public function __construct(VindiSettings $vindi_settings)
   {
 
     global $woocommerce;
 
-    $this->vindi_settings = $vindi_settings;
-
     $this->id                   = 'vindi-credit-card';
     $this->icon                 = apply_filters('vindi_woocommerce_credit_card_icon', '');
-    $this->method_title         = __('Vindi - Credit card', 'vindi-woocommerce');
-    $this->method_description   = __('Accept credit card payments using Vindi.', 'vindi-woocommerce');
+    $this->method_title         = __('Vindi - Cartão de Crédito', VINDI);
+    $this->method_description   = __('Aceitar pagamentos via cartão de crédito utilizando a Vindi.', VINDI);
     $this->has_fields           = true;
-    $this->view_transaction_url = 'https://google.com.br';
 
     $this->supports             = array(
       'subscriptions',
@@ -54,120 +52,125 @@ class VindiCreditGateway extends VindiPaymentGateway
     );
 
     $this->init_form_fields();
-
-    // Load the settings.
     $this->init_settings();
-    $this->title = $this->get_option('title');
-    $this->description = $this->get_option('description');
-    $this->enabled = $this->get_option('enabled');
-    $this->testmode = 'yes' === $this->get_option('testmode');
-    $this->private_key = $this->testmode ? $this->get_option('test_private_key') : $this->get_option('private_key');
-    $this->publishable_key = $this->testmode ? $this->get_option('test_publishable_key') : $this->get_option('publishable_key');
 
-
-    // This action hook saves the settings
-    add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-
-    // We need custom JavaScript to obtain a token
-    add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
+    parent::__construct($vindi_settings);
   }
+
+  /**
+   * Should return payment type for payment processing.
+   * @return string
+   */
+   public function type()
+   {
+     return 'cc';
+   }
 
   public function init_form_fields()
   {
 
     $this->form_fields = array(
       'enabled' => array(
-        'title'       => 'Enable/Disable',
-        'label'       => 'Enable Vindi Gateway',
-        'type'        => 'checkbox',
-        'description' => '',
-        'default'     => 'no'
+        'title'   => __('Habilitar/Desabilitar', VINDI),
+        'label'   => __('Habilitar pagamento via Cartão de Crédito com a Vindi', VINDI),
+        'type'    => 'checkbox',
+        'default' => 'no',
       ),
       'title' => array(
-        'title'       => 'Title',
+        'title'       => __('Título', VINDI),
         'type'        => 'text',
-        'description' => 'This controls the title which the user sees during checkout.',
-        'default'     => 'Credit Card',
-        'desc_tip'    => true,
+        'description' => __('Título que o cliente verá durante o processo de pagamento.', VINDI),
+        'default'     => __('Cartão de Crédito', VINDI),
       ),
-      'description' => array(
-        'title'       => 'Description',
-        'type'        => 'textarea',
-        'description' => 'This controls the description which the user sees during checkout.',
-        'default'     => 'Pay with your credit card via our super-cool payment gateway.',
-      ),
-      'testmode' => array(
-        'title'       => 'Test mode',
-        'label'       => 'Enable Test Mode',
+      'verify_method' => array(
+        'title'       => __('Transação de Verificação', VINDI),
         'type'        => 'checkbox',
-        'description' => 'Place the payment gateway in test mode using test API keys.',
-        'default'     => 'yes',
-        'desc_tip'    => true,
+        'description' => __(' Realiza a transação de verificação em todos os novos pedidos. (Taxas adicionais por verificação poderão ser cobradas).', VINDI),
+        'default'     => 'no',
       ),
-      'test_publishable_key' => array(
-        'title'       => 'Test Publishable Key',
-        'type'        => 'text'
+      'single_charge' => array(
+        'title' => __('Vendas Avulsas', VINDI),
+        'type'  => 'title',
       ),
-      'test_private_key' => array(
-        'title'       => 'Test Private Key',
-        'type'        => 'password',
+      'smallest_installment' => array(
+        'title'       => __('Valor mínimo da parcela', VINDI),
+        'type'        => 'text',
+        'description' => __('Valor mínimo da parcela, não deve ser inferior a R$ 5,00.', VINDI),
+        'default'     => '5',
       ),
-      'publishable_key' => array(
-        'title'       => 'Live Publishable Key',
-        'type'        => 'text'
-      ),
-      'private_key' => array(
-        'title'       => 'Live Private Key',
-        'type'        => 'password'
+      'installments' => array(
+        'title'       => __('Número máximo de parcelas', VINDI),
+        'type'        => 'select',
+        'description' => __('Número máximo de parcelas para vendas avulsas. Deixe em 1x para desativar o parcelamento.', VINDI),
+        'default'     => '1',
+        'options'     => array(
+          '1'  => '1x',
+          '2'  => '2x',
+          '3'  => '3x',
+          '4'  => '4x',
+          '5'  => '5x',
+          '6'  => '6x',
+          '7'  => '7x',
+          '8'  => '8x',
+          '9'  => '9x',
+          '10' => '10x',
+          '11' => '11x',
+          '12' => '12x',
+        ),
       )
     );
-  }
-
-  public function payment_scripts()
-  {
-
-    // we need JavaScript to process a token only on cart/checkout pages, right?
-    if (!is_cart() && !is_checkout() && !isset($_GET['pay_for_order'])) {
-      return;
-    }
-
-    // if our payment gateway is disabled, we do not have to enqueue JS too
-    if ('no' === $this->enabled) {
-      return;
-    }
-
-    // no reason to enqueue JavaScript if API keys are not set
-    if (empty($this->private_key) || empty($this->publishable_key)) {
-      return;
-    }
-
-    // do not work with card detailes without SSL unless your website is in a test mode
-    if (!$this->testmode && !is_ssl()) {
-      return;
-    }
-
-    // let's suppose it is our payment processor JavaScript that allows to obtain a token
-    wp_enqueue_script('misha_js', 'https://www.mishapayments.com/api/token.js');
-
-    // and this is our custom JS in your plugin directory that works with token.js
-    wp_register_script('woocommerce_misha', plugins_url('misha.js', __FILE__), array('jquery', 'misha_js'));
-
-    // in most payment processors you have to use PUBLIC KEY to obtain a token
-    wp_localize_script('woocommerce_misha', 'misha_params', array(
-      'publishableKey' => $this->publishable_key
-    ));
-
-    wp_enqueue_script('woocommerce_misha');
   }
 
   public function payment_fields()
   {
     $id = $this->id;
     $description = $this->description;
-    $testmode = $this->testmode;
-    $this->vindi_settings->get_template('creditcard-checkout.html.php', compact('id', 'description', 'testmode'));
-  }
+    $is_trial = $this->is_trial;
 
+    $total = $this->vindi_settings->woocommerce->cart->total;
+    $max_times  = 12;
+    $max_times  = $this->get_order_max_installments($total);
+    
+    if ($max_times > 1) {
+      for ($times = 1; $times <= $max_times; $times++) {
+        $installments[$times] = ceil($total / $times * 100) / 100;
+      }
+    }
+
+    $user_payment_profile = $this->build_user_payment_profile();
+    $payment_methods = $this->routes->getPaymentMethods();
+
+    if ($payment_methods === false || empty($payment_methods) || ! count($payment_methods['credit_card'])) {
+      _e( 'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.', VINDI);
+      return;
+    }
+
+    $months = array();
+
+    for ($i = 1 ; $i <= 12 ; $i++) {
+      $timestamp    = mktime( 0, 0, 0, $i, 1);
+      $num          = date('m', $timestamp);
+      $name         = date('F', $timestamp);
+      $months[$num] = __($name);
+    }
+
+    $years = array();
+
+    for ($i = date('Y') ; $i <= date('Y') + 15 ; $i++)
+      $years[] = $i;
+
+    if ($is_trial = $this->vindi_settings->get_is_active_sandbox())
+      $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
+
+    $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
+      'months',
+      'years',
+      'installments',
+      'is_trial',
+      'user_payment_profile',
+      'payment_methods'
+    ));
+  }
 
   public function process_payment($order_id)
   {
@@ -178,48 +181,83 @@ class VindiCreditGateway extends VindiPaymentGateway
 
     // we need it to get any order detailes
     $order = wc_get_order($order_id);
+    $this->logger->log(sprintf("[Order #%s]: iniciando processamento", $order_id));
+    $payment = new VindiPaymentProcessor($order, $this, $this->vindi_settings);
+    return $payment->process();
+  }
 
+  public function verify_user_payment_profile()
+  {
+    $old_payment_profile = (int) filter_input(
+      INPUT_POST,
+      'vindi-old-cc-data-check',
+      FILTER_SANITIZE_NUMBER_INT
+    );
 
-    /*
-      * Array with parameters for API interaction
-     */
-    $args = array();
+    return 1 === $old_payment_profile;
+  }
 
-    /*
-     * Your API interaction could be built with wp_remote_post()
-      */
-    $response = wp_remote_post('{payment processor endpoint}', $args);
+  public function verify_method()
+  {
+    return 'yes' === $this->verify_method;
+  }
 
+  protected function get_order_max_installments($order_total)
+  {
+    if($this->is_single_order()) {
+      $order_max_times = floor($order_total / $this->smallest_installment);
+      $max_times = empty($order_max_times) ? 1 : $order_max_times;
 
-    if (!is_wp_error($response)) {
-
-      $body = json_decode($response['body'], true);
-
-      // it could be different depending on your payment processor
-      if ($body['response']['responseCode'] == 'APPROVED') {
-
-        // we received the payment
-        $order->payment_complete();
-        $order->reduce_order_stock();
-
-        // some notes to customer (replace true with false to make it private)
-        $order->add_order_note('Hey, your order is paid! Thank you!', true);
-
-        // Empty cart
-        $woocommerce->cart->empty_cart();
-
-        // Redirect to the thank you page
-        return array(
-          'result' => 'success',
-          'redirect' => $this->get_return_url($order)
-        );
-      } else {
-        wc_add_notice('Please try again.', 'error');
-        return;
-      }
-    } else {
-      wc_add_notice('Connection error.', 'error');
-      return;
+      return min($this->max_installments, $max_times, $this->get_installments());
     }
+    return $this->get_installments();
+  }
+
+
+  private function build_user_payment_profile()
+  {
+    $user_payment_profile = array();
+    $user_vindi_id = get_user_meta(wp_get_current_user()->ID, 'vindi_customer_id', true);
+    $payment_profile = WC()->session->get('current_payment_profile'); 
+    $current_customer = WC()->session->get('current_customer');
+
+    if (!isset($payment_profile) || $current_customer['code'] != $user_vindi_id) {
+      $payment_profile = $this->routes->getPaymentProfile($user_vindi_id);
+    }
+
+    if($payment_profile['type'] !== 'PaymentProfile::CreditCard')
+      return $user_payment_profile;
+
+    if(false === empty($payment_profile)) {
+      $user_payment_profile['holder_name']     = $payment_profile['holder_name'];
+      $user_payment_profile['payment_company'] = $payment_profile['payment_company']['code'];
+      $user_payment_profile['card_number']     = sprintf('**** **** **** %s', $payment_profile['card_number_last_four']);
+    }
+
+    WC()->session->set('current_payment_profile', $payment_profile); 
+    return $user_payment_profile;
+  }
+
+  protected function get_installments()
+  {
+    if($this->is_single_order())
+      return $this->installments;
+
+    foreach($this->vindi_settings->woocommerce->cart->cart_contents as $item) {
+      $plan_id = $item['data']->get_meta('vindi_subscription_plan');
+      if (!empty($plan_id))
+        break;
+    }
+    
+    $current_plan = WC()->session->get('current_plan');
+    if ($current_plan && $current_plan['id'] == $plan_id && !empty($current_plan['installments']))
+      return $current_plan['installments'];
+
+    $plan = $this->routes->getPlan($plan_id);
+    WC()->session->set('current_plan', $plan);
+    if($plan['installments'] > 1)
+      return $plan['installments'];               
+            
+    return 1;
   }
 }
