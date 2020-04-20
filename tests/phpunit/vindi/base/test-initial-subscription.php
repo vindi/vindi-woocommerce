@@ -1,6 +1,7 @@
 <?php
 
 include_once VINDI_PATH . 'src/services/VindiHelpers.php';
+require_once VINDI_PATH . 'src/routes/RoutesApi.php';
 require_once VINDI_PATH . 'src/utils/PaymentGateway.php';
 include_once VINDI_PATH . 'src/includes/gateways/CreditPayment.php';
 
