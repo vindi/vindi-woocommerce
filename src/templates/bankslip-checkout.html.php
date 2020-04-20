@@ -1,23 +1,29 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 
-<?php if ($testmode): ?>
-  <p>TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a href="#" target="_blank" rel="noopener noreferrer">documentation</a>.</p>
-<?php endif; ?>
-<?php if ($description): ?>
-  <p><?php echo $description; ?></p>
-<?php endif; ?>
-
-<fieldset id="wc-<?php echo $id; ?>-form" class="wc-bankslip-form wc-payment-form" style="background:transparent;">
-
-    <?php do_action('woocommerce_bank_slip_form_start', $id); ?>
-
-    <div class="form-row form-row-wide">
-      <?php _e('A Bank Slip wil be sent to your e-mail.', VINDI); ?>
-      <?php //_e('Um Boleto Bancário será enviado para o seu endereço de e-mail.', VINDI); ?>
+<?php if ($is_trial): ?>
+    <div style="padding: 10px;border: 1px solid #f00; background-color: #fdd; color: #f00; margin: 10px 2px">
+    	<h3 style="color: #f00"><?php _e('MODO DE TESTES', VINDI); ?></h3>
+    	<p>
+    		<?php _e('Sua conta na Vindi está em <strong>Modo Trial</strong>. Este modo é proposto para a realização de testes e, portanto, nenhum pedido será efetivamente cobrado.', VINDI); ?>
+    	</p>
     </div>
-    <div class="clear"></div>
+<?php endif; ?>
+<fieldset>
 
-    <?php do_action('woocommerce_bank_slip_form_end', $id); ?>
+	<?php do_action('vindi_bank_slip_form_start', $id); ?>
 
-    <div class="clear"></div>
+	<div class="vindi-invoice-description" style="padding: 20px 0; font-weight: bold;">
+		<?php
+		if ($is_single_order){
+			_e('Um Boleto Bancário será enviado para o seu endereço de e-mail.', VINDI);
+		} else {
+			_e('Um boleto bancário será enviado para o seu e-mail de acordo com a sua assinatura. ', VINDI);
+		}
+		?>
+	</div>
+	<div class="clear"></div>
+
+	<?php do_action('vindi_bank_slip_form_end', $id); ?>
+
+	<div class="clear"></div>
 </fieldset>
