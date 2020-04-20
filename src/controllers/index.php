@@ -15,6 +15,15 @@ class VindiControllers
    */
   private $path;
 
+  /**
+   * @var PlansController
+   */
+  public $plans;
+
+  /**
+   * @var CustomerController
+   */
+   public $customers;
 
   function __construct(VindiSettings $vindi_settings)
   {

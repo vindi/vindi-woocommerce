@@ -42,13 +42,20 @@ class VindiPaymentProcessor
    */
   private $routes;
 
+  /**
+   * @var VindiControllers
+   */
+  private $controllers;
+
   function __construct(WC_Order $order, VindiPaymentGateway $gateway, VindiSettings $vindi_settings)
   {
+    global $controllers;
     $this->order = $order;
     $this->gateway = $gateway;
     $this->vindi_settings = $vindi_settings;
     $this->logger = $vindi_settings->logger;
     $this->routes = new VindiRoutes($vindi_settings);
+    $this->controllers = $controllers;
   }
 
   /**
@@ -102,6 +109,9 @@ class VindiPaymentProcessor
     $vindi_customer_id = get_user_meta($current_user->ID, 'vindi_customer_id')[0];
     $vindi_customer = $this->routes->findCustomerByid($vindi_customer_id);
     // TODO: if user doesn't exist, create
+    if(!$vindi_customer) {
+      $vindi_customer = $this->controllers->customers->create($current_user->ID);
+    }
 
     if ($this->is_cc())
       $this->create_payment_profile($vindi_customer['id']);

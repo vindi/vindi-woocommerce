@@ -66,6 +66,7 @@ class CustomerController
 
     // Saving customer in the user meta WP
     update_user_meta($user_id, 'vindi_customer_id', $createUser['id']);
+    return $createUser;
   }
 
 
