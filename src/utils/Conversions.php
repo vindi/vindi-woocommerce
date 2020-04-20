@@ -9,7 +9,7 @@ class VindiConversions {
  * Used to send days in parameter  to Vindi.
  *
  *
- * @since 1.0.0
+ * @since 1.0.1
  *
  * @return number
  */
@@ -27,7 +27,7 @@ class VindiConversions {
       return false;
     }
 
-    return $number * $verifyType;
+    return intval($number) * intval($verifyType);
 
   }
 }

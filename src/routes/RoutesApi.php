@@ -22,6 +22,26 @@ class VindiRoutes
   }
 
   /**
+   * Enough if there is a product within Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function findProductById($product_id)
+  {
+
+    $response = $this->api->request(sprintf(
+      'product/%s',
+      $product_id
+    ), 'GET');
+
+
+    return $response;
+  }
+
+
+  /**
    * Post method for creating plan in the Vindi
    *
    * @since 1.0.0
