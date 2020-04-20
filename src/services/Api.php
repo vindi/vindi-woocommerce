@@ -15,7 +15,7 @@ class VindiApi
   /**
    * @var bool
    */
-  private $accept_bank_slip;
+  public $accept_bank_slip;
 
   /**
    * @var VindiLogger
