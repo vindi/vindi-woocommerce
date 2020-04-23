@@ -54,7 +54,7 @@ class VindiPaymentProcessor
     $this->gateway = $gateway;
     $this->vindi_settings = $vindi_settings;
     $this->logger = $vindi_settings->logger;
-    $this->routes = new VindiRoutes($vindi_settings);
+    $this->routes = $vindi_settings->routes;
     $this->controllers = $controllers;
   }
 

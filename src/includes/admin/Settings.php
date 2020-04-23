@@ -50,6 +50,7 @@ class VindiSettings extends WC_Settings_API
     $this->debug = $this->get_option('debug') == 'yes' ? true : false;
     $this->logger = new VindiLogger(VINDI, $this->debug);
     $this->api = new VindiApi($this->get_api_key(), $this->logger, $this->get_is_active_sandbox());
+    $this->routes = new VindiRoutes($this);
     $this->woocommerce = $woocommerce;
     $this->invalidToken = get_option( 'vindi_invalid_token', false );
     
@@ -311,5 +312,22 @@ class VindiSettings extends WC_Settings_API
     } else {
       return 'processing';
     }
+  }
+
+	public function get_webhooks_url() {
+		return sprintf('%s/wc-api/%s?token=%s',
+      get_site_url(),
+      WC_Vindi_Payment::WC_API_CALLBACK,
+      $this->get_token()
+    );
+  }
+  
+  /**
+   * Get Vindi Synchronism status
+   * @return string
+   */
+  public function get_synchronism_status()
+  {
+    return 'yes' === $this->settings['vindi_synchronism'];
   }
 }
