@@ -214,6 +214,57 @@ class VindiRoutes
     return $response;
   }
 
+  /**
+   * @param int   $subscription_id
+   *
+   * @return array|bool|mixed
+   */
+  public function activateSubscription($subscription_id)
+  {
+    if ($response = $this->request('subscriptions/' . $subscription_id . '/reactivate', 'POST'))
+      return $response;
+
+    return false;
+  }
+
+  /**
+	 * @param int   $subscription_id
+	 *
+	 * @return array|bool|mixed
+	 */
+	public function getSubscription($subscription_id)
+	{
+		if ($response = $this->api->request("subscriptions/{$subscription_id}",'GET')['subscription'])
+			return $response;
+
+		return false;
+  }
+  
+  /**
+   * @param string $subscription_id
+   *
+   * @return bool
+   */
+  public function isSubscriptionActive($subscription_id)
+  {
+    if (isset($this->recentRequest)
+      && $this->recentRequest['id'] == $subscription_id) {
+      if ($this->recentRequest['status'] != 'canceled')
+        return true;
+      return false;
+    }
+
+    $response = $this->getSubscription($subscription_id);
+      
+    if ($response && array_key_exists('status', $response)) {
+      if ($response['status'] != 'canceled') {
+        $this->recentRequest = $response;
+        return true;
+      }
+    }
+    return false;
+  }
+
   public function verifyCustomerPaymentProfile($payment_profile_id)
   {
     return 'success' === $this->api->request(sprintf(
@@ -236,7 +287,7 @@ class VindiRoutes
 
   public function findProductByCode($code)
   {
-    $transient_key = 'vindi_product_' . $code;
+    $transient_key = "vindi_product_{$code}";
     $product = get_transient($transient_key);
 
     if(false !== $product)
@@ -282,7 +333,7 @@ class VindiRoutes
 
   public function deleteBill($bill_id)
   {
-    if ($response = $this->api->request('bills/' . $bill_id, 'DELETE'))
+    if ($response = $this->api->request("bills/{$bill_id}", 'DELETE'))
       return $response;
 
     return false;
@@ -354,9 +405,19 @@ class VindiRoutes
     return $merchant;
   }
 
+  public function getCharge($charge_id)
+  {
+    $response = $this->api->request("charges/{$charge_id}", 'GET');
+
+    if (empty($response['charge']))
+      return false;
+
+    return $response['charge'];
+  }
+
   public function getPlan($plan_id)
   {
-    $response = $this->api->request('plans/' . $plan_id, 'GET');
+    $response = $this->api->request("plans/{$plan_id}", 'GET');
 
     if (empty($response['plan'])) {
       $this->current_plan = false;
@@ -385,7 +446,7 @@ class VindiRoutes
   public function acceptBankSlip()
   {
     if (null === $this->api->accept_bank_slip) {
-      $this->get_payment_methods();
+      $this->getPaymentMethods();
     }
 
     return $this->api->accept_bank_slip;

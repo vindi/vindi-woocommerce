@@ -24,7 +24,7 @@ class PlansController
   function __construct(VindiSettings $vindi_settings)
   {
 
-    $this->routes = new VindiRoutes($vindi_settings);
+    $this->routes = $vindi_settings->routes;
     $this->logger = $vindi_settings->logger;
 
     $this->types = array('variable-subscription', 'subscription');
