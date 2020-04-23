@@ -108,7 +108,7 @@ class VindiBankSlipGateway extends VindiPaymentGateway
 
   public function thank_you_page($order_id)
   {
-    if ($download_url = get_post_meta($order_id, 'vindi_wc_invoice_download_url', true)) {
+    if ($download_url = get_post_meta($order_id, 'vindi_wc_bank_slip_download_url', true)) {
       $this->vindi_settings->get_template('bankslip-download.html.php', compact('download_url'));
     }
   }
