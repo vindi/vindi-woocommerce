@@ -29,6 +29,11 @@ class VindiSettings extends WC_Settings_API
   public $api;
 
   /**
+   * @var VindiRoutes
+   **/
+  public $routes;
+
+  /**
    * @var boolean
    **/
   private $debug;
