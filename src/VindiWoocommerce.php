@@ -14,6 +14,11 @@ class WC_Vindi_Payment extends AbstractInstance
   const MODE = 'development';
 
   /**
+   * @var string
+   */
+  const WC_API_CALLBACK = 'vindi_webhook';
+
+  /**
    * Instance of this class.
    *
    * @var object
@@ -30,17 +35,26 @@ class WC_Vindi_Payment extends AbstractInstance
       $this->init();
 
 
-      $this->languages   = new VindiLanguages();
+      $this->languages = new VindiLanguages();
 
-      $this->settings    = new VindiSettings();
+      $this->settings = new VindiSettings();
       $this->controllers = new VindiControllers($this->settings);
-      $this->frontendLoader    = new FrontendFilesLoader();
+      $this->webhooks = new VindiWebhooks($this->settings);
+      $this->frontend_files_loader = new FrontendFilesLoader();
+      $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
 
 
       /**
        * Add Gateway to Woocommerce
        */
       add_filter('woocommerce_payment_gateways', array($this->settings, 'add_gateway'));
+
+      /**
+       * Register webhook handler 
+       */
+      add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
+        $this->webhooks, 'handle'
+      ));
     } else {
 
       add_action('admin_notices', 'dependencies_notices');
@@ -60,6 +74,7 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/services/Logger.php';
     require_once $this->getPath() . '/i18n/Languages.php';
     require_once $this->getPath() . '/services/VindiHelpers.php';
+    require_once $this->getPath() . '/services/Webhooks.php';
 
     // Loading Abstract Method and Utils
     require_once $this->getPath() . '/utils/PaymentGateway.php';
@@ -70,6 +85,7 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
     require_once $this->getPath() . '/includes/gateways/BankSlipPayment.php';
     require_once $this->getPath() . '/includes/FrontendFilesLoader.php';
+    require_once $this->getPath() . '/includes/SubscriptionStatusHandler.php';
 
     // Routes import
     require_once $this->getPath() . '/routes/RoutesApi.php';
