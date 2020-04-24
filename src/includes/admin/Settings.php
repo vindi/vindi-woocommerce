@@ -335,4 +335,13 @@ class VindiSettings extends WC_Settings_API
   {
     return 'yes' === $this->settings['vindi_synchronism'];
   }
+  
+  /**
+   * Verify if the user wants to send nfe information
+   * @return bool
+   */
+  public function send_nfe_information()
+  {
+    return 'yes' === $this->settings['send_nfe_information'];
+  }
 }

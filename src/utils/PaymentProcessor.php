@@ -106,11 +106,13 @@ class VindiPaymentProcessor
   public function get_customer()
   {
     $current_user = wp_get_current_user();
-    $vindi_customer_id = get_user_meta($current_user->ID, 'vindi_customer_id')[0];
-    $vindi_customer = $this->routes->findCustomerByid($vindi_customer_id);
-    // TODO: if user doesn't exist, create
+    $vindi_customer_id = get_user_meta($current_user->ID, 'vindi_customer_id', true);
+    $vindi_customer = $this->routes->findCustomerById($vindi_customer_id);
     if(!$vindi_customer) {
-      $vindi_customer = $this->controllers->customers->create($current_user->ID);
+      $vindi_customer = $this->controllers->customers->create($current_user->ID, $this->order);
+    }
+    if($this->vindi_settings->send_nfe_information()) {
+      $vindi_customer = $this->controllers->customers->update($current_user->ID, $this->order);
     }
 
     if ($this->is_cc())
@@ -166,7 +168,6 @@ class VindiPaymentProcessor
    */
   public function payment_method_code()
   {
-    // TODO fix it to proper method code
     return $this->is_cc() ? 'credit_card' : 'bank_slip';
   }
 
@@ -521,7 +522,7 @@ class VindiPaymentProcessor
     if (!isset($subscription['id']) || empty($subscription['id'])) {
       $this->logger->log(sprintf('Erro no pagamento do pedido %s.', $this->order->id));
 
-      $message = sprintf(__('Pagamento Falhou. (%s)', VINDI) , $this->routes->api->last_error);
+      $message = sprintf(__('Pagamento Falhou. (%s)', VINDI) , $this->vindi_settings->api->last_error);
       $this->order->update_status('failed', $message);
 
       throw new Exception($message);
@@ -551,7 +552,7 @@ class VindiPaymentProcessor
 
     if (!$bill) {
       $this->logger->log(sprintf('Erro no pagamento do pedido %s.', $this->order->id));
-      $message = sprintf(__('Pagamento Falhou. (%s)', VINDI) , $this->routes->api->last_error);
+      $message = sprintf(__('Pagamento Falhou. (%s)', VINDI) , $this->vindi_settings->api->last_error);
       $this->order->update_status('failed', $message);
 
       throw new Exception($message);

@@ -163,7 +163,7 @@ class VindiRoutes
    * @version 1.0.0
    * @return array
    */
-  public function findCustomerByid($id)
+  public function findCustomerById($id)
   {
 
     $response = $this->api->request(sprintf(
@@ -429,7 +429,7 @@ class VindiRoutes
 
   public function getPaymentProfile($user_vindi_id)
   {
-    $customer = $this->findCustomerByid($user_vindi_id);
+    $customer = $this->findCustomerById($user_vindi_id);
 
     if (empty($customer))
       return false;
