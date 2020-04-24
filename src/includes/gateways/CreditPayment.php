@@ -54,6 +54,10 @@ class VindiCreditGateway extends VindiPaymentGateway
     $this->init_form_fields();
     $this->init_settings();
 
+    $this->smallest_installment = $this->get_option('smallest_installment');
+    $this->installments = $this->get_option('installments');
+    $this->verify_method = $this->get_option('verify_method');
+
     parent::__construct($vindi_settings);
   }
 
@@ -124,7 +128,6 @@ class VindiCreditGateway extends VindiPaymentGateway
   public function payment_fields()
   {
     $id = $this->id;
-    $description = $this->description;
     $is_trial = $this->is_trial;
 
     $total = $this->vindi_settings->woocommerce->cart->total;
