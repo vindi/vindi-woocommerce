@@ -36,8 +36,9 @@ class VindiRoutes
       $product_id
     ), 'GET');
 
+    $productExists = isset($response['product']['id']) ? $response['product'] : false;
 
-    return $response['product'];
+    return $productExists;
   }
 
 
