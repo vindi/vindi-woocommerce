@@ -451,5 +451,37 @@ class VindiRoutes
 
     return $this->api->accept_bank_slip;
   }
+
+  /**
+   * Enough if there is a product within Vindi
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function findBillById($bill_id)
+  {
+
+    $response = $this->api->request(sprintf(
+      'bills/%s',
+      $bill_id
+    ), 'GET');
+
+    if (isset($response['bill']))
+      return $response['bill'];
+
+    return false;
+  }
+
+  public function refundCharge($charge_id, $data)
+  {
+    $response = $this->api->request(sprintf('charges/%s/refund', $charge_id), 'POST', $data);
+    
+    if (isset($response['charge'])) {
+      return $response['charge'];
+    }
+
+    return false;
+  }
 }
 ?>
