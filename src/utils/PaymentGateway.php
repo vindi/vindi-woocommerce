@@ -179,7 +179,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
 
     // Validate plugin settings
     if (! $this->validate_settings()) {
-      return $payment->abort(__('O Pagamento foi cancelado devido a erro de configuração do meio de pagamento.', VINDI_IDENTIFIER));
+      return $payment->abort(__('O Pagamento foi cancelado devido a erro de configuração do meio de pagamento.', VINDI));
     }
 
     try {
@@ -209,4 +209,92 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
 
     return !(boolean) preg_grep('/subscription/', $types);
   }
+
+  /**
+   * Process a refund.
+   *
+   * @param  int    $order_id Order ID.
+   * @param  float  $amount Refund amount.
+   * @param  string $reason Refund reason.
+   * @return bool|WP_Error
+   */
+  public function process_refund($order_id, $amount = null, $reason = '') {
+    $order = wc_get_order($order_id);
+
+    if (!$this->can_refund_order($order)) {
+      return new WP_Error('error', __('Reembolso falhou.', VINDI));
+    }
+
+    $result = $this->refund_transaction($order, $amount, $reason);
+
+    $this->logger->log('Resultado do reembolso: ' . wc_print_r($result, true));
+
+    switch (strtolower($result['status'])) {
+      case 'success':
+        $order->add_order_note(
+          /* translators: 1: Refund amount, 2: Refund ID */
+          sprintf(__('[Reembolso #%2$s]: reembolsado R$%1$s', VINDI), $result['amount'], $result['id'])
+        );
+        return true;
+    }
+          
+          
+    if(isset($result->errors)) {
+      throw new Exception($result->errors[0]->message);
+      return false;
+    }
+  }
+
+  /**
+	 * Get refund request args.
+	 *
+	 * @param  WC_Order $order Order object.
+	 * @param  float    $amount Refund amount.
+	 * @param  string   $reason Refund reason.
+	 * @return array
+	 */
+	public function get_refund_request($order, $amount = null, $reason = '') {
+    $id = $order->get_transaction_id();
+		$request = array(
+			'cancel_bill' => true,
+			'comments' => strip_tags(wc_trim_string($reason, 255)),
+		);
+		if (!is_null($amount) ) {
+			$request['amount'] = $amount;
+		}
+		return apply_filters('vindi_refund_request', $request, $order, $amount, $reason);
+  }
+  
+  /**
+	 * Refund an order via PayPal.
+	 *
+	 * @param  WC_Order $order Order object.
+	 * @param  float    $amount Refund amount.
+	 * @param  string   $reason Refund reason.
+	 * @return object Either an object of name value pairs for a success, or a WP_ERROR object.
+	 */
+	public function refund_transaction($order, $amount = null, $reason = '') {
+    $data = $this->get_refund_request($order, $amount, $reason);
+    $last_charge = $this->find_order_last_charge($order);
+    $charge_id = $last_charge['id'];
+    $refund = $this->routes->refundCharge($charge_id, $data);
+
+		if (empty($refund)) {
+			throw new Exception('Resposta vazia');
+		}
+
+		return $refund['last_transaction'];
+  }
+  
+  private function find_order_last_charge($order)
+  {
+    $bill_id = get_post_meta($order->id, 'vindi_wc_bill_id', true);
+    $bill = $this->routes->findBillById($bill_id);
+
+    if(!$bill)
+    throw new Exception('A fatura com bill_id #' . $bill_id . ' não foi encontrada!', 2);
+    
+    $charges = $bill['charges'];
+    return end($charges);
+	}
 };
