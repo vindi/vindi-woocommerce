@@ -27,7 +27,7 @@ class PlansController
     $this->routes = $vindi_settings->routes;
     $this->logger = $vindi_settings->logger;
 
-    $this->types = array('variable-subscription', 'subscription');
+    $this->allowed_types = array('variable-subscription', 'subscription');
 
     add_action('wp_insert_post', array($this, 'create'), 10, 3);
     add_action('wp_trash_post', array($this, 'trash'), 10, 1);
@@ -35,7 +35,7 @@ class PlansController
   }
 
   /**
-   * When the user creates a product in Woocomerce, it is created in the Vindi.
+   * When the user creates a subscription in Woocomerce, it is created in the Vindi.
    *
    * @since 1.2.2
    * @version 1.2.0
@@ -55,8 +55,8 @@ class PlansController
 
     $product = wc_get_product($post_id);
 
-    // Check if the post is of the signature type
-    if (!in_array($product->get_type(), $this->types)) {
+    // Check if the post is of the subscription type
+    if (!in_array($product->get_type(), $this->allowed_types)) {
       return;
     }
 
@@ -76,7 +76,7 @@ class PlansController
                       );
 
         // Creates the product within the Vindi
-        $createProduct = $this->routes->createProduct(array(
+        $createdProduct = $this->routes->createProduct(array(
           'name' => PREFIX_PRODUCT . $data['name'],
           'code' => 'WC-' . $data['id'],
           'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
@@ -89,7 +89,7 @@ class PlansController
         ));
 
         // Creates the plan within the Vindi
-        $createPlan = $this->routes->createPlan(array(
+        $createdPlan = $this->routes->createPlan(array(
           'name' => PREFIX_PLAN . $data['name'],
           'interval' => $product->get_meta('_subscription_period') . 's',
           'interval_count' => intval($product->get_meta('_subscription_period_interval')),
@@ -103,15 +103,15 @@ class PlansController
           'plan_items' => array(
             array(
               'cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
-              'product_id' => $createProduct['id']
+              'product_id' => $createdProduct['id']
             ),
           ),
         ));
 
         // Saving product id and plan in the WC goal
-        update_post_meta( $post_id, 'vindi_product_id', $createProduct['id'] );
+        update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
 
-        update_post_meta( $post_id, 'vindi_plan_id', $createPlan['id'] );
+        update_post_meta( $post_id, 'vindi_plan_id', $createdPlan['id'] );
 
         update_post_meta( $post_id, 'vindi_product_created', true );
 
@@ -129,7 +129,7 @@ class PlansController
     );
 
     // Creates the product within the Vindi
-    $createProduct = $this->routes->createProduct(array(
+    $createdProduct = $this->routes->createProduct(array(
       'name' => PREFIX_PRODUCT . $data['name'],
       'code' => 'WC-' . $data['id'],
       'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
@@ -142,7 +142,7 @@ class PlansController
     ));
 
     // Creates the plan within the Vindi
-    $createPlan = $this->routes->createPlan(array(
+    $createdPlan = $this->routes->createPlan(array(
       'name' => PREFIX_PLAN . $data['name'],
       'interval' => $product->get_meta('_subscription_period') . 's',
       'interval_count' => intval($product->get_meta('_subscription_period_interval')),
@@ -156,17 +156,22 @@ class PlansController
       'plan_items' => array(
         array(
           'cycles' => $product->get_meta('_subscription_length'),
-          'product_id' => $createProduct['id']
+          'product_id' => $createdProduct['id']
         ),
       ),
     ));
 
     // Saving product id and plan in the WC goal
-    update_post_meta( $post_id, 'vindi_product_id', $createProduct['id'] );
+    update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
 
-    update_post_meta( $post_id, 'vindi_plan_id', $createPlan['id'] );
+    update_post_meta( $post_id, 'vindi_plan_id', $createdPlan['id'] );
 
     update_post_meta( $post_id, 'vindi_product_created', true );
+
+    return array(
+      'product' => $createdProduct,
+      'plan' => $createdPlan,
+    );
   }
 
   function update($post_id)
@@ -175,7 +180,7 @@ class PlansController
     $product = wc_get_product($post_id);
 
     // Check if the post is of the signature type
-    if (!in_array($product->get_type(), $this->types)) {
+    if (!in_array($product->get_type(), $this->allowed_types)) {
       return;
     }
 
@@ -217,7 +222,7 @@ class PlansController
                       );
 
         // Updates the product within the Vindi
-        $updateProduct = $this->routes->updateProduct(
+        $updatedProduct = $this->routes->updateProduct(
           $vindi_product_id[0],
             array(
             'name' => PREFIX_PRODUCT . $data['name'],
@@ -233,7 +238,7 @@ class PlansController
         );
 
         // Updates the plan within the Vindi
-        $updatePlan = $this->routes->updatePlan(
+        $updatedPlan = $this->routes->updatePlan(
           $vindi_plan_id[0],
             array(
             'name' => PREFIX_PLAN . $data['name'],
@@ -251,7 +256,10 @@ class PlansController
 
       }
 
-      return;
+      return array(
+        'product' => $updatedProduct,
+        'plan' => $updatedPlan,
+      );
     }
 
     $data = $product->get_data();
@@ -264,7 +272,7 @@ class PlansController
     $vindi_product_id = get_post_meta($post_id, 'vindi_product_id');
 
     // Updates the product within the Vindi
-    $updateProduct = $this->routes->updateProduct(
+    $updatedProduct = $this->routes->updateProduct(
       $vindi_product_id[0],
       array(
         'name' => PREFIX_PRODUCT . $data['name'],
@@ -283,7 +291,7 @@ class PlansController
     $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id');
 
     // Updates the plan within the Vindi
-    $updatePlan = $this->routes->updatePlan(
+    $updatedPlan = $this->routes->updatePlan(
       $vindi_plan_id[0],
       array(
         'name' => PREFIX_PLAN . $data['name'],
@@ -299,6 +307,10 @@ class PlansController
         )
     );
 
+    return array(
+      'product' => $updatedProduct,
+      'plan' => $updatedPlan,
+    );
   }
 
   /**
@@ -316,7 +328,7 @@ class PlansController
 
     $product = wc_get_product($post_id);
     // Check if the post is of the signature type
-    if (!in_array($product->get_type(), $this->types)) {
+    if (!in_array($product->get_type(), $this->allowed_types)) {
       return;
     }
 
@@ -328,14 +340,19 @@ class PlansController
     }
 
     // Changes the product status within the Vindi
-    $inactiveProduct = $this->routes->updateProduct($vindi_product_id, array(
+    $inactivatedProduct = $this->routes->updateProduct($vindi_product_id, array(
       'status' => 'inactive',
     ));
 
     // Changes the plan status within the Vindi
-    $inactivePlan = $this->routes->updatePlan($vindi_plan_id, array(
+    $inactivatedPlan = $this->routes->updatePlan($vindi_plan_id, array(
       'status' => 'inactive',
     ));
+
+    return array(
+      'product' => $inactivatedProduct,
+      'plan' => $inactivatedPlan,
+    );
   }
 
   /**
@@ -353,7 +370,7 @@ class PlansController
 
     $product = wc_get_product($post_id);
     // Check if the post is of the signature type
-    if (!in_array($product->get_type(), $this->types)) {
+    if (!in_array($product->get_type(), $this->allowed_types)) {
       return;
     }
 
@@ -365,13 +382,18 @@ class PlansController
     }
 
     // Changes the product status within the Vindi
-    $activeProduct = $this->routes->updateProduct($vindi_product_id, array(
+    $activatedProduct = $this->routes->updateProduct($vindi_product_id, array(
       'status' => 'active',
     ));
 
     // Changes the plan status within the Vindi
-    $activePlan = $this->routes->updatePlan($vindi_plan_id, array(
+    $activatedPlan = $this->routes->updatePlan($vindi_plan_id, array(
       'status' => 'active',
     ));
+
+    return array(
+      'product' => $activatedProduct,
+      'plan' => $activatedPlan,
+    );
   }
 }
