@@ -23,8 +23,37 @@ class WC_Vindi_Payment extends AbstractInstance
    *
    * @var object
    */
-
   static $instance = null;
+
+  /**
+   * @var VindiLanguages
+   */
+  private $languages;
+
+  /**
+   * @var VindiSettings
+   */
+  private $settings;
+
+  /**
+   * @var VindiControllers
+   */
+  private $controllers;
+
+  /**
+   * @var VindiWebhooks
+   */
+  private $webhooks;
+
+  /**
+   * @var FrontendFilesLoader
+   */
+  private $frontend_files_loader;
+
+  /**
+   * @var VindiSubscriptionStatusHandler
+   */
+  private $subscription_status_handler;
 
   public function __construct()
   {
@@ -43,11 +72,10 @@ class WC_Vindi_Payment extends AbstractInstance
       $this->frontend_files_loader = new FrontendFilesLoader();
       $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
 
-
       /**
        * Add Gateway to Woocommerce
        */
-      add_filter('woocommerce_payment_gateways', array($this->settings, 'add_gateway'));
+      add_filter('woocommerce_payment_gateways', array(&$this, 'add_gateway'));
 
       /**
        * Register webhook handler 
@@ -109,6 +137,19 @@ class WC_Vindi_Payment extends AbstractInstance
     }
 
     return self::$instance;
+  }
+
+  /**
+   * Add the gateway to WooCommerce.
+   * @param  array $methods WooCommerce payment methods.
+   * @return array Payment methods with Vindi.
+   */
+  public function add_gateway($methods)
+  {
+    $methods[] = new VindiCreditGateway($this->settings, $this->controllers);
+    $methods[] = new VindiBankSlipGateway($this->settings, $this->controllers);
+
+    return $methods;
   }
 }
 
