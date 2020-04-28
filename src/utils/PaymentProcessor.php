@@ -47,9 +47,8 @@ class VindiPaymentProcessor
    */
   private $controllers;
 
-  function __construct(WC_Order $order, VindiPaymentGateway $gateway, VindiSettings $vindi_settings)
+  function __construct(WC_Order $order, VindiPaymentGateway $gateway, VindiSettings $vindi_settings, VindiControllers $controllers)
   {
-    global $controllers;
     $this->order = $order;
     $this->gateway = $gateway;
     $this->vindi_settings = $vindi_settings;
@@ -88,10 +87,10 @@ class VindiPaymentProcessor
       if (isset($item['variation_id']) && $item['variation_id'] != 0) {
         $vindi_plan = get_post_meta($item['variation_id'], 'vindi_variable_subscription_plan', true);
         if (empty($vindi_plan) || !is_numeric($vindi_plan) || is_null($vindi_plan) || $vindi_plan == 0) {
-          $vindi_plan = $product->get_meta('vindi_plan_id', true);
+          $vindi_plan = get_post_meta($product->id, 'vindi_plan_id', true);
         }
       }
-      else $vindi_plan = $product->get_meta('vindi_plan_id', true);
+      else $vindi_plan = get_post_meta($product->id, 'vindi_plan_id', true);
 
       if ($this->is_subscription_type($product) and !empty($vindi_plan)) return $vindi_plan;
     }
@@ -626,8 +625,21 @@ class VindiPaymentProcessor
   protected function get_product($order_item)
   {
     $product = $this->order->get_product_from_item($order_item);
-    $product->vindi_id = (int) $product->get_meta('vindi_product_id');
-    //TODO: if product doesn't exist, create
+    $product_id = $product->id;
+    $vindi_product_id = get_post_meta($product_id, 'vindi_product_id', true);
+    
+    if (!$vindi_product_id) {
+      $vindi_product = null;
+      if($this->is_subscription_type($product)) {
+        $vindi_product = $this->controllers->products->create($product_id, '', '', true);
+      } else {
+        $vindi_product = $this->controllers->plans->create($product_id, '', '', true);
+      }
+
+      $vindi_product_id = $vindi_product['id'];
+    }
+
+    $product->vindi_id = (int) $vindi_product_id;
     return $product;
   }
 

@@ -23,7 +23,12 @@ class VindiControllers
   /**
    * @var CustomerController
    */
-   public $customers;
+  public $customers;
+
+  /**
+   * @var ProductController
+   */
+  public $products;
 
   function __construct(VindiSettings $vindi_settings)
   {
@@ -31,6 +36,7 @@ class VindiControllers
 
     $this->plans = new PlansController($vindi_settings);
     $this->customers = new CustomerController($vindi_settings);
+    $this->products = new ProductController($vindi_settings);
   }
 
 
@@ -38,5 +44,6 @@ class VindiControllers
   {
     require_once WC_Vindi_Payment::getPath() . '/controllers/PlansController.php';
     require_once WC_Vindi_Payment::getPath() . '/controllers/CustomerController.php';
+    require_once WC_Vindi_Payment::getPath() . '/controllers/ProductController.php';
   }
 }
