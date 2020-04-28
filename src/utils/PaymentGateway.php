@@ -26,6 +26,11 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
   public $vindi_settings;
 
   /**
+   * @var VindiControllers
+   */
+  public $controllers;
+
+  /**
    * @var VindiLogger
    */
   protected $logger;
@@ -41,9 +46,10 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
    */
   public abstract function type();
 
-  public function __construct(VindiSettings $vindi_settings)
+  public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
   {
     $this->vindi_settings = $vindi_settings;
+    $this->controllers = $controllers;
     $this->logger = $this->vindi_settings->logger;
     $this->routes = $vindi_settings->routes;
     $this->title = $this->get_option('title');
@@ -170,7 +176,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
   {
     $this->logger->log(sprintf('Processando pedido %s.', $order_id));
     $order   = wc_get_order($order_id);
-    $payment = new VindiPaymentProcessor($order, $this, $this->vindi_settings);
+    $payment = new VindiPaymentProcessor($order, $this, $this->vindi_settings, $this->controllers);
 
     // exit if validation by validate_fields() fails
     if (! $this->validated) {

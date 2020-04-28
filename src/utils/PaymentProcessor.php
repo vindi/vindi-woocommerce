@@ -47,9 +47,8 @@ class VindiPaymentProcessor
    */
   private $controllers;
 
-  function __construct(WC_Order $order, VindiPaymentGateway $gateway, VindiSettings $vindi_settings)
+  function __construct(WC_Order $order, VindiPaymentGateway $gateway, VindiSettings $vindi_settings, VindiControllers $controllers)
   {
-    global $controllers;
     $this->order = $order;
     $this->gateway = $gateway;
     $this->vindi_settings = $vindi_settings;
@@ -626,8 +625,16 @@ class VindiPaymentProcessor
   protected function get_product($order_item)
   {
     $product = $this->order->get_product_from_item($order_item);
-    $product->vindi_id = (int) $product->get_meta('vindi_product_id');
-    //TODO: if product doesn't exist, create
+    $product_id = $product->id;
+    $vindi_product_id = $product->get_meta('vindi_product_id');
+    
+    if (!$vindi_product_id) {
+      $vindi_product = $this->controllers->products->create($product_id, '', '', true);
+
+      $vindi_product_id = $vindi_product['id'];
+    }
+
+    $product->vindi_id = (int) $vindi_product_id;
     return $product;
   }
 
