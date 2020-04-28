@@ -239,7 +239,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
       case 'success':
         $order->add_order_note(
           /* translators: 1: Refund amount, 2: Refund ID */
-          sprintf(__('[Reembolso #%2$s]: reembolsado R$%1$s', VINDI), $result['amount'], $result['id'])
+          sprintf(__('[Transação #%2$s]: reembolsado R$%1$s', VINDI), $result['amount'], $result['id'])
         );
         return true;
     }
