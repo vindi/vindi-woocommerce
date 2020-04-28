@@ -101,7 +101,7 @@ class ProductController
     // Checks whether there is a vindi product ID associated within
     if($product->get_type() == 'subscription') {
 
-      $vindi_product_id = get_post_meta($post_id, 'vindi_product_id');
+      $vindi_product_id = get_post_meta($post_id, 'vindi_product_id', true);
 
       if(empty($vindi_product_id)) {
 
@@ -111,11 +111,11 @@ class ProductController
 
     $data = $product->get_data();
 
-    $vindi_product_id = get_post_meta($post_id, 'vindi_product_id');
+    $vindi_product_id = get_post_meta($post_id, 'vindi_product_id', true);
 
     // Updates the product within the Vindi
     $updatedProduct = $this->routes->updateProduct(
-      $vindi_product_id[0],
+      $vindi_product_id,
       array(
         'name' => PREFIX_PRODUCT . $data['name'],
         'code' => 'WC-' . $data['id'],
@@ -152,7 +152,7 @@ class ProductController
       return;
     }
 
-    $vindi_product_id = $product->get_meta('vindi_product_id');
+    $vindi_product_id = get_post_meta($product->id, 'vindi_product_id', true);
 
     if(empty($vindi_product_id)) {
       return;
@@ -186,7 +186,7 @@ class ProductController
       return;
     }
 
-    $vindi_product_id = $product->get_meta('vindi_product_id');
+    $vindi_product_id = get_post_meta($product->id, 'vindi_product_id', true);
 
     if(empty($vindi_product_id)) {
       return;

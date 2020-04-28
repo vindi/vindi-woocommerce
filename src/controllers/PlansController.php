@@ -187,7 +187,7 @@ class PlansController
     // Checks whether there is a vindi plan ID created within
     if($product->get_type() == 'subscription') {
 
-      $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id');
+      $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id', true);
 
       if(empty($vindi_plan_id)) {
 
@@ -205,8 +205,8 @@ class PlansController
         $data = wc_get_product($variation['variation_id']);
 
         // Checks whether there is a vindi plan ID created within
-        $vindi_plan_id = get_post_meta($variation['variation_id'], 'vindi_plan_id');
-        $vindi_product_id = get_post_meta($variation['variation_id'], 'vindi_product_id');
+        $vindi_plan_id = get_post_meta($variation['variation_id'], 'vindi_plan_id', true);
+        $vindi_product_id = get_post_meta($variation['variation_id'], 'vindi_product_id', true);
 
         if(empty($vindi_plan_id)) {
 
@@ -223,7 +223,7 @@ class PlansController
 
         // Updates the product within the Vindi
         $updatedProduct = $this->routes->updateProduct(
-          $vindi_product_id[0],
+          $vindi_product_id,
             array(
             'name' => PREFIX_PRODUCT . $data['name'],
             'code' => 'WC-' . $data['id'],
@@ -239,7 +239,7 @@ class PlansController
 
         // Updates the plan within the Vindi
         $updatedPlan = $this->routes->updatePlan(
-          $vindi_plan_id[0],
+          $vindi_plan_id,
             array(
             'name' => PREFIX_PLAN . $data['name'],
             'interval' => $product->get_meta('_subscription_period') . 's',
@@ -269,11 +269,11 @@ class PlansController
       $product->get_meta('_subscription_trial_period')
     );
 
-    $vindi_product_id = get_post_meta($post_id, 'vindi_product_id');
+    $vindi_product_id = get_post_meta($post_id, 'vindi_product_id', true);
 
     // Updates the product within the Vindi
     $updatedProduct = $this->routes->updateProduct(
-      $vindi_product_id[0],
+      $vindi_product_id,
       array(
         'name' => PREFIX_PRODUCT . $data['name'],
         'code' => 'WC-' . $data['id'],
@@ -288,11 +288,11 @@ class PlansController
     );
 
 
-    $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id');
+    $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id', true);
 
     // Updates the plan within the Vindi
     $updatedPlan = $this->routes->updatePlan(
-      $vindi_plan_id[0],
+      $vindi_plan_id,
       array(
         'name' => PREFIX_PLAN . $data['name'],
         'interval' => $product->get_meta('_subscription_period') . 's',
@@ -332,8 +332,8 @@ class PlansController
       return;
     }
 
-    $vindi_product_id = $product->get_meta('vindi_product_id');
-    $vindi_plan_id = $product->get_meta('vindi_plan_id');
+    $vindi_product_id = get_post_meta($product->id, 'vindi_product_id', true);
+    $vindi_plan_id = get_post_meta($product->id, 'vindi_plan_id', true);
 
     if(empty($vindi_product_id) || empty($vindi_plan_id)) {
       return;
@@ -374,8 +374,8 @@ class PlansController
       return;
     }
 
-    $vindi_product_id = $product->get_meta('vindi_product_id');
-    $vindi_plan_id = $product->get_meta('vindi_plan_id');
+    $vindi_product_id = get_post_meta($product->id, 'vindi_product_id', true);
+    $vindi_plan_id = get_post_meta($product->id, 'vindi_plan_id', true);
 
     if(empty($vindi_product_id) || empty($vindi_plan_id)) {
       return;
