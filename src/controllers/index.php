@@ -23,12 +23,12 @@ class VindiControllers
   /**
    * @var CustomerController
    */
-   public $customers;
+  public $customers;
 
   /**
    * @var ProductController
    */
-   public $products;
+  public $products;
 
   function __construct(VindiSettings $vindi_settings)
   {
