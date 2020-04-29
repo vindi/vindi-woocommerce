@@ -101,11 +101,11 @@ class VindiWebhooks
     WC_Subscriptions_Manager::prepare_renewal($subscription->id);
     $order_id = $subscription->get_last_order();
     $order = $this->find_order_by_id($order_id);
-    add_post_meta($order->id, 'vindi_wc_cycle', $renew_infos['cycle']);
-    add_post_meta($order->id, 'vindi_wc_bill_id', $renew_infos['bill_id']);
-    add_post_meta($order->id, 'vindi_wc_subscription_id', $renew_infos['vindi_subscription_id']);
+    add_post_meta($order->id, 'vindi_cycle', $renew_infos['cycle']);
+    add_post_meta($order->id, 'vindi_bill_id', $renew_infos['bill_id']);
+    add_post_meta($order->id, 'vindi_subscription_id', $renew_infos['vindi_subscription_id']);
     if (!empty($renew_infos['print_url'])) {
-      add_post_meta( $order->id, 'vindi_wc_bank_slip_download_url', $renew_infos['print_url'] );
+      add_post_meta( $order->id, 'vindi_bank_slip_download_url', $renew_infos['print_url'] );
     }
 
     $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
@@ -299,7 +299,7 @@ class VindiWebhooks
   {
     $args = array(
       'post_type' => 'shop_order',
-      'meta_key' => 'vindi_wc_bill_id',
+      'meta_key' => 'vindi_bill_id',
       'meta_value' => $bill_id,
       'post_status' => 'any',
     );
@@ -324,11 +324,11 @@ class VindiWebhooks
   {
     $query = $this->query_order_by_metas(array(
       array(
-        'key' => 'vindi_wc_cycle',
+        'key' => 'vindi_cycle',
         'value' => $cycle,
       ),
       array(
-        'key' => 'vindi_wc_subscription_id',
+        'key' => 'vindi_subscription_id',
         'value' => $subscription_id,
       )
     ));
@@ -349,11 +349,11 @@ class VindiWebhooks
   {
     $query = $this->query_order_by_metas(array(
       array(
-        'key' => 'vindi_wc_cycle',
+        'key' => 'vindi_cycle',
         'value' => $cycle,
       ),
       array(
-        'key' => 'vindi_wc_subscription_id',
+        'key' => 'vindi_subscription_id',
         'value' => $subscription_id,
       )
     ));

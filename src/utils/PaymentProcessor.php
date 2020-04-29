@@ -215,10 +215,10 @@ class VindiPaymentProcessor
     $wc_subscriptions = wcs_get_subscriptions_for_order($this->order);
     $wc_subscription = end($wc_subscriptions);
 
-    add_post_meta($this->order->id, 'vindi_wc_cycle', $subscription['current_period']['cycle']);
-    add_post_meta($this->order->id, 'vindi_wc_subscription_id', $subscription['id']);
-    add_post_meta($this->order->id, 'vindi_wc_bill_id', $subscription['bill']['id']);
-    add_post_meta($wc_subscription->id, 'vindi_wc_subscription_id', $subscription['id']);
+    add_post_meta($this->order->id, 'vindi_cycle', $subscription['current_period']['cycle']);
+    add_post_meta($this->order->id, 'vindi_subscription_id', $subscription['id']);
+    add_post_meta($this->order->id, 'vindi_bill_id', $subscription['bill']['id']);
+    add_post_meta($wc_subscription->id, 'vindi_subscription_id', $subscription['id']);
 
     if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
       $wc_subscription->update_status('cancelled', __($message, VINDI));
@@ -249,7 +249,7 @@ class VindiPaymentProcessor
       $this->abort(__($message, VINDI) , true);
     }
 
-    add_post_meta($this->order->id, 'vindi_wc_bill_id', $bill['id']);
+    add_post_meta($this->order->id, 'vindi_bill_id', $bill['id']);
     $this->add_download_url_meta_for_order($bill, false);
 
     return $this->finish_payment($bill);
@@ -565,13 +565,13 @@ class VindiPaymentProcessor
   {
     if ($subscription) {
       if (isset($sale['bill']) && isset($sale['bill']['charges']) && count($sale['bill']['charges'])) {
-        add_post_meta($this->order->id, 'vindi_wc_bank_slip_download_url', $sale['bill']['charges'][0]['print_url']);
+        add_post_meta($this->order->id, 'vindi_bank_slip_download_url', $sale['bill']['charges'][0]['print_url']);
       }
       return;
     }
 
     if (isset($sale['charges']) && count($sale['charges'])) {
-      add_post_meta($this->order->id, 'vindi_wc_bank_slip_download_url', $sale['charges'][0]['print_url']);
+      add_post_meta($this->order->id, 'vindi_bank_slip_download_url', $sale['charges'][0]['print_url']);
     }
   }
 
