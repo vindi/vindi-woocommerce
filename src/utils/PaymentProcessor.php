@@ -73,30 +73,6 @@ class VindiPaymentProcessor
     return static ::ORDER_TYPE_SINGLE;
   }
 
-  /**
-   * Retrieve Plan for Vindi Subscription.
-   * @return int|bool
-   */
-  public function get_plan()
-  {
-    $items = $this->order->get_items();
-
-    foreach ($items as $item) {
-      $product = $this->order->get_product_from_item($item);
-
-      if (isset($item['variation_id']) && $item['variation_id'] != 0) {
-        $vindi_plan = get_post_meta($item['variation_id'], 'vindi_variable_subscription_plan', true);
-        if (empty($vindi_plan) || !is_numeric($vindi_plan) || is_null($vindi_plan) || $vindi_plan == 0) {
-          $vindi_plan = get_post_meta($product->id, 'vindi_plan_id', true);
-        }
-      }
-      else $vindi_plan = get_post_meta($product->id, 'vindi_plan_id', true);
-
-      if ($this->is_subscription_type($product) and !empty($vindi_plan)) return $vindi_plan;
-    }
-
-    $this->abort(__('O produto selecionado não é uma assinatura.', VINDI) , true);
-  }
 
   /**
    * Find or Create a Customer at Vindi for the given credentials.
@@ -211,15 +187,26 @@ class VindiPaymentProcessor
   public function process_subscription()
   {
     $customer = $this->get_customer();
-    $subscription = $this->create_subscription($customer['id']);
+    $subscriptions = $this->create_subscriptions($customer['id']);
     $wc_subscriptions = wcs_get_subscriptions_for_order($this->order);
-    $wc_subscription = end($wc_subscriptions);
+    // $wc_subscription = end($wc_subscriptions);
+    $cycles = $subscriptions_id = $bills_id = $bills = array();
+    foreach ($wc_subscriptions as $wc_subscription) {
+      $wc_subscription_id = $wc_subscription->id;
 
-    add_post_meta($this->order->id, 'vindi_cycle', $subscription['current_period']['cycle']);
-    add_post_meta($this->order->id, 'vindi_subscription_id', $subscription['id']);
-    add_post_meta($this->order->id, 'vindi_bill_id', $subscription['bill']['id']);
-    add_post_meta($wc_subscription->id, 'vindi_subscription_id', $subscription['id']);
+      $subscription = $subscriptions[$wc_subscription_id];
+      array_push($cycles, $subscription['current_period']['cycle']);
+      array_push($subscriptions_id, $subscription['id']);
+      array_push($bills_id, $subscription['bill']['id']);
+      array_push($bills, $subscription['bill']);
+      update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription['id']);
+    }
 
+    update_post_meta($this->order->id, 'vindi_cycle', $cycles);
+    update_post_meta($this->order->id, 'vindi_subscription_id', $subscriptions_id);
+    update_post_meta($this->order->id, 'vindi_bill_id', $bills_id);
+
+    // TODO cancel all subscriptions
     if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
       $wc_subscription->update_status('cancelled', __($message, VINDI));
       $this->order->update_status('cancelled', __($message, VINDI));
@@ -227,11 +214,11 @@ class VindiPaymentProcessor
       $this->abort(__($message, VINDI) , true);
     }
 
-    $this->add_download_url_meta_for_order($subscription, true);
+    $this->add_download_url_meta_for_order($subscriptions, true);
 
     remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
 
-    return $this->finish_payment($subscription['bill']);
+    return $this->finish_payment($bills);
   }
 
   /**
@@ -314,7 +301,7 @@ class VindiPaymentProcessor
    * @return array
    * @throws Exception
    */
-  protected function build_product_items($order_type = 'bill')
+  protected function build_product_items($order_type = 'bill', $wc_subscription = null)
   {
     $call_build_items = "build_product_items_for_{$order_type}";
 
@@ -323,7 +310,7 @@ class VindiPaymentProcessor
     }
 
     $product_items = [];
-    $order_items = $this->build_product_order_items();
+    $order_items = $this->build_product_order_items($wc_subscription);
     $order_items[] = $this->build_shipping_item();
     $order_items[] = $this->build_tax_item();
 
@@ -345,8 +332,20 @@ class VindiPaymentProcessor
     return $product_items;
   }
 
-  protected function build_product_order_items()
+  protected function build_product_order_items($wc_subscription = null)
   {
+    if($wc_subscription) {
+      $subscription_items = $wc_subscription->get_items();
+
+      foreach ($subscription_items as $key => $subscription_item) {
+        $product = $this->get_product($subscription_item);
+        $subscription_items[$key]['type'] = 'product';
+        $subscription_items[$key]['vindi_id'] = $product->vindi_id;
+        $subscription_items[$key]['price'] = (float)$subscription_items[$key]['subtotal'] / $subscription_items[$key]['qty'];
+      }
+  
+      return $subscription_items;
+    }
     $order_items = $this->order->get_items();
 
     foreach ($order_items as $key => $order_item) {
@@ -495,40 +494,72 @@ class VindiPaymentProcessor
     return 1;
   }
 
+
+  /**
+   * Retrieve Plan for Vindi Subscription.
+   * @return int|bool
+   */
+  public function get_plan_from_subscription($wc_subscription)
+  {
+    $items = $wc_subscription->get_items();
+
+    foreach ($items as $item) {
+      $product = $wc_subscription->get_product_from_item($item);
+
+      if (isset($item['variation_id']) && $item['variation_id'] != 0) {
+        $vindi_plan = get_post_meta($item['variation_id'], 'vindi_plan_id', true);
+        if (empty($vindi_plan) || !is_numeric($vindi_plan) || is_null($vindi_plan) || $vindi_plan == 0) {
+          $vindi_plan = get_post_meta($product->id, 'vindi_plan_id', true);
+        }
+      }
+      else $vindi_plan = get_post_meta($product->id, 'vindi_plan_id', true);
+      
+      if ($this->is_subscription_type($product) and !empty($vindi_plan)) return $vindi_plan;
+    }
+
+    $this->abort(__('O produto selecionado não é uma assinatura.', VINDI) , true);
+  }
+
   /**
    * @param $customer_id
    *
    * @return array
    * @throws Exception
    */
-  protected function create_subscription($customer_id)
+  protected function create_subscriptions($customer_id)
   {
-    $vindi_plan = $this->get_plan();
     $wc_subscription_array = wcs_get_subscriptions_for_order($this->order->id);
-    $wc_subscription = end($wc_subscription_array);
+    $subscriptions = array();
+    foreach ($wc_subscription_array as $wc_subscription) {
+      $wc_subscription_id = $wc_subscription->id;
+      $vindi_plan = $this->get_plan_from_subscription($wc_subscription);
 
-    $body = array(
-      'customer_id' => $customer_id,
-      'payment_method_code' => $this->payment_method_code() ,
-      'plan_id' => $vindi_plan,
-      'product_items' => $this->build_product_items('subscription') ,
-      'code' => $wc_subscription->id,
-      'installments' => $this->installments()
-    );
+      $data = array(
+        'customer_id' => $customer_id,
+        'payment_method_code' => $this->payment_method_code() ,
+        'plan_id' => $vindi_plan,
+        'product_items' => $this->build_product_items('subscription', $wc_subscription) ,
+        'code' => $wc_subscription_id,
+        'installments' => $this->installments()
+      );
+  
+      $subscription = $this->routes->createSubscription($data);
+  
+      if (!isset($subscription['id']) || empty($subscription['id'])) {
+        $this->logger->log(sprintf('Erro no pagamento do pedido %s.', $this->order->id));
+  
+        $message = sprintf(__('Pagamento Falhou. (%s)', VINDI) , $this->vindi_settings->api->last_error);
+        $this->order->update_status('failed', $message);
+  
+        throw new Exception($message);
+      }
 
-    $subscription = $this->routes->createSubscription($body);
-
-    if (!isset($subscription['id']) || empty($subscription['id'])) {
-      $this->logger->log(sprintf('Erro no pagamento do pedido %s.', $this->order->id));
-
-      $message = sprintf(__('Pagamento Falhou. (%s)', VINDI) , $this->vindi_settings->api->last_error);
-      $this->order->update_status('failed', $message);
-
-      throw new Exception($message);
+      $subscriptions[$wc_subscription_id] = $subscription;
     }
+
     WC()->session->__unset('current_payment_profile');
     WC()->session->__unset('current_customer');
-    return $subscription;
+    return $subscriptions;
   }
 
   /**
@@ -561,11 +592,15 @@ class VindiPaymentProcessor
     return $bill;
   }
 
-  protected function add_download_url_meta_for_order($sale, $subscription)
+  protected function add_download_url_meta_for_order($sale, $is_subscription)
   {
-    if ($subscription) {
-      if (isset($sale['bill']) && isset($sale['bill']['charges']) && count($sale['bill']['charges'])) {
-        add_post_meta($this->order->id, 'vindi_bank_slip_download_url', $sale['bill']['charges'][0]['print_url']);
+    if ($is_subscription) {
+      $bank_slips = array();
+      if (isset($subscription['bill']) && isset($subscription['bill']['charges']) && count($subscription['bill']['charges'])) {
+        foreach ($sale as $subscription) {
+          $bank_slips[$subscription['id']] = $subscription['bill']['charges'][0]['print_url'];
+        }
+        update_post_meta($this->order->id, 'vindi_bank_slip_download_url', $bank_slips);
       }
       return;
     }
@@ -598,6 +633,27 @@ class VindiPaymentProcessor
   protected function finish_payment($bill)
   {
     $this->vindi_settings->woocommerce->cart->empty_cart();
+    if(is_array($bill)) {
+      $last_status = 'paid';
+      foreach ($bill as $bill_item) {
+        if ($bill['status'] == 'paid' && $last_status == 'paid') {
+          $status = $this->vindi_settings->get_return_status();
+          $status_message = __('O Pagamento da fatura %s foi realizado com sucesso pela Vindi.', VINDI);
+        } else {
+          $data_to_log = sprintf('Aguardando pagamento do pedido %s pela Vindi.', $this->order->id);
+          $status_message = __('Aguardando pagamento do pedido.', VINDI);
+          $status = 'pending';
+        }
+        $last_status = $bill['status'];
+      }
+      $this->logger->log($data_to_log);
+      $this->order->update_status($status, $status_message);
+
+      return array(
+        'result' => 'success',
+        'redirect' => $this->order->get_checkout_order_received_url() ,
+      );
+    }
 
     if ($bill['status'] == 'paid') {
       $status = $this->vindi_settings->get_return_status();
@@ -630,7 +686,7 @@ class VindiPaymentProcessor
     
     if (!$vindi_product_id) {
       $vindi_product = null;
-      if($this->is_subscription_type($product)) {
+      if(!$this->is_subscription_type($product)) {
         $vindi_product = $this->controllers->products->create($product_id, '', '', true);
       } else {
         $vindi_product = $this->controllers->plans->create($product_id, '', '', true);
