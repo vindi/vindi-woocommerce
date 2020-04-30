@@ -63,14 +63,11 @@ class VindiPaymentProcessor
    */
   public function get_order_type()
   {
-    $items = $this->order->get_items();
-
-    foreach ($items as $item) {
-      $product = $this->order->get_product_from_item($item);
-      if ($this->is_subscription_type($product)) return static ::ORDER_TYPE_SUBSCRIPTION;
+    if (wcs_order_contains_subscription($this->order, array('any'))) {
+      return static::ORDER_TYPE_SUBSCRIPTION;
     }
 
-    return static ::ORDER_TYPE_SINGLE;
+    return static::ORDER_TYPE_SINGLE;
   }
 
 
@@ -280,21 +277,23 @@ class VindiPaymentProcessor
    */
   private function return_cycle_from_product_type($item)
   {
+    $product = $this->order->get_product_from_item($item);
     if ($item['type'] == 'shipping' || $item['type'] == 'tax') {
       if ($this->vindi_settings->get_shipping_and_tax_config()) return 1;
     }
-    elseif (!$this->is_subscription_type(wc_get_product($item['product_id'])) || $this->is_one_time_shipping(wc_get_product($item['product_id']))) {
+    elseif (!$this->is_subscription_type($product) || $this->is_one_time_shipping($product)) {
       return 1;
     }
-    return null;
+    $cycles = get_post_meta($product->id, '_subscription_length', true);
+    return $cycles > 0 ? $cycles : null;
   }
 
   /**
    * @param WC_Product $item
    */
-  private function is_one_time_shipping($item)
+  private function is_one_time_shipping($product)
   {
-    return reset(get_post_meta($item->id) ['_subscription_one_time_shipping']) == 'yes';
+    return get_post_meta($product->id, '_subscription_one_time_shipping', true) == 'yes';
   }
 
   /**
@@ -636,7 +635,7 @@ class VindiPaymentProcessor
     if(is_array($bill)) {
       $last_status = 'paid';
       foreach ($bill as $bill_item) {
-        if ($bill['status'] == 'paid' && $last_status == 'paid') {
+        if ($bill_item['status'] == 'paid' && $last_status == 'paid') {
           $status = $this->vindi_settings->get_return_status();
           $status_message = __('O Pagamento da fatura %s foi realizado com sucesso pela Vindi.', VINDI);
         } else {
@@ -644,7 +643,7 @@ class VindiPaymentProcessor
           $status_message = __('Aguardando pagamento do pedido.', VINDI);
           $status = 'pending';
         }
-        $last_status = $bill['status'];
+        $last_status = $bill_item['status'];
       }
       $this->logger->log($data_to_log);
       $this->order->update_status($status, $status_message);
