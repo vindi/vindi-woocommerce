@@ -168,6 +168,12 @@ class PlansController
 
     update_post_meta( $post_id, 'vindi_product_created', true );
 
+    if($createdPlan && $createdProduct) {
+      set_transient('vindi_product_message', 'created', 60);
+    } else {
+      set_transient('vindi_product_message', 'error', 60);
+    }
+
     return array(
       'product' => $createdProduct,
       'plan' => $createdPlan,
@@ -306,6 +312,12 @@ class PlansController
         'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
         )
     );
+
+    if($updatedPlan && $updatedProduct) {
+      set_transient('vindi_product_message', 'updated', 60);
+    } else {
+      set_transient('vindi_product_message', 'error', 60);
+    }
 
     return array(
       'product' => $updatedProduct,
