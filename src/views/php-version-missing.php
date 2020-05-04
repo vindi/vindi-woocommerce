@@ -6,12 +6,12 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-$message = sprintf(esc_html__('Vindi requires PHP version %s+, plugin is currently NOT RUNNING.', VINDI), VINDI_MININUM_PHP_VERSION);
+$message = sprintf(esc_html__('A Vindi precisa da versão %s+ do PHP. Por você não estar em uma versão mais recente, o plugin NÂO ESTÁ RODANDO atualmente.', VINDI), VINDI_MININUM_PHP_VERSION);
 ?>
 <div class="error">
 	<p>
     <strong>
-      <?php _e('ERROR', VINDI);?>
+      <?php _e('ERRO', VINDI);?>
     </strong>:
     <?php echo $message; ?>
     </p>

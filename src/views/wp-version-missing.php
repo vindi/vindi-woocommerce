@@ -7,12 +7,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$message = sprintf(esc_html__('Vindi requires WordPress version %s+. Because you are using an earlier version, the plugin is currently NOT RUNNING.', VINDI), VINDI_MININUM_WP_VERSION);
+$message = sprintf(esc_html__('A Vindi precisa da versão %s+ do WordPress. Por você não estar em uma versão mais recente, o plugin NÂO ESTÁ RODANDO atualmente.', VINDI), VINDI_MININUM_WP_VERSION);
 ?>
 <div class="error">
 	<p>
     <strong>
-      <?php _e('ERROR', VINDI);?>
+      <?php _e('ERRO', VINDI);?>
     </strong>:
     <?php echo $message; ?>
     </p>
