@@ -3,6 +3,7 @@
 include_once VINDI_PATH . 'src/services/VindiHelpers.php';
 require_once VINDI_PATH . 'src/routes/RoutesApi.php';
 require_once VINDI_PATH . 'src/utils/PaymentGateway.php';
+require_once VINDI_PATH . 'src/controllers/index.php';
 include_once VINDI_PATH . 'src/includes/gateways/CreditPayment.php';
 
 include_once VINDI_PATH . 'src/includes/admin/Settings.php';
@@ -58,8 +59,9 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
     // Act: Call get_level3_data_from_order().
 
     $settings = new VindiSettings();
+    $controllers = new VindiControllers($settings);
 
-    $gateway = new VindiCreditGateway($settings);
+    $gateway = new VindiCreditGateway($settings, $controllers);
     $result = $gateway->get_level3_data_from_order($order);
 
 
@@ -134,8 +136,9 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
     $store_postcode = '1100';
 
     $settings = new VindiSettings();
+    $controllers = new VindiControllers($settings);
 
-    $gateway = new VindiCreditGateway($settings);
+    $gateway = new VindiCreditGateway($settings, $controllers);
     $result = $gateway->get_level3_data_from_order($order);
 
     // Assert.

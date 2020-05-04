@@ -17,8 +17,8 @@ class VindiRoutes
   function __construct(VindiSettings $vindi_settings)
   {
 
-    $this->settings = $vindi_settings;
-    $this->api = $this->settings->api;
+    $this->vindi_settings = $vindi_settings;
+    $this->api = $this->vindi_settings->api;
   }
 
   /**
@@ -36,8 +36,9 @@ class VindiRoutes
       $product_id
     ), 'GET');
 
+    $productExists = isset($response['product']['id']) ? $response['product'] : false;
 
-    return $response['product'];
+    return $productExists;
   }
 
 

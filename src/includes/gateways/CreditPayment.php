@@ -20,11 +20,16 @@ class VindiCreditGateway extends VindiPaymentGateway
   public $vindi_settings;
 
   /**
+   * @var VindiControllers
+   */
+  public $controllers;
+
+  /**
    * @var int
    */
   private $max_installments = 12;
  
-  public function __construct(VindiSettings $vindi_settings)
+  public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
   {
 
     global $woocommerce;
@@ -58,7 +63,7 @@ class VindiCreditGateway extends VindiPaymentGateway
     $this->installments = $this->get_option('installments');
     $this->verify_method = $this->get_option('verify_method');
 
-    parent::__construct($vindi_settings);
+    parent::__construct($vindi_settings, $controllers);
   }
 
   /**

@@ -15,10 +15,20 @@ if (!defined('ABSPATH')) {
 class VindiBankSlipGateway extends VindiPaymentGateway
 {
   /**
+   * @var VindiSettings
+   */
+  public $vindi_settings;
+
+  /**
+   * @var VindiControllers
+   */
+  public $controllers;
+
+  /**
    * Constructor for the gateway.
    */
 
-  public function __construct(VindiSettings $vindi_settings)
+  public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
   {
     $this->id                   = 'vindi-bank-slip';
     $this->icon                 = apply_filters('vindi_woocommerce_bank_slip_icon', '');
@@ -50,7 +60,7 @@ class VindiBankSlipGateway extends VindiPaymentGateway
     add_action('woocommerce_view_order', array(&$this, 'show_bank_slip_download'), -10, 1);
     add_action('woocommerce_thankyou_' . $this->id, array(&$this, 'thank_you_page'));
 
-    parent::__construct($vindi_settings);
+    parent::__construct($vindi_settings, $controllers);
     $this->title = $this->get_option('title');
     $this->description = $this->get_option('description');
     $this->enabled = $this->get_option('enabled');

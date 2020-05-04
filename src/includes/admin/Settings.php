@@ -288,20 +288,6 @@ class VindiSettings extends WC_Settings_API
   }
 
   /**
-   * Add the gateway to WooCommerce.
-   * @param  array $methods WooCommerce payment methods.
-   * @return array Payment methods with Vindi.
-   */
-  public function add_gateway($methods)
-  {
-
-    $methods[] = new VindiCreditGateway($this);
-    $methods[] = new VindiBankSlipGateway($this);
-
-    return $methods;
-  }
-
-  /**
    * Get Vindi Shipping and Tax config
    * @return string
    */
