@@ -19,6 +19,10 @@ class VindiSubscriptionStatusHandler
     add_action('woocommerce_subscription_status_updated',array(
       &$this, 'filter_pre_status'
     ), 1, 3);
+
+    add_action('woocommerce_order_fully_refunded', array(
+      &$this, 'refunded_status'
+    ));
   }
 
   /**
@@ -92,5 +96,34 @@ class VindiSubscriptionStatusHandler
     ? $wc_subscription->get_id()
     : $wc_subscription->id;
     return end(get_post_meta($subscription_id, 'vindi_wc_subscription_id'));
+  }
+
+  /**
+   * @param WC_Subscription $wc_subscription
+   */
+  public function refunded_status($order)
+  {
+    if (!is_object($order)) {
+      $order = wc_get_order($order);
+    }
+  
+    if (wcs_order_contains_subscription($order, array('parent', 'renewal'))) {
+      $subscriptions = wcs_get_subscriptions_for_order(wcs_get_objects_property($order, 'id'), array('order_type' => array('parent', 'renewal')));
+      foreach ($subscriptions as $subscription) {
+        $latest_order = $subscription->get_last_order();
+  
+        if (wcs_get_objects_property($order, 'id') == $latest_order && $subscription->can_be_updated_to('cancelled')) {
+          // translators: $1: opening link tag, $2: order number, $3: closing link tag
+          $subscription->update_status(
+            'cancelled',
+            wp_kses(sprintf(
+              __('A assinatura foi cancelada pelo pedido reembolsado %1$s#%2$s%3$s.', VINDI),
+              sprintf('<a href="%s">', esc_url(wcs_get_edit_post_link(wcs_get_objects_property($order, 'id')))),
+              $order->get_order_number(),
+              '</a>'
+            ), array('a' => array('href' => true))));
+        }
+      }
+    }
   }
 }

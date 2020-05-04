@@ -175,20 +175,6 @@ class VindiCreditGateway extends VindiPaymentGateway
     ));
   }
 
-  public function process_payment($order_id)
-  {
-
-    print_r($order_id);
-
-    global $woocommerce;
-
-    // we need it to get any order detailes
-    $order = wc_get_order($order_id);
-    $this->logger->log(sprintf("[Order #%s]: iniciando processamento", $order_id));
-    $payment = new VindiPaymentProcessor($order, $this, $this->vindi_settings);
-    return $payment->process();
-  }
-
   public function verify_user_payment_profile()
   {
     $old_payment_profile = (int) filter_input(
