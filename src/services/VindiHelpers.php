@@ -89,4 +89,33 @@ class VindiHelpers
 
     $product->save();
   }
+
+  /**
+   * Get a subscription that has an item equals as an order item, if any.
+   *
+   * @since 1.0.0
+   * @param WC_Order $order A WC_Order object
+   * @param int $product_id The product/post ID of a subscription
+   * @return null
+   */
+   public static function get_matching_subscription($order, $order_item)
+   {
+		$subscriptions = wcs_get_subscriptions_for_order($order, array('order_type' => 'parent'));
+    $matching_subscription = null;
+    foreach ($subscriptions as $subscription) {
+      foreach ($subscription->get_items() as $subscription_item) {
+        $line_item = wcs_find_matching_line_item($order, $subscription_item, $match_type = 'match_attributes');
+        if($order_item === $line_item) {
+          $matching_subscription = $subscription;
+          break 2;
+        }
+      }
+    }
+
+		if (null === $matching_subscription && !empty($subscriptions)) {
+			$matching_subscription = array_pop($subscriptions);
+		}
+
+		return $matching_subscription;
+	}
 };
