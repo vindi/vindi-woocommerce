@@ -101,12 +101,15 @@ class VindiWebhooks
     WC_Subscriptions_Manager::prepare_renewal($subscription->id);
     $order_id = $subscription->get_last_order();
     $order = $this->find_order_by_id($order_id);
-    add_post_meta($order->id, 'vindi_cycle', $renew_infos['cycle']);
-    add_post_meta($order->id, 'vindi_bill_id', $renew_infos['bill_id']);
-    add_post_meta($order->id, 'vindi_subscription_id', $renew_infos['vindi_subscription_id']);
-    if (!empty($renew_infos['print_url'])) {
-      add_post_meta( $order->id, 'vindi_bank_slip_download_url', $renew_infos['print_url'] );
-    }
+    $subscription_id = $renew_infos['vindi_subscription_id'];
+    $order_post_meta = get_post_meta($order->id, 'vindi_order', true) || [];
+    $order_post_meta[$subscription_id]['cycle'] = $renew_infos['cycle'];
+    $order_post_meta[$subscription_id]['bill'] = array(
+      'id' => $renew_infos['bill_id'],
+      'status' => $renew_infos['bill_status'],
+      'bank_slip_url' => $renew_infos['bill_print_url'],
+    );
+    update_post_meta($order->id, 'vindi_order', $order_post_meta);
 
     $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
 
@@ -128,8 +131,9 @@ class VindiWebhooks
       'wc_subscription_id' => $data->bill->subscription->code,
       'vindi_subscription_id' => $data->bill->subscription->id,
       'cycle' => $data->bill->period->cycle,
+      'bill_status' => $data->bill->status,
       'bill_id' => $data->bill->id,
-      'print_url' => $data->bill->charges[0]->print_url
+      'bill_print_url' => $data->bill->charges[0]->print_url
     ];
 
     if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'],
@@ -221,11 +225,10 @@ class VindiWebhooks
       return;
     }
 
-    // TODO check woocommerce memberships
-    /* if ($this->vindi_settings->dependency->wc_memberships_are_activated()) {
+    if ($this->vindi_settings->dependencies->is_wc_memberships_active()) {
       $subscription->update_status('pending-cancel');
       return;
-    } */
+    }
     $subscription->update_status('cancelled');
   }
 
@@ -324,13 +327,10 @@ class VindiWebhooks
   {
     $query = $this->query_order_by_metas(array(
       array(
-        'key' => 'vindi_cycle',
-        'value' => $cycle,
+        'key' => 'vindi_order',
+        'value' => '{i:'.$subscription_id.';a:2:{s:5:"cycle";i:'.$cycle.';',
+        'compare' => 'LIKE'
       ),
-      array(
-        'key' => 'vindi_subscription_id',
-        'value' => $subscription_id,
-      )
     ));
 
     if(false === $query->have_posts())
@@ -349,13 +349,10 @@ class VindiWebhooks
   {
     $query = $this->query_order_by_metas(array(
       array(
-        'key' => 'vindi_cycle',
-        'value' => $cycle,
+        'key' => 'vindi_order',
+        'value' => '{i:'.$subscription_id.';a:2:{s:5:"cycle";i:'.$cycle.';',
+        'compare' => 'LIKE'
       ),
-      array(
-        'key' => 'vindi_subscription_id',
-        'value' => $subscription_id,
-      )
     ));
 
     return $query->have_posts();
