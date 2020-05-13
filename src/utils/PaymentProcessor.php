@@ -47,6 +47,14 @@ class VindiPaymentProcessor
    */
   private $controllers;
 
+  /**
+   * Payment Processor contructor.
+   *
+   * @param WC_Order $order The order to be processed
+   * @param VindiPaymentGateway $gateway Current payment gateway
+   * @param VindiSettings $vindi_settings The VindiSettings instance
+   * @param VindiControllers $controllers VindiControllers instance
+   */
   function __construct(WC_Order $order, VindiPaymentGateway $gateway, VindiSettings $vindi_settings, VindiControllers $controllers)
   {
     $this->order = $order;
@@ -58,8 +66,9 @@ class VindiPaymentProcessor
   }
 
   /**
-   * Validate order to chose payment type.
-   * @return int order type.
+   * Check if the order contains any subscription.
+   *
+   * @return int Order type
    */
   public function get_order_type()
   {
@@ -72,8 +81,9 @@ class VindiPaymentProcessor
 
 
   /**
-   * Find or Create a Customer at Vindi for the given credentials.
-   * @return array|bool
+   * Find or create a customer within Vindi using the given credentials.
+   *
+   * @return array Vindi customer array
    */
   public function get_customer()
   {
@@ -96,9 +106,9 @@ class VindiPaymentProcessor
   }
 
   /**
-   * Build payment type for credit card.
+   * Build the credit card payment type.
    *
-   * @param int $customer_id
+   * @param int $customer_id Vindi customer id
    *
    * @return array
    */
@@ -118,7 +128,8 @@ class VindiPaymentProcessor
   }
 
   /**
-   * Check if payment is of type "Credit Card"
+   * Check if payment method is "Credit Card"
+   *
    * @return bool
    */
   public function is_cc()
@@ -127,7 +138,8 @@ class VindiPaymentProcessor
   }
 
   /**
-   * Check if payment is of type "bank_slip"
+   * Check if payment method is "Bank Slip"
+   *
    * @return bool
    */
   public function is_bank_slip()
@@ -136,7 +148,9 @@ class VindiPaymentProcessor
   }
 
   /**
-   * @return string
+   * Retrieve payment method code
+   *
+   * @return string Vindi payment method code
    */
   public function payment_method_code()
   {
@@ -144,10 +158,14 @@ class VindiPaymentProcessor
   }
 
   /**
-   * @param string $message
-   * @param bool   $throw_exception
+   * Interrupt the payment process and throw an error if needed.
+   * Log the message, add it to the order note and send an alert to the user
    *
-   * @return bool
+   * @param string $message The error message
+   * @param bool $throw_exception When true an exception is thrown
+   *
+   * @return bool Always returns false
+   *
    * @throws Exception
    */
   public function abort($message, $throw_exception = false)
@@ -161,14 +179,16 @@ class VindiPaymentProcessor
   }
 
   /**
+   * Check if the order type is valid and process it.
+   *
    * @return array|void
+   *
    * @throws Exception
    */
   public function process()
   {
     switch ($orderType = $this->get_order_type()) {
       case static ::ORDER_TYPE_SINGLE:
-        return $this->process_order();
       case static ::ORDER_TYPE_SUBSCRIPTION:
         return $this->process_order();
       case static ::ORDER_TYPE_INVALID:
@@ -178,7 +198,10 @@ class VindiPaymentProcessor
   }
 
   /**
+   * Process current order.
+   *
    * @return array
+   *
    * @throws Exception
    */
   public function process_order()
@@ -208,8 +231,7 @@ class VindiPaymentProcessor
       
       $bill_products[] = $order_item;
     }
-    // return false;
-    
+
     if(!empty($bill_products)) {
       $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
       $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
@@ -230,7 +252,9 @@ class VindiPaymentProcessor
   
 
   /**
-   * @param int $customer_id
+   * Create a payment profile for the customer
+   * 
+   * @param int $customer_id Vindi customer id
    *
    * @throws Exception
    */
@@ -251,7 +275,9 @@ class VindiPaymentProcessor
   }
 
   /**
-   * @param int $payment_profile_id
+   * Check if the payment profile is valid
+   *
+   * @param int $payment_profile_id The customer's payment profile id
    *
    * @throws Exception
    */
@@ -262,10 +288,13 @@ class VindiPaymentProcessor
   }
 
   /**
-   * @param array $item
+   * Get the subscription/product expiration time in months
    *
+   * @param WC_Order_Item_Product $item
+   *
+   * @return int
    */
-  private function return_cycle_from_product_type($item)
+  private function get_cycle_from_product_type($item)
   {
     $product = method_exists($item, 'get_product') ? $item->get_product() : false;
     if ($item['type'] == 'shipping' || $item['type'] == 'tax') {
@@ -279,7 +308,11 @@ class VindiPaymentProcessor
   }
 
   /**
-   * @param WC_Product $item
+   * Check if the product needs to be shipped only once
+   *
+   * @param WC_Product $product Woocommerce product
+   *
+   * @return bool
    */
   private function is_one_time_shipping($product)
   {
@@ -334,6 +367,15 @@ class VindiPaymentProcessor
     return $product_items;
   }
 
+  /**
+   * Retrives the product(s) information. Adds the vindi_id, the type and the price to it.
+   *
+   * @param string $order_type ('subscription' or 'bill')
+   * @param WC_Order_Item_Product|WC_Order_Item_Product[] $order_items. Subscriptions will pass only one order_item and
+   * Bills will pass an array with all the products to be processed
+   *
+   * @return array
+   */
   protected function build_product_from_order_item($order_type, $order_items)
   {
     if('bill' === $order_type) {
@@ -353,6 +395,14 @@ class VindiPaymentProcessor
     return $order_items;
   }
 
+  /**
+   * Create the shipping item to be added to the bill.
+   *
+   * @param WC_Order_Item_Product[] $order_items. Array with all items to add
+   * the respective delivered value // TODO.
+   *
+   * @return array
+   */
   protected function build_shipping_item($order_items)
   {
     $shipping_item = [];
@@ -375,6 +425,13 @@ class VindiPaymentProcessor
     return $shipping_item;
   }
 
+  /**
+   * Create the tax item.
+   *
+   * @param WC_Order_Item_Product[] $order_items. Products to calculate the tax amount
+   *
+   * @return array
+   */
   protected function build_tax_item($order_items)
   {
     $taxItem = [];
@@ -405,6 +462,14 @@ class VindiPaymentProcessor
     return $taxItem;
   }
 
+  /**
+   * Create discount item for a bill.
+   *
+   * @param WC_Order_Item_Product[] $order_items. All the products to calculate
+   * the discount amount
+   *
+   * @return array
+   */
   protected function build_discount_item_for_bill($order_items)
   {
     $discount_item = [];
@@ -429,6 +494,14 @@ class VindiPaymentProcessor
     return $discount_item;
   }
 
+  /**
+   * Create bill product item to send to the Vindi API.
+   *
+   * @param WC_Order_Item_Product $order_item. The product to be converted to
+   * the correct product format.
+   *
+   * @return array
+   */
   protected function build_product_items_for_bill($order_item)
   {
     $item = array(
@@ -450,9 +523,17 @@ class VindiPaymentProcessor
     return $item;
   }
 
+  /**
+   * Create subscription product item to send to the Vindi API.
+   *
+   * @param WC_Order_Item_Product $order_item. The product to be converted to
+   * the correct product format.
+   *
+   * @return array
+   */
   protected function build_product_items_for_subscription($order_item)
   {
-    $plan_cycles = $this->return_cycle_from_product_type($order_item);
+    $plan_cycles = $this->get_cycle_from_product_type($order_item);
     $product_item = array(
       'product_id' => $order_item['vindi_id'],
       'quantity' => $order_item['qty'],
@@ -476,6 +557,14 @@ class VindiPaymentProcessor
     return $product_item;
   }
 
+  /**
+   * Verify that the coupon can be applied to the current product.
+   *
+   * @param WC_Order_Item_Product $order_item. The product.
+   * @param WC_Coupon $coupon. The coupon.
+   *
+   * @return bool
+   */
   protected function coupon_supports_product($order_item, $coupon)
   {
     $product_id = $order_item->get_product()->id;
@@ -498,6 +587,14 @@ class VindiPaymentProcessor
     return true;
   }
 
+  /**
+   * Create a discount item for a subscription.
+   *
+   * @param WC_Coupon $coupon. The coupon to be added.
+   * @param int $plan_cycles. The amount of cycles that the subscription has.
+   *
+   * @return array
+   */
   protected function build_discount_item_for_subscription($coupon, $plan_cycles = 0) {
     $discount_item = [];
     
@@ -520,6 +617,14 @@ class VindiPaymentProcessor
     return $discount_item;
   }
 
+  /**
+   * Configure the discount cycles that the coupon will be used.
+   *
+   * @param WC_Coupon $coupon. The coupon to be added.
+   * @param int $plan_cycles. The amount of cycles that the subscription has.
+   *
+   * @return int
+   */
   protected function config_discount_cycles($coupon, $plan_cycles = 0)
   {
     $get_plan_length =
@@ -545,6 +650,10 @@ class VindiPaymentProcessor
   }
 
   /**
+   * Retrieve number of installments from order.
+   * If the order contains subscriptions the return will be 1,
+   * else it will be the amount selected by the user during checkout.
+   *
    * @return int
    */
   protected function installments()
@@ -556,6 +665,9 @@ class VindiPaymentProcessor
 
   /**
    * Retrieve Plan for Vindi Subscription.
+   *
+   * @param WC_Order_Item_Product $order_item
+   *
    * @return int|bool
    */
   public function get_plan_from_order_item($order_item)
@@ -577,8 +689,10 @@ class VindiPaymentProcessor
 
 
   /**
-   * @param $customer_id
-   * @param WC_Order_item_product $order_item
+   * Create a subscription within Vindi
+   *
+   * @param int $customer_id ID of the customer that placed the order
+   * @param WC_Order_item_product $order_item Item to add to the subscription.
    *
    * @return array
    * @throws Exception
@@ -614,7 +728,10 @@ class VindiPaymentProcessor
   }
 
   /**
-   * @param int $customer_id
+   * Create a bill within Vindi
+   *
+   * @param int $customer_id ID of the customer that placed the order
+   * @param WC_Order_item_product[] $order_items Array with items to add to the bill.
    *
    * @return int
    * @throws Exception
@@ -641,6 +758,13 @@ class VindiPaymentProcessor
      return $bill;
    }
 
+  /**
+   * Create bill meta array to add to the order
+   *
+   * @param array $bill The bill returned from Vindi API
+   *
+   * @return array
+   */
   protected function create_bill_meta_for_order($bill)
   {
     $bill_meta['id'] = $bill['id'];
@@ -651,6 +775,13 @@ class VindiPaymentProcessor
     return $bill_meta;
   }
 
+  /**
+   * Cancel order if vindi rejects the payment
+   *
+   * @param array $bill The bill returned from Vindi API
+   *
+   * @return bool|string
+   */
   protected function cancel_if_denied_bill_status($bill)
   {
     if (empty($bill['charges'])) {
@@ -669,6 +800,10 @@ class VindiPaymentProcessor
   }
 
   /**
+   * Finish the payment
+   *
+   * @param array $bills Order bills returned from Vindi API
+   *
    * @return array
    */
   protected function finish_payment($bills)
@@ -701,8 +836,12 @@ class VindiPaymentProcessor
   }
 
   /**
-   * @param array $product
+   * Find or create the product within Vindi
+   * and add the vindi id to the product array
    *
+   * @param WC_Order_Item_Product $order_item
+   *
+   * @return WC_Product Woocommerce product array with a vindi id
    */
   protected function get_product($order_item)
   {
@@ -725,11 +864,23 @@ class VindiPaymentProcessor
     return $product;
   }
 
+  /**
+   * Check if the product is variable
+   *
+   * @param WC_Product $product
+   * @return bool
+   */
   protected function is_variable($product)
   {
     return (boolean)preg_match('/variation/', $product->get_type());
   }
 
+  /**
+   * Check if the product is a subscription
+   *
+   * @param WC_Product $product
+   * @return bool
+   */
   protected function is_subscription_type(WC_Product $product)
   {
     return (boolean)preg_match('/subscription/', $product->get_type());
