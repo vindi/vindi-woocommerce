@@ -222,6 +222,7 @@ class VindiPaymentProcessor
         array_push($subscriptions_ids, $subscription_id);
         $wc_subscription_id = $subscription['wc_id'];
         $subscription_bill = $subscription['bill'];
+        $order_post_meta[$subscription_id]['product'] = $product->name;
         $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
         $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
         if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
@@ -242,6 +243,7 @@ class VindiPaymentProcessor
 
     if(!empty($bill_products)) {
       $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
+      $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
       $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
       if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
         $this->order->update_status('cancelled', __($message, VINDI));
