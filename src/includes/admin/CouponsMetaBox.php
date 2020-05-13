@@ -18,23 +18,23 @@ class CouponsMetaBox {
   {
 		woocommerce_wp_select(
 			array(
-				'id'      => 'cicle_count',
-				'label'   => __( 'Discount coupon cicle count', 'woocommerce' ),
-				'value'   => get_post_meta($coupon->get_id(), 'cicle_count')[0],
+				'id'      => 'cycle_count',
+				'label'   => __( 'Número de ciclos do cupom', VINDI ),
+				'value'   => get_post_meta($coupon->get_id(), 'cycle_count')[0],
 				'options' => array(
-					'0'  => 'All cicles',
-					'1'  => '1 cicle',
-					'2'  => '2 cicles',
-					'3'  => '3 cicles',
-					'4'  => '4 cicles',
-					'5'  => '5 cicles',
-					'6'  => '6 cicles',
-					'7'  => '7 cicles',
-					'8'  => '8 cicles',
-					'9'  => '9 cicles',
-					'10' => '10 cicles',
-					'11' => '11 cicles',
-					'12' => '12 cicles',
+					'0'  => 'Todos os ciclos',
+					'1'  => '1 ciclo',
+					'2'  => '2 ciclos',
+					'3'  => '3 ciclos',
+					'4'  => '4 ciclos',
+					'5'  => '5 ciclos',
+					'6'  => '6 ciclos',
+					'7'  => '7 ciclos',
+					'8'  => '8 ciclos',
+					'9'  => '9 ciclos',
+					'10' => '10 ciclos',
+					'11' => '11 ciclos',
+					'12' => '12 ciclos',
 				),
 			)
 		);
@@ -53,7 +53,7 @@ class CouponsMetaBox {
 			return;
 		}
 		$coupon = new WC_Coupon( $post_id );
-		$coupon->update_meta_data('cicle_count', intval($_POST['cicle_count']));
+		$coupon->update_meta_data('cycle_count', intval($_POST['cycle_count']));
 		$coupon->save();
   }
 
@@ -69,6 +69,8 @@ class CouponsMetaBox {
     return array_diff(
 			$discount_types,
 			array(
+				'sign_up_fee'         => __( 'Sign Up Fee Discount', 'woocommerce-subscriptions' ),
+				'sign_up_fee_percent' => __( 'Sign Up Fee % Discount', 'woocommerce-subscriptions' ),
 				'recurring_fee'       => __( 'Recurring Product Discount', 'woocommerce-subscriptions' ),
 				'recurring_percent'   => __( 'Recurring Product % Discount', 'woocommerce-subscriptions' ),
 			)
