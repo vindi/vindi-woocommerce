@@ -119,16 +119,19 @@ class VindiBankSlipGateway extends VindiPaymentGateway
 
   public function thank_you_page($order_id)
   {
-    if ($download_url = get_post_meta($order_id, 'vindi_bank_slip_download_url', true)) {
-      $this->vindi_settings->get_template('bankslip-download.html.php', compact('download_url'));
+    $order = wc_get_order($order_id);
+    if ($order->get_payment_method() == 'vindi-bank-slip') {
+      $vindi_order = get_post_meta($order_id, 'vindi_order', true);
+      $this->vindi_settings->get_template('bankslip-download.html.php', compact('vindi_order'));
     }
   }
 
   public function show_bank_slip_download($order_id) {
     $order = wc_get_order($order_id);
-    if ($download_url = get_post_meta($order_id, 'vindi_bank_slip_download_url', true)) {
+    if ($order->get_payment_method() == 'vindi-bank-slip') {
+      $vindi_order = get_post_meta($order_id, 'vindi_order', true);
       if(!$order->is_paid() && !$order->has_status('cancelled')) {
-        $this->vindi_settings->get_template('bankslip-download.html.php', compact('download_url'));
+        $this->vindi_settings->get_template('bankslip-download.html.php', compact('vindi_order'));
       }
     }
   }
