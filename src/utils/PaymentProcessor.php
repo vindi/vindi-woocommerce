@@ -207,25 +207,33 @@ class VindiPaymentProcessor
   public function process_order()
   {
     $customer = $this->get_customer();
-    $wc_subscriptions = wcs_get_subscriptions_for_order($this->order);
 
     $order_items = $this->order->get_items();
     $bills = [];
     $order_post_meta = [];
     $bill_products = [];
+    $subscriptions_ids = [];
     foreach ($order_items as $order_item) {
       $product = $order_item->get_product();
 
       if($this->is_subscription_type($product)) {
         $subscription = $this->create_subscription($customer['id'], $order_item);
         $subscription_id = $subscription['id'];
-        $subscription_wc_id = $subscription['wc_id'];
+        array_push($subscriptions_ids, $subscription_id);
+        $wc_subscription_id = $subscription['wc_id'];
         $subscription_bill = $subscription['bill'];
         $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
         $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
+        if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
+          $wc_subscription = wcs_get_subscription($wc_subscription_id);
+          $wc_subscription->update_status('cancelled', __($message, VINDI));
+          $this->order->update_status('cancelled', __($message, VINDI));
+          $this->suspend_subscriptions($subscriptions_ids);
+          $this->abort(__($message, VINDI) , true);
+        }
         $bills[] = $subscription['bill'];
         
-        update_post_meta($subscription_wc_id, 'vindi_subscription_id', $subscription_id);
+        update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
         continue;
       }
       
@@ -235,6 +243,11 @@ class VindiPaymentProcessor
     if(!empty($bill_products)) {
       $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
       $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
+      if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
+        $this->order->update_status('cancelled', __($message, VINDI));
+        $this->suspend_subscriptions($subscriptions_ids);
+        $this->abort(__($message, VINDI) , true);
+      }
 
       $bills[] = $single_payment_bill;
     }
@@ -776,7 +789,7 @@ class VindiPaymentProcessor
   }
 
   /**
-   * Cancel order if vindi rejects the payment
+   * Check if bill was rejected by Vindi
    *
    * @param array $bill The bill returned from Vindi API
    *
@@ -797,6 +810,18 @@ class VindiPaymentProcessor
     }
 
     return false;
+  }
+
+  /**
+   * Suspend subscription within Vindi
+   *
+   * @param array $subscriptions_ids Array with the IDs of subscriptions that were processed
+   */
+  protected function suspend_subscriptions($subscriptions_ids)
+  {
+    foreach ($subscriptions_ids as $subscription_id) {
+      $this->routes->suspendSubscription($subscription_id, true);
+    }
   }
 
   /**
