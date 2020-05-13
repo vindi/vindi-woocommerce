@@ -7,7 +7,7 @@
 			<?php _e('Após recebermos a confirmação do pagamento, seu pedido será processado.', VINDI); ?>
 		</span>
 		<br><br>
-		<?php foreach ($vindi_order as $key => $item): ?>
+		<?php foreach ($vindi_order as $item): ?>
 			<span>
 				<a class="button" href="<?php echo esc_url($item['bill']['bank_slip_url']); ?>" target="_blank">
 					<?php _e('Baixar boleto', VINDI ); ?>
