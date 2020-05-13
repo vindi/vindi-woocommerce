@@ -317,7 +317,7 @@ class VindiPaymentProcessor
     $order_items[] = $this->build_tax_item($order_items);
 
     if ('bill' === $order_type) {
-      $order_items[] = $this->build_discount_item_for_bill();
+      $order_items[] = $this->build_discount_item_for_bill($order_items);
     }
 
     foreach ($order_items as $order_item) {
@@ -405,12 +405,16 @@ class VindiPaymentProcessor
     return $taxItem;
   }
 
-  protected function build_discount_item_for_bill()
+  protected function build_discount_item_for_bill($order_items)
   {
     $discount_item = [];
-    $total_discount = $this->order->get_total_discount();
-
-    if (empty($total_discount)) {
+    $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
+    $bill_total_discount = 0;
+    foreach ($order_items as $order_item) {
+      $bill_total_discount += (float) ($order_item['subtotal'] - $order_item['total']);
+    }
+    
+    if (empty($bill_total_discount)) {
       return $discount_item;
     }
 
@@ -418,7 +422,7 @@ class VindiPaymentProcessor
     $discount_item = array(
       'type' => 'discount',
       'vindi_id' => $item['id'],
-      'price' => (float)$total_discount * -1,
+      'price' => (float)$bill_total_discount * -1,
       'qty' => 1
     );
 
@@ -448,50 +452,95 @@ class VindiPaymentProcessor
 
   protected function build_product_items_for_subscription($order_item)
   {
+    $plan_cycles = $this->return_cycle_from_product_type($order_item);
     $product_item = array(
       'product_id' => $order_item['vindi_id'],
       'quantity' => $order_item['qty'],
-      'cycles' => $this->return_cycle_from_product_type($order_item),
+      'cycles' => $plan_cycles,
       'pricing_schema' => array(
         'price' => $order_item['price'],
         'schema_type' => 'per_unit'
       )
     );
-    // TODO Aplicar todos os cupons encima do valor do produto
+
     if (!empty($this->order->get_total_discount()) && $order_item['type'] == 'line_item') {
-      $product_item['discounts'] = array(
-        array(
-          'discount_type' => 'percentage',
-          'percentage' => ($this->order->get_total_discount() / $this->order->get_subtotal()) * 100,
-          'cycles' => $this->config_discount_cycles()
-        )
-      );
+      $product_item['discounts'] = [];
+
+      $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
+      foreach ($coupons as $coupon) {
+        if($this->coupon_supports_product($order_item, $coupon)) {
+          $product_item['discounts'][] = $this->build_discount_item_for_subscription($coupon, $plan_cycles);
+        }
+      }
     }
     return $product_item;
   }
 
-  protected function config_discount_cycles()
+  protected function coupon_supports_product($order_item, $coupon)
+  {
+    $product_id = $order_item->get_product()->id;
+    $included_products = $coupon->get_product_ids();
+    $excluded_products = $coupon->get_excluded_product_ids();
+
+    if(!empty($excluded_products)) {
+      if(in_array($product_id, $excluded_products)) {
+        // The coupon doesn't support the current product
+        return false;
+      }
+    }
+    if(!empty($included_products)) {
+      if(!in_array($product_id, $included_products)) {
+        // The coupon doesn't support the current product
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  protected function build_discount_item_for_subscription($coupon, $plan_cycles = 0) {
+    $discount_item = [];
+    
+    $amount = $coupon->get_amount();
+    $discount_type = $coupon->get_discount_type();
+    if($discount_type == 'fixed_cart') {
+      $discount_item['discount_type'] = 'amount';
+      $discount_item['amount'] = $amount / $this->order->get_item_count();
+      $discount_item['cycles'] = 1;
+      return $discount_item;
+    } elseif(strpos($discount_type, 'fixed') !== false) {
+      $discount_item['discount_type'] = 'amount';
+      $discount_item['amount'] = $amount;
+    } elseif(strpos($discount_type, 'percent') !== false) {
+      $discount_item['discount_type'] = 'percentage';
+      $discount_item['percentage'] = $amount;
+    }
+    $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
+
+    return $discount_item;
+  }
+
+  protected function config_discount_cycles($coupon, $plan_cycles = 0)
   {
     $get_plan_length =
-    function ($cicle_count)
+    function ($cycle_count, $plan_cycles)
     {
-      if (!$cicle_count) {
-        return  null;
+      if (!$cycle_count) {
+        return null;
       }
-      $plan_cycles = (int) WC()->session->get('current_plan')['billing_cycles'];
 
       if ($plan_cycles) {
-        return min($plan_cycles, $cicle_count);
+        return min($plan_cycles, $cycle_count);
       }
-      return $cicle_count;
+      return $cycle_count;
     };
-    $cicle_count = get_post_meta(array_values($this->vindi_settings->woocommerce->cart->get_coupons())[0]->id, 'cicle_count', true);
+    $cycle_count = get_post_meta($coupon->id, 'cycle_count', true);
 
-    switch ($cicle_count) {
+    switch ($cycle_count) {
       case '0':
         return null;
       default:
-        return $get_plan_length($cicle_count);
+        return $get_plan_length($cycle_count, $plan_cycles);
     }
   }
 
@@ -520,7 +569,7 @@ class VindiPaymentProcessor
       }
     }
     else $vindi_plan = get_post_meta($product->id, 'vindi_plan_id', true);
-    
+
     if ($this->is_subscription_type($product) and !empty($vindi_plan)) return $vindi_plan;
 
     $this->abort(__('O produto selecionado não é uma assinatura.', VINDI) , true);
