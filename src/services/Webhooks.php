@@ -102,7 +102,12 @@ class VindiWebhooks
     $order_id = $subscription->get_last_order();
     $order = $this->find_order_by_id($order_id);
     $subscription_id = $renew_infos['vindi_subscription_id'];
-    $order_post_meta = get_post_meta($order->id, 'vindi_order', true) || [];
+    $order_post_meta = get_post_meta($order->id, 'vindi_order', true);
+
+    if(!is_array($order_post_meta)) {
+      throw new Exception('O pedido não possui as informações de pedido da vindi!');
+    }
+
     $order_post_meta[$subscription_id]['cycle'] = $renew_infos['cycle'];
     $order_post_meta[$subscription_id]['bill'] = array(
       'id' => $renew_infos['bill_id'],
@@ -353,15 +358,9 @@ class VindiWebhooks
 	private function find_order_by_subscription_and_cycle($subscription_id, $cycle)
   {
     $query = $this->query_order_by_metas(array(
-      'relation' => 'AND',
       array(
         'key' => 'vindi_order',
-        'value' => 'i:'.$subscription_id.';',
-        'compare' => 'LIKE'
-      ),
-      array(
-        'key' => 'vindi_order',
-        'value' => 's:5:"cycle";i:'.$cycle.';',
+        'value' => 'i:'.$subscription_id.';a:3:{s:5:"cycle";i:'.$cycle.';',
         'compare' => 'LIKE'
       ),
     ));
@@ -381,15 +380,9 @@ class VindiWebhooks
 	private function subscription_has_order_in_cycle($subscription_id, $cycle)
   {
     $query = $this->query_order_by_metas(array(
-      'relation' => 'AND',
       array(
         'key' => 'vindi_order',
-        'value' => 'i:'.$subscription_id.';',
-        'compare' => 'LIKE'
-      ),
-      array(
-        'key' => 'vindi_order',
-        'value' => 's:5:"cycle";i:'.$cycle.';',
+        'value' => 'i:'.$subscription_id.';a:3:{s:5:"cycle";i:'.$cycle.';',
         'compare' => 'LIKE'
       ),
     ));
