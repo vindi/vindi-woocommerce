@@ -85,6 +85,12 @@ class ProductController
 
     update_post_meta( $post_id, 'vindi_product_created', true );
 
+    if($createdProduct) {
+      set_transient('vindi_product_message', 'created', 60);
+    } else {
+      set_transient('vindi_product_message', 'error', 60);
+    }
+
     return $createdProduct;
   }
 
@@ -128,6 +134,12 @@ class ProductController
         )
       )
     );
+
+    if($updatedProduct) {
+      set_transient('vindi_product_message', 'updated', 60);
+    } else {
+      set_transient('vindi_product_message', 'error', 60);
+    }
 
     return $updatedProduct;
   }

@@ -101,10 +101,12 @@ class PlansController
           'installments' => 1,
           'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
           'plan_items' => array(
-            array(
-              'cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
+            ($product->get_meta('_subscription_length') == 0) ? array(
               'product_id' => $createdProduct['id']
-            ),
+            ) : array(
+              'cycles' => $product->get_meta('_subscription_length'),
+              'product_id' => $createdProduct['id']
+            )
           ),
         ));
 
@@ -154,10 +156,12 @@ class PlansController
       'installments' => 1,
       'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
       'plan_items' => array(
-        array(
+        ($product->get_meta('_subscription_length') == 0) ? array(
+          'product_id' => $createdProduct['id']
+        ) : array(
           'cycles' => $product->get_meta('_subscription_length'),
           'product_id' => $createdProduct['id']
-        ),
+        )
       ),
     ));
 
@@ -167,6 +171,12 @@ class PlansController
     update_post_meta( $post_id, 'vindi_plan_id', $createdPlan['id'] );
 
     update_post_meta( $post_id, 'vindi_product_created', true );
+
+    if($createdPlan && $createdProduct) {
+      set_transient('vindi_product_message', 'created', 60);
+    } else {
+      set_transient('vindi_product_message', 'error', 60);
+    }
 
     return array(
       'product' => $createdProduct,
@@ -224,7 +234,7 @@ class PlansController
         // Updates the product within the Vindi
         $updatedProduct = $this->routes->updateProduct(
           $vindi_product_id,
-            array(
+          array(
             'name' => PREFIX_PRODUCT . $data['name'],
             'code' => 'WC-' . $data['id'],
             'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
@@ -240,7 +250,7 @@ class PlansController
         // Updates the plan within the Vindi
         $updatedPlan = $this->routes->updatePlan(
           $vindi_plan_id,
-            array(
+          array(
             'name' => PREFIX_PLAN . $data['name'],
             'interval' => $product->get_meta('_subscription_period') . 's',
             'interval_count' => intval($product->get_meta('_subscription_period_interval')),
@@ -304,8 +314,14 @@ class PlansController
         'description' => $data['description'],
         'installments' => 1,
         'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
-        )
+      )
     );
+
+    if($updatedPlan && $updatedProduct) {
+      set_transient('vindi_product_message', 'updated', 60);
+    } else {
+      set_transient('vindi_product_message', 'error', 60);
+    }
 
     return array(
       'product' => $updatedProduct,

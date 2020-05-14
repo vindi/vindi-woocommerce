@@ -35,23 +35,10 @@ msgstr ""
 msgid "vindi"
 msgstr ""
 
-#: src/views/ecfb-missing.php:20 src/views/woocommerce-missing.php:20
-msgid "Vindi Disabled"
-msgstr ""
-
 #. Name of the plugin
 msgid "Vindi WooCommerce"
 msgstr ""
 
 #: src/views/woocommerce-missing.php:20
 msgid "WooCommerce"
-msgstr ""
-
-#: src/views/ecfb-missing.php:20
-msgid "WooCommerce Extra Checkout Fields for Brazil"
-msgstr ""
-
-#: src/views/ecfb-missing.php:20 src/views/woocommerce-missing.php:20
-#, php-format
-msgid "WooCommerce vindi requires the latest version of %s to work!"
 msgstr ""

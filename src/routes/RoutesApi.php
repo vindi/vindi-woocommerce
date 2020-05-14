@@ -12,7 +12,7 @@ class VindiRoutes
   /**
    * @var void
    */
-  protected $api;
+  public $api;
 
   function __construct(VindiSettings $vindi_settings)
   {

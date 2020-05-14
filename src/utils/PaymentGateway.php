@@ -294,7 +294,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
   
   private function find_order_last_charge($order)
   {
-    $bill_id = get_post_meta($order->id, 'vindi_wc_bill_id', true);
+    $bill_id = get_post_meta($order->id, 'vindi_bill_id', true);
     $bill = $this->routes->findBillById($bill_id);
 
     if(!$bill)
