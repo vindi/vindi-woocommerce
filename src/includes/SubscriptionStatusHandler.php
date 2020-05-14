@@ -43,10 +43,9 @@ class VindiSubscriptionStatusHandler
         $this->cancelled_status($wc_subscription);
         break;
       case 'pending-cancel':
-        // TODO: check memberships
-        // if (!$this->vindi_settings->dependency->wc_memberships_are_activated()) {
+        if (!$this->vindi_settings->dependencies->is_wc_memberships_active()) {
           $wc_subscription->update_status('cancelled');
-        // }
+        }
         break;
     }
   }
@@ -95,7 +94,7 @@ class VindiSubscriptionStatusHandler
     $subscription_id = method_exists($wc_subscription, 'get_id')
     ? $wc_subscription->get_id()
     : $wc_subscription->id;
-    return end(get_post_meta($subscription_id, 'vindi_wc_subscription_id'));
+    return get_post_meta($subscription_id, 'vindi_subscription_id', true);
   }
 
   /**

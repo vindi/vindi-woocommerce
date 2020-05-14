@@ -9,6 +9,11 @@ class VindiSettings extends WC_Settings_API
   public $woocommerce;
 
   /**
+   * @var VindiDependencies
+   **/
+  public $dependencies;
+
+  /**
    * @var string
    **/
   private $token;
@@ -57,6 +62,7 @@ class VindiSettings extends WC_Settings_API
     $this->api = new VindiApi($this->get_api_key(), $this->logger, $this->get_is_active_sandbox());
     $this->routes = new VindiRoutes($this);
     $this->woocommerce = $woocommerce;
+    $this->dependencies  = new VindiDependencies;
     $this->invalidToken = get_option( 'vindi_invalid_token', false );
     
     if (is_admin()) {
