@@ -234,6 +234,7 @@ class VindiPaymentProcessor
         }
         $bills[] = $subscription['bill'];
         
+        update_post_meta($this->order->id, 'vindi_order', $order_post_meta);
         update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
         continue;
       }

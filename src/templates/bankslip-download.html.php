@@ -8,13 +8,15 @@
 		</span>
 		<br><br>
 		<?php foreach ($vindi_order as $item): ?>
-			<span>
-				<a class="button" href="<?php echo esc_url($item['bill']['bank_slip_url']); ?>" target="_blank">
-					<?php _e('Baixar boleto', VINDI ); ?>
-				</a>
-				<?php echo sprintf(__('Clique no botão ao lado para baixar o boleto de: %s.', VINDI), $item['product']); ?>
-			</span>
-			<br/>
+			<?php if ($item['bill']['status'] != 'paid'): ?>
+				<span>
+					<a class="button" href="<?php echo esc_url($item['bill']['bank_slip_url']); ?>" target="_blank">
+						<?php _e('Baixar boleto', VINDI ); ?>
+					</a>
+					<?php echo sprintf(__('Clique no botão ao lado para baixar o boleto de: %s.', VINDI), $item['product']); ?>
+				</span>
+				<br/>
+			<?php endif; ?>
 		<?php endforeach; ?>
 	</div>
 <?php endif; ?>
