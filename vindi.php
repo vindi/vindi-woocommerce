@@ -27,6 +27,8 @@ require plugin_dir_path(__FILE__) . '/src/utils/DefinitionVariables.php';
 
 // Adding dependency validator
 require plugin_dir_path(__FILE__) . '/src/validators/DependenciesNotices.php';
+// Plugin dependencies
+require_once plugin_dir_path(__FILE__) . '/src/utils/Dependencies.php';
 
 
 // Comparing version of php and WP

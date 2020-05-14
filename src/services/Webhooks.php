@@ -146,15 +146,33 @@ class VindiWebhooks
    * Process bill_paid event from webhook
    * @param $data array
    */
+  // TODO Alterar modo de como o status do pedido é alterado
   private function bill_paid($data)
   {
     if(empty($data->bill->subscription)) {
       $order = $this->find_order_by_id($data->bill->code);
+
+      $vindi_order = get_post_meta($order->id, 'vindi_order', true) || [];
+      $vindi_order['single_payment']['bill']['status'] = 'paid';
+      update_post_meta($order->id, 'vindi_order', $vindi_order);
     } else {
       $vindi_subscription_id = $data->bill->subscription->id;
       $cycle = $data->bill->period->cycle;
       $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
+
+      $vindi_order = get_post_meta($order->id, 'vindi_order', true) || [];
+      $vindi_order[$vindi_subscription_id]['bill']['status'] = 'paid';
+      update_post_meta($order->id, 'vindi_order', $vindi_order);
     }
+
+    /* $all_bills_paid = false;
+    foreach ($vindi_order as $item) {
+      if ($item['bill']['status'] == 'paid') {
+        $all_bills_paid = true;
+      } else {
+        $all_bills_paid = false;
+      }
+    } */
 
     $new_status = $this->vindi_settings->get_return_status();
     $order->update_status($new_status, __('O Pagamento foi realizado com sucesso pela Vindi.',
@@ -326,9 +344,15 @@ class VindiWebhooks
 	private function find_order_by_subscription_and_cycle($subscription_id, $cycle)
   {
     $query = $this->query_order_by_metas(array(
+      'relation' => 'AND',
       array(
         'key' => 'vindi_order',
-        'value' => '{i:'.$subscription_id.';a:2:{s:5:"cycle";i:'.$cycle.';',
+        'value' => 'i:'.$subscription_id.';',
+        'compare' => 'LIKE'
+      ),
+      array(
+        'key' => 'vindi_order',
+        'value' => 's:5:"cycle";i:'.$cycle.';',
         'compare' => 'LIKE'
       ),
     ));
@@ -348,9 +372,15 @@ class VindiWebhooks
 	private function subscription_has_order_in_cycle($subscription_id, $cycle)
   {
     $query = $this->query_order_by_metas(array(
+      'relation' => 'AND',
       array(
         'key' => 'vindi_order',
-        'value' => '{i:'.$subscription_id.';a:2:{s:5:"cycle";i:'.$cycle.';',
+        'value' => 'i:'.$subscription_id.';',
+        'compare' => 'LIKE'
+      ),
+      array(
+        'key' => 'vindi_order',
+        'value' => 's:5:"cycle";i:'.$cycle.';',
         'compare' => 'LIKE'
       ),
     ));
