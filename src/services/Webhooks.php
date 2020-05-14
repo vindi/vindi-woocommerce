@@ -152,32 +152,41 @@ class VindiWebhooks
     if(empty($data->bill->subscription)) {
       $order = $this->find_order_by_id($data->bill->code);
 
-      $vindi_order = get_post_meta($order->id, 'vindi_order', true) || [];
-      $vindi_order['single_payment']['bill']['status'] = 'paid';
-      update_post_meta($order->id, 'vindi_order', $vindi_order);
+      $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+      if(is_array($vindi_order)) {
+        $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
+      } else {
+        return;
+      }
     } else {
       $vindi_subscription_id = $data->bill->subscription->id;
       $cycle = $data->bill->period->cycle;
       $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
 
-      $vindi_order = get_post_meta($order->id, 'vindi_order', true) || [];
-      $vindi_order[$vindi_subscription_id]['bill']['status'] = 'paid';
-      update_post_meta($order->id, 'vindi_order', $vindi_order);
+      $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+      if(is_array($vindi_order)) {
+        $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
+      } else {
+        return;
+      }
     }
+    update_post_meta($order->id, 'vindi_order', $vindi_order);
 
-    /* $all_bills_paid = false;
+    $all_bills_paid = [];
     foreach ($vindi_order as $item) {
       if ($item['bill']['status'] == 'paid') {
-        $all_bills_paid = true;
+        array_push($all_bills_paid, true);
       } else {
-        $all_bills_paid = false;
+        array_push($all_bills_paid, false);
       }
-    } */
+    }
 
-    $new_status = $this->vindi_settings->get_return_status();
-    $order->update_status($new_status, __('O Pagamento foi realizado com sucesso pela Vindi.',
-      'woocommerce-vindi'));
-    $this->update_next_payment($data);
+    if(!empty($all_bills_paid) && !in_array(false, $all_bills_paid)) {
+      $new_status = $this->vindi_settings->get_return_status();
+      $order->update_status($new_status, __('O Pagamento foi realizado com sucesso pela Vindi.',
+        'woocommerce-vindi'));
+      $this->update_next_payment($data);
+    }
   }
 
   /**

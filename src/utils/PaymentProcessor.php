@@ -234,7 +234,6 @@ class VindiPaymentProcessor
         }
         $bills[] = $subscription['bill'];
         
-        update_post_meta($this->order->id, 'vindi_order', $order_post_meta);
         update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
         continue;
       }
@@ -361,7 +360,7 @@ class VindiPaymentProcessor
     } else {
       $order_items[] = $this->build_product_from_order_item($order_type, $product);
     }
-    // TODO Buscar separadamente o valor de entrega, imposto e desconto
+    // TODO Buscar separadamente o valor de entrega
     $order_items[] = $this->build_shipping_item($order_items);
     $order_items[] = $this->build_tax_item($order_items);
 
