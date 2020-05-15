@@ -154,7 +154,5 @@ class VindiSubscriptionStatusHandler
     if($single_payment_bill_id) {
       $this->routes->deleteBill($single_payment_bill_id);
     }
-  
-    $this->vindi_settings->logger->log('Um pedido foi cancelado');
   }
 }
