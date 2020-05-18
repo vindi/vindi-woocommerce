@@ -38,7 +38,3 @@ msgstr ""
 #. Name of the plugin
 msgid "Vindi WooCommerce"
 msgstr ""
-
-#: src/views/woocommerce-missing.php:20
-msgid "WooCommerce"
-msgstr ""
