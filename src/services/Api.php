@@ -209,6 +209,9 @@ class VindiApi
         if ('unauthorized' == $error['id'] and 'authorization' == $error['parameter']) {
           delete_transient('vindi_plans');
           delete_transient('vindi_payment_methods');
+          $message = $this->get_error_message($error);
+          $this->last_error = $message;
+
           return $error['id'];
         }
       }

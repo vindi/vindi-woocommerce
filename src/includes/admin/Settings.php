@@ -46,7 +46,7 @@ class VindiSettings extends WC_Settings_API
   /**
    * @var boolean
    **/
-  private $invalidToken;
+  private $invalidApiKey;
 
   function __construct()
   {
@@ -63,7 +63,7 @@ class VindiSettings extends WC_Settings_API
     $this->routes = new VindiRoutes($this);
     $this->woocommerce = $woocommerce;
     $this->dependencies  = new VindiDependencies;
-    $this->invalidToken = get_option( 'vindi_invalid_token', false );
+    $this->invalidApiKey = get_option( 'vindi_invalid_api_key', false );
     
     if (is_admin()) {
       
@@ -266,30 +266,31 @@ class VindiSettings extends WC_Settings_API
 
   public function api_key_field()
   {
-    $api_key = $this->settings['api_key'];
+    $api_key = $this->get_api_key();
+    $this->api = new VindiApi($api_key, $this->logger, $this->get_is_active_sandbox());
 
     if (!$api_key) {
       return;
     }
     if ('unauthorized' === $this->api->test_api_key($api_key)) {
-      update_option('vindi_invalid_token', true);
-      $this->invalidToken = true;
+      update_option('vindi_invalid_api_key', true);
+      $this->invalidApiKey = true;
 
-      include_once VINDI_SRC . 'views/invalid-token.php';
+      include_once VINDI_SRC . 'views/invalid-api-key.php';
     } else {
-      update_option('vindi_invalid_token', false);
-      $this->invalidToken = false;
+      update_option('vindi_invalid_api_key', false);
+      $this->invalidApiKey = false;
     }
   }
 
   /**
-   * Check if invalidToken is true
-   * @return mixed includes the invalid-token view
+   * Check if invalidApiKey is true
+   * @return mixed includes the invalid-api-key view
    */
   public function is_api_key_valid()
   {
-    if($this->invalidToken) {
-      include_once VINDI_SRC . 'views/invalid-token.php';
+    if($this->invalidApiKey) {
+      include_once VINDI_SRC . 'views/invalid-api-key.php';
     }
   }
 
