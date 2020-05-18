@@ -266,7 +266,8 @@ class VindiSettings extends WC_Settings_API
 
   public function api_key_field()
   {
-    $api_key = $this->settings['api_key'];
+    $api_key = $this->get_api_key();
+    $this->api = new VindiApi($api_key, $this->logger, $this->get_is_active_sandbox());
 
     if (!$api_key) {
       return;
