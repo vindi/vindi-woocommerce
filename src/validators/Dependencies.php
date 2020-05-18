@@ -24,12 +24,64 @@ class VindiDependencies
   }
 
   /**
+   * Check required critical dependencies
+   *
+   * @return  boolean
+   */
+  public static function check_critical_dependencies()
+  {
+    $critical_dependencies = [
+      [
+        'name' => 'PHP',
+        'version' => [
+          'validation' => '>=',
+          'number' => VINDI_MININUM_PHP_VERSION
+        ]
+      ],
+      [
+        'name' => 'WordPress',
+        'version' => [
+          'validation' => '>=',
+          'number' => VINDI_MININUM_WP_VERSION
+        ]
+      ]
+    ];
+
+    foreach ($critical_dependencies as $dependency) {
+      $version = $dependency['version'];
+      if (!version_compare(PHP_VERSION, $version['number'], $version['validation'])) {
+        $name = $dependency['name'];
+        $number = $version['number'];
+        $notice = function () use ($name, $number) {
+          self::critical_dependency_missing_notice($name, $number);
+        };
+        add_action(
+          'admin_notices',
+          $notice
+        );
+
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public static function coco() {
+    echo '<h1>COCO</h1>';
+  }
+
+  /**
    * Check required plugins
    *
    * @return  boolean
    */
   public static function check()
   {
+    if(!self::check_critical_dependencies()) {
+      return false;
+    }
+
     if (!self::$active_plugins) {
       self::init();
     }
@@ -92,7 +144,29 @@ class VindiDependencies
    */
   public static function missing_notice($name, $version, $link)
   {
-    echo '<div class="error"><p>' . sprintf(__('O Plugin Vindi WooCommerce depende da versão %s do %s para funcionar!', VINDI), $version, "<a href=\"{$link}\">" . __($name, VINDI) . '</a>') . '</p></div>';
+    echo '<div class="error"><p>' . sprintf(
+        __('O Plugin Vindi WooCommerce depende da versão %s do %s para funcionar!', VINDI),
+        $version,
+        "<a href=\"{$link}\">" . __($name, VINDI) . '</a>'
+      ) . '</p></div>';
+  }
+
+  /**
+   * Generate critical dependency notice content
+   *
+   * @param string $name Dependency name
+   * @param string $version Dependency version
+   *
+   * @return  string
+   */
+  public static function critical_dependency_missing_notice($name, $version)
+  {
+    echo '<div class="error"><p>' . sprintf(
+        __('O Plugin Vindi WooCommerce depende da versão %s+ do %s para funcionar! Como a versão atual do %s é mais antiga, o plugin foi DESATIVADO!', VINDI),
+        $version,
+        $name,
+        $name
+      ) . '</p></div>';
   }
 
   /**
@@ -104,11 +178,8 @@ class VindiDependencies
    */
   public static function is_plugin_active($plugin)
   {
-    // class_exists('WC_Payment_Gateway') && class_exists('Extra_Checkout_Fields_For_Brazil')
     if(in_array($plugin['path'], self::$active_plugins) && is_plugin_active($plugin['path'])) {
-      if(class_exists('WC_Payment_Gateway') && class_exists('Extra_Checkout_Fields_For_Brazil')) {
-        return true;
-      }
+      return true;
     }
 
     return false;
@@ -132,13 +203,15 @@ class VindiDependencies
     );
     
     if ($version_compare == false) {
+      $name = $plugin['plugin']['name'];
+      $number = $version_match['number'];
+      $url = $plugin['plugin']['url'];
+      $notice = function () use ($name, $number, $url) {
+        self::missing_notice($name, $number, $url);
+      };
       add_action(
         'admin_notices',
-        self::missing_notice(
-          $plugin['plugin']['name'],
-          $version_match['number'],
-          $plugin['plugin']['url']
-        )
+        $notice
       );
 
       return false;

@@ -26,22 +26,14 @@ include plugin_dir_path(__FILE__) . '.env.php';
 require plugin_dir_path(__FILE__) . '/src/utils/DefinitionVariables.php';
 
 // Adding dependency validator
-require plugin_dir_path(__FILE__) . '/src/validators/DependenciesNotices.php';
-// Plugin dependencies
-require_once plugin_dir_path(__FILE__) . '/src/utils/Dependencies.php';
+require_once plugin_dir_path(__FILE__) . '/src/validators/Dependencies.php';
 
-
-// Comparing version of php and WP
-if (!version_compare(PHP_VERSION, VINDI_MININUM_PHP_VERSION, '>=')) {
-  add_action('admin_notices', 'vindi_fail_php_version');
-} elseif (!version_compare(get_bloginfo('version'), VINDI_MININUM_WP_VERSION, '>=')) {
-  add_action('admin_notices', 'vindi_fail_wp_version');
-} else {
+if (VindiDependencies::check()) {
 
   require_once VINDI_PATH . 'src/VindiWoocommerce.php';
 
   if (!defined('VINDI_TESTS')) {
     // In tests we run the instance manually.
-    $GLOBALS['vindi'] = WC_Vindi_Payment::instance();
+    // $GLOBALS['vindi'] = WC_Vindi_Payment::get_instance();
   }
 }
