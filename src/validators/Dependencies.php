@@ -115,11 +115,15 @@ class VindiDependencies
 
     foreach ($required_plugins as $plugin) {
       if (self::is_plugin_active($plugin) == false) {
-
-        self::missing_notice(
-          $plugin['plugin']['name'],
-          $plugin['plugin']['version']['number'],
-          $plugin['plugin']['url']
+        $name = $plugin['plugin']['name'];
+        $number = $plugin['plugin']['version']['number'];
+        $url = $plugin['plugin']['url'];
+        $notice = function () use ($name, $number, $url) {
+          self::missing_notice($name, $number, $url);
+        };
+        add_action(
+          'admin_notices',
+          $notice
         );
 
         return false;
