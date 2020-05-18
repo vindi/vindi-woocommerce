@@ -59,35 +59,29 @@ class WC_Vindi_Payment extends AbstractInstance
   {
 
     // Checks if Woocommerce is installed and activated
-    if (class_exists('WC_Payment_Gateway') && class_exists('Extra_Checkout_Fields_For_Brazil')) {
-
-      $this->init();
+    $this->init();
 
 
-      $this->languages = new VindiLanguages();
+    $this->languages = new VindiLanguages();
 
-      $this->settings = new VindiSettings();
-      $this->controllers = new VindiControllers($this->settings);
-      $this->webhooks = new VindiWebhooks($this->settings);
-      $this->frontend_files_loader = new FrontendFilesLoader();
-      $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
-      $this->vindi_status_notifier = new VindiProductStatus($this->settings);
+    $this->settings = new VindiSettings();
+    $this->controllers = new VindiControllers($this->settings);
+    $this->webhooks = new VindiWebhooks($this->settings);
+    $this->frontend_files_loader = new FrontendFilesLoader();
+    $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
+    $this->vindi_status_notifier = new VindiProductStatus($this->settings);
 
-      /**
-       * Add Gateway to Woocommerce
-       */
-      add_filter('woocommerce_payment_gateways', array(&$this, 'add_gateway'));
+    /**
+      * Add Gateway to Woocommerce
+      */
+    add_filter('woocommerce_payment_gateways', array(&$this, 'add_gateway'));
 
-      /**
-       * Register webhook handler 
-       */
-      add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
-        $this->webhooks, 'handle'
-      ));
-    } else {
-
-      add_action('admin_notices', 'dependencies_notices');
-    }
+    /**
+      * Register webhook handler 
+      */
+    add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
+      $this->webhooks, 'handle'
+    ));
   }
 
   /**

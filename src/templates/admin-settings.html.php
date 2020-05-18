@@ -14,6 +14,12 @@
 <table class="form-table">
   <?php $settings->generate_settings_html(); ?>
 </table>
+<?php
+  $merchant = false;
+  $api_key  = $settings->get_api_key();
+  if(!empty($api_key))
+      $merchant = get_transient('vindi_merchant');
+?>
 <div class="below-h2 <?php echo $merchant !== false ? 'updated' : 'error'; ?>">
 	<h3 class="wc-settings-sub-title">
 		<?php _e('Link de configuração dos Eventos da Vindi', VINDI); ?>
@@ -29,13 +35,6 @@
 	<h3 class="wc-settings-sub-title">
 		<?php _e( 'Teste de conexão com a Vindi', VINDI); ?>
 	</h3>
-
-  <?php
-    $merchant = false;
-    $api_key  = $settings->get_api_key();
-    if(!empty($api_key))
-        $merchant = $settings->routes->getMerchant(true);
-  ?>
 
 	<div>
     <?php

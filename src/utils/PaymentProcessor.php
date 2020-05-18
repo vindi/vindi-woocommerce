@@ -222,8 +222,8 @@ class VindiPaymentProcessor
         array_push($subscriptions_ids, $subscription_id);
         $wc_subscription_id = $subscription['wc_id'];
         $subscription_bill = $subscription['bill'];
-        $order_post_meta[$subscription_id]['product'] = $product->name;
         $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
+        $order_post_meta[$subscription_id]['product'] = $product->name;
         $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
         if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
           $wc_subscription = wcs_get_subscription($wc_subscription_id);
@@ -234,7 +234,6 @@ class VindiPaymentProcessor
         }
         $bills[] = $subscription['bill'];
         
-        update_post_meta($this->order->id, 'vindi_order', $order_post_meta);
         update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
         continue;
       }
@@ -361,7 +360,7 @@ class VindiPaymentProcessor
     } else {
       $order_items[] = $this->build_product_from_order_item($order_type, $product);
     }
-    // TODO Buscar separadamente o valor de entrega, imposto e desconto
+    // TODO Buscar separadamente o valor de entrega
     $order_items[] = $this->build_shipping_item($order_items);
     $order_items[] = $this->build_tax_item($order_items);
 
@@ -838,7 +837,7 @@ class VindiPaymentProcessor
   {
     $this->vindi_settings->woocommerce->cart->empty_cart();
 
-    $last_status = 'paid';
+    $bills_status = [];
     foreach ($bills as $bill) {
       if ($bill['status'] == 'paid') {
         $data_to_log = sprintf('O Pagamento da fatura %s do pedido %s foi realizado com sucesso pela Vindi.', $bill['id'], $this->order->id);
@@ -847,13 +846,13 @@ class VindiPaymentProcessor
         $data_to_log = sprintf('Aguardando pagamento da fatura %s do pedido %s pela Vindi.', $bill['id'], $this->order->id);
         $status_message = __('Aguardando pagamento do pedido.', VINDI);
       }
-      if($last_status != 'paid') {
-        $status = 'pending';
-      } else {
-        $status = $this->vindi_settings->get_return_status();
-      }
+      array_push($bills_status, $bill['status']);
       $this->logger->log($data_to_log);
-      $last_status = $bill['status'];
+    }
+    if(sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
+      $status = $this->vindi_settings->get_return_status();
+    } else {
+      $status = 'pending';
     }
     $this->order->update_status($status, $status_message);
 

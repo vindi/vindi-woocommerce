@@ -8,7 +8,7 @@
 		</span>
 		<br><br>
 		<?php foreach ($vindi_order as $item): ?>
-			<?php if ($item['bill']['status'] != 'paid'): ?>
+			<?php if (!in_array($item['bill']['status'], array('paid', 'canceled'))): ?>
 				<span>
 					<a class="button" href="<?php echo esc_url($item['bill']['bank_slip_url']); ?>" target="_blank">
 						<?php _e('Baixar boleto', VINDI ); ?>

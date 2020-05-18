@@ -21,7 +21,11 @@ class VindiSubscriptionStatusHandler
     ), 1, 3);
 
     add_action('woocommerce_order_fully_refunded', array(
-      &$this, 'refunded_status'
+      &$this, 'order_fully_refunded'
+    ));
+
+    add_action('woocommerce_order_status_cancelled', array(
+      &$this, 'order_canceled'
     ));
   }
 
@@ -98,9 +102,9 @@ class VindiSubscriptionStatusHandler
   }
 
   /**
-   * @param WC_Subscription $wc_subscription
+   * @param WC_Order $order
    */
-  public function refunded_status($order)
+  public function order_fully_refunded($order)
   {
     if (!is_object($order)) {
       $order = wc_get_order($order);
@@ -123,6 +127,32 @@ class VindiSubscriptionStatusHandler
             ), array('a' => array('href' => true))));
         }
       }
+    }
+  }
+
+  /**
+   * @param WC_Order $order
+   */
+  public function order_canceled($order)
+  {
+    if (!is_object($order)) {
+      $order = wc_get_order($order);
+    }
+
+    $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+    if(!is_array($vindi_order)) {
+      return;
+    }
+    $single_payment_bill_id = 0;
+    foreach ($vindi_order as $key => $item) {
+      if($key == 'single_payment' && $vindi_order[$key]['bill']['status'] != 'canceled') {
+        $single_payment_bill_id = $vindi_order[$key]['bill']['id'];
+      }
+      $vindi_order[$key]['bill']['status'] = 'canceled';
+    }
+    update_post_meta($order->id, 'vindi_order', $vindi_order);
+    if($single_payment_bill_id) {
+      $this->routes->deleteBill($single_payment_bill_id);
     }
   }
 }

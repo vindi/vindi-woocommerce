@@ -35,7 +35,7 @@ class VindiWebhooks
       die('invalid access token');
     }
 
-    $this->vindi_settings->logger->log('Novo Webhook chamado: ' . $raw_body);
+    $this->vindi_settings->logger->log(sprintf(__('Novo Webhook chamado: %s', VINDI), $raw_body));
 
     try {
       $this->process_event($body);
@@ -64,17 +64,17 @@ class VindiWebhooks
   private function process_event($body)
   {
     if(null == $body || empty($body->event))
-      throw new Exception('Falha ao interpretar JSON do webhook: Evento do Webhook não encontrado!');
+      throw new Exception(__('Falha ao interpretar JSON do webhook: Evento do Webhook não encontrado!', VINDI));
 
     $type = $body->event->type;
     $data = $body->event->data;
 
     if(method_exists($this, $type)) {
-      $this->vindi_settings->logger->log('Novo Evento processado: ' . $type);
+      $this->vindi_settings->logger->log(sprintf(__('Novo Evento processado: %s', VINDI), $type));
       return $this->{$type}($data);
     }
 
-    $this->vindi_settings->logger->log('Evento do webhook ignorado pelo plugin: ' . $type);
+    $this->vindi_settings->logger->log(sprintf(__('Evento do webhook ignorado pelo plugin: ', VINDI), $type));
   }
 
   /**
@@ -83,7 +83,7 @@ class VindiWebhooks
    */
   private function test($data)
   {
-    $this->vindi_settings->logger->log('Evento de teste do webhook.');
+    $this->vindi_settings->logger->log(__('Evento de teste do webhook.', VINDI));
   }
 
   /**
@@ -95,15 +95,25 @@ class VindiWebhooks
     $subscription = $this->find_subscription_by_id($renew_infos['wc_subscription_id']);
 
     if($this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'], $renew_infos['cycle'])) {
-      throw new Exception('Já existe o ciclo ' . $renew_infos['cycle'] . ' para a assinatura ' . $renew_infos['vindi_subscription_id'] . ' pedido ' . $subscription->id);
+      throw new Exception(sprintf(
+        __('Já existe o ciclo %s para a assinatura #%s pedido #%s!', VINDI),
+        $renew_infos['cicle'],
+        $renew_infos['vindi_subscription_id'],
+        $subscription->get_last_order()
+      ));
     }
 
     WC_Subscriptions_Manager::prepare_renewal($subscription->id);
     $order_id = $subscription->get_last_order();
     $order = $this->find_order_by_id($order_id);
     $subscription_id = $renew_infos['vindi_subscription_id'];
-    $order_post_meta = get_post_meta($order->id, 'vindi_order', true) || [];
+    $order_post_meta = get_post_meta($order->id, 'vindi_order', true);
+    if(!is_array($order_post_meta)) {
+      throw new Exception(__('O pedido não possui as informações de pedido da vindi!', VINDI));
+    }
+
     $order_post_meta[$subscription_id]['cycle'] = $renew_infos['cycle'];
+    $order_post_meta[$subscription_id]['product'] = $renew_infos['plan_name'];
     $order_post_meta[$subscription_id]['bill'] = array(
       'id' => $renew_infos['bill_id'],
       'status' => $renew_infos['bill_status'],
@@ -130,14 +140,17 @@ class VindiWebhooks
     $renew_infos = [
       'wc_subscription_id' => $data->bill->subscription->code,
       'vindi_subscription_id' => $data->bill->subscription->id,
+      'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
       'cycle' => $data->bill->period->cycle,
       'bill_status' => $data->bill->status,
       'bill_id' => $data->bill->id,
       'bill_print_url' => $data->bill->charges[0]->print_url
     ];
 
-    if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'],
-      $renew_infos['cycle'])) {
+    if (!$this->subscription_has_order_in_cycle(
+      $renew_infos['vindi_subscription_id'],
+      $renew_infos['cycle']
+    )) {
       $this->subscription_renew($renew_infos);
     }
   }
@@ -146,38 +159,63 @@ class VindiWebhooks
    * Process bill_paid event from webhook
    * @param $data array
    */
-  // TODO Alterar modo de como o status do pedido é alterado
   private function bill_paid($data)
   {
     if(empty($data->bill->subscription)) {
       $order = $this->find_order_by_id($data->bill->code);
 
-      $vindi_order = get_post_meta($order->id, 'vindi_order', true) || [];
-      $vindi_order['single_payment']['bill']['status'] = 'paid';
-      update_post_meta($order->id, 'vindi_order', $vindi_order);
+      $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+      if(is_array($vindi_order)) {
+        $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
+      } else {
+        return;
+      }
     } else {
       $vindi_subscription_id = $data->bill->subscription->id;
       $cycle = $data->bill->period->cycle;
       $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
 
-      $vindi_order = get_post_meta($order->id, 'vindi_order', true) || [];
-      $vindi_order[$vindi_subscription_id]['bill']['status'] = 'paid';
-      update_post_meta($order->id, 'vindi_order', $vindi_order);
+      $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+      if(is_array($vindi_order)) {
+        $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
+      } else {
+        return;
+      }
     }
+    update_post_meta($order->id, 'vindi_order', $vindi_order);
 
-    /* $all_bills_paid = false;
+    $all_bills_paid = [];
     foreach ($vindi_order as $item) {
       if ($item['bill']['status'] == 'paid') {
-        $all_bills_paid = true;
+        array_push($all_bills_paid, true);
       } else {
-        $all_bills_paid = false;
+        array_push($all_bills_paid, false);
       }
-    } */
+    }
 
-    $new_status = $this->vindi_settings->get_return_status();
-    $order->update_status($new_status, __('O Pagamento foi realizado com sucesso pela Vindi.',
-      'woocommerce-vindi'));
-    $this->update_next_payment($data);
+    if(!empty($all_bills_paid) && !in_array(false, $all_bills_paid)) {
+      $new_status = $this->vindi_settings->get_return_status();
+      $order->update_status($new_status, __('O Pagamento foi realizado com sucesso pela Vindi.',
+        VINDI));
+      $this->update_next_payment($data);
+    }
+  }
+
+  /**
+   * Process bill_canceled event from webhook
+   * @param $data array
+   */
+  private function bill_canceled($data)
+  {
+    if(empty($data->bill->subscription)) {
+      $order = $this->find_order_by_id($data->bill->code);
+    } else {
+      $vindi_subscription_id = $data->bill->subscription->id;
+      $cycle = $data->bill->period->cycle;
+      $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
+    }
+
+    $order->update_status('cancelled', __('Pagamento cancelado dentro da Vindi!', VINDI));
   }
 
   /**
@@ -191,13 +229,13 @@ class VindiWebhooks
     $item_type = strtolower($data->issue->item_type);
 
     if('charge_underpay' !== $issue_type)
-      throw new Exception("issue_create with issue_type '{$issue_type}' not handled");
+      throw new Exception(sprintf(__('Pendência criada com o tipo "%s" não processada!', VINDI), $issue_type));
 
     if('open' !== $issue_status)
-      throw new Exception("issue_create with status '{$issue_status}' not handled");
+      throw new Exception(sprintf(__('Pendência criada com o status "%s" não processada!', VINDI), $issue_status));
 
     if('charge' !== $item_type)
-      throw new Exception("issue_create with item_type '{$item_type}' not handled");
+      throw new Exception(sprintf(__('Pendência criada com o item do tipo "%s" não processada!', VINDI), $item_type));
 
     $item_id = (int) $data->issue->item_id;
     $issue_data = $data->issue->data;
@@ -205,7 +243,7 @@ class VindiWebhooks
     $order = $this->find_order_by_bill_id($bill->id);
 
     $order->add_order_note(sprintf(
-      "Divergencia de valores do Pedido #%s: Valor Esperado R$ %s, Valor Pago R$ %s",
+      __('Divergencia de valores do Pedido #%s: Valor Esperado R$ %s, Valor Pago R$ %s.', VINDI),
       $order->id,
       $issue_data->expected_amount,
       $issue_data->transaction_amount
@@ -221,10 +259,12 @@ class VindiWebhooks
     $order = $this->find_order_by_bill_id($data->charge->bill->id);
 
     if($order->get_status() == 'pending'){
-      $order->update_status('failed', 'Pagamento rejeitado!');
+      $order->update_status('failed', __('Pagamento rejeitado!', VINDI));
     }else{
-      throw new Exception('Erro ao trocar status da fatura para "failed" pois a fatura #' .
-        $data->charge->bill->id . ' não está mais pendente!');
+      throw new Exception(sprintf(
+        __('Erro ao trocar status da fatura para "failed" pois a fatura #%s não está mais pendente!', VINDI),
+        $data->charge->bill->id
+      ));
     }
   }
 
@@ -259,7 +299,7 @@ class VindiWebhooks
     if ($this->vindi_settings->get_synchronism_status()){
       $subscription_id = $data->subscription->code;
       $subscription = $this->find_subscription_by_id($subscription_id);
-      $subscription->update_status('active', 'Assinatura ' . $subscription_id . ' reativada pela Vindi.');
+      $subscription->update_status('active', sprintf(__('Assinatura %s reativada pela Vindi.', VINDI), $subscription_id));
     }
   }
 
@@ -273,7 +313,7 @@ class VindiWebhooks
     $subscription = wcs_get_subscription($id);
 
     if(empty($subscription))
-      throw new Exception('Assinatura #' . $id . ' não encontrada!', 2);
+      throw new Exception(sprintf(__('Assinatura #%s não encontrada!', VINDI), $id), 2);
 
     return $subscription;
   }
@@ -288,7 +328,7 @@ class VindiWebhooks
     $charge = $this->routes->getCharge($id);
 
     if(empty($charge))
-      throw new Exception('Charge #' . $id . ' não encontrada!', 2);
+      throw new Exception(sprintf(__('Cobrança #%s não encontrada!', VINDI), $id), 2);
 
     return (object) $charge['bill'];
   }
@@ -304,7 +344,7 @@ class VindiWebhooks
     $order = wc_get_order($id);
 
     if(empty($order))
-      throw new Exception('Pedido #' . $id . ' não encontrado!', 2);
+      throw new Exception(sprintf(__('Pedido #%s não encontrado!', VINDI), $id), 2);
 
     return $order;
   }
@@ -328,7 +368,7 @@ class VindiWebhooks
     $query = new WP_Query($args);
 
     if(false === $query->have_posts())
-      throw new Exception('Pedido com bill_id #' . $bill_id . ' não encontrado!', 2);
+      throw new Exception(sprintf(__('Pedido com bill_id #%s não encontrado!', VINDI), $bill_id), 2);
 
     return wc_get_order($query->post->ID);
 	}
@@ -344,21 +384,15 @@ class VindiWebhooks
 	private function find_order_by_subscription_and_cycle($subscription_id, $cycle)
   {
     $query = $this->query_order_by_metas(array(
-      'relation' => 'AND',
       array(
         'key' => 'vindi_order',
-        'value' => 'i:'.$subscription_id.';',
-        'compare' => 'LIKE'
-      ),
-      array(
-        'key' => 'vindi_order',
-        'value' => 's:5:"cycle";i:'.$cycle.';',
+        'value' => 'i:'.$subscription_id.';a:3:{s:5:"cycle";i:'.$cycle.';',
         'compare' => 'LIKE'
       ),
     ));
 
     if(false === $query->have_posts())
-      throw new Exception('Pedido da assinatura #' . $subscription_id . ' para o ciclo #' . $cycle . ' não encontrada!', 2);
+      throw new Exception(sprintf(__('Pedido da assinatura #%s para o ciclo #%s não encontrado!', VINDI), $subscriptionn_id, $cycle), 2);
 
     return wc_get_order($query->post->ID);
 	}
@@ -372,15 +406,9 @@ class VindiWebhooks
 	private function subscription_has_order_in_cycle($subscription_id, $cycle)
   {
     $query = $this->query_order_by_metas(array(
-      'relation' => 'AND',
       array(
         'key' => 'vindi_order',
-        'value' => 'i:'.$subscription_id.';',
-        'compare' => 'LIKE'
-      ),
-      array(
-        'key' => 'vindi_order',
-        'value' => 's:5:"cycle";i:'.$cycle.';',
+        'value' => 'i:'.$subscription_id.';a:3:{s:5:"cycle";i:'.$cycle.';',
         'compare' => 'LIKE'
       ),
     ));

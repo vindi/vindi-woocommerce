@@ -94,9 +94,9 @@ class CustomerController
             'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '559999999999',
           )
         ),
-        'registry_code' => $cpf_or_cnpj || '',
-        'notes' => $notes || '',
-        'metadata' => $metadata || '',
+        'registry_code' => $cpf_or_cnpj ? $cpf_or_cnpj : '',
+        'notes' => $notes ? $notes : '',
+        'metadata' => !empty($metadata) ? $metadata : '',
       )
     );
 
@@ -158,11 +158,14 @@ class CustomerController
       } else {
         // Pessoa física
         $cpf_or_cnpj = $order->get_meta('_billing_cpf');
+        $this->vindi_settings->logger->log(sprintf('Order cpf -> %s', $cpf_or_cnpj));
+        $this->vindi_settings->logger->log(sprintf('Customer cpf -> %s', $customer->get_meta('billing_cpf')));
         $notes = '';
   
         if ($this->vindi_settings->send_nfe_information()) {
           $metadata['carteira_de_identidade'] = $order->get_meta('_billing_rg');
         }
+        $this->vindi_settings->logger->log(sprintf('Order rg -> %s', $order->get_meta('_billing_rg')));
       }
     }
 
@@ -196,9 +199,9 @@ class CustomerController
             'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '559999999999',
           )
         ),
-        'registry_code' => $cpf_or_cnpj || '',
-        'notes' => $notes || '',
-        'metadata' => $metadata || '',
+        'registry_code' => $cpf_or_cnpj ? $cpf_or_cnpj : '',
+        'notes' => $notes ? $notes : '',
+        'metadata' => !empty($metadata) ? $metadata : '',
       )
     );
     return $updatedUser;
