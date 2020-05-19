@@ -72,7 +72,7 @@ class VindiPaymentProcessor
    */
   public function get_order_type()
   {
-    if (wcs_order_contains_subscription($this->order, array('any'))) {
+    if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($this->order, array('any'))) {
       return static::ORDER_TYPE_SUBSCRIPTION;
     }
 
