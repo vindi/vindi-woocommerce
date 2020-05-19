@@ -48,6 +48,11 @@ class VindiPaymentProcessor
   private $controllers;
 
   /**
+   * @var bool
+   */
+  private $shipping_added;
+
+  /**
    * Payment Processor contructor.
    *
    * @param WC_Order $order The order to be processed
@@ -63,6 +68,7 @@ class VindiPaymentProcessor
     $this->logger = $vindi_settings->logger;
     $this->routes = $vindi_settings->routes;
     $this->controllers = $controllers;
+    $this->shipping_added = false;
   }
 
   /**
@@ -423,21 +429,27 @@ class VindiPaymentProcessor
     $shipping_item = [];
     $shipping_method = $this->order->get_shipping_method();
 
-    // foreach ($order_items as $order_item) {
-      
-    // }
-
     if (empty($shipping_method)) return $shipping_item;
+    
+    foreach ($order_items as $order_item) {
+      $product = $order_item->get_product();
 
-    $item = $this->routes->findOrCreateProduct("Frete ($shipping_method)", sanitize_title($shipping_method));
-    $shipping_item = array(
-      'type' => 'shipping',
-      'vindi_id' => $item['id'],
-      'price' => (float)$this->order->get_total_shipping(),
-      'qty' => 1,
-    );
-
-    return $shipping_item;
+      if($product->needs_shipping() && !$this->shipping_added) {
+        if (class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::get_trial_length($product->id) > 0) {
+          return $shipping_item;
+        }
+        $item = $this->routes->findOrCreateProduct("Frete ($shipping_method)", sanitize_title($shipping_method));
+        $shipping_item = array(
+          'type' => 'shipping',
+          'vindi_id' => $item['id'],
+          'price' => (float)$this->order->get_total_shipping(),
+          'qty' => 1,
+        );
+        $this->shipping_added = true;
+    
+        return $shipping_item;
+      }
+    }
   }
 
   /**
