@@ -212,8 +212,16 @@ class VindiPaymentProcessor
    */
   public function process_order()
   {
-    $customer = $this->get_customer();
+    if($this->order_has_trial_and_simple_product())  {
+      $message = __('Não é possível comprar produtos simples e assinaturas com trial no mesmo pedido!', VINDI);
+      $this->order->update_status('failed', $message);
+      wc_add_notice($message, 'error');
 
+      throw new Exception($message);
+      return false;
+    }
+
+    $customer = $this->get_customer();
     $order_items = $this->order->get_items();
     $bills = [];
     $order_post_meta = [];
@@ -435,9 +443,6 @@ class VindiPaymentProcessor
       $product = $order_item->get_product();
 
       if($product->needs_shipping() && !$this->shipping_added) {
-        if (class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::get_trial_length($product->id) > 0) {
-          return $shipping_item;
-        }
         $item = $this->routes->findOrCreateProduct("Frete ($shipping_method)", sanitize_title($shipping_method));
         $shipping_item = array(
           'type' => 'shipping',
@@ -904,12 +909,38 @@ class VindiPaymentProcessor
   }
 
   /**
+   * Check if the order has a subscription with trial and simple products.
+   *
+   * @since 1.0.0
+   * @return bool
+   */
+  public function order_has_trial_and_simple_product()
+  {
+    $has_trial = false;
+    $has_simple_product = false;
+    $order_items = $this->order->get_items();
+    foreach ($order_items as $order_item) {
+      $product = $order_item->get_product();
+      if ($this->is_subscription_type($product)) {
+        if (class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::get_trial_length($product->id) > 0) {
+          $has_trial = true;
+          if ($has_simple_product) return true;
+        }
+      } else {
+        $has_simple_product = true;
+        if ($has_trial) return true;        
+      }
+    }
+    return $has_trial && $has_simple_product;
+  }
+
+  /**
    * Check if the product is variable
    *
    * @param WC_Product $product
    * @return bool
    */
-  protected function is_variable($product)
+  protected function is_variable(WC_Product $product)
   {
     return (boolean)preg_match('/variation/', $product->get_type());
   }
