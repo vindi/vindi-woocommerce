@@ -95,8 +95,9 @@ class VindiHelpers
    *
    * @since 1.0.0
    * @param WC_Order $order A WC_Order object
-   * @param int $product_id The product/post ID of a subscription
-   * @return null
+   * @param WC_Order_Item_Product $order_item The order item
+   *
+   * @return WC_Subscription
    */
   public static function get_matching_subscription($order, $order_item)
   {
@@ -117,5 +118,42 @@ class VindiHelpers
 		}
 
 		return $matching_subscription;
+	}
+
+  /**
+   * Get the subscription item that matches the order item.
+   *
+   * @since 1.0.0
+   * @param WC_Subscription $subscription The WC_Subscription object
+   * @param WC_Order_Item_Product $order_item The order item
+   * @param string $match_type Optional. The type of comparison to make. Can be 'match_product_ids' to compare product|variation IDs or 'match_attributes' to also compare by item attributes on top of matching product IDs. Default 'match_attributes'.
+   *
+   * @return WC_Order_Item_Product|bool
+   */
+  public static function get_matching_subscription_item($subscription, $order_item, $match_type = 'match_attributes')
+  {
+		$matching_item = false;
+
+    if ('match_attributes' === $match_type) {
+      $order_item_attributes = wp_list_pluck($order_item->get_formatted_meta_data('_', true), 'value', 'key');
+    }
+
+    $order_item_canonical_product_id = wcs_get_canonical_product_id($order_item);
+
+    foreach ($subscription->get_items() as $subscription_item) {
+      if (wcs_get_canonical_product_id($subscription_item) !== $order_item_canonical_product_id) {
+        continue;
+      }
+
+      // Check if we have matching meta key and value pairs loosely - they can appear in any order,
+      if ('match_attributes' === $match_type && wp_list_pluck($subscription_item->get_formatted_meta_data('_', true), 'value', 'key') != $order_item_attributes) {
+        continue;
+      }
+
+      $matching_item = $subscription_item;
+      break;
+    }
+
+		return $matching_item;
 	}
 }
