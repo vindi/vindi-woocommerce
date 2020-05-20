@@ -98,8 +98,8 @@ class VindiHelpers
    * @param int $product_id The product/post ID of a subscription
    * @return null
    */
-   public static function get_matching_subscription($order, $order_item)
-   {
+  public static function get_matching_subscription($order, $order_item)
+  {
 		$subscriptions = wcs_get_subscriptions_for_order($order, array('order_type' => 'parent'));
     $matching_subscription = null;
     foreach ($subscriptions as $subscription) {
@@ -118,4 +118,4 @@ class VindiHelpers
 
 		return $matching_subscription;
 	}
-};
+}
