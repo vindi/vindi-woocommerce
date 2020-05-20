@@ -212,8 +212,6 @@ class VindiPaymentProcessor
    */
   public function process_order()
   {
-    $customer = $this->get_customer();
-
     if($this->order_has_trial_and_simple_product())  {
       $message = __('Não é possível comprar produtos simples e assinaturas com trial no mesmo pedido!', VINDI);
       $this->order->update_status('failed', $message);
@@ -223,6 +221,7 @@ class VindiPaymentProcessor
       return false;
     }
 
+    $customer = $this->get_customer();
     $order_items = $this->order->get_items();
     $bills = [];
     $order_post_meta = [];
