@@ -231,24 +231,32 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
       return new WP_Error('error', __('Reembolso falhou.', VINDI));
     }
 
-    $result = $this->refund_transaction($order, $amount, $reason);
-
-    $this->logger->log('Resultado do reembolso: ' . wc_print_r($result, true));
-
-    switch (strtolower($result['status'])) {
-      case 'success':
-        $order->add_order_note(
-          /* translators: 1: Refund amount, 2: Refund ID */
-          sprintf(__('[Transação #%2$s]: reembolsado R$%1$s', VINDI), $result['amount'], $result['id'])
-        );
-        return true;
+    if($amount < $order->get_total()) {
+      return new WP_Error('error', __('Não é possível realizar reembolsos parciais, faça um reembolso manual caso você opte por esta opção.', VINDI));
     }
-          
-          
-    if(isset($result->errors)) {
-      throw new Exception($result->errors[0]->message);
-      return false;
-    }
+
+    $results = [];
+    $order_meta = get_post_meta($order->id, 'vindi_order', true);
+    foreach ($order_meta as $key => $order_item) {
+      $bill_id = $order_item['bill']['id'];
+      
+      $result = $this->refund_transaction($bill_id, null, $reason);
+
+      $this->logger->log('Resultado do reembolso: ' . wc_print_r($result, true));
+      switch (strtolower($result['status'])) {
+        case 'success':
+          $order->add_order_note(
+            /* translators: 1: Refund amount, 2: Refund ID */
+            sprintf(__('[Transação #%2$s]: reembolsado R$%1$s', VINDI), $result['amount'], $result['id'])
+          );
+          continue;
+      }
+      if(isset($result->errors)) {
+        throw new Exception($result->errors[0]->message);
+        return false;
+      }
+    }     
+    return true;
   }
 
   /**
@@ -259,8 +267,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
 	 * @param  string   $reason Refund reason.
 	 * @return array
 	 */
-	public function get_refund_request($order, $amount = null, $reason = '') {
-    $id = $order->get_transaction_id();
+	public function get_refund_request($bill_id, $amount = null, $reason = '') {
 		$request = array(
 			'cancel_bill' => true,
 			'comments' => strip_tags(wc_trim_string($reason, 255)),
@@ -268,7 +275,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
 		if (!is_null($amount) ) {
 			$request['amount'] = $amount;
 		}
-		return apply_filters('vindi_refund_request', $request, $order, $amount, $reason);
+		return apply_filters('vindi_refund_request', $request, $bill_id, $amount, $reason);
   }
   
   /**
@@ -279,26 +286,26 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
 	 * @param  string   $reason Refund reason.
 	 * @return object Either an object of name value pairs for a success, or a WP_ERROR object.
 	 */
-	public function refund_transaction($order, $amount = null, $reason = '') {
-    $data = $this->get_refund_request($order, $amount, $reason);
-    $last_charge = $this->find_order_last_charge($order);
+	public function refund_transaction($bill_id, $amount = null, $reason = '') {
+    $data = $this->get_refund_request($bill_id, $amount, $reason);
+    $last_charge = $this->find_bill_last_charge($bill_id);
     $charge_id = $last_charge['id'];
     $refund = $this->routes->refundCharge($charge_id, $data);
 
 		if (empty($refund)) {
-			throw new Exception('Resposta vazia');
+			throw new Exception(__('Resposta vazia', VINDI));
 		}
 
 		return $refund['last_transaction'];
   }
   
-  private function find_order_last_charge($order)
+  private function find_bill_last_charge($bill_id)
   {
-    $bill_id = get_post_meta($order->id, 'vindi_bill_id', true);
     $bill = $this->routes->findBillById($bill_id);
 
-    if(!$bill)
-    throw new Exception('A fatura com bill_id #' . $bill_id . ' não foi encontrada!', 2);
+    if(!$bill) {
+      throw new Exception(sprintf(__('A fatura com bill_id #%s não foi encontrada!', VINDI), $bill_id), 2);
+    }
     
     $charges = $bill['charges'];
     return end($charges);
