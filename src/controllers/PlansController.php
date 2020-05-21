@@ -42,6 +42,10 @@ class PlansController
    */
   function create($post_id, $post, $update, $recreated = false)
   {
+    // Check if the post is a draft
+    if (strpos(get_post_status($post_id), 'draft') !== false) {
+      return;
+    }
     // Check if the post is product
     if (get_post_type($post_id) != 'product') {
       return;

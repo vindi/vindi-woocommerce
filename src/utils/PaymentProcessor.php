@@ -48,6 +48,11 @@ class VindiPaymentProcessor
   private $controllers;
 
   /**
+   * @var bool
+   */
+  private $shipping_added;
+
+  /**
    * Payment Processor contructor.
    *
    * @param WC_Order $order The order to be processed
@@ -63,6 +68,7 @@ class VindiPaymentProcessor
     $this->logger = $vindi_settings->logger;
     $this->routes = $vindi_settings->routes;
     $this->controllers = $controllers;
+    $this->shipping_added = false;
   }
 
   /**
@@ -72,7 +78,7 @@ class VindiPaymentProcessor
    */
   public function get_order_type()
   {
-    if (wcs_order_contains_subscription($this->order, array('any'))) {
+    if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($this->order, array('any'))) {
       return static::ORDER_TYPE_SUBSCRIPTION;
     }
 
@@ -206,8 +212,16 @@ class VindiPaymentProcessor
    */
   public function process_order()
   {
-    $customer = $this->get_customer();
+    if($this->order_has_trial_and_simple_product())  {
+      $message = __('Não é possível comprar produtos simples e assinaturas com trial no mesmo pedido!', VINDI);
+      $this->order->update_status('failed', $message);
+      wc_add_notice($message, 'error');
 
+      throw new Exception($message);
+      return false;
+    }
+
+    $customer = $this->get_customer();
     $order_items = $this->order->get_items();
     $bills = [];
     $order_post_meta = [];
@@ -405,7 +419,12 @@ class VindiPaymentProcessor
     $product = $this->get_product($order_items);
     $order_items['type'] = 'product';
     $order_items['vindi_id'] = $product->vindi_id;
-    $order_items['price'] = (float)$order_items['subtotal'] / $order_items['qty'];
+    if ($this->subscription_has_trial($product)) {
+      $matching_item = $this->get_trial_matching_subscription_item($order_items);
+      $order_items['price'] = (float)$matching_item['subtotal'] / $matching_item['qty'];
+    } else {
+      $order_items['price'] = (float)$order_items['subtotal'] / $order_items['qty'];
+    }
 
     return $order_items;
   }
@@ -423,21 +442,24 @@ class VindiPaymentProcessor
     $shipping_item = [];
     $shipping_method = $this->order->get_shipping_method();
 
-    // foreach ($order_items as $order_item) {
-      
-    // }
-
     if (empty($shipping_method)) return $shipping_item;
+    
+    foreach ($order_items as $order_item) {
+      $product = $order_item->get_product();
 
-    $item = $this->routes->findOrCreateProduct("Frete ($shipping_method)", sanitize_title($shipping_method));
-    $shipping_item = array(
-      'type' => 'shipping',
-      'vindi_id' => $item['id'],
-      'price' => (float)$this->order->get_total_shipping(),
-      'qty' => 1,
-    );
-
-    return $shipping_item;
+      if($product->needs_shipping() && !$this->shipping_added) {
+        $item = $this->routes->findOrCreateProduct("Frete ($shipping_method)", sanitize_title($shipping_method));
+        $shipping_item = array(
+          'type' => 'shipping',
+          'vindi_id' => $item['id'],
+          'price' => (float)$this->order->get_total_shipping(),
+          'qty' => 1,
+        );
+        $this->shipping_added = true;
+    
+        return $shipping_item;
+      }
+    }
   }
 
   /**
@@ -892,12 +914,36 @@ class VindiPaymentProcessor
   }
 
   /**
+   * Check if the order has a subscription with trial and simple products.
+   *
+   * @since 1.0.0
+   * @return bool
+   */
+  public function order_has_trial_and_simple_product()
+  {
+    $has_trial = false;
+    $has_simple_product = false;
+    $order_items = $this->order->get_items();
+    foreach ($order_items as $order_item) {
+      $product = $order_item->get_product();
+      if ($this->subscription_has_trial($product)) {
+        $has_trial = true;
+        if ($has_simple_product) return true;
+      } else {
+        $has_simple_product = true;
+        if ($has_trial) return true;        
+      }
+    }
+    return $has_trial && $has_simple_product;
+  }
+
+  /**
    * Check if the product is variable
    *
    * @param WC_Product $product
    * @return bool
    */
-  protected function is_variable($product)
+  protected function is_variable(WC_Product $product)
   {
     return (boolean)preg_match('/variation/', $product->get_type());
   }
@@ -911,5 +957,29 @@ class VindiPaymentProcessor
   protected function is_subscription_type(WC_Product $product)
   {
     return (boolean)preg_match('/subscription/', $product->get_type());
+  }
+
+  /**
+   * Check if the subscription has a trial period
+   *
+   * @param WC_Product $product
+   * @return bool
+   */
+  protected function subscription_has_trial(WC_Product $product)
+  {
+    return $this->is_subscription_type($product) && class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::get_trial_length($product->id) > 0;
+  }
+
+  /**
+   * Get trial item quantity, subtotal and total price.
+   *
+   * @param WC_Order_Item_Product $order_item
+   * @return WC_Order_Item_Product
+   */
+  protected function get_trial_matching_subscription_item(WC_Order_Item_Product $order_item)
+  {
+    $subscription = VindiHelpers::get_matching_subscription($this->order, $order_item);
+    $matching_item = VindiHelpers::get_matching_subscription_item($subscription, $order_item);
+    return $matching_item;
   }
 }
