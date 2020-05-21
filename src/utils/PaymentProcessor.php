@@ -232,6 +232,7 @@ class VindiPaymentProcessor
 
       if($this->is_subscription_type($product)) {
         $subscription = $this->create_subscription($customer['id'], $order_item);
+        $subscription_order_post_meta = [];
         $subscription_id = $subscription['id'];
         array_push($subscriptions_ids, $subscription_id);
         $wc_subscription_id = $subscription['wc_id'];
@@ -239,6 +240,10 @@ class VindiPaymentProcessor
         $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
         $order_post_meta[$subscription_id]['product'] = $product->name;
         $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
+
+        $subscription_order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
+        $subscription_order_post_meta[$subscription_id]['product'] = $product->name;
+        $subscription_order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
         if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
           $wc_subscription = wcs_get_subscription($wc_subscription_id);
           $wc_subscription->update_status('cancelled', __($message, VINDI));
@@ -249,6 +254,7 @@ class VindiPaymentProcessor
         $bills[] = $subscription['bill'];
         
         update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
+        update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
         continue;
       }
       
