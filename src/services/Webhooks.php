@@ -108,9 +108,6 @@ class VindiWebhooks
     $order = $this->find_order_by_id($order_id);
     $subscription_id = $renew_infos['vindi_subscription_id'];
     $order_post_meta = get_post_meta($order->id, 'vindi_order', true);
-    if(!is_array($order_post_meta)) {
-      throw new Exception(__('O pedido não possui as informações de pedido da vindi!', VINDI));
-    }
 
     $order_post_meta[$subscription_id]['cycle'] = $renew_infos['cycle'];
     $order_post_meta[$subscription_id]['product'] = $renew_infos['plan_name'];

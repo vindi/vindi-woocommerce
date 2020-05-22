@@ -48,7 +48,6 @@ class VindiBankSlipGateway extends VindiPaymentGateway
       'subscription_payment_method_change_admin',
       'subscription_date_changes',
       'multiple_subscriptions',
-      'refunds',
       'pre-orders'
     );
 
