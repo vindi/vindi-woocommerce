@@ -17,9 +17,6 @@ class VindiProductStatus
     $this->vindi_settings = $vindi_settings;
     
     add_action('admin_notices', array(&$this, 'product_status_notifier'));
-    
-    // if (is_admin()) {
-    // }
   }
   
   /**
