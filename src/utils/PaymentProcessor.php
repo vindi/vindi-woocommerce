@@ -788,7 +788,7 @@ class VindiPaymentProcessor
       'code' => $this->order->id,
       'installments' => $this->installments()
     );
-    if ($this->is_cc() && $this->gateway->is_interest_rate_enabled()) {
+    if ($this->is_cc() && $this->installments() > 1 && $this->gateway->is_interest_rate_enabled()) {
       $data['payment_condition']['daily_fee_value'] = intval($this->gateway->get_interest_rate());
       $data['payment_condition']['daily_fee_type'] = 'percentage';
     }
