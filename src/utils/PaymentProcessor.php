@@ -99,13 +99,15 @@ class VindiPaymentProcessor
     if(!$vindi_customer) {
       $vindi_customer = $this->controllers->customers->create($current_user->ID, $this->order);
     }
-    if($this->vindi_settings->send_nfe_information()) {
+
+
+    // if($this->vindi_settings->send_nfe_information()) {
       $vindi_customer = $this->controllers->customers->update($current_user->ID, $this->order);
-    }
+    // }
 
     if ($this->is_cc())
       $this->create_payment_profile($vindi_customer['id']);
-      
+
     $this->logger->log(sprintf('Cliente Vindi: %s', $vindi_customer['id']));
 
     return $vindi_customer;
@@ -252,12 +254,12 @@ class VindiPaymentProcessor
           $this->abort(__($message, VINDI) , true);
         }
         $bills[] = $subscription['bill'];
-        
+
         update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
         update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
         continue;
       }
-      
+
       $bill_products[] = $order_item;
     }
 
@@ -284,11 +286,11 @@ class VindiPaymentProcessor
     return $this->finish_payment($bills);
   }
 
-  
+
 
   /**
    * Create a payment profile for the customer
-   * 
+   *
    * @param int $customer_id Vindi customer id
    *
    * @throws Exception
@@ -449,7 +451,7 @@ class VindiPaymentProcessor
     $shipping_method = $this->order->get_shipping_method();
 
     if (empty($shipping_method)) return $shipping_item;
-    
+
     foreach ($order_items as $order_item) {
       $product = $order_item->get_product();
 
@@ -462,7 +464,7 @@ class VindiPaymentProcessor
           'qty' => 1,
         );
         $this->shipping_added = true;
-    
+
         return $shipping_item;
       }
     }
@@ -521,7 +523,7 @@ class VindiPaymentProcessor
     foreach ($order_items as $order_item) {
       $bill_total_discount += (float) ($order_item['subtotal'] - $order_item['total']);
     }
-    
+
     if (empty($bill_total_discount)) {
       return $discount_item;
     }
@@ -640,7 +642,7 @@ class VindiPaymentProcessor
    */
   protected function build_discount_item_for_subscription($coupon, $plan_cycles = 0) {
     $discount_item = [];
-    
+
     $amount = $coupon->get_amount();
     $discount_type = $coupon->get_discount_type();
     if($discount_type == 'fixed_cart') {
@@ -788,14 +790,14 @@ class VindiPaymentProcessor
        'code' => $this->order->id,
        'installments' => $this->installments()
      );
- 
+
      $bill = $this->routes->createBill($data);
- 
+
      if (!$bill) {
        $this->logger->log(sprintf('Erro no pagamento do pedido %s.', $this->order->id));
        $message = sprintf(__('Pagamento Falhou. (%s)', VINDI) , $this->vindi_settings->api->last_error);
        $this->order->update_status('failed', $message);
- 
+
        throw new Exception($message);
      }
      return $bill;
@@ -903,7 +905,7 @@ class VindiPaymentProcessor
     $product = $order_item->get_product();
     $product_id = $product->id;
     $vindi_product_id = get_post_meta($product_id, 'vindi_product_id', true);
-    
+
     if (!$vindi_product_id) {
       $vindi_product = null;
       if(!$this->is_subscription_type($product)) {
@@ -937,7 +939,7 @@ class VindiPaymentProcessor
         if ($has_simple_product) return true;
       } else {
         $has_simple_product = true;
-        if ($has_trial) return true;        
+        if ($has_trial) return true;
       }
     }
     return $has_trial && $has_simple_product;
