@@ -53,40 +53,7 @@ class Vindi_Test_Api extends Vindi_Test_Base
     // Check meta Vindi ID
     if (empty($vindi_customer_id)) {
 
-      // Criando usuário dentro da vindi
-      $createdUser = $this->routes->createCustomer(
-        array(
-          'name' => 'Teste de criação de usuário',
-          'email' => 'admin@teste.com',
-          'code' => 'WC-' . $user['id'],
-          'address' => array(
-            'street' => 'Flávio dallegrave',
-            'number' => '0',
-            'registry_code' => '00000000000',
-            'additional_details' => '',
-            'zipcode' => '',
-            'neighborhood' => '',
-            'city' => '',
-            'state' => '',
-            'country' => ''
-          ),
-          'phones' => array(
-            array(
-              'phone_type' => 'mobile',
-              'number' => '5599999999999',
-            ),
-            array(
-              'phone_type' => 'landline',
-              'number' => '559999999999',
-            )
-          ),
-          'registry_code' => '',
-          'notes' => '',
-          'metadata' => '',
-        )
-      );
 
-      print_r($createdUser);
     }
 
   }
