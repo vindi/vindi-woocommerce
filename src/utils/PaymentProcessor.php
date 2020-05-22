@@ -779,27 +779,31 @@ class VindiPaymentProcessor
    * @return int
    * @throws Exception
    */
-   protected function create_bill($customer_id, $order_items)
-   {
-     $data = array(
-       'customer_id' => $customer_id,
-       'payment_method_code' => $this->payment_method_code() ,
-       'bill_items' => $this->build_product_items('bill', $order_items) ,
-       'code' => $this->order->id,
-       'installments' => $this->installments()
-     );
- 
-     $bill = $this->routes->createBill($data);
- 
-     if (!$bill) {
-       $this->logger->log(sprintf('Erro no pagamento do pedido %s.', $this->order->id));
-       $message = sprintf(__('Pagamento Falhou. (%s)', VINDI) , $this->vindi_settings->api->last_error);
-       $this->order->update_status('failed', $message);
- 
-       throw new Exception($message);
-     }
-     return $bill;
-   }
+  protected function create_bill($customer_id, $order_items)
+  {
+    $data = array(
+      'customer_id' => $customer_id,
+      'payment_method_code' => $this->payment_method_code() ,
+      'bill_items' => $this->build_product_items('bill', $order_items) ,
+      'code' => $this->order->id,
+      'installments' => $this->installments()
+    );
+    if ($this->is_cc() && $this->gateway->is_interest_rate_enabled()) {
+      $data['payment_condition']['daily_fee_value'] = intval($this->gateway->get_interest_rate());
+      $data['payment_condition']['daily_fee_type'] = 'percentage';
+    }
+
+    $bill = $this->routes->createBill($data);
+
+    if (!$bill) {
+      $this->logger->log(sprintf('Erro no pagamento do pedido %s.', $this->order->id));
+      $message = sprintf(__('Pagamento Falhou. (%s)', VINDI) , $this->vindi_settings->api->last_error);
+      $this->order->update_status('failed', $message);
+
+      throw new Exception($message);
+    }
+    return $bill;
+  }
 
   /**
    * Create bill meta array to add to the order

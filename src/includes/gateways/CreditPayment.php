@@ -62,6 +62,8 @@ class VindiCreditGateway extends VindiPaymentGateway
     $this->smallest_installment = $this->get_option('smallest_installment');
     $this->installments = $this->get_option('installments');
     $this->verify_method = $this->get_option('verify_method');
+    $this->enable_interest_rate = $this->get_option('enable_interest_rate');
+    $this->interest_rate = $this->get_option('interest_rate');
 
     parent::__construct($vindi_settings, $controllers);
   }
@@ -126,6 +128,18 @@ class VindiCreditGateway extends VindiPaymentGateway
           '11' => '11x',
           '12' => '12x',
         ),
+      ),
+      'enable_interest_rate' => array(
+        'title'       => __('Habilitar juros', VINDI),
+        'type'        => 'checkbox',
+        'description' => __('Habilitar juros no parcelamento do pedido.', VINDI),
+        'default'     => 'no',
+      ),
+      'interest_rate' => array(
+        'title'       => __('Taxa de juros ao dia (%)', VINDI),
+        'type'        => 'number',
+        'description' => __('Taxa de juros que será adicionada aos pagamentos parcelados.', VINDI),
+        'default'     => '0.1',
       )
     );
   }
@@ -194,6 +208,16 @@ class VindiCreditGateway extends VindiPaymentGateway
   public function verify_method()
   {
     return 'yes' === $this->verify_method;
+  }
+
+  public function is_interest_rate_enabled()
+  {
+    return 'yes' === $this->enable_interest_rate;
+  }
+
+  public function get_interest_rate()
+  {
+    return $this->interest_rate;
   }
 
   protected function get_order_max_installments($order_total)
