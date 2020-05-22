@@ -20,11 +20,11 @@ class CustomerController
     $this->routes = $vindi_settings->routes;
 
     // Fires immediately after a new user is registered.
-    add_action('user_register', array($this, 'create'), 10, 4);
+    add_action('user_register', array($this, 'create'), 10, 1);
 
     // Fires immediately after an existing user is updated.
-    add_action('woocommerce_customer_save_address', array($this, 'update'), 10, 4);
-    add_action('woocommerce_save_account_details', array($this, 'update'), 10, 4);
+    add_action('woocommerce_customer_save_address', array($this, 'update'), 10, 1);
+    add_action('woocommerce_save_account_details', array($this, 'update'), 10, 1);
     add_action('delete_user', array($this, 'delete'), 10, 2);
   }
 
@@ -46,14 +46,15 @@ class CustomerController
     $cpf_or_cnpj = null;
     $metadata = null;
 
-    if($order) {
+
+    if($order && method_exists($order, 'needs_payment')) {
       $metadata = array();
       if ('2' === $order->get_meta('_billing_persontype')) {
         // Pessoa jurídica
         $name = $order->get_billing_company();
         $cpf_or_cnpj = $order->get_meta('_billing_cnpj');
         $notes = sprintf('Nome: %s %s', $order->get_billing_first_name(), $order->get_billing_last_name());
-  
+
         if ($this->vindi_settings->send_nfe_information()) {
           $metadata['inscricao_estadual'] = $order->get_meta('_billing_ie');
         }
@@ -61,7 +62,7 @@ class CustomerController
         // Pessoa física
         $cpf_or_cnpj = $order->get_meta('_billing_cpf');
         $notes = '';
-  
+
         if ($this->vindi_settings->send_nfe_information()) {
           $metadata['carteira_de_identidade'] = $order->get_meta('_billing_rg');
         }
@@ -72,7 +73,7 @@ class CustomerController
       array(
         'name' => $name,
         'email' => ($user['email']) ? $user['email'] : rand() . '@gmail.com',
-        'code' => 'WC-' . $user['id'],
+        'code' => 'WC-USER-'.$user['id'],
         'address' => array(
           'street' => ($customer->get_meta('billing_address_1')) ? $customer->get_meta('billing_address_1') : '',
           'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '0',
@@ -144,14 +145,15 @@ class CustomerController
     $cpf_or_cnpj = null;
     $metadata = null;
 
-    if($order) {
+
+    if($order && method_exists($order, 'needs_payment')) {
       $metadata = array();
       if ('2' === $order->get_meta('_billing_persontype')) {
         // Pessoa jurídica
         $name = $order->get_billing_company();
         $cpf_or_cnpj = $order->get_meta('_billing_cnpj');
         $notes = sprintf('Nome: %s %s', $order->get_billing_first_name(), $order->get_billing_last_name());
-  
+
         if ($this->vindi_settings->send_nfe_information()) {
           $metadata['inscricao_estadual'] = $order->get_meta('_billing_ie');
         }
@@ -161,7 +163,7 @@ class CustomerController
         $this->vindi_settings->logger->log(sprintf('Order cpf -> %s', $cpf_or_cnpj));
         $this->vindi_settings->logger->log(sprintf('Customer cpf -> %s', $customer->get_meta('billing_cpf')));
         $notes = '';
-  
+
         if ($this->vindi_settings->send_nfe_information()) {
           $metadata['carteira_de_identidade'] = $order->get_meta('_billing_rg');
         }
@@ -175,7 +177,7 @@ class CustomerController
       array(
         'name' => $name,
         'email' => ($user['email']) ? $user['email'] : rand() . '@gmail.com',
-        'code' => 'WC-' . $user['id'],
+        'code' => 'WC-USER-'.$user['id'],
         'address' => array(
           'street' => ($customer->get_meta('billing_address_1')) ? $customer->get_meta('billing_address_1') : '',
           'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '0',
