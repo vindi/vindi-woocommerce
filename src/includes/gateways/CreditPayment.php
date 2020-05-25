@@ -28,6 +28,11 @@ class VindiCreditGateway extends VindiPaymentGateway
    * @var int
    */
   private $max_installments = 12;
+
+  /**
+   * @var int
+   */
+  public static $interest_rate = 10;
  
   public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
   {
@@ -63,7 +68,7 @@ class VindiCreditGateway extends VindiPaymentGateway
     $this->installments = $this->get_option('installments');
     $this->verify_method = $this->get_option('verify_method');
     $this->enable_interest_rate = $this->get_option('enable_interest_rate');
-    $this->interest_rate = $this->get_option('interest_rate');
+    self::$interest_rate = $this->get_option('interest_rate');
 
     parent::__construct($vindi_settings, $controllers);
   }
@@ -136,8 +141,8 @@ class VindiCreditGateway extends VindiPaymentGateway
         'default'     => 'no',
       ),
       'interest_rate' => array(
-        'title'       => __('Taxa de juros ao dia (%)', VINDI),
-        'type'        => 'number',
+        'title'       => __('Taxa de juros ao mês (%)', VINDI),
+        'type'        => 'text',
         'description' => __('Taxa de juros que será adicionada aos pagamentos parcelados.', VINDI),
         'default'     => '0.1',
       )
@@ -149,13 +154,24 @@ class VindiCreditGateway extends VindiPaymentGateway
     $id = $this->id;
     $is_trial = $this->is_trial;
 
-    $total = $this->vindi_settings->woocommerce->cart->total;
+    $cart = $this->vindi_settings->woocommerce->cart;
+    $total = $cart->total;
+    foreach ($cart->get_fees() as $index => $fee) {
+      if($fee->name == __('Juros', VINDI)) {
+        $total -= $fee->amount;
+      }
+    }
+
     $max_times  = 12;
     $max_times  = $this->get_order_max_installments($total);
     
     if ($max_times > 1) {
       for ($times = 1; $times <= $max_times; $times++) {
-        $installments[$times] = ceil($total / $times * 100) / 100;
+        if ($this->is_interest_rate_enabled()) {
+          $installments[$times] = ceil(($total / $times * 100) * ((1 + ($this->get_interest_rate() / 100)) ** ($times - 1))) / 100;
+        } else {
+          $installments[$times] = ceil($total / $times * 100) / 100;
+        }
       }
     }
 
@@ -163,14 +179,14 @@ class VindiCreditGateway extends VindiPaymentGateway
     $payment_methods = $this->routes->getPaymentMethods();
 
     if ($payment_methods === false || empty($payment_methods) || ! count($payment_methods['credit_card'])) {
-      _e( 'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.', VINDI);
+      _e('Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.', VINDI);
       return;
     }
 
     $months = array();
 
     for ($i = 1 ; $i <= 12 ; $i++) {
-      $timestamp    = mktime( 0, 0, 0, $i, 1);
+      $timestamp    = mktime(0, 0, 0, $i, 1);
       $num          = date('m', $timestamp);
       $name         = date('F', $timestamp);
       $months[$num] = __($name);
@@ -215,9 +231,9 @@ class VindiCreditGateway extends VindiPaymentGateway
     return 'yes' === $this->enable_interest_rate;
   }
 
-  public function get_interest_rate()
+  public static function get_interest_rate()
   {
-    return $this->interest_rate;
+    return floatval(self::$interest_rate);
   }
 
   protected function get_order_max_installments($order_total)

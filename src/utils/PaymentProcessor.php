@@ -386,6 +386,7 @@ class VindiPaymentProcessor
 
     if ('bill' === $order_type) {
       $order_items[] = $this->build_discount_item_for_bill($order_items);
+      $order_items[] = $this->build_interest_rate_item($order_items);
     }
 
     foreach ($order_items as $order_item) {
@@ -433,6 +434,44 @@ class VindiPaymentProcessor
     }
 
     return $order_items;
+  }
+
+  /**
+   * Create the shipping item to be added to the bill.
+   *
+   * @param WC_Order_Item_Product[] $order_items. Array with all items to add
+   * the respective delivered value // TODO.
+   *
+   * @return array
+   */
+  protected function build_interest_rate_item($order_items)
+  {
+    $interest_rate_item = [];
+
+    if (!($this->is_cc() && $this->installments() > 1 && $this->gateway->is_interest_rate_enabled())) {
+      return $interest_rate_item;
+    }
+
+    $interest_rate = $this->gateway->get_interest_rate();
+    $installments = $this->installments();
+    $cart = WC()->cart;
+    $cart_total = $cart->total;
+    foreach ($cart->get_fees() as $index => $fee) {
+      if($fee->name == __('Juros', VINDI)) {
+        $cart_total -= $fee->amount;
+      }
+    }
+    $total_price = $installments * ceil(($cart_total / $installments * 100) * ((1 + ($interest_rate / 100)) ** ($installments - 1))) / 100;
+    $interest_price = (float) $total_price - $cart_total;
+
+    $item = $this->routes->findOrCreateProduct("Juros", 'wc-interest-rate');
+    $interest_rate_item = array(
+      'type' => 'interest_rate',
+      'vindi_id' => $item['id'],
+      'price' => $interest_price,
+      'qty' => 1,
+    );
+    return $interest_rate_item;
   }
 
   /**
@@ -556,7 +595,10 @@ class VindiPaymentProcessor
       )
     );
 
-    if ('discount' == $order_item['type']) {
+    if (
+      'discount' == $order_item['type'] || 'shipping' == $order_item['type'] ||
+      'tax' == $order_item['type'] || 'interest_rate' == $order_item['type']
+    ) {
       $item = array(
         'product_id' => $order_item['vindi_id'],
         'amount' => $order_item['price']
@@ -784,14 +826,10 @@ class VindiPaymentProcessor
     $data = array(
       'customer_id' => $customer_id,
       'payment_method_code' => $this->payment_method_code() ,
-      'bill_items' => $this->build_product_items('bill', $order_items) ,
+      'bill_items' => $this->build_product_items('bill', $order_items),
       'code' => $this->order->id,
       'installments' => $this->installments()
     );
-    if ($this->is_cc() && $this->installments() > 1 && $this->gateway->is_interest_rate_enabled()) {
-      $data['payment_condition']['daily_fee_value'] = intval($this->gateway->get_interest_rate());
-      $data['payment_condition']['daily_fee_type'] = 'percentage';
-    }
 
     $bill = $this->routes->createBill($data);
 

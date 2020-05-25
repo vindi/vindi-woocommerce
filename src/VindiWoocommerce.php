@@ -70,6 +70,7 @@ class WC_Vindi_Payment extends AbstractInstance
     $this->frontend_files_loader = new FrontendFilesLoader();
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
+    $this->interest_price_handler = new InterestPriceHandler();
 
     /**
       * Add Gateway to Woocommerce
@@ -109,6 +110,7 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/includes/gateways/BankSlipPayment.php';
     require_once $this->getPath() . '/includes/FrontendFilesLoader.php';
     require_once $this->getPath() . '/includes/SubscriptionStatusHandler.php';
+    require_once $this->getPath() . '/utils/InterestPriceHandler.php';
 
     require_once $this->getPath() . '/includes/admin/ProductStatus.php';
 
