@@ -78,7 +78,7 @@ class WC_Vindi_Payment extends AbstractInstance
     add_filter('woocommerce_payment_gateways', array(&$this, 'add_gateway'));
 
     /**
-      * Register webhook handler 
+      * Register webhook handler
       */
     add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
       $this->webhooks, 'handle'
@@ -103,6 +103,7 @@ class WC_Vindi_Payment extends AbstractInstance
     // Loading Abstract Method and Utils
     require_once $this->getPath() . '/utils/PaymentGateway.php';
     require_once $this->getPath() . '/utils/Conversions.php';
+    require_once $this->getPath() . '/utils/RedirectCheckout.php';
 
     require_once $this->getPath() . '/includes/admin/CouponsMetaBox.php';
     require_once $this->getPath() . '/includes/admin/Settings.php';

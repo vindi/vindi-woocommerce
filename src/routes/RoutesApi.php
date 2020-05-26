@@ -32,7 +32,7 @@ class VindiRoutes
   {
 
     $response = $this->api->request(sprintf(
-      'product/%s',
+      'products/%s',
       $product_id
     ), 'GET');
 
@@ -222,7 +222,7 @@ class VindiRoutes
    */
   public function activateSubscription($subscription_id)
   {
-    if ($response = $this->request('subscriptions/' . $subscription_id . '/reactivate', 'POST'))
+    if ($response = $this->api->request('subscriptions/' . $subscription_id . '/reactivate', 'POST'))
       return $response;
 
     return false;

@@ -21,7 +21,10 @@ if (!defined('ABSPATH')) {
 }
 
 // Adding the development variables
-include plugin_dir_path(__FILE__) . '.env.php';
+if(file_exists(plugin_dir_path(__FILE__) . '.env.php')) {
+  include plugin_dir_path(__FILE__) . '.env.php';
+}
+
 // Adding the variables
 require plugin_dir_path(__FILE__) . '/src/utils/DefinitionVariables.php';
 
