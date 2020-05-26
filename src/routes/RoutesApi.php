@@ -332,10 +332,18 @@ class VindiRoutes
     return false;
   }
 
-  public function deleteBill($bill_id)
+  public function deleteBill($bill_id, $comments = '')
   {
-    if ($response = $this->api->request("bills/{$bill_id}", 'DELETE'))
+    $query = '';
+
+    if($comments)
+      $query = '?comments= ' . $comments;
+
+    if ($response = $this->api->request(
+      sprintf('bills/%s%s', $bill_id, $query), 'DELETE')
+    ) {
       return $response;
+    }
 
     return false;
   }
