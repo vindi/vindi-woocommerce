@@ -249,7 +249,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
             /* translators: 1: Refund amount, 2: Refund ID */
             sprintf(__('[Transação #%2$s]: reembolsado R$%1$s', VINDI), $result['amount'], $result['id'])
           );
-          continue;
+          break;
       }
       if(isset($result->errors)) {
         throw new Exception($result->errors[0]->message);
