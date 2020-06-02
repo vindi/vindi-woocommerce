@@ -142,13 +142,6 @@ class VindiSettings extends WC_Settings_API
         'description'      => __('A Chave da API de sua conta na Vindi. ' . $prospects_url, VINDI),
         'default'          => '',
       ),
-      'sandbox'             => array(
-        'title'            => __('Ambiente Sandbox', VINDI),
-        'label'            => __('Ativar Sandbox', VINDI),
-        'type'             => 'checkbox',
-        'description'      => __('Ative esta opção para habilitar a comunicação com o ambiente Sandbox da Vindi.', VINDI),
-        'default'          => 'no',
-      ),
       'send_nfe_information' => array(
         'title'            => __('Emissão de NFe\'s', VINDI),
         'label'            => __('Enviar informações para emissão de NFe\'s', VINDI),
@@ -184,6 +177,13 @@ class VindiSettings extends WC_Settings_API
       'testing'              => array(
         'title'            => __('Testes', VINDI),
         'type'             => 'title',
+      ),
+      'sandbox'             => array(
+        'title'            => __('Ambiente Sandbox', VINDI),
+        'label'            => __('Ativar Sandbox', VINDI),
+        'type'             => 'checkbox',
+        'description'      => __('Ative esta opção para habilitar a comunicação com o ambiente Sandbox da Vindi.', VINDI),
+        'default'          => 'no',
       ),
       'debug'                => array(
         'title'            => __('Log de Depuração', VINDI),
