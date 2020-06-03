@@ -46,6 +46,20 @@ class CustomerController
     $cpf_or_cnpj = null;
     $metadata = null;
 
+    $phones = [];
+    if ($customer->get_meta('billing_cellphone')) {
+      $phones[] = array(
+        'phone_type' => 'mobile',
+        'number' => preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone'))
+      );
+    }
+    if ($customer->get_meta('billing_phone')) {
+      $phones[] = array(
+        'phone_type' => 'landline',
+        'number' => preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone'))
+      );
+    }
+
 
     if($order && method_exists($order, 'needs_payment')) {
       $metadata = array();
@@ -72,12 +86,11 @@ class CustomerController
     $createdUser = $this->routes->createCustomer(
       array(
         'name' => $name,
-        'email' => ($user['email']) ? $user['email'] : rand() . '@gmail.com',
+        'email' => ($user['email']) ? $user['email'] : '',
         'code' => 'WC-USER-'.$user['id'],
         'address' => array(
           'street' => ($customer->get_meta('billing_address_1')) ? $customer->get_meta('billing_address_1') : '',
-          'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '0',
-          'registry_code' => ($customer->get_meta('billing_cpf')) ? $customer->get_meta('billing_cpf') : '00000000000',
+          'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '',
           'additional_details' => ($customer->get_meta('billing_address_2')) ?  $customer->get_meta('billing_address_2') : '',
           'zipcode' => ($customer->get_meta('billing_postcode')) ? $customer->get_meta('billing_postcode') : '',
           'neighborhood' => ($customer->get_meta('billing_neighborhood')) ? $customer->get_meta('billing_neighborhood') : '',
@@ -85,16 +98,7 @@ class CustomerController
           'state' => ($customer->get_meta('billing_state')) ? $customer->get_meta('billing_state') : '',
           'country' => ($customer->get_meta('billing_country')) ? $customer->get_meta('billing_country') : ''
         ),
-        'phones' => array(
-          array(
-            'phone_type' => 'mobile',
-            'number' => ($customer->get_meta('billing_cellphone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone')) : '5599999999999',
-          ),
-          array(
-            'phone_type' => 'landline',
-            'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '559999999999',
-          )
-        ),
+        'phones' => $phones,
         'registry_code' => $cpf_or_cnpj ? $cpf_or_cnpj : '',
         'notes' => $notes ? $notes : '',
         'metadata' => !empty($metadata) ? $metadata : '',
@@ -135,10 +139,26 @@ class CustomerController
     $customer = new WC_Customer($user_id);
 
     $user = $customer->get_data();
-    $phones = array();
-    foreach ($vindiUser['phones'] as $phone) :
-      $phones[$phone['phone_type']] = $phone['id'];
-    endforeach;
+    $phones = $vindi_phones = [];
+    foreach ($vindiUser['phones'] as $phone) {
+      $vindi_phones[$phone['phone_type']] = $phone['id'];
+    }
+    if ($customer->get_meta('billing_cellphone')) {
+      $mobile = array(
+        'phone_type' => 'mobile',
+        'number' => preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone'))
+      );
+      if ($vindi_phones['mobile']) $mobile['id'] = $vindi_phones['mobile'];
+      $phones[] = $mobile;
+    }
+    if ($customer->get_meta('billing_phone')) {
+      $landline = array(
+        'phone_type' => 'landline',
+        'number' => preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone'))
+      );
+      if ($vindi_phones['landline']) $landline['id'] = $vindi_phones['landline'];
+      $phones[] = $landline;
+    }
 
     $name = (!$user['first_name']) ? $user['display_name'] : $user['first_name'] . ' ' . $user['last_name'];
     $notes = null;
@@ -176,12 +196,11 @@ class CustomerController
       $vindi_customer_id,
       array(
         'name' => $name,
-        'email' => ($user['email']) ? $user['email'] : rand() . '@gmail.com',
+        'email' => ($user['email']) ? $user['email'] : '',
         'code' => 'WC-USER-'.$user['id'],
         'address' => array(
           'street' => ($customer->get_meta('billing_address_1')) ? $customer->get_meta('billing_address_1') : '',
-          'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '0',
-          'registry_code' => ($customer->get_meta('billing_cpf')) ? $customer->get_meta('billing_cpf') : '00000000000',
+          'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '',
           'additional_details' => ($customer->get_meta('billing_address_2')) ?  $customer->get_meta('billing_address_2') : '',
           'zipcode' => ($customer->get_meta('billing_postcode')) ? $customer->get_meta('billing_postcode') : '',
           'neighborhood' => ($customer->get_meta('billing_neighborhood')) ? $customer->get_meta('billing_neighborhood') : '',
@@ -189,18 +208,7 @@ class CustomerController
           'state' => ($customer->get_meta('billing_state')) ? $customer->get_meta('billing_state') : '',
           'country' => ($customer->get_meta('billing_country')) ? $customer->get_meta('billing_country') : ''
         ),
-        'phones' => array(
-          array(
-            'id' => $phones['mobile'],
-            'phone_type' => 'mobile',
-            'number' => ($customer->get_meta('billing_cellphone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone')) : '5599999999999',
-          ),
-          array(
-            'id' => $phones['landline'],
-            'phone_type' => 'landline',
-            'number' => ($customer->get_meta('billing_phone')) ? preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone')) : '559999999999',
-          )
-        ),
+        'phones' => $phones,
         'registry_code' => $cpf_or_cnpj ? $cpf_or_cnpj : '',
         'notes' => $notes ? $notes : '',
         'metadata' => !empty($metadata) ? $metadata : '',
