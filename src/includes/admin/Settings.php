@@ -73,7 +73,6 @@ class VindiSettings extends WC_Settings_API
       add_action('woocommerce_update_options_settings_vindi', array(&$this, 'process_admin_options'), 10);
       add_action('woocommerce_update_options_settings_vindi', array($this, 'api_key_field'), 11);
       add_action('woocommerce_settings_tabs_settings_vindi', array($this, 'is_api_key_valid'));
-      // add_action('woocommerce_update_options_shipping_methods', array(&$this, 'process_admin_options'));
 
      /**
       * Add custom input fields in coupon 'General' tab
