@@ -9,6 +9,14 @@
 	],
 "creatorBuild": "32186",
 "files": {
+	"/.cache/php/php-lint/linted/0abfee3259ab6c326cbdf2ecabfda800a067c6fb": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/.cache/php/php-lint/linted/0abfee3259ab6c326cbdf2ecabfda800a067c6fb",
+		"oF": 0
+		},
 	"/.cache/php/php-lint/linted/157b602de9b685f6a3c1d945365d770746d404cf": {
 		"cB": 0,
 		"ft": 8192,
@@ -63,6 +71,14 @@
 		"hM": 0,
 		"oA": 0,
 		"oAP": "/.cache/php/php-lint/linted/28726a7ceb58cd8464decc2af8fc1f80b2bb6193",
+		"oF": 0
+		},
+	"/.cache/php/php-lint/linted/2d94d39cbdbcf63637e5e1dd6b2cfbb6ca3ed550": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/.cache/php/php-lint/linted/2d94d39cbdbcf63637e5e1dd6b2cfbb6ca3ed550",
 		"oF": 0
 		},
 	"/.cache/php/php-lint/linted/49de47621aae246e49c57c2ccb8d20c59cbd4f84": {
@@ -183,6 +199,14 @@
 		"hM": 0,
 		"oA": 0,
 		"oAP": "/.cache/php/php-lint/linted/7f04606aaabe029a5589280a528cdcb15d11c0b3",
+		"oF": 0
+		},
+	"/.cache/php/php-lint/linted/89d651c48c6f3cb1aeb0a36b9a165c5ad5d3299b": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/.cache/php/php-lint/linted/89d651c48c6f3cb1aeb0a36b9a165c5ad5d3299b",
 		"oF": 0
 		},
 	"/.cache/php/php-lint/linted/8e0f81069c875166acc6bc20a993a8d187edb061": {
@@ -633,6 +657,17 @@
 		"plM": 52780316221407,
 		"prP": 0
 		},
+	"/src/assets/images/icon-2.png": {
+		"ft": 32768,
+		"iS": 2744,
+		"oA": 0,
+		"oAP": "/src/assets/images/icon-2.png",
+		"oF": 0,
+		"oIPL": 0,
+		"opt": 0,
+		"oT": 1,
+		"q": 100
+		},
 	"/src/assets/images/icon-2.svg": {
 		"ft": 2097152,
 		"miP": 0,
@@ -648,6 +683,16 @@
 		"miP": 0,
 		"oA": 2,
 		"oAP": "/src/assets/images/icon-3.svg",
+		"oF": 0,
+		"opt": 0,
+		"plM": 52780316221407,
+		"prP": 0
+		},
+	"/src/assets/images/icon-4.svg": {
+		"ft": 2097152,
+		"miP": 0,
+		"oA": 2,
+		"oAP": "/src/assets/images/icon-4.svg",
 		"oF": 0,
 		"opt": 0,
 		"plM": 52780316221407,
