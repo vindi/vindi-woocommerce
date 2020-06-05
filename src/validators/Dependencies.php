@@ -47,6 +47,8 @@ class VindiDependencies
       ]
     ];
 
+    $errors = [];
+
     foreach ($critical_dependencies as $dependency) {
       $version = $dependency['version'];
       if (!version_compare(PHP_VERSION, $version['number'], $version['validation'])) {
@@ -59,9 +61,11 @@ class VindiDependencies
           'admin_notices',
           $notice
         );
-
-        return false;
+        array_push($errors, $plugin);
       }
+    }
+    if(!empty($errors)) {
+      return false;
     }
 
     return true;
@@ -116,6 +120,8 @@ class VindiDependencies
 
     self::is_wc_subscriptions_active();
 
+    $errors = [];
+
     foreach ($required_plugins as $plugin) {
       if (self::is_plugin_active($plugin) == false) {
         $name = $plugin['plugin']['name'];
@@ -129,12 +135,16 @@ class VindiDependencies
           $notice
         );
 
-        return false;
+        array_push($errors, $plugin);
       }
 
       if (self::verify_plugin_version($plugin) == false) {
-        return false;
+        array_push($errors, $plugin);
       }
+    }
+
+    if(!empty($errors)) {
+      return false;
     }
 
     return true;
@@ -151,7 +161,7 @@ class VindiDependencies
    */
   public static function missing_notice($name, $version, $link)
   {
-    include_once plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
+    include plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
   }
 
   /**
@@ -164,7 +174,7 @@ class VindiDependencies
    */
   public static function critical_dependency_missing_notice($name, $version)
   {
-    include_once plugin_dir_path(VINDI_SRC) . 'src/views/missing-critical-dependency.php';
+    include plugin_dir_path(VINDI_SRC) . 'src/views/missing-critical-dependency.php';
   }
 
   /**
