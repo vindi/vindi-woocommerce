@@ -9,12 +9,13 @@ if (!defined('ABSPATH')) {
 }
 ?>
 
-<div class="error">
+<div class="vindi-alert notice vindi-error d-flex" style=>
   <p>
     <?php echo sprintf(
       __('O Plugin Vindi WooCommerce depende da versão %s do %s para funcionar!', VINDI),
       $version,
-      "<a href=\"{$link}\">" . __($name, VINDI) . '</a>'
+      $name,
     )?>
   </p>
+  <a class="btn-to-right" href="<?php echo $link; ?>">Instalar e Ativar</a>
 </div>
