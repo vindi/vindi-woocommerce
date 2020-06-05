@@ -109,7 +109,6 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/includes/admin/Settings.php';
     require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
     require_once $this->getPath() . '/includes/gateways/BankSlipPayment.php';
-    require_once $this->getPath() . '/includes/FrontendFilesLoader.php';
     require_once $this->getPath() . '/includes/SubscriptionStatusHandler.php';
     require_once $this->getPath() . '/utils/InterestPriceHandler.php';
 
@@ -131,12 +130,15 @@ class WC_Vindi_Payment extends AbstractInstance
 
   public static function get_instance()
   {
+    require_once self::getPath() . '/includes/FrontendFilesLoader.php';
+    new FrontendFilesLoader();
+
     if (VindiDependencies::check()) {
       // If the single instance hasn't been set, set it now.
       if (null == self::$instance) {
         self::$instance = new self;
       }
-  
+
       return self::$instance;
     }
   }

@@ -1032,6 +1032,22 @@
 		"oAP": "/src/views/invalid-api-key.php",
 		"oF": 0
 		},
+	"/src/views/missing-critical-dependency.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/src/views/missing-critical-dependency.php",
+		"oF": 0
+		},
+	"/src/views/missing-dependency.php": {
+		"cB": 0,
+		"ft": 8192,
+		"hM": 0,
+		"oA": 0,
+		"oAP": "/src/views/missing-dependency.php",
+		"oF": 0
+		},
 	"/src/views/product-status.php": {
 		"cB": 0,
 		"ft": 8192,
