@@ -372,7 +372,7 @@ class VindiRoutes
             $payment_methods['credit_card'],
             $method['payment_companies']
           );
-        } else if ('PaymentMethod::BankSlip' === $method['type']) {
+        } else if ('PaymentMethod::BankSlip' === $method['type'] || 'PaymentMethod::OnlineBankSlip' === $method['type']) {
           $payment_methods['bank_slip'] = true;
         }
       }
