@@ -140,3 +140,6 @@ temp/
 
 # Variaveis de ambiente
 .env.php
+
+# Compiladores de CSS
+config.codekit3
