@@ -154,14 +154,18 @@ class VindiDependencies
    * Generate notice content
    *
    * @param string $name Plugin name
-   * @param string $version Plugin version 
+   * @param string $version Plugin version
    * @param string $link Plugin url
    *
    * @return  string
    */
   public static function missing_notice($name, $version, $link)
   {
-    include plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
+    echo '<div class="error vindi-error"><p>' . sprintf(
+        __('O Plugin Vindi WooCommerce depende da versão %s do %s para funcionar!', VINDI),
+        $version,
+        "<a href=\"{$link}\">" . __($name, VINDI) . '</a>'
+      ) . '</p></div>';
   }
 
   /**
@@ -209,7 +213,7 @@ class VindiDependencies
       $version_match['number'],
       $version_match['validation']
     );
-    
+
     if ($version_compare == false) {
       $name = $plugin['plugin']['name'];
       $number = $version_match['number'];
