@@ -31,12 +31,9 @@ require plugin_dir_path(__FILE__) . '/src/utils/DefinitionVariables.php';
 // Adding dependency validator
 require_once plugin_dir_path(__FILE__) . '/src/validators/Dependencies.php';
 
-if (VindiDependencies::check()) {
+require_once VINDI_PATH . 'src/VindiWoocommerce.php';
 
-  require_once VINDI_PATH . 'src/VindiWoocommerce.php';
-
-  if (!defined('VINDI_TESTS')) {
-    // In tests we run the instance manually.
-    // $GLOBALS['vindi'] = WC_Vindi_Payment::get_instance();
-  }
+if (!defined('VINDI_TESTS')) {
+  // In tests we run the instance manually.
+  // $GLOBALS['vindi'] = WC_Vindi_Payment::get_instance();
 }

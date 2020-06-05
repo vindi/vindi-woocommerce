@@ -47,6 +47,8 @@ class VindiDependencies
       ]
     ];
 
+    $errors = [];
+
     foreach ($critical_dependencies as $dependency) {
       $version = $dependency['version'];
       if (!version_compare(PHP_VERSION, $version['number'], $version['validation'])) {
@@ -59,9 +61,11 @@ class VindiDependencies
           'admin_notices',
           $notice
         );
-
-        return false;
+        array_push($errors, $plugin);
       }
+    }
+    if(!empty($errors)) {
+      return false;
     }
 
     return true;
@@ -81,13 +85,20 @@ class VindiDependencies
     if (!self::$active_plugins) {
       self::init();
     }
+    if (current_user_can('install_plugins')) {
+      $woocommerce_url = wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=woocommerce'), 'install-plugin_woocommerce');
+      $ecfb_url = wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=woocommerce-extra-checkout-fields-for-brazil'), 'install-plugin_woocommerce-extra-checkout-fields-for-brazil');
+    } else {
+      $woocommerce_url = 'https://wordpress.org/extend/plugins/woocommerce/';
+      $ecfb_url = 'https://wordpress.org/extend/plugins/woocommerce-extra-checkout-fields-for-brazil/';
+    }
 
     $required_plugins = [
       [
         'path' => 'woocommerce/woocommerce.php',
         'plugin' => [
           'name' => 'WooCommerce',
-          'url' => 'https://wordpress.org/extend/plugins/woocommerce/',
+          'url' =>  $woocommerce_url,
           'version' => [
             'validation' => '>=',
             'number' => '3.0'
@@ -97,8 +108,8 @@ class VindiDependencies
       [
         'path' => 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php',
         'plugin' => [
-          'name' => 'WooCommerce Extra Checkout Fields for Brazil',
-          'url' => 'https://wordpress.org/extend/plugins/woocommerce-extra-checkout-fields-for-brazil/',
+          'name' => 'Brazilian Market on WooCommerce',
+          'url' => $ecfb_url,
           'version' => [
             'validation' => '>=',
             'number' => '3.5'
@@ -108,6 +119,8 @@ class VindiDependencies
     ];
 
     self::is_wc_subscriptions_active();
+
+    $errors = [];
 
     foreach ($required_plugins as $plugin) {
       if (self::is_plugin_active($plugin) == false) {
@@ -122,12 +135,16 @@ class VindiDependencies
           $notice
         );
 
-        return false;
+        array_push($errors, $plugin);
       }
 
       if (self::verify_plugin_version($plugin) == false) {
-        return false;
+        array_push($errors, $plugin);
       }
+    }
+
+    if(!empty($errors)) {
+      return false;
     }
 
     return true;
@@ -144,11 +161,7 @@ class VindiDependencies
    */
   public static function missing_notice($name, $version, $link)
   {
-    echo '<div class="error vindi-error"><p>' . sprintf(
-        __('O Plugin Vindi WooCommerce depende da versão %s do %s para funcionar!', VINDI),
-        $version,
-        "<a href=\"{$link}\">" . __($name, VINDI) . '</a>'
-      ) . '</p></div>';
+    include plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
   }
 
   /**
@@ -161,12 +174,7 @@ class VindiDependencies
    */
   public static function critical_dependency_missing_notice($name, $version)
   {
-    echo '<div class="error"><p>' . sprintf(
-        __('O Plugin Vindi WooCommerce depende da versão %s+ do %s para funcionar! Como a versão atual do %s é mais antiga, o plugin foi DESATIVADO!', VINDI),
-        $version,
-        $name,
-        $name
-      ) . '</p></div>';
+    include plugin_dir_path(VINDI_SRC) . 'src/views/missing-critical-dependency.php';
   }
 
   /**
