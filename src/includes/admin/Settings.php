@@ -73,7 +73,6 @@ class VindiSettings extends WC_Settings_API
       add_action('woocommerce_update_options_settings_vindi', array(&$this, 'process_admin_options'), 10);
       add_action('woocommerce_update_options_settings_vindi', array($this, 'api_key_field'), 11);
       add_action('woocommerce_settings_tabs_settings_vindi', array($this, 'is_api_key_valid'));
-      // add_action('woocommerce_update_options_shipping_methods', array(&$this, 'process_admin_options'));
 
      /**
       * Add custom input fields in coupon 'General' tab
@@ -185,12 +184,6 @@ class VindiSettings extends WC_Settings_API
         'description'      => __('Ative esta opção para habilitar a comunicação com o ambiente Sandbox da Vindi.', VINDI),
         'default'          => 'no',
       ),
-      'api_key_sandbox'     => array(
-        'title'            => __('Chave da API Sandbox Vindi', VINDI),
-        'type'             => 'text',
-        'description'      => __('A Chave da API Sandbox de sua conta na Vindi (só preencha se a opção anterior estiver habilitada). ' . $sand_box_article, VINDI),
-        'default'          => '',
-      ),
       'debug'                => array(
         'title'            => __('Log de Depuração', VINDI),
         'label'            => __('Ativar Logs', VINDI),
@@ -229,10 +222,6 @@ class VindiSettings extends WC_Settings_API
    **/
   public function get_api_key()
   {
-    if ('yes' === $this->get_is_active_sandbox()) {
-      return $this->settings['api_key_sandbox'];
-    }
-
     return $this->settings['api_key'];
   }
 
