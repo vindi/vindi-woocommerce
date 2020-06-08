@@ -20,33 +20,35 @@
   if(!empty($api_key))
       $merchant = get_transient('vindi_merchant');
 ?>
+
 <div class="below-h2 <?php echo $merchant !== false ? 'updated' : 'error'; ?>">
-	<h3 class="wc-settings-sub-title">
+	<h3 class="wc-settings-sub-title title-1">
 		<?php _e('Link de configuração dos Eventos da Vindi', VINDI); ?>
 	</h3>
 
 	<p><?php _e('Copie esse link e utilize-o para configurar os eventos nos Webhooks da Vindi.', VINDI); ?></p>
 
-	<p>
-		<input type="text" value="<?php echo $settings->get_webhooks_url(); ?>" readonly="readonly" style="width:100%;"
-      onClick="this.select(); this.setSelectionRange(0, this.value.length); document.execCommand('copy');"/>
-	</p>
+  <input type="text" value="<?php echo $settings->get_webhooks_url(); ?>" readonly="readonly"
+    onClick="this.select(); this.setSelectionRange(0, this.value.length); document.execCommand('copy');"/>
+  <hr>
 
-	<h3 class="wc-settings-sub-title">
-		<?php _e( 'Teste de conexão com a Vindi', VINDI); ?>
-	</h3>
-
-	<div>
-    <?php
-      if($merchant):
-    ?>
-        <p><?php _e('Conectado com sucesso!', VINDI) ?></p>
-        <p><?php echo sprintf(__('Conta: <strong>%s</strong>.', VINDI), $merchant['name']) ?></p>
-        <p><?php echo sprintf(__('Status: <strong>%s</strong>.', VINDI), ucwords($merchant['status'])) ?></p>
-    <?php
-      else:
-        echo sprintf(__('<p>Falha na conexão! <br><b>%s</b></p>', VINDI), $settings->api->last_error);
-      endif; 
-    ?>
+	<div class="test-return-infos">
+    <?php if($merchant): ?>
+        <div>
+          <h3 class="wc-settings-sub-title title-2"><?php _e( 'Teste de conexão com a Vindi', VINDI); ?></h3>
+          <p><?php _e('Conectado com sucesso!', VINDI) ?></p>
+        </div>
+        <div>
+          <p><?php echo sprintf(__('Conta: <strong>%s</strong>', VINDI), $merchant['name']) ?></p>
+        </div>
+        <div>
+          <p><?php echo sprintf(__('Status: <strong>%s</strong>', VINDI), ucwords($merchant['status'])) ?></p>
+        </div>
+    <?php else: ?>
+        <div>
+          <h3 class="wc-settings-sub-title title-2"><?php _e( 'Teste de conexão com a Vindi', VINDI); ?></h3>
+          <p><?php echo sprintf(__('Falha na conexão! <br><strong>%s</strong>', VINDI), $settings->api->last_error); ?></p>
+        </div>
+    <?php endif; ?>
 	</div>
 </div>
