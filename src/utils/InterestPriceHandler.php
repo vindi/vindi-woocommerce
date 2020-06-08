@@ -13,12 +13,12 @@ class InterestPriceHandler {
   }
 
   public function add_installment_change_script() {
-    // echo '<pre>';
-    // print_r(WC()->session->get('coco'));
-    // echo '</pre>';
     if (is_checkout()): ?>
       <script type="text/javascript">
         jQuery(document).ready(function($) {
+          $('form.checkout').on('change', 'input[name="payment_method"]', function() {
+            $('body').trigger('update_checkout');
+          });
           $('form.checkout').on('change', 'select[name^="vindi_cc_installments"]', function() {
             const selectedValue = $(this).val();
             $('body').trigger('update_checkout');
@@ -29,16 +29,13 @@ class InterestPriceHandler {
               $(`select[name^="vindi_cc_installments"] option[value="${selectedValue}"]`).prop('selected', true);
             });
           });
+          
         });
       </script>
     <?php endif;
   }
 
   public function calculate_cost($cart) {
-    $ext_cst_label_billing 	= 'OLHA A TAXA';
-    $ext_cst_amount_type = 'fixed';
-    $ext_cst_amount = 24.69;
-
     if (!$_POST || (is_admin() && !is_ajax())) {
       return;
     }
@@ -49,7 +46,10 @@ class InterestPriceHandler {
       $post_data = $_POST;
     }
 
-    if (isset($post_data['vindi_cc_installments']) && $post_data['vindi_cc_installments'] > 1) {
+    if (isset($post_data['vindi_cc_installments']) &&
+      $post_data['vindi_cc_installments'] > 1 &&
+      $post_data['payment_method'] === 'vindi-credit-card'
+    ) {
       global $woocommerce;
       $interest_rate = VindiCreditGateway::get_interest_rate();
       $installments = intval($post_data['vindi_cc_installments']);
