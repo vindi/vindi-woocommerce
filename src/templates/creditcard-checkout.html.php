@@ -34,15 +34,14 @@
   <?php endif; ?>
 
   <div class='vindi-new-cc-data'>
-    <p class="form-row form-row-wide">
+    <div>
       <label for="vindi_cc_fullname">
         <?php _e("Nome Impresso no Cartão", VINDI); ?>
         <span class="required">*</span>
       </label>
       <input type="text" class="input-text" name="vindi_cc_fullname"/>
-    </p>
-    
-    <p class="form-row form-row-first">
+    </div>
+    <div>
       <label for="vindi_cc_paymentcompany">
         <?php _e("Bandeira do cartão", VINDI); ?>
         <span class="required">*</span>
@@ -52,19 +51,15 @@
           <option value="<?php echo $company['code']; ?>"><?php echo $company['name']; ?></option>
         <?php endforeach; ?>
       </select>
-    </p>
-
-    <p class="form-row form-row-last">
+    </div>
+    <div>
       <label for="vindi_cc_number">
         <?php _e("Número do Cartão de Crédito", VINDI); ?>
         <span class="required">*</span>
       </label>
       <input type="text" class="input-text wc-credit-card-form-card-number" maxlength="20" name="vindi_cc_number" autocomplete="off" placeholder="•••• •••• •••• ••••" style="padding-right:55px"/>
-    </p>
-
-    <div class="clear"></div>
-
-    <p class="form-row form-row-first">
+    </div>
+    <div>
       <label for="vindi_cc_monthexpiry"><?php _e( "Validade do Cartão", VINDI ) ?>
         <span class="required">*</span>
       </label>
@@ -74,26 +69,24 @@
           <option value="<?php echo $number; ?>"><?php echo str_pad($number, 2, STR_PAD_LEFT); ?> - <?php echo __($name); ?></option>
         <?php endforeach; ?>
       </select>
-
+    </div>
+    <div>
       <select name="vindi_cc_yearexpiry" style="width:90px" class="input-text">
         <?php foreach($years as $year): ?>
           <option value="<?php echo $year; ?>"><?php echo $year; ?></option>
         <?php endforeach; ?>
       </select>
-    </p>
-
-    <p class="form-row form-row-last">
+    </div>
+    <div>
       <label for="vindi_cc_cvc">
         <?php _e("Código de Segurança do Cartão", VINDI); ?>
         <span class="required">*</span>
       </label>
-
       <input type="text" class="input-text wc-credit-card-form-card-cvc" name="vindi_cc_cvc" placeholder="CCV" autocomplete="off" maxlength="4" style="width: 4em;"/>
-
+    </div>
       <span class="help vindi_card_csc_description">
         <?php _e('3 ou 4 dígitos localizados do verso do cartão.', VINDI); ?>
       </span>
-    </p>
   </div>
 
   <?php if (isset($installments)): ?>
