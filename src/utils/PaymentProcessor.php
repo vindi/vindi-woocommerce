@@ -464,7 +464,7 @@ class VindiPaymentProcessor
         $cart_total -= $fee->amount;
       }
     }
-    $total_price = $installments * ceil(($cart_total / $installments * 100) * ((1 + ($interest_rate / 100)) ** ($installments - 1))) / 100;
+    $total_price = $cart_total * (1 + (($interest_rate / 100) * ($installments - 1)));
     $interest_price = (float) $total_price - $cart_total;
 
     $item = $this->routes->findOrCreateProduct("Juros", 'wc-interest-rate');
