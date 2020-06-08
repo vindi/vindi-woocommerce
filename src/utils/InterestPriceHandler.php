@@ -51,13 +51,13 @@ class InterestPriceHandler {
       $post_data['payment_method'] === 'vindi-credit-card'
     ) {
       global $woocommerce;
-      $interest_rate = VindiCreditGateway::get_interest_rate();
+      $interest_rate = get_option('woocommerce_vindi-credit-card_settings', true)['interest_rate'];
       $installments = intval($post_data['vindi_cc_installments']);
       $tax_total = 0;
       $taxes = $cart->get_taxes(); 
       foreach($taxes as $tax) $tax_total += $tax;
       $cart_total = ($cart->get_cart_contents_total() + $cart->get_shipping_total() + $tax_total);
-      $total_price = $installments * ceil(($cart_total / $installments * 100) * ((1 + ($interest_rate / 100)) ** ($installments - 1))) / 100;
+      $total_price = $cart_total * (1 + (($interest_rate / 100) * ($installments - 1)));
       $interest_price = (float) $total_price - $cart_total;
       WC()->cart->add_fee(__('Juros', VINDI), $interest_price);
     }

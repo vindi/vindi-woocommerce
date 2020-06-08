@@ -32,7 +32,7 @@ class VindiCreditGateway extends VindiPaymentGateway
   /**
    * @var int
    */
-  public static $interest_rate = 10;
+  public $interest_rate;
  
   public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
   {
@@ -68,7 +68,7 @@ class VindiCreditGateway extends VindiPaymentGateway
     $this->installments = $this->get_option('installments');
     $this->verify_method = $this->get_option('verify_method');
     $this->enable_interest_rate = $this->get_option('enable_interest_rate');
-    self::$interest_rate = $this->get_option('interest_rate');
+    $this->interest_rate = $this->get_option('interest_rate');
 
     parent::__construct($vindi_settings, $controllers);
   }
@@ -168,7 +168,7 @@ class VindiCreditGateway extends VindiPaymentGateway
     if ($max_times > 1) {
       for ($times = 1; $times <= $max_times; $times++) {
         if ($this->is_interest_rate_enabled()) {
-          $installments[$times] = ceil(($total / $times * 100) * ((1 + ($this->get_interest_rate() / 100)) ** ($times - 1))) / 100;
+          $installments[$times] = ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
         } else {
           $installments[$times] = ceil($total / $times * 100) / 100;
         }
@@ -231,9 +231,9 @@ class VindiCreditGateway extends VindiPaymentGateway
     return 'yes' === $this->enable_interest_rate;
   }
 
-  public static function get_interest_rate()
+  public function get_interest_rate()
   {
-    return floatval(self::$interest_rate);
+    return floatval($this->interest_rate);
   }
 
   protected function get_order_max_installments($order_total)
