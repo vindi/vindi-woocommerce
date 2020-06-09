@@ -138,7 +138,7 @@ class VindiDependencies
         array_push($errors, $plugin);
       }
 
-      if (self::verify_plugin_version($plugin) == false) {
+      if (!defined('VINDI_TESTS') && self::verify_plugin_version($plugin) == false) {
         array_push($errors, $plugin);
       }
     }
