@@ -235,12 +235,12 @@ class VindiSettings extends WC_Settings_API
   }
 
   /**
-   * Check if SSL is enabled when merchant is not trial.
+   * Check if SSL is enabled when merchant is not in sandbox.
    * @return boolean
    */
-  public static function check_ssl()
+  public function check_ssl()
   {
-    if ($this->routes->isMerchantStatusTrialOrSandbox()) {
+    if ($this->get_is_active_sandbox()) {
       return true;
     } else {
       return is_ssl();
