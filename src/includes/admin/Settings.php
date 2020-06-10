@@ -240,8 +240,8 @@ class VindiSettings extends WC_Settings_API
    */
   public static function check_ssl()
   {
-    if (WC_Vindi_Payment::MODE != 'development') {
-      return false;
+    if ($this->routes->isMerchantStatusTrialOrSandbox()) {
+      return true;
     } else {
       return is_ssl();
     }
