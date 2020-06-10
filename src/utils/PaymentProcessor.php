@@ -561,7 +561,9 @@ class VindiPaymentProcessor
     $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
     $bill_total_discount = 0;
     foreach ($order_items as $order_item) {
-      $bill_total_discount += (float) ($order_item['subtotal'] - $order_item['total']);
+      if(isset($order_item['subtotal']) && isset($order_item['total'])) {
+        $bill_total_discount += (float) ($order_item['subtotal'] - $order_item['total']);
+      }
     }
 
     if (empty($bill_total_discount)) {
@@ -746,7 +748,7 @@ class VindiPaymentProcessor
    */
   protected function installments()
   {
-    if ('credit_card' == $this->payment_method_code() && !is_null($_POST['vindi_cc_installments'])) return $_POST['vindi_cc_installments'];
+    if ('credit_card' == $this->payment_method_code() && isset($_POST['vindi_cc_installments'])) return $_POST['vindi_cc_installments'];
 
     return 1;
   }
