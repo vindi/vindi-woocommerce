@@ -368,7 +368,7 @@ class VindiPaymentProcessor
    *
    * @throws Exception
    */
-  protected function build_product_items($order_type = 'bill', $product)
+  public function build_product_items($order_type = 'bill', $product)
   {
     $call_build_items = "build_product_items_for_{$order_type}";
 
