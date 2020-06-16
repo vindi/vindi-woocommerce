@@ -161,7 +161,7 @@ class ProductController
       return;
     }
 
-    $vindi_product_id = get_post_meta($product->id, 'vindi_product_id', true);
+    $vindi_product_id = get_post_meta($post_id, 'vindi_product_id', true);
 
     if(empty($vindi_product_id)) {
       return;
@@ -195,7 +195,7 @@ class ProductController
       return;
     }
 
-    $vindi_product_id = get_post_meta($product->id, 'vindi_product_id', true);
+    $vindi_product_id = get_post_meta($post_id, 'vindi_product_id', true);
 
     if(empty($vindi_product_id)) {
       return;
