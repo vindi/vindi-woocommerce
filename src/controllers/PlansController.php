@@ -53,7 +53,6 @@ class PlansController
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
     if(!$recreated && get_post_status($post_id) != 'publish' || (
-      !empty(get_post_meta($post_id, 'vindi_product_created', true)) &&
       !empty(get_post_meta($post_id, 'vindi_plan_id', true)) &&
       !empty(get_post_meta($post_id, 'vindi_product_id', true)))
     ) {
@@ -133,14 +132,10 @@ class PlansController
         update_post_meta( $variation['variation_id'], 'vindi_product_id', $createdProduct['id'] );
 
         update_post_meta( $variation['variation_id'], 'vindi_plan_id', $createdPlan['id'] );
-
-        update_post_meta( $variation['variation_id'], 'vindi_product_created', true );
       }
       update_post_meta( $post_id, 'vindi_product_id', end($variations_products)['id'] );
 
       update_post_meta( $post_id, 'vindi_plan_id', end($variations_products)['id'] );
-
-      update_post_meta( $post_id, 'vindi_product_created', true );
 
       return array(
         'product' => $variations_products,
@@ -208,8 +203,6 @@ class PlansController
     }
     
     if($createdPlan && $createdProduct) {
-      update_post_meta( $post_id, 'vindi_product_created', true );
-
       set_transient('vindi_product_message', 'created', 60);
     } else {
       set_transient('vindi_product_message', 'error', 60);
@@ -312,14 +305,10 @@ class PlansController
         update_post_meta( $variation['variation_id'], 'vindi_product_id', $updatedProduct['id'] );
 
         update_post_meta( $variation['variation_id'], 'vindi_plan_id', $updatedPlan['id'] );
-
-        update_post_meta( $variation['variation_id'], 'vindi_product_created', true );
       }
       update_post_meta( $post_id, 'vindi_product_id', end($variations_products)['id'] );
 
       update_post_meta( $post_id, 'vindi_plan_id', end($variations_products)['id'] );
-
-      update_post_meta( $post_id, 'vindi_product_created', true );
 
       return array(
         'product' => $variations_products,
