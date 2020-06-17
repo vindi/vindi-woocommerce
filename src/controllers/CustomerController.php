@@ -25,7 +25,7 @@ class CustomerController
     // Fires immediately after an existing user is updated.
     add_action('woocommerce_customer_save_address', array($this, 'update'), 10, 1);
     add_action('woocommerce_save_account_details', array($this, 'update'), 10, 1);
-    add_action('delete_user', array($this, 'delete'), 10, 2);
+    add_action('delete_user', array($this, 'delete'), 10, 1);
   }
 
   /**
@@ -53,10 +53,10 @@ class CustomerController
         'number' => preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone'))
       );
     }
-    if ($customer->get_meta('billing_phone')) {
+    if ($customer->get_billing_phone()) {
       $phones[] = array(
         'phone_type' => 'landline',
-        'number' => preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone'))
+        'number' => preg_replace('/\D+/', '', '55' . $customer->get_billing_phone())
       );
     }
 
@@ -89,14 +89,14 @@ class CustomerController
         'email' => ($user['email']) ? $user['email'] : '',
         'code' => 'WC-USER-'.$user['id'],
         'address' => array(
-          'street' => ($customer->get_meta('billing_address_1')) ? $customer->get_meta('billing_address_1') : '',
+          'street' => ($customer->get_billing_address_1()) ? $customer->get_billing_address_1() : '',
           'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '',
-          'additional_details' => ($customer->get_meta('billing_address_2')) ?  $customer->get_meta('billing_address_2') : '',
-          'zipcode' => ($customer->get_meta('billing_postcode')) ? $customer->get_meta('billing_postcode') : '',
+          'additional_details' => ($customer->get_billing_address_2()) ?  $customer->get_billing_address_2() : '',
+          'zipcode' => ($customer->get_billing_postcode()) ? $customer->get_billing_postcode() : '',
           'neighborhood' => ($customer->get_meta('billing_neighborhood')) ? $customer->get_meta('billing_neighborhood') : '',
-          'city' => ($customer->get_meta('billing_city')) ? $customer->get_meta('billing_city') : '',
-          'state' => ($customer->get_meta('billing_state')) ? $customer->get_meta('billing_state') : '',
-          'country' => ($customer->get_meta('billing_country')) ? $customer->get_meta('billing_country') : ''
+          'city' => ($customer->get_billing_city()) ? $customer->get_billing_city() : '',
+          'state' => ($customer->get_billing_state()) ? $customer->get_billing_state() : '',
+          'country' => ($customer->get_billing_country()) ? $customer->get_billing_country() : ''
         ),
         'phones' => $phones,
         'registry_code' => $cpf_or_cnpj ? $cpf_or_cnpj : '',
@@ -151,10 +151,10 @@ class CustomerController
       if ($vindi_phones['mobile']) $mobile['id'] = $vindi_phones['mobile'];
       $phones[] = $mobile;
     }
-    if ($customer->get_meta('billing_phone')) {
+    if ($customer->get_billing_phone()) {
       $landline = array(
         'phone_type' => 'landline',
-        'number' => preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_phone'))
+        'number' => preg_replace('/\D+/', '', '55' . $customer->get_billing_phone())
       );
       if ($vindi_phones['landline']) $landline['id'] = $vindi_phones['landline'];
       $phones[] = $landline;
@@ -199,14 +199,14 @@ class CustomerController
         'email' => ($user['email']) ? $user['email'] : '',
         'code' => 'WC-USER-'.$user['id'],
         'address' => array(
-          'street' => ($customer->get_meta('billing_address_1')) ? $customer->get_meta('billing_address_1') : '',
+          'street' => ($customer->get_billing_address_1()) ? $customer->get_billing_address_1() : '',
           'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '',
-          'additional_details' => ($customer->get_meta('billing_address_2')) ?  $customer->get_meta('billing_address_2') : '',
-          'zipcode' => ($customer->get_meta('billing_postcode')) ? $customer->get_meta('billing_postcode') : '',
+          'additional_details' => ($customer->get_billing_address_2()) ?  $customer->get_billing_address_2() : '',
+          'zipcode' => ($customer->get_billing_postcode()) ? $customer->get_billing_postcode() : '',
           'neighborhood' => ($customer->get_meta('billing_neighborhood')) ? $customer->get_meta('billing_neighborhood') : '',
-          'city' => ($customer->get_meta('billing_city')) ? $customer->get_meta('billing_city') : '',
-          'state' => ($customer->get_meta('billing_state')) ? $customer->get_meta('billing_state') : '',
-          'country' => ($customer->get_meta('billing_country')) ? $customer->get_meta('billing_country') : ''
+          'city' => ($customer->get_billing_city()) ? $customer->get_billing_city() : '',
+          'state' => ($customer->get_billing_state()) ? $customer->get_billing_state() : '',
+          'country' => ($customer->get_billing_country()) ? $customer->get_billing_country() : ''
         ),
         'phones' => $phones,
         'registry_code' => $cpf_or_cnpj ? $cpf_or_cnpj : '',
@@ -225,7 +225,7 @@ class CustomerController
    * @version 1.0.0
    */
 
-  function delete($user_id, $reassign)
+  function delete($user_id)
   {
 
     $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id')[0];
@@ -247,5 +247,7 @@ class CustomerController
     $deletedUser = $this->routes->deleteCustomer(
       $vindi_customer_id
     );
+
+    return $deletedUser;
   }
 }
