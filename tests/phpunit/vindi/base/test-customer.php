@@ -46,6 +46,7 @@ class Vindi_Test_Customer_Controller extends Vindi_Test_Base
     );
 
     $this->customer = WC_Helper_Customer::create_customer();
+    update_user_meta($this->customer->get_id(), 'vindi_customer_id', 328876);
   }
 
   public function tearDown()
@@ -64,7 +65,6 @@ class Vindi_Test_Customer_Controller extends Vindi_Test_Base
     $settings->routes = $routes;
 
     $customer_controller = new CustomerController($settings);
-    update_user_meta($this->customer->get_id(), 'vindi_customer_id', 328876);
 
     $createdUser = $customer_controller->create($this->customer->get_id());
     $this->assertEquals($createdUser, $this->mock_data);
@@ -80,7 +80,6 @@ class Vindi_Test_Customer_Controller extends Vindi_Test_Base
     $settings->routes = $routes;
 
     $customer_controller = new CustomerController($settings);
-    update_user_meta($this->customer->get_id(), 'vindi_customer_id', 328876);
 
     $createdUser = $customer_controller->update($this->customer->get_id());
     $this->assertEquals($createdUser, $this->mock_data);
@@ -98,7 +97,6 @@ class Vindi_Test_Customer_Controller extends Vindi_Test_Base
     $settings->routes = $routes;
 
     $customer_controller = new CustomerController($settings);
-    update_user_meta($this->customer->get_id(), 'vindi_customer_id', 328876);
 
     $deletedUser = $customer_controller->delete($this->customer->get_id());
     $this->assertEquals($deletedUser, $deleted_data);
