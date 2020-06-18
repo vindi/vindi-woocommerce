@@ -121,7 +121,7 @@ class CustomerController
   function update($user_id, $order = null)
   {
 
-    $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id')[0];
+    $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id', true);
 
     // Check meta Vindi ID
     if (empty($vindi_customer_id)) {
@@ -228,7 +228,7 @@ class CustomerController
   function delete($user_id)
   {
 
-    $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id')[0];
+    $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id', true);
 
     // Check meta Vindi ID
     if (empty($vindi_customer_id)) {
