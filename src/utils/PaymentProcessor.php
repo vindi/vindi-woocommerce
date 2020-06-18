@@ -341,7 +341,7 @@ class VindiPaymentProcessor
     elseif (!$this->is_subscription_type($product) || $this->is_one_time_shipping($product)) {
       return 1;
     }
-    $cycles = get_post_meta($product->id, '_subscription_length', true);
+    $cycles = get_post_meta($product->get_id(), '_subscription_length', true);
     return $cycles > 0 ? $cycles : null;
   }
 
@@ -354,7 +354,7 @@ class VindiPaymentProcessor
    */
   private function is_one_time_shipping($product)
   {
-    return get_post_meta($product->id, '_subscription_one_time_shipping', true) == 'yes';
+    return get_post_meta($product->get_id(), '_subscription_one_time_shipping', true) == 'yes';
   }
 
   /**
@@ -767,10 +767,10 @@ class VindiPaymentProcessor
     if (isset($order_item['variation_id']) && $order_item['variation_id'] != 0) {
       $vindi_plan = get_post_meta($order_item['variation_id'], 'vindi_plan_id', true);
       if (empty($vindi_plan) || !is_numeric($vindi_plan) || is_null($vindi_plan) || $vindi_plan == 0) {
-        $vindi_plan = get_post_meta($product->id, 'vindi_plan_id', true);
+        $vindi_plan = get_post_meta($product->get_id(), 'vindi_plan_id', true);
       }
     }
-    else $vindi_plan = get_post_meta($product->id, 'vindi_plan_id', true);
+    else $vindi_plan = get_post_meta($product->get_id(), 'vindi_plan_id', true);
 
     if ($this->is_subscription_type($product) and !empty($vindi_plan)) return $vindi_plan;
 
@@ -960,7 +960,7 @@ class VindiPaymentProcessor
   protected function get_product($order_item)
   {
     $product = $order_item->get_product();
-    $product_id = $product->id;
+    $product_id = $product->get_id();
     $vindi_product_id = get_post_meta($product_id, 'vindi_product_id', true);
 
     if (!$vindi_product_id) {
@@ -1032,7 +1032,7 @@ class VindiPaymentProcessor
    */
   protected function subscription_has_trial(WC_Product $product)
   {
-    return $this->is_subscription_type($product) && class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::get_trial_length($product->id) > 0;
+    return $this->is_subscription_type($product) && class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::get_trial_length($product->get_id()) > 0;
   }
 
   /**
