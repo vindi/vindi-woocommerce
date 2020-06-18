@@ -16,8 +16,8 @@ class Vindi_Test_Bootstrap extends Vindi_Test_Base
     WC_Vindi_Payment::instance();
 
     // Run fake actions
-    do_action('init');
     do_action('plugins_loaded');
+    do_action('init');
   }
 
 
