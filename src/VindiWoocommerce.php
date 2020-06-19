@@ -11,11 +11,6 @@ class WC_Vindi_Payment extends AbstractInstance
   /**
    * @var string
    */
-  const MODE = 'development';
-
-  /**
-   * @var string
-   */
   const WC_API_CALLBACK = 'vindi_webhook';
 
   /**

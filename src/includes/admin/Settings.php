@@ -235,13 +235,13 @@ class VindiSettings extends WC_Settings_API
   }
 
   /**
-   * Check if SSL is enabled when merchant is not trial.
+   * Check if SSL is enabled when merchant is not in sandbox.
    * @return boolean
    */
-  public static function check_ssl()
+  public function check_ssl()
   {
-    if (WC_Vindi_Payment::MODE != 'development') {
-      return false;
+    if ($this->get_is_active_sandbox()) {
+      return true;
     } else {
       return is_ssl();
     }
@@ -302,7 +302,7 @@ class VindiSettings extends WC_Settings_API
   }
 
 	public function get_webhooks_url() {
-		return sprintf('%s/wc-api/%s?token=%s',
+		return sprintf('%s/index.php/wc-api/%s?token=%s',
       get_site_url(),
       WC_Vindi_Payment::WC_API_CALLBACK,
       $this->get_token()
