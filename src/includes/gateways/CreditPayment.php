@@ -183,26 +183,10 @@ class VindiCreditGateway extends VindiPaymentGateway
       return;
     }
 
-    $months = array();
-
-    for ($i = 1 ; $i <= 12 ; $i++) {
-      $timestamp    = mktime(0, 0, 0, $i, 1);
-      $num          = date('m', $timestamp);
-      $name         = date('F', $timestamp);
-      $months[$num] = __($name);
-    }
-
-    $years = array();
-
-    for ($i = date('Y') ; $i <= date('Y') + 15 ; $i++)
-      $years[] = $i;
-
     if ($is_trial = $this->vindi_settings->get_is_active_sandbox())
       $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
 
     $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
-      'months',
-      'years',
       'installments',
       'is_trial',
       'user_payment_profile',

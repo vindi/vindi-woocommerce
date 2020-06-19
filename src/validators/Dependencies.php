@@ -161,11 +161,7 @@ class VindiDependencies
    */
   public static function missing_notice($name, $version, $link)
   {
-    echo '<div class="error vindi-error"><p>' . sprintf(
-        __('O Plugin Vindi WooCommerce depende da versão %s do %s para funcionar!', VINDI),
-        $version,
-        "<a href=\"{$link}\">" . __($name, VINDI) . '</a>'
-      ) . '</p></div>';
+    include plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
   }
 
   /**
