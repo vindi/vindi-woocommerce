@@ -1,0 +1,346 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,1000,2000,3000,4000,5000,6000,7000,8000,9001,1001,2001,3001,4001,5001,6001,7001,8001,900&display=swap')
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap')
+
+//***********************\\
+//  CREDIT CARD STYLING  \\
+//***********************\\
+.vindi_cc_form-container
+  display: grid
+  grid-column-gap: 10px
+  grid-template-columns: auto auto
+  grid-template-rows: 70px 70px 70px
+  grid-template-areas: "name name""number number""expiration security"
+  max-width: 400px
+  padding: 20px 0
+  color: #707070
+
+  label
+    padding-bottom: 5px
+    font-size: 13px
+
+  input
+    width: 100%
+    border-radius: 5px
+    &#vindi_cc_name
+      text-transform: uppercase
+
+  .field-container
+    position: relative
+    &:first-of-type
+      grid-area: name
+
+    &:nth-of-type(2)
+      grid-area: number
+
+    &:nth-of-type(3)
+      grid-area: expiration
+
+    &:nth-of-type(4)
+      grid-area: security
+
+    input
+      -webkit-box-sizing: border-box
+      box-sizing: border-box
+
+
+.vindi_cc_ccicon
+  height: 29px
+  position: absolute
+  right: 4px
+  top: calc(50% - 8px)
+  width: 48px
+
+/* CREDIT CARD IMAGE STYLING */
+.vindi_cc_preload *
+  -webkit-transition: none !important
+  -moz-transition: none !important
+  -ms-transition: none !important
+  -o-transition: none !important
+
+.vindi_cc_card-container
+  width: 100%
+  max-width: 400px
+  max-height: 180px
+  height: 54vw
+
+#vindi_cc_ccsingle
+  position: absolute
+  right: 15px
+  top: 15px
+
+#vindi_cc_ccsingle svg
+  width: 75px
+  max-height: 45px
+
+.vindi_cc_creditcard
+  svg#vindi_cc_cardfront,
+  svg#vindi_cc_cardback
+    width: 100%
+    -webkit-box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.37)
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.37)
+    border-radius: 22px
+
+/* CHANGEABLE CARD ELEMENTS */
+.vindi_cc_creditcard
+  .vindi_cc_lightcolor
+    fill-rule: evenodd
+    opacity: 0.15
+    isolation: isolate
+    fill: #fff
+
+  .vindi_cc_lightcolor,
+  .vindi_cc_cardcolor
+    -webkit-transition: fill .5s
+    transition: fill .5s
+
+  .lightblue
+    fill: #03A9F4
+
+  .lightbluedark
+    fill: #0288D1
+
+  .blue
+    fill: #2846A1
+
+  .bluedark
+    fill: #152554
+
+  .red
+    fill: #ef5350
+
+  .reddark
+    fill: #d32f2f
+
+  .purple
+    fill: #ab47bc
+
+  .purpledark
+    fill: #7b1fa2
+
+  .cyan
+    fill: #26c6da
+
+  .cyandark
+    fill: #0097a7
+
+  .green
+    fill: #66bb6a
+
+  .greendark
+    fill: #388e3c
+
+  .lime
+    fill: #d4e157
+
+  .limedark
+    fill: #afb42b
+
+  .yellow
+    fill: #ffeb3b
+
+  .yellowdark
+    fill: #f9a825
+
+  .orange
+    fill: #ff9800
+
+  .orangedark
+    fill: #ef6c00
+
+  .grey
+    fill: #bdbdbd
+
+  .greydark
+    fill: #616161
+
+/* FRONT OF CARD */
+#vindi_cc_svgname
+  text-transform: uppercase
+
+#vindi_cc_cardfront
+  .st2
+    fill: #FFFFFF
+
+  .st3
+    font-family: 'Montserrat', monospace
+    font-weight: 600
+
+  .st4
+    font-size: 54.7817px
+
+  .st5
+    font-family: 'Montserrat', monospace
+    font-weight: 400
+
+  .st6
+    font-size: 33.1112px
+
+  .st7
+    opacity: 0.6
+    fill: #FFFFFF
+
+  .st8
+    font-size: 24px
+
+  .st9
+    font-size: 36.5498px
+
+  .st10
+    font-family: 'Montserrat', monospace
+    font-weight: 300
+
+  .st11
+    font-size: 16.1716px
+
+  .st12
+    fill: #4C4C4C
+
+/* BACK OF CARD */
+#vindi_cc_cardback
+  .st0
+    fill: none
+    stroke: #0F0F0F
+    stroke-miterlimit: 10
+
+  .st2
+    fill: #111111
+
+  .st3
+    fill: #F2F2F2
+
+  .st4
+    fill: #D8D2DB
+
+  .st5
+    fill: #C4C4C4
+
+  .st6
+    font-family: 'Montserrat', monospace
+    font-weight: 400
+
+  .st7
+    font-size: 27px
+
+  .st8
+    opacity: 0.6
+
+  .st9
+    fill: #FFFFFF
+
+  .st10
+    font-size: 24px
+
+  .st11
+    fill: #EAEAEA
+
+  .st12
+    font-family: 'Pacifico', cursive
+
+  .st13
+    font-size: 37.769px
+
+/* FLIP ANIMATION */
+.vindi_cc_card-container
+  perspective: 1000px
+
+.vindi_cc_creditcard
+  width: 100%
+  max-width: 400px
+  -webkit-transform-style: preserve-3d
+  transform-style: preserve-3d
+  transition: -webkit-transform 0.6s
+  -webkit-transition: -webkit-transform 0.6s
+  transition: transform 0.6s
+  transition: transform 0.6s, -webkit-transform 0.6s
+  cursor: pointer
+  &.flipped
+    -webkit-transform: rotateY(180deg)
+    transform: rotateY(180deg)
+
+  .front,
+  .back
+    position: absolute
+    width: 100%
+    max-width: 400px
+    -webkit-backface-visibility: hidden
+    backface-visibility: hidden
+    -webkit-font-smoothing: antialiased
+    color: #47525d
+
+  .back
+    -webkit-transform: rotateY(180deg)
+    transform: rotateY(180deg)
+
+
+//****************************\\
+//  BANK SLIPS' LIST STYLING  \\
+//****************************\\
+.vindi_bankslip_listing
+  background: #FFFFFF
+  border-radius: 2px
+  box-shadow: inset 5px 0px 0px #37D559
+  border: 1px solid #E6E6E6
+  color: #000000
+  font:
+    family: 'Montserrat', sans-serif
+    style: normal
+  margin-bottom: 1.41575em
+  .info_message
+    padding: 20px 30px
+    display: flex
+    .icon
+      width: 30px
+      height: 30px
+      margin-right: 22px
+      background-image: url('../images/icon-bankslip.svg')
+    .message
+      display: flex
+      flex-direction: column
+      max-width: 90%
+      .message_title
+        margin: 0
+        line-height: 17px
+        font:
+          weight: bold
+          size: 14px
+
+      .message_description
+        margin: 3px 0 0
+        line-height: 18px
+        font:
+          weight: 300
+          size: 13px
+  .bankslips
+    display: flex
+    flex-direction: column
+    align-items: flex-end
+    .bankslip
+      width: calc(100% - 5px)
+      display: flex
+      justify-content: space-between
+      align-items: center
+      border-top: 1px solid #E6E6E6
+      padding: 15px 17px 15px 25px
+      .product_title
+        font:
+          weight: bold
+          size: 14px
+        line-height: 17px
+      .download_button
+        padding: 12px 30px
+        background: #FFFFFF
+        border: 1px solid #006DFF
+        border-radius: 3px
+        color: #006DFF
+        font:
+          weight: 600
+          size: 13px
+        line-height: 16px
+        text-align: center
+        text-decoration: none !important
+        transition: opacity 0.2s ease
+        &:hover
+          opacity: 0.5
+        &:focus
+          outline-color: #006DFF
+

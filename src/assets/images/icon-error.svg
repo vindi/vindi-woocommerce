@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .cls-1 {
+        fill:#fba98f;
+      }
+      .cls-2 {
+        fill:#f83001;
+      }
+      .cls-3 {
+        fill:#fff;
+      }
+    </style>
+  </defs>
+  <title>icon-error</title>
+  <g id="ErrorIcon">
+    <path id="Lado_Esquerdo" data-name="Lado Esquerdo" class="cls-1" d="M256,512C114.62,512,0,397.39,0,256S114.62,0,256,0Z"/>
+    <path id="Lado_Direito" data-name="Lado Direito" class="cls-2" d="M256,0C397.38,0,512,114.61,512,256S397.38,512,256,512Z"/>
+    <polygon id="X" class="cls-3" points="115.05 160.88 161.03 114.9 256 209.86 350.96 114.9 396.95 160.88 301.98 255.84 396.95 350.81 350.96 396.79 256 301.83 161.03 396.79 115.05 350.81 210.02 255.84 115.05 160.88"/>
+  </g>
+</svg>

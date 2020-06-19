@@ -111,11 +111,11 @@ class Vindi_Unit_Tests_Bootstrap
     // framework
     require_once $wc_tests_framework_base_dir . 'class-wc-unit-test-factory.php';
     require_once $wc_tests_framework_base_dir . 'class-wc-mock-session-handler.php';
-    require_once $wc_tests_framework_base_dir . 'class-wc-mock-wc-data.php';
-    require_once $wc_tests_framework_base_dir . 'class-wc-mock-wc-object-query.php';
-    require_once $wc_tests_framework_base_dir . 'class-wc-mock-payment-gateway.php';
-    require_once $wc_tests_framework_base_dir . 'class-wc-payment-token-stub.php';
-    require_once $wc_tests_framework_base_dir . 'vendor/class-wp-test-spy-rest-server.php';
+    // require_once $wc_tests_framework_base_dir . 'class-wc-mock-wc-data.php';
+    // require_once $wc_tests_framework_base_dir . 'class-wc-mock-wc-object-query.php';
+    // require_once $wc_tests_framework_base_dir . 'class-wc-mock-payment-gateway.php';
+    // require_once $wc_tests_framework_base_dir . 'class-wc-payment-token-stub.php';
+    // require_once $wc_tests_framework_base_dir . 'vendor/class-wp-test-spy-rest-server.php';
 
 
     // Helpers
@@ -125,9 +125,9 @@ class Vindi_Unit_Tests_Bootstrap
     require_once $wc_tests_framework_base_dir . 'helpers/class-wc-helper-shipping.php';
     require_once $wc_tests_framework_base_dir . 'helpers/class-wc-helper-customer.php';
     require_once $wc_tests_framework_base_dir . 'helpers/class-wc-helper-order.php';
-    require_once $wc_tests_framework_base_dir . 'helpers/class-wc-helper-shipping-zones.php';
-    require_once $wc_tests_framework_base_dir . 'helpers/class-wc-helper-payment-token.php';
-    require_once $wc_tests_framework_base_dir . 'helpers/class-wc-helper-settings.php';
+    // require_once $wc_tests_framework_base_dir . 'helpers/class-wc-helper-shipping-zones.php';
+    // require_once $wc_tests_framework_base_dir . 'helpers/class-wc-helper-payment-token.php';
+    // require_once $wc_tests_framework_base_dir . 'helpers/class-wc-helper-settings.php';
 
     // test case
     // require_once $wc_tests_framework_base_dir . 'class-wc-unit-test-case.php';
