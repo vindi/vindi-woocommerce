@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,1000,2000,3000,4000,5000,6000,7000,8000,9001,1001,2001,3001,4001,5001,6001,7001,8001,900&display=swap')
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap')
 
+//***********************\\
+//  CREDIT CARD STYLING  \\
+//***********************\\
 .vindi_cc_form-container
   display: grid
   grid-column-gap: 10px
@@ -158,14 +162,14 @@
     fill: #FFFFFF
 
   .st3
-    font-family: 'Source Code Pro', monospace
+    font-family: 'Montserrat', monospace
     font-weight: 600
 
   .st4
     font-size: 54.7817px
 
   .st5
-    font-family: 'Source Code Pro', monospace
+    font-family: 'Montserrat', monospace
     font-weight: 400
 
   .st6
@@ -182,7 +186,7 @@
     font-size: 36.5498px
 
   .st10
-    font-family: 'Source Code Pro', monospace
+    font-family: 'Montserrat', monospace
     font-weight: 300
 
   .st11
@@ -211,7 +215,7 @@
     fill: #C4C4C4
 
   .st6
-    font-family: 'Source Code Pro', monospace
+    font-family: 'Montserrat', monospace
     font-weight: 400
 
   .st7
@@ -230,7 +234,7 @@
     fill: #EAEAEA
 
   .st12
-    font-family: 'Rock Salt', cursive
+    font-family: 'Pacifico', cursive
 
   .st13
     font-size: 37.769px
@@ -266,3 +270,77 @@
   .back
     -webkit-transform: rotateY(180deg)
     transform: rotateY(180deg)
+
+
+//****************************\\
+//  BANK SLIPS' LIST STYLING  \\
+//****************************\\
+.vindi_bankslip_listing
+  background: #FFFFFF
+  border-radius: 2px
+  box-shadow: inset 5px 0px 0px #37D559
+  border: 1px solid #E6E6E6
+  color: #000000
+  font:
+    family: 'Montserrat', sans-serif
+    style: normal
+  margin-bottom: 1.41575em
+  .info_message
+    padding: 20px 30px
+    display: flex
+    .icon
+      width: 30px
+      height: 30px
+      margin-right: 22px
+      background-image: url('../images/icon-bankslip.svg')
+    .message
+      display: flex
+      flex-direction: column
+      max-width: 90%
+      .message_title
+        margin: 0
+        line-height: 17px
+        font:
+          weight: bold
+          size: 14px
+
+      .message_description
+        margin: 3px 0 0
+        line-height: 18px
+        font:
+          weight: 300
+          size: 13px
+  .bankslips
+    display: flex
+    flex-direction: column
+    align-items: flex-end
+    .bankslip
+      width: calc(100% - 5px)
+      display: flex
+      justify-content: space-between
+      align-items: center
+      border-top: 1px solid #E6E6E6
+      padding: 15px 17px 15px 25px
+      .product_title
+        font:
+          weight: bold
+          size: 14px
+        line-height: 17px
+      .download_button
+        padding: 12px 30px
+        background: #FFFFFF
+        border: 1px solid #006DFF
+        border-radius: 3px
+        color: #006DFF
+        font:
+          weight: 600
+          size: 13px
+        line-height: 16px
+        text-align: center
+        text-decoration: none !important
+        transition: opacity 0.2s ease
+        &:hover
+          opacity: 0.5
+        &:focus
+          outline-color: #006DFF
+
