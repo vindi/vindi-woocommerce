@@ -2,7 +2,6 @@
 
 ## 1.0.0
 * Lançamento da versão inicial.
-* **Adição**: Estrutura padronizada de commits.
 * **Adição**: Template para tradução do plugin.
 * **Adição**: Vizualização dos boletos dentro do pedido.
 * **Melhoria**: Novo campo de cartão de crédito.
@@ -13,3 +12,4 @@
 * **Melhoria**: Configuração de desconto por cupom.
 * **Melhoria**: Estorno automático pelo painel do woocommerce do valor total de compras por cartão de crédito.
 * **Melhoria**: Separação de assinaturas no painel.
+* **Melhoria**: Juros configuráveis em compras parceladas.
