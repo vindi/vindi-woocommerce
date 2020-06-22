@@ -1,40 +1,595 @@
-#, fuzzy
+# Copyright (C) 2020
+# This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
 "Project-Id-Version: Vindi WooCommerce\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-03 17:55+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: \n"
-"Language: \n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/vindi-plugin\n"
+"POT-Creation-Date: 2020-06-22 17:57:53+00:00\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.3.1; wp-5.3"
+"PO-Revision-Date: 2020-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: node-wp-i18n 1.2.3\n"
 
-#. URI of the plugin
-msgid "#!"
+#: includes/admin/CouponsMetaBox.php:22
+msgid "Número de ciclos do cupom"
 msgstr ""
 
-#. Description of the plugin
-msgid "Adiciona o gateway de pagamentos da Vindi para o WooCommerce."
+#: includes/admin/CouponsMetaBox.php:72
+msgid "Sign Up Fee Discount"
 msgstr ""
 
-#. Author URI of the plugin
-msgid "https://www.vindi.com.br"
+#: includes/admin/CouponsMetaBox.php:73
+msgid "Sign Up Fee % Discount"
 msgstr ""
 
-#: src/includes/Settings.php:126
+#: includes/admin/CouponsMetaBox.php:74
+msgid "Recurring Product Discount"
+msgstr ""
+
+#: includes/admin/CouponsMetaBox.php:75
+msgid "Recurring Product % Discount"
+msgstr ""
+
+#: includes/admin/Settings.php:91 templates/admin-gateway-settings.html.php:12
+#: templates/admin-settings.html.php:12 views/product-status.php:15
+#: views/product-status.php:19 views/product-status.php:23
+msgid "Vindi"
+msgstr ""
+
+#: includes/admin/Settings.php:130
+msgid "Ver Logs"
+msgstr ""
+
+#: includes/admin/Settings.php:131
+msgid "Saiba mais"
+msgstr ""
+
+#: includes/admin/Settings.php:133
+msgid "Não possui uma conta?"
+msgstr ""
+
+#: includes/admin/Settings.php:135
+msgid "Dúvidas?"
+msgstr ""
+
+#: includes/admin/Settings.php:139
+msgid "Chave da API Vindi"
+msgstr ""
+
+#: includes/admin/Settings.php:145
+msgid "Emissão de NFe's"
+msgstr ""
+
+#: includes/admin/Settings.php:146
+msgid "Enviar informações para emissão de NFe's"
+msgstr ""
+
+#: includes/admin/Settings.php:148
+msgid ""
+"Envia informações de RG e Inscrição Estadual para Emissão de NFe's com "
+"nossos parceiros. %s"
+msgstr ""
+
+#: includes/admin/Settings.php:152
+msgid "Status de conclusão do pedido"
+msgstr ""
+
+#: includes/admin/Settings.php:154
+msgid ""
+"Status que o pedido deverá ter após receber a confirmação de pagamento da "
+"Vindi."
+msgstr ""
+
+#: includes/admin/Settings.php:163
+msgid "Sincronismo de Status das Assinaturas"
+msgstr ""
+
+#: includes/admin/Settings.php:165
+msgid "Enviar alterações de status nas assinaturas do WooCommerce"
+msgstr ""
+
+#: includes/admin/Settings.php:166
+msgid "Envia as alterações de status nas assinaturas do WooCommerce para Vindi."
+msgstr ""
+
+#: includes/admin/Settings.php:170
+msgid "Cobrança única"
+msgstr ""
+
+#: includes/admin/Settings.php:172
+msgid "Ativar cobrança única para fretes e taxas"
+msgstr ""
+
+#: includes/admin/Settings.php:173
+msgid "Fretes e Taxas serão cobrados somente no primeiro ciclo de uma assinatura"
+msgstr ""
+
+#: includes/admin/Settings.php:177
 msgid "Testes"
 msgstr ""
 
-#. Author of the plugin
-msgid "vindi"
+#: includes/admin/Settings.php:181
+msgid "Ambiente Sandbox"
 msgstr ""
 
-#. Name of the plugin
-msgid "Vindi WooCommerce"
+#: includes/admin/Settings.php:182
+msgid "Ativar Sandbox"
+msgstr ""
+
+#: includes/admin/Settings.php:184
+msgid ""
+"Ative esta opção para habilitar a comunicação com o ambiente Sandbox da "
+"Vindi."
+msgstr ""
+
+#: includes/admin/Settings.php:188
+msgid "Log de Depuração"
+msgstr ""
+
+#: includes/admin/Settings.php:189
+msgid "Ativar Logs"
+msgstr ""
+
+#: includes/admin/Settings.php:191
+msgid "Ative esta opção para habilitar logs de depuração do servidor. %s"
+msgstr ""
+
+#: includes/gateways/BankSlipPayment.php:35
+msgid "Vindi - Boleto Bancário"
+msgstr ""
+
+#: includes/gateways/BankSlipPayment.php:36
+msgid "Aceitar pagamentos via boleto bancário utilizando a Vindi."
+msgstr ""
+
+#: includes/gateways/BankSlipPayment.php:83
+#: includes/gateways/CreditPayment.php:90
+msgid "Habilitar/Desabilitar"
+msgstr ""
+
+#: includes/gateways/BankSlipPayment.php:84
+msgid "Habilitar pagamento por Boleto Bancário com Vindi"
+msgstr ""
+
+#: includes/gateways/BankSlipPayment.php:89
+#: includes/gateways/CreditPayment.php:96
+msgid "Título"
+msgstr ""
+
+#: includes/gateways/BankSlipPayment.php:91
+#: includes/gateways/CreditPayment.php:98
+msgid "Título que o cliente verá durante o processo de pagamento."
+msgstr ""
+
+#: includes/gateways/BankSlipPayment.php:92
+msgid "Boleto Bancário"
+msgstr ""
+
+#: includes/gateways/BankSlipPayment.php:102
+msgid "Selecione o País para visualizar as formas de pagamento."
+msgstr ""
+
+#: includes/gateways/BankSlipPayment.php:107
+msgid "Este método de pagamento não é aceito."
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:44
+msgid "Vindi - Cartão de Crédito"
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:45
+msgid "Aceitar pagamentos via cartão de crédito utilizando a Vindi."
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:91
+msgid "Habilitar pagamento via Cartão de Crédito com a Vindi"
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:99
+msgid "Cartão de Crédito"
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:102
+msgid "Transação de Verificação"
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:104
+msgid ""
+" Realiza a transação de verificação em todos os novos pedidos. (Taxas "
+"adicionais por verificação poderão ser cobradas)."
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:108
+msgid "Vendas Avulsas"
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:112
+msgid "Valor mínimo da parcela"
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:114
+msgid "Valor mínimo da parcela, não deve ser inferior a R$ 5,00."
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:118
+msgid "Número máximo de parcelas"
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:120
+msgid ""
+"Número máximo de parcelas para vendas avulsas. Deixe em 1x para desativar o "
+"parcelamento."
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:138
+msgid "Habilitar juros"
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:140
+msgid "Habilitar juros no parcelamento do pedido."
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:144
+msgid "Taxa de juros ao mês (%)"
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:146
+msgid "Taxa de juros que será adicionada aos pagamentos parcelados."
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:160 utils/InterestPriceHandler.php:62
+#: utils/PaymentProcessor.php:463
+msgid "Juros"
+msgstr ""
+
+#: includes/gateways/CreditPayment.php:182
+msgid ""
+"Estamos enfrentando problemas técnicos no momento. Tente novamente mais "
+"tarde ou entre em contato."
+msgstr ""
+
+#: services/Webhooks.php:38
+msgid "Novo Webhook chamado: %s"
+msgstr ""
+
+#: services/Webhooks.php:67
+msgid "Falha ao interpretar JSON do webhook: Evento do Webhook não encontrado!"
+msgstr ""
+
+#: services/Webhooks.php:73
+msgid "Novo Evento processado: %s"
+msgstr ""
+
+#: services/Webhooks.php:77
+msgid "Evento do webhook ignorado pelo plugin: "
+msgstr ""
+
+#: services/Webhooks.php:86
+msgid "Evento de teste do webhook."
+msgstr ""
+
+#: services/Webhooks.php:99
+msgid "Já existe o ciclo %s para a assinatura #%s pedido #%s!"
+msgstr ""
+
+#: services/Webhooks.php:195 utils/PaymentProcessor.php:931
+msgid "O Pagamento foi realizado com sucesso pela Vindi."
+msgstr ""
+
+#: services/Webhooks.php:215
+msgid "Pagamento cancelado dentro da Vindi!"
+msgstr ""
+
+#: services/Webhooks.php:229
+msgid "Pendência criada com o tipo \"%s\" não processada!"
+msgstr ""
+
+#: services/Webhooks.php:232
+msgid "Pendência criada com o status \"%s\" não processada!"
+msgstr ""
+
+#: services/Webhooks.php:235
+msgid "Pendência criada com o item do tipo \"%s\" não processada!"
+msgstr ""
+
+#: services/Webhooks.php:243
+msgid ""
+"Divergencia de valores do Pedido #%s: Valor Esperado R$ %s, Valor Pago R$ "
+"%s."
+msgstr ""
+
+#: services/Webhooks.php:259
+msgid "Pagamento rejeitado!"
+msgstr ""
+
+#: services/Webhooks.php:262
+msgid ""
+"Erro ao trocar status da fatura para \"failed\" pois a fatura #%s não está "
+"mais pendente!"
+msgstr ""
+
+#: services/Webhooks.php:299
+msgid "Assinatura %s reativada pela Vindi."
+msgstr ""
+
+#: services/Webhooks.php:313
+msgid "Assinatura #%s não encontrada!"
+msgstr ""
+
+#: services/Webhooks.php:328
+msgid "Cobrança #%s não encontrada!"
+msgstr ""
+
+#: services/Webhooks.php:344
+msgid "Pedido #%s não encontrado!"
+msgstr ""
+
+#: services/Webhooks.php:368
+msgid "Pedido com bill_id #%s não encontrado!"
+msgstr ""
+
+#: services/Webhooks.php:392
+msgid "Pedido da assinatura #%s para o ciclo #%s não encontrado!"
+msgstr ""
+
+#: templates/admin-gateway-settings.html.php:6
+#: templates/admin-settings.html.php:6
+msgid "Vindi WooCommerce Desabilitado"
+msgstr ""
+
+#: templates/admin-gateway-settings.html.php:7
+msgid ""
+"É necessário um <strong> Certificado SSL </strong> para ativar este método "
+"de pagamento em modo de produção. Por favor, verifique se um certificado "
+"SSL está instalado em seu servidor !"
+msgstr ""
+
+#: templates/admin-gateway-settings.html.php:13
+#: templates/admin-settings.html.php:13
+msgid "Utiliza a rede Vindi como meio de pagamento para cobranças."
+msgstr ""
+
+#: templates/admin-settings.html.php:7
+msgid ""
+"É necessário um <strong>Certificado SSL</strong> para ativar este método de "
+"pagamento em modo de produção. Por favor, verifique se um certificado SSL "
+"está instalado em seu servidor!"
+msgstr ""
+
+#: templates/admin-settings.html.php:26
+msgid "Link de configuração dos Eventos da Vindi"
+msgstr ""
+
+#: templates/admin-settings.html.php:29
+msgid ""
+"Copie esse link e utilize-o para configurar os eventos nos Webhooks da "
+"Vindi."
+msgstr ""
+
+#: templates/admin-settings.html.php:38 templates/admin-settings.html.php:49
+msgid "Teste de conexão com a Vindi"
+msgstr ""
+
+#: templates/admin-settings.html.php:39
+msgid "Conectado com sucesso!"
+msgstr ""
+
+#: templates/admin-settings.html.php:42
+msgid "Conta: <strong>%s</strong>"
+msgstr ""
+
+#: templates/admin-settings.html.php:45
+msgid "Status: <strong>%s</strong>"
+msgstr ""
+
+#: templates/admin-settings.html.php:50
+msgid "Falha na conexão! <br><strong>%s</strong>"
+msgstr ""
+
+#: templates/bankslip-checkout.html.php:5
+#: templates/creditcard-checkout.html.php:5
+msgid "MODO DE TESTES"
+msgstr ""
+
+#: templates/bankslip-checkout.html.php:7
+#: templates/creditcard-checkout.html.php:7
+msgid ""
+"Sua conta na Vindi está em <strong>Modo Trial</strong>. Este modo é "
+"proposto para a realização de testes e, portanto, nenhum pedido será "
+"efetivamente cobrado."
+msgstr ""
+
+#: templates/bankslip-checkout.html.php:18
+msgid "Um Boleto Bancário será enviado para o seu endereço de e-mail."
+msgstr ""
+
+#: templates/bankslip-checkout.html.php:20
+msgid ""
+"Um boleto bancário será enviado para o seu e-mail de acordo com a sua "
+"assinatura. "
+msgstr ""
+
+#: templates/bankslip-download.html.php:8
+msgid "Aqui estão os boletos de suas compras."
+msgstr ""
+
+#: templates/bankslip-download.html.php:11
+msgid ""
+"Você pode imprimi-los e pagá-los via internet banking ou em agências "
+"bancárias e loréricas. Após recebermos a confirmação do pagamento, seu "
+"pedido será processado."
+msgstr ""
+
+#: templates/bankslip-download.html.php:23
+msgid "Baixar boleto"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:20
+msgid "Cartão Cadastrado"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:31
+msgid "usar outro cartão"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:60
+msgid "Nome"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:61
+msgid "Validade"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:62
+#: templates/creditcard-checkout.html.php:143
+msgid "Número do Cartão"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:123
+msgid "CVC"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:136
+msgid "Nome Impresso no Cartão"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:153
+msgid "Validade (mm/aa)"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:160
+msgid "Código de Segurança"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:173
+msgid "Número de Parcelas"
+msgstr ""
+
+#: templates/creditcard-checkout.html.php:178
+msgid "%dx de %s"
+msgstr ""
+
+#: utils/PaymentGateway.php:188
+msgid ""
+"O Pagamento foi cancelado devido a erro de configuração do meio de "
+"pagamento."
+msgstr ""
+
+#: utils/PaymentGateway.php:231
+msgid "Reembolso falhou."
+msgstr ""
+
+#: utils/PaymentGateway.php:235
+msgid ""
+"Não é possível realizar reembolsos parciais, faça um reembolso manual caso "
+"você opte por esta opção."
+msgstr ""
+
+#: utils/PaymentGateway.php:250
+#. translators: 1: Refund amount, 2: Refund ID
+msgid "[Transação #%2$s]: reembolsado R$%1$s"
+msgstr ""
+
+#: utils/PaymentGateway.php:296
+msgid "Resposta vazia"
+msgstr ""
+
+#: utils/PaymentGateway.php:307
+msgid "A fatura com bill_id #%s não foi encontrada!"
+msgstr ""
+
+#: utils/PaymentProcessor.php:204
+msgid ""
+"Falha ao processar carrinho de compras. Verifique os itens escolhidos e "
+"tente novamente."
+msgstr ""
+
+#: utils/PaymentProcessor.php:218
+msgid ""
+"Não é possível comprar produtos simples e assinaturas com trial no mesmo "
+"pedido!"
+msgstr ""
+
+#: utils/PaymentProcessor.php:255 utils/PaymentProcessor.php:275
+msgid "Algum pagamento do pedido não pode ser processado"
+msgstr ""
+
+#: utils/PaymentProcessor.php:309
+msgid ""
+"Falha ao registrar o método de pagamento. Verifique os dados e tente "
+"novamente."
+msgstr ""
+
+#: utils/PaymentProcessor.php:325
+msgid "Não foi possível realizar a verificação do seu cartão de crédito!"
+msgstr ""
+
+#: utils/PaymentProcessor.php:376
+msgid "Ocorreu um erro ao gerar o seu pedido!"
+msgstr ""
+
+#: utils/PaymentProcessor.php:403
+msgid ""
+"Falha ao recuperar informações sobre o produto na Vindi. Verifique os dados "
+"e tente novamente."
+msgstr ""
+
+#: utils/PaymentProcessor.php:777
+msgid "O produto selecionado não é uma assinatura."
+msgstr ""
+
+#: utils/PaymentProcessor.php:809 utils/PaymentProcessor.php:843
+msgid "Pagamento Falhou. (%s)"
+msgstr ""
+
+#: utils/PaymentProcessor.php:934
+msgid "Aguardando pagamento do pedido."
+msgstr ""
+
+#: utils/RedirectCheckout.php:29
+msgid "Para finalizar sua compra, é necessário estar logado"
+msgstr ""
+
+#: utils/RedirectCheckout.php:31
+msgid "Clique aqui para acessar uma conta existente ou criá-la."
+msgstr ""
+
+#: utils/SubscriptionStatusHandler.php:123
+#. translators: $1: opening link tag, $2: order number, $3: closing link tag
+msgid "A assinatura foi cancelada pelo pedido reembolsado %1$s#%2$s%3$s."
+msgstr ""
+
+#: views/invalid-api-key.php:13
+msgid "Chave API Inválida"
+msgstr ""
+
+#: views/invalid-api-key.php:13
+msgid ""
+"A chave API utilizada não é uma chave válida! Por favor verifique as "
+"informações e tente novamente!"
+msgstr ""
+
+#: views/missing-critical-dependency.php:15
+msgid ""
+"O Plugin Vindi WooCommerce depende da versão %s+ do %s para funcionar! Como "
+"a versão atual do %s é mais antiga, o plugin foi DESATIVADO!"
+msgstr ""
+
+#: views/missing-dependency.php:15
+msgid "O Plugin Vindi WooCommerce depende da versão %s do %s para funcionar!"
+msgstr ""
+
+#: views/product-status.php:15
+msgid "O produto foi criado na Vindi com sucesso!"
+msgstr ""
+
+#: views/product-status.php:19
+msgid "O produto foi atualizado na Vindi com sucesso!"
+msgstr ""
+
+#: views/product-status.php:23
+msgid "Não foi possível criar/atualizar o produto na Vindi!"
 msgstr ""
