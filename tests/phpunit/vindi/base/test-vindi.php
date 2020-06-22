@@ -1,7 +1,7 @@
 
 <?php
 
-include_once VINDI_PATH . 'src/helpers/VindiHelpers.php';
+include_once VINDI_PATH . 'src/services/VindiHelpers.php';
 
 class Vindi_Test extends Vindi_Test_Base
 {
@@ -11,7 +11,7 @@ class Vindi_Test extends Vindi_Test_Base
     $this->assertTrue(defined('VINDI'));
     $this->assertTrue(defined('VINDI_MININUM_WP_VERSION'));
     $this->assertTrue(defined('VINDI_MININUM_PHP_VERSION'));
-    $this->assertTrue(defined('VINDI__FILE__'));
+    $this->assertTrue(defined('VINDI_FILE'));
     $this->assertTrue(defined('VINDI_PLUGIN_BASE'));
     $this->assertTrue(defined('VINDI_PATH'));
   }

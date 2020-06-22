@@ -1,12 +1,14 @@
 <?php
 
-include_once VINDI_PATH . 'src/helpers/VindiHelpers.php';
+include_once VINDI_PATH . 'src/services/VindiHelpers.php';
+require_once VINDI_PATH . 'src/routes/RoutesApi.php';
 require_once VINDI_PATH . 'src/utils/PaymentGateway.php';
+require_once VINDI_PATH . 'src/controllers/index.php';
 include_once VINDI_PATH . 'src/includes/gateways/CreditPayment.php';
 
+include_once VINDI_PATH . 'src/includes/admin/Settings.php';
 
 /**
- * These tests assert various things about processing an initial payment
  * for a WooCommerce Subscriptions.
  *
  * The responses from HTTP requests are mocked using the WP filter
@@ -43,8 +45,7 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
     $product_2->save();
 
     // Arrange: Set up an order with:
-    // 1) A variation product.
-    // 2) The same product added several times.
+    // 1) A variation product.    // 2) The same product added several times.
     // 3) A valid BR ZIP code
     $order = new WC_Order();
 
@@ -56,7 +57,11 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
     $order->calculate_totals();
 
     // Act: Call get_level3_data_from_order().
-    $gateway = new VindiCreditGateway();
+
+    $settings = new VindiSettings();
+    $controllers = new VindiControllers($settings);
+
+    $gateway = new VindiCreditGateway($settings, $controllers);
     $result = $gateway->get_level3_data_from_order($order);
 
 
@@ -101,5 +106,58 @@ class Vindi_Test_Subscription_initial extends Vindi_Test_Base
     $order = new WC_Order();
     $gateway = new VindiHelpers();
     $this->assertEquals(array(), $gateway->get_level3_data_from_order($order));
+  }
+
+  public function test_non_us_shipping_zip_codes()
+  {
+    // Skip this test because of the complexity of creating products in WC pre-3.0.
+    if (VindiHelpers::is_wc_lt('3.0')) {
+      // Dummy assertion.
+      $this->assertEquals(VindiHelpers::is_wc_lt('3.0'), true);
+      return;
+    }
+
+    // Update the store with the right post code.
+    update_option('woocommerce_store_postcode', 1040);
+
+    // Arrange: Create a couple of products to use.
+    $product = WC_Helper_Product::create_simple_product();
+    $product->set_regular_price(19.19);
+    $product->save();
+
+    // Arrange: Set up an order with a non-US postcode.
+    $order = new WC_Order();
+    $order->set_shipping_postcode('1050');
+    $order->add_product($product, 1);
+    $order->save();
+    $order->calculate_totals();
+
+    // Act: Call get_level3_data_from_order().
+    $store_postcode = '1100';
+
+    $settings = new VindiSettings();
+    $controllers = new VindiControllers($settings);
+
+    $gateway = new VindiCreditGateway($settings, $controllers);
+    $result = $gateway->get_level3_data_from_order($order);
+
+    // Assert.
+    $this->assertEquals(
+      array(
+        'merchant_reference' => $order->get_id(),
+        'shipping_amount' => 0,
+        'line_items' => array(
+          (object) array(
+            'product_code'        => (string) $product->get_id(),
+            'product_description' => substr($product->get_name(), 0, 26),
+            'unit_cost'           => 1919,
+            'quantity'            => 1,
+            'tax_amount'          => 0,
+            'discount_amount'     => 0,
+          ),
+        ),
+      ),
+      $result
+    );
   }
 };

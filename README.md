@@ -2,11 +2,10 @@
 
 Recurring payment gateway for Wordpress | Woocommerce.
 
+![Banner](./docs/banner.png)
+
 [![Licença do Software][badge-license]](LICENSE)
 [![Última Versão no WordPress][badge-version]][link-version]
-[![Avaliação do Plugin][badge-rates]][link-rates]
-[![Downloads no Total][badge-downloads]][link-downloads]
-[![Build Status](https://semaphoreci.com/api/v1/vindi/vindi-woocommerce-subscriptions/branches/master/shields_badge.svg)](https://semaphoreci.com/vindi/vindi-woocommerce-subscriptions)
 
 ## Description
 

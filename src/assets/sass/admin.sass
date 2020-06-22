@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,1000,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap')
+
+.below-h2
+  background: white !important
+  border-radius: 2px
+  border: 0 !important
+  padding: 20px !important
+    left: 80px !important
+  margin: 0 !important
+  &.error
+    box-shadow: inset 5px 0px 0px #FD0000, 0px 0px 0px 1px #E0E0E0 !important
+  &.updated
+    box-shadow: inset 5px 0px 0px #37D559, 0px 0px 0px 1px #E0E0E0 !important
+    h3.wc-settings-sub-title
+      &.title-2
+        &::before
+          background-image: url('../images/icon-success.svg')
+  h3.wc-settings-sub-title
+    font-family: 'Montserrat', sans-serif
+    font-weight: 700
+    font-size: 14px
+    line-height: 17px
+    color: #000000
+    margin: 0
+    &.title-2,
+    &.title-1
+      position: relative
+      &::before
+        content: ''
+        display: block
+        position: absolute
+        top: 0
+        left: -50px
+        height: 30px
+        width: 30px
+        background:
+          image: url('../images/icon-web.svg')
+          repeat: no-repeat
+          position: center
+    &.title-2
+      &::before
+        background-image: url('../images/icon-error.svg')
+  p
+    margin: 0
+    padding: 0
+    font-family: 'Montserrat', sans-serif
+    font-weight: 300
+    font-size: 13px
+    line-height: 16px
+    color: #000000
+  input
+    width: 100%
+    background: #F6F6F6
+    padding: 15px 20px
+      right: 115px
+    margin-top: 15px
+    margin-bottom: 20px
+    font-family: 'Montserrat', sans-serif
+    font-weight: 300
+    font-size: 13px
+    line-height: 16px
+    color: #000000
+    border: 0
+    &[readonly="readonly"]
+      cursor: pointer
+      background:
+        image: url('../images/copiar.svg')
+        repeat: no-repeat
+        position: calc(100% - 20px) center
+  hr
+    background-color: #e6e6e6
+    width: calc(100% + 95px)
+    margin: 0
+    margin-bottom: 20px
+    margin-left: -75px
+    border: 0
+    height: 1px
+  .test-return-infos
+    display: flex
+    justify-content: flex-start
+    div
+      box-shadow: 1px 0px 0px 0px #e6e6e6
+      padding: 5px 0
+        left: 15px
+      &:first-child
+        padding: 0
+      &:last-child
+        box-shadow: none
+      h3
+        margin-bottom: 3px
+      p
+        margin: 0
+          right: 100px
+        padding: 0
+        strong
+          display: block
+
+.vindi-alert
+  background: white
+  border-radius: 2px
+  padding: 25px !important
+    left: 80px !important
+  box-shadow: 0px 0px 0px 1px #E0E0E0
+  border: 0
+  background:
+    repeat: no-repeat
+    position: 25px
+    size: 30px
+  &.vindi-warning
+    background-image: url('../images/icon-info.svg')
+    box-shadow: inset 5px 0px 0px #FF9B00, 0px 0px 0px 1px #E0E0E0
+  &.vindi-success
+    background-image: url('../images/icon-success.svg')
+    box-shadow: inset 5px 0px 0px #37D559, 0px 0px 0px 1px #E0E0E0
+  &.vindi-error
+    background-image: url('../images/icon-error.svg')
+    box-shadow: inset 5px 0px 0px #FD0000, 0px 0px 0px 1px #E0E0E0
+  &.d-flex
+    display: flex
+    flex-direction: row
+    align-items: center
+    padding: 14px !important
+      right: 25px !important
+      left: 80px !important
+  p
+    margin: 0
+    padding: 0
+    font:
+      family: 'Montserrat', sans-serif
+      weight: 300
+      size: 13px
+    line-height: 16px
+    color: #000000
+  .btn-to-right
+    font:
+      family: 'Montserrat', sans-serif
+      weight: 600
+      size: 13px
+    color: #006DFF
+    letter-spacing: 0
+    text-align: center
+    border-radius: 2px
+    padding: 12px 15px
+    margin-left: auto
+    text-decoration: none
+    box-shadow: 0px 0px 0px 2px #006DFF

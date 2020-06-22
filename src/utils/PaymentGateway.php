@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
   exit;
 }
 
-include_once VINDI_PATH . 'src/helpers/VindiHelpers.php';
+include_once VINDI_PATH . 'src/services/VindiHelpers.php';
 
 /**
  * Abstract class that will be inherited by all payment methods.
@@ -15,6 +15,51 @@ include_once VINDI_PATH . 'src/helpers/VindiHelpers.php';
 
 abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
 {
+  /**
+   * @var bool
+   */
+  protected $validated = true;
+
+  /**
+   * @var VindiSettings
+   */
+  public $vindi_settings;
+
+  /**
+   * @var VindiControllers
+   */
+  public $controllers;
+
+  /**
+   * @var VindiLogger
+   */
+  protected $logger;
+
+  /**
+   * @var VindiRoutes
+   */
+  protected $routes;
+
+  /**
+   * Should return payment type for payment processing.
+   * @return string
+   */
+  public abstract function type();
+
+  public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
+  {
+    $this->vindi_settings = $vindi_settings;
+    $this->controllers = $controllers;
+    $this->logger = $this->vindi_settings->logger;
+    $this->routes = $vindi_settings->routes;
+    $this->title = $this->get_option('title');
+    $this->enabled = $this->get_option('enabled');
+
+    if (is_admin()) {
+      add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
+    }
+  }
+
   /**
    * Create the level 3 data array to send to Vindi when making a purchase.
    *
@@ -86,4 +131,183 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
   {
     return !empty($zip) && preg_match('/^[0-9]{5,5}([- ]?[0-9]{3,3})?$/', $zip);
   }
+
+  /**
+   * Admin Panel Options
+   */
+  public function admin_options()
+  {
+      $this->vindi_settings->get_template('admin-gateway-settings.html.php', array('gateway' => $this));
+  }
+
+  /**
+   * Get the users country either from their order, or from their customer data
+   * @return string|null
+   */
+  public function get_country_code()
+  {
+    if (isset($_GET['order_id'])) {
+      $order = new WC_Order($_GET['order_id']);
+      return $order->billing_country;
+    } elseif ($this->vindi_settings->woocommerce->customer->get_billing_country()) {
+      return $this->vindi_settings->woocommerce->customer->get_billing_country();
+    }
+  }
+
+  /**
+   * Validate plugin settings
+   * @return bool
+   */
+  public function validate_settings()
+  {
+    $currency = get_option('woocommerce_currency');
+    $api_key = $this->vindi_settings->get_api_key();
+    return in_array($currency, ['BRL']) && ! empty($api_key);
+  }
+
+  /**
+   * Process the payment
+   *
+   * @param int $order_id
+   *
+   * @return array
+   */
+  public function process_payment($order_id)
+  {
+    $this->logger->log(sprintf('Processando pedido %s.', $order_id));
+    $order   = wc_get_order($order_id);
+    $payment = new VindiPaymentProcessor($order, $this, $this->vindi_settings, $this->controllers);
+
+    // exit if validation by validate_fields() fails
+    if (! $this->validated) {
+      return false;
+    }
+
+    // Validate plugin settings
+    if (! $this->validate_settings()) {
+      return $payment->abort(__('O Pagamento foi cancelado devido a erro de configuração do meio de pagamento.', VINDI));
+    }
+
+    try {
+      $response = $payment->process();
+      $order->reduce_order_stock();
+    } catch (Exception $e) {
+      $response = array(
+        'result'   => 'fail',
+        'redirect' => '',
+      );
+    }
+
+    return $response;
+  }
+
+  /**
+   * Check if the order is a Single Payment Order (not a Subscription).
+   * @return bool
+   */
+  protected function is_single_order()
+  {
+    $types = [];
+
+    foreach ($this->vindi_settings->woocommerce->cart->cart_contents as $item) {
+      $types[] = $item['data']->get_type();
+    }
+
+    return !(boolean) preg_grep('/subscription/', $types);
+  }
+
+  /**
+   * Process a refund.
+   *
+   * @param  int    $order_id Order ID.
+   * @param  float  $amount Refund amount.
+   * @param  string $reason Refund reason.
+   * @return bool|WP_Error
+   */
+  public function process_refund($order_id, $amount = null, $reason = '') {
+    $order = wc_get_order($order_id);
+
+    if (!$this->can_refund_order($order)) {
+      return new WP_Error('error', __('Reembolso falhou.', VINDI));
+    }
+
+    if($amount < $order->get_total()) {
+      return new WP_Error('error', __('Não é possível realizar reembolsos parciais, faça um reembolso manual caso você opte por esta opção.', VINDI));
+    }
+
+    $results = [];
+    $order_meta = get_post_meta($order->id, 'vindi_order', true);
+    foreach ($order_meta as $key => $order_item) {
+      $bill_id = $order_item['bill']['id'];
+      
+      $result = $this->refund_transaction($bill_id, null, $reason);
+
+      $this->logger->log('Resultado do reembolso: ' . wc_print_r($result, true));
+      switch (strtolower($result['status'])) {
+        case 'success':
+          $order->add_order_note(
+            /* translators: 1: Refund amount, 2: Refund ID */
+            sprintf(__('[Transação #%2$s]: reembolsado R$%1$s', VINDI), $result['amount'], $result['id'])
+          );
+          break;
+      }
+      if(isset($result->errors)) {
+        throw new Exception($result->errors[0]->message);
+        return false;
+      }
+    }     
+    return true;
+  }
+
+  /**
+	 * Get refund request args.
+	 *
+	 * @param  WC_Order $order Order object.
+	 * @param  float    $amount Refund amount.
+	 * @param  string   $reason Refund reason.
+	 * @return array
+	 */
+	public function get_refund_request($bill_id, $amount = null, $reason = '') {
+		$request = array(
+			'cancel_bill' => true,
+			'comments' => strip_tags(wc_trim_string($reason, 255)),
+		);
+		if (!is_null($amount) ) {
+			$request['amount'] = $amount;
+		}
+		return apply_filters('vindi_refund_request', $request, $bill_id, $amount, $reason);
+  }
+  
+  /**
+	 * Refund an order via PayPal.
+	 *
+	 * @param  WC_Order $order Order object.
+	 * @param  float    $amount Refund amount.
+	 * @param  string   $reason Refund reason.
+	 * @return object Either an object of name value pairs for a success, or a WP_ERROR object.
+	 */
+	public function refund_transaction($bill_id, $amount = null, $reason = '') {
+    $data = $this->get_refund_request($bill_id, $amount, $reason);
+    $last_charge = $this->find_bill_last_charge($bill_id);
+    $charge_id = $last_charge['id'];
+    $refund = $this->routes->refundCharge($charge_id, $data);
+
+		if (empty($refund)) {
+			throw new Exception(__('Resposta vazia', VINDI));
+		}
+
+		return $refund['last_transaction'];
+  }
+  
+  private function find_bill_last_charge($bill_id)
+  {
+    $bill = $this->routes->findBillById($bill_id);
+
+    if(!$bill) {
+      throw new Exception(sprintf(__('A fatura com bill_id #%s não foi encontrada!', VINDI), $bill_id), 2);
+    }
+    
+    $charges = $bill['charges'];
+    return end($charges);
+	}
 };
