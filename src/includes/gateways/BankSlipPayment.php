@@ -33,7 +33,7 @@ class VindiBankSlipGateway extends VindiPaymentGateway
     $this->id                   = 'vindi-bank-slip';
     $this->icon                 = apply_filters('vindi_woocommerce_bank_slip_icon', '');
     $this->method_title         = __('Vindi - Boleto Bancário', VINDI);
-    $this->method_description   = __('Aceitar pagamentos via boleto bancário utilizando a vindi.', VINDI);
+    $this->method_description   = __('Aceitar pagamentos via boleto bancário utilizando a Vindi.', VINDI);
     $this->has_fields           = true;
 
     $this->supports             = array(
