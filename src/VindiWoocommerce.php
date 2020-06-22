@@ -104,7 +104,7 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/includes/admin/Settings.php';
     require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
     require_once $this->getPath() . '/includes/gateways/BankSlipPayment.php';
-    require_once $this->getPath() . '/includes/SubscriptionStatusHandler.php';
+    require_once $this->getPath() . '/utils/SubscriptionStatusHandler.php';
     require_once $this->getPath() . '/utils/InterestPriceHandler.php';
 
     require_once $this->getPath() . '/includes/admin/ProductStatus.php';
@@ -125,7 +125,7 @@ class WC_Vindi_Payment extends AbstractInstance
 
   public static function get_instance()
   {
-    require_once self::getPath() . '/includes/FrontendFilesLoader.php';
+    require_once self::getPath() . '/utils/FrontendFilesLoader.php';
     new FrontendFilesLoader();
 
     if (VindiDependencies::check()) {
