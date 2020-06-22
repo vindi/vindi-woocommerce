@@ -2,6 +2,8 @@
 
 Recurring payment gateway for Wordpress | Woocommerce.
 
+![Banner](./docs/banner.png)
+
 [![Licença do Software][badge-license]](LICENSE)
 [![Última Versão no WordPress][badge-version]][link-version]
 

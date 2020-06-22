@@ -9,7 +9,7 @@
      * Load the plugin text domain for translation.
      */
     public function load_plugin_textdomain() {
-      load_plugin_textdomain( 'vindi-woocommerce', false, plugin_dir_path( __FILE__ ) . '/languages/' );
+      load_plugin_textdomain( 'vindi-payment-gateway', false, plugin_dir_path( __FILE__ ) . '/languages/' );
     }
   }
 ;
