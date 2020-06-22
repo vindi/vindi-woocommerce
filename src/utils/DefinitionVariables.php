@@ -5,7 +5,7 @@ define('VINDI_VERSION', '1.0.0');
 define('VINDI_MININUM_WP_VERSION', '5.0');
 define('VINDI_MININUM_PHP_VERSION', '5.6');
 
-define('VINDI', 'vindi-woocommerce');
+define('VINDI', 'vindi-payment-gateway');
 
 define('VINDI_FILE', dirname(dirname(__FILE__)));
 define('VINDI_PLUGIN_BASE', plugin_basename(VINDI_FILE));
