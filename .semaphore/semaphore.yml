@@ -1,0 +1,25 @@
+version: v1.0
+name: vindi-woocommerce
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Setup
+    task:
+      jobs:
+        - name: Setup
+          commands:
+            - checkout
+            - sh bin/setup-github.sh
+            - cache store
+  - name: Test
+    task:
+      prologue:
+        commands:
+          - checkout
+          - cache restore
+      jobs:
+        - name: Test
+          commands:
+            - docker-compose run --rm wordpress_phpunit phpunit
