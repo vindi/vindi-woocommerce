@@ -1,33 +1,31 @@
-# Vindi Woocommerce Subscriptions
+# Vindi Woocommerce
 
-Recurring payment gateway for Wordpress | Woocommerce.
+Gateway de pagamentos recorrentes para Wordpress | Woocommerce.
 
 ![Banner](./docs/banner.png)
 
 [![Licença do Software][badge-license]](LICENSE)
 [![Última Versão no WordPress][badge-version]][link-version]
 
-## Description
+**Vindi WooCommerce** oferece uma solução completa para pagamentos únicos e assinaturas com cartão de crédito e boleto utilizando o [Woocommerce Subscriptions](https://www.woothemes.com/products/woocommerce-subscriptions/).
 
-**Vindi WooCommerce** Vindi offers a complete solution for single payments and subscriptions with Credit Card
-and Bank slip using [Woocommerce Subscriptions](https://www.woothemes.com/products/woocommerce-subscriptions/).
+## Instalação
 
-## Installation
+Para verificar os requisitos e efetuar a instalação do plugin, [siga as instruções na documentação oficial](https://atendimento.vindi.com.br/hc/pt-br/articles/227335608).
 
-To check the requirements and install the plugin, [follow the instructions in the official documentation](https://atendimento.vindi.com.br/hc/pt-br/articles/227335608).
+## Dúvidas
 
-## Problems?
+Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através da nossa [central de atendimento](https://atendimento.vindi.com.br/hc/pt-br).
 
-For questions, problems or technical support, contact the Vindi team through our [call center](https://atendimento.vindi.com.br/hc/pt-br).
-
-## Credits
+## Créditos
 
 - [Mentores Digital](https://mentores.com.br)
-- [Vindi](https://github.com/vindi)
+- [Vindi](https://vindi.com.br)
+- [Todos os contribuidores](https://github.com/vindi/vindi-woocommerce/graphs/contributors)
 
-## License
+## Licença
 
-GNU GPLv3. Please see the [License File](LICENSE) for more information.
+GNU GPLv3. Por favor, veja o [Arquivo de Licença](LICENSE) para mais informações.
 
 [badge-license]: https://img.shields.io/badge/license-GPLv3-blue.svg
 [badge-version]: https://img.shields.io/wordpress/plugin/v/vindi-woocommerce-subscriptions.svg
