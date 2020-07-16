@@ -49,11 +49,11 @@ class CouponsMetaBox {
   public static function save($post_id, $post)
   {
     // Check the nonce (again).
-		if ( empty( $_POST['woocommerce_meta_nonce'] ) || ! wp_verify_nonce( $_POST['woocommerce_meta_nonce'], 'woocommerce_save_data' ) ) {
+		if ( empty( VindiHelpers::sanitize_xss($_POST['woocommerce_meta_nonce']) ) || ! wp_verify_nonce( VindiHelpers::sanitize_xss($_POST['woocommerce_meta_nonce']), 'woocommerce_save_data' ) ) {
 			return;
 		}
 		$coupon = new WC_Coupon( $post_id );
-		$coupon->update_meta_data('cycle_count', intval($_POST['cycle_count']));
+		$coupon->update_meta_data('cycle_count', intval(filter_var($_POST['cycle_count'], FILTER_SANITIZE_NUMBER_INT)));
 		$coupon->save();
   }
 

@@ -92,7 +92,7 @@ class PlansController
         $createdProduct = !empty($vindi_product_id) ?
           $this->routes->findProductById($vindi_product_id) :
           $this->routes->createProduct(array(
-            'name' => PREFIX_PRODUCT . $data['name'],
+            'name' => VINDI_PREFIX_PRODUCT . $data['name'],
             'code' => 'WC-' . $data['id'],
             'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
             'description' => $data['description'],
@@ -106,7 +106,7 @@ class PlansController
 
         // Creates the plan within the Vindi
         $createdPlan = $this->routes->createPlan(array(
-          'name' => PREFIX_PLAN . $data['name'],
+          'name' => VINDI_PREFIX_PLAN . $data['name'],
           'interval' => $plan_interval['interval'],
           'interval_count' => $plan_interval['interval_count'],
           'billing_trigger_type' => 'beginning_of_period',
@@ -160,7 +160,7 @@ class PlansController
     $createdProduct = !empty($vindi_product_id) ?
       $this->routes->findProductById($vindi_product_id) :
       $this->routes->createProduct(array(
-        'name' => PREFIX_PRODUCT . $data['name'],
+        'name' => VINDI_PREFIX_PRODUCT . $data['name'],
         'code' => 'WC-' . $data['id'],
         'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
         'description' => $data['description'],
@@ -174,7 +174,7 @@ class PlansController
 
     // Creates the plan within the Vindi
     $createdPlan = $this->routes->createPlan(array(
-      'name' => PREFIX_PLAN . $data['name'],
+      'name' => VINDI_PREFIX_PLAN . $data['name'],
       'interval' => $plan_interval['interval'],
       'interval_count' => $plan_interval['interval_count'],
       'billing_trigger_type' => 'beginning_of_period',
@@ -270,7 +270,7 @@ class PlansController
         $updatedProduct = $this->routes->updateProduct(
           $vindi_product_id,
           array(
-            'name' => PREFIX_PRODUCT . $data['name'],
+            'name' => VINDI_PREFIX_PRODUCT . $data['name'],
             'code' => 'WC-' . $data['id'],
             'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
             'description' => $data['description'],
@@ -286,7 +286,7 @@ class PlansController
         $updatedPlan = $this->routes->updatePlan(
           $vindi_plan_id,
           array(
-            'name' => PREFIX_PLAN . $data['name'],
+            'name' => VINDI_PREFIX_PLAN . $data['name'],
             'interval' => $plan_interval['interval'],
             'interval_count' => $plan_interval['interval_count'],
             'billing_trigger_type' => 'beginning_of_period',
@@ -333,7 +333,7 @@ class PlansController
     $updatedProduct = $this->routes->updateProduct(
       $vindi_product_id,
       array(
-        'name' => PREFIX_PRODUCT . $data['name'],
+        'name' => VINDI_PREFIX_PRODUCT . $data['name'],
         'code' => 'WC-' . $data['id'],
         'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
         'description' => $data['description'],
@@ -351,7 +351,7 @@ class PlansController
     $updatedPlan = $this->routes->updatePlan(
       $vindi_plan_id,
       array(
-        'name' => PREFIX_PLAN . $data['name'],
+        'name' => VINDI_PREFIX_PLAN . $data['name'],
         'interval' => $plan_interval['interval'],
         'interval_count' => $plan_interval['interval_count'],
         'billing_trigger_type' => 'beginning_of_period',

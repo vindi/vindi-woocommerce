@@ -73,7 +73,7 @@ class ProductController
 
     // Creates the product within the Vindi
     $createdProduct = $this->routes->createProduct(array(
-      'name' => PREFIX_PRODUCT . $data['name'],
+      'name' => VINDI_PREFIX_PRODUCT . $data['name'],
       'code' => 'WC-' . $data['id'],
       'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
       'description' => $data['description'],
@@ -120,7 +120,7 @@ class ProductController
     $updatedProduct = $this->routes->updateProduct(
       $vindi_product_id,
       array(
-        'name' => PREFIX_PRODUCT . $data['name'],
+        'name' => VINDI_PREFIX_PRODUCT . $data['name'],
         'code' => 'WC-' . $data['id'],
         'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
         'description' => $data['description'],

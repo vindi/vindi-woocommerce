@@ -936,14 +936,6 @@
 		"oAP": "/src/services/Webhooks.php",
 		"oF": 0
 		},
-	"/src/SupportSubscriptions.php": {
-		"cB": 0,
-		"ft": 8192,
-		"hM": 0,
-		"oA": 0,
-		"oAP": "/src/SupportSubscriptions.php",
-		"oF": 0
-		},
 	"/src/templates/admin-gateway-settings.html.php": {
 		"cB": 0,
 		"ft": 8192,

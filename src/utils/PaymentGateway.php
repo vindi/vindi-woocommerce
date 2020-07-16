@@ -147,7 +147,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
   public function get_country_code()
   {
     if (isset($_GET['order_id'])) {
-      $order = new WC_Order($_GET['order_id']);
+      $order = new WC_Order(filter_var($_GET['order_id'], FILTER_SANITIZE_NUMBER_INT));
       return $order->billing_country;
     } elseif ($this->vindi_settings->woocommerce->customer->get_billing_country()) {
       return $this->vindi_settings->woocommerce->customer->get_billing_country();
@@ -174,6 +174,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
    */
   public function process_payment($order_id)
   {
+    $order_id = filter_var($order_id, FILTER_SANITIZE_NUMBER_INT);
     $this->logger->log(sprintf('Processando pedido %s.', $order_id));
     $order   = wc_get_order($order_id);
     $payment = new VindiPaymentProcessor($order, $this, $this->vindi_settings, $this->controllers);
@@ -225,6 +226,9 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
    * @return bool|WP_Error
    */
   public function process_refund($order_id, $amount = null, $reason = '') {
+    $order_id = filter_var($order_id, FILTER_SANITIZE_NUMBER_INT);
+    $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_FLOAT);
+    $reason = sanitize_text_field($reason);
     $order = wc_get_order($order_id);
 
     if (!$this->can_refund_order($order)) {
@@ -262,12 +266,15 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
   /**
 	 * Get refund request args.
 	 *
-	 * @param  WC_Order $order Order object.
+	 * @param  int      $bill_id Order object.
 	 * @param  float    $amount Refund amount.
 	 * @param  string   $reason Refund reason.
 	 * @return array
 	 */
 	public function get_refund_request($bill_id, $amount = null, $reason = '') {
+    $bill_id = filter_var($bill_id, FILTER_SANITIZE_NUMBER_INT);
+    $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_FLOAT);
+    $reason = sanitize_text_field($reason);
 		$request = array(
 			'cancel_bill' => true,
 			'comments' => strip_tags(wc_trim_string($reason, 255)),
@@ -281,12 +288,16 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
   /**
 	 * Refund an order via PayPal.
 	 *
-	 * @param  WC_Order $order Order object.
+	 * @param  int      $bill_id Order object.
 	 * @param  float    $amount Refund amount.
 	 * @param  string   $reason Refund reason.
 	 * @return object Either an object of name value pairs for a success, or a WP_ERROR object.
 	 */
 	public function refund_transaction($bill_id, $amount = null, $reason = '') {
+    $bill_id = filter_var($bill_id, FILTER_SANITIZE_NUMBER_INT);
+    $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_FLOAT);
+    $reason = sanitize_text_field($reason);
+
     $data = $this->get_refund_request($bill_id, $amount, $reason);
     $last_charge = $this->find_bill_last_charge($bill_id);
     $charge_id = $last_charge['id'];
@@ -301,6 +312,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
   
   private function find_bill_last_charge($bill_id)
   {
+    $bill_id = filter_var($bill_id, FILTER_SANITIZE_NUMBER_INT);
     $bill = $this->routes->findBillById($bill_id);
 
     if(!$bill) {

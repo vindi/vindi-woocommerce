@@ -155,5 +155,17 @@ class VindiHelpers
     }
 
 		return $matching_item;
-	}
+  }
+
+  /**
+   * Sanitize user input to prevent XSS atacks.
+   *
+   * @since 1.0.0
+   * @param string $value. String to be sanitized.
+   *
+   * @return string
+   */
+  public static function sanitize_xss($value) {
+    return htmlspecialchars(strip_tags($value));
+  }
 }

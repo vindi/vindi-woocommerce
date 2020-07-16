@@ -30,10 +30,9 @@ class VindiRoutes
    */
   public function findProductById($product_id)
   {
-
     $response = $this->api->request(sprintf(
       'products/%s',
-      $product_id
+      filter_var($product_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'GET');
 
     $productExists = isset($response['product']['id']) ? $response['product'] : false;
@@ -69,7 +68,7 @@ class VindiRoutes
 
     $response = $this->api->request(sprintf(
       'plans/%s',
-      $plan_id
+      filter_var($plan_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'PUT', $data);
 
     return $response['plan'];
@@ -101,7 +100,7 @@ class VindiRoutes
 
     $response = $this->api->request(sprintf(
       'products/%s',
-      $product_id
+      filter_var($product_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'PUT', $data);
     return $response['product'];
   }
@@ -132,7 +131,7 @@ class VindiRoutes
 
     $response = $this->api->request(sprintf(
       'customers/%s',
-      $user_id
+      filter_var($user_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'PUT', $data);
 
     return $response['customer'];
@@ -150,7 +149,7 @@ class VindiRoutes
 
     $response = $this->api->request(sprintf(
       'customers/%s',
-      $user_id
+      filter_var($user_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'DELETE');
 
     return $response['customer'];
@@ -169,7 +168,7 @@ class VindiRoutes
 
     $response = $this->api->request(sprintf(
       'customers/%s',
-      $id
+      filter_var($id, FILTER_SANITIZE_NUMBER_INT)
     ), 'GET');
 
     $userExists = isset($response['customer']['id']) ? $response['customer'] : false;
@@ -210,7 +209,7 @@ class VindiRoutes
       $query = '?cancel_bills=false';
 
     $response = $this->api->request(
-      sprintf('subscriptions/%s%s', $subscription_id, $query), 'DELETE');
+      sprintf('subscriptions/%s%s', filter_var($subscription_id, FILTER_SANITIZE_NUMBER_INT), $query), 'DELETE');
 
     return $response;
   }
@@ -222,7 +221,7 @@ class VindiRoutes
    */
   public function activateSubscription($subscription_id)
   {
-    if ($response = $this->api->request('subscriptions/' . $subscription_id . '/reactivate', 'POST'))
+    if ($response = $this->api->request('subscriptions/' . filter_var($subscription_id, FILTER_SANITIZE_NUMBER_INT) . '/reactivate', 'POST'))
       return $response;
 
     return false;
@@ -235,7 +234,7 @@ class VindiRoutes
 	 */
 	public function getSubscription($subscription_id)
 	{
-		if ($response = $this->api->request("subscriptions/{$subscription_id}",'GET')['subscription'])
+		if ($response = $this->api->request("subscriptions/". filter_var($subscription_id, FILTER_SANITIZE_NUMBER_INT),'GET')['subscription'])
 			return $response;
 
 		return false;
@@ -248,6 +247,7 @@ class VindiRoutes
    */
   public function isSubscriptionActive($subscription_id)
   {
+    $subscription_id = filter_var($subscription_id, FILTER_SANITIZE_NUMBER_INT);
     if (isset($this->recentRequest)
       && $this->recentRequest['id'] == $subscription_id) {
       if ($this->recentRequest['status'] != 'canceled')
@@ -270,7 +270,7 @@ class VindiRoutes
   {
     return 'success' === $this->api->request(sprintf(
       'payment_profiles/%s/verify',
-      $payment_profile_id
+      filter_var($payment_profile_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'POST')['transaction']['status'];
   }
 
@@ -288,6 +288,7 @@ class VindiRoutes
 
   public function findProductByCode($code)
   {
+    $code = sanitize_text_field($code);
     $transient_key = "vindi_product_{$code}";
     $product = get_transient($transient_key);
 
@@ -306,6 +307,8 @@ class VindiRoutes
 
   public function findOrCreateProduct($name, $code)
   {
+    $name = sanitize_text_field($name);
+    $code = sanitize_text_field($code);
     $product = $this->findProductByCode($code);
 
     if (false === $product)
@@ -340,7 +343,7 @@ class VindiRoutes
       $query = '?comments= ' . $comments;
 
     if ($response = $this->api->request(
-      sprintf('bills/%s%s', $bill_id, $query), 'DELETE')
+      sprintf('bills/%s%s', filter_var($bill_id, FILTER_SANITIZE_NUMBER_INT), $query), 'DELETE')
     ) {
       return $response;
     }
@@ -416,7 +419,7 @@ class VindiRoutes
 
   public function getCharge($charge_id)
   {
-    $response = $this->api->request("charges/{$charge_id}", 'GET');
+    $response = $this->api->request("charges/" . filter_var($charge_id, FILTER_SANITIZE_NUMBER_INT), 'GET');
 
     if (empty($response['charge']))
       return false;
@@ -426,7 +429,7 @@ class VindiRoutes
 
   public function getPlan($plan_id)
   {
-    $response = $this->api->request("plans/{$plan_id}", 'GET');
+    $response = $this->api->request("plans/" . filter_var($plan_id, FILTER_SANITIZE_NUMBER_INT), 'GET');
 
     if (empty($response['plan'])) {
       $this->current_plan = false;
@@ -438,6 +441,7 @@ class VindiRoutes
 
   public function getPaymentProfile($user_vindi_id)
   {
+    $user_vindi_id = filter_var($user_vindi_id, FILTER_SANITIZE_NUMBER_INT);
     $customer = $this->findCustomerById($user_vindi_id);
 
     if (empty($customer))
@@ -473,7 +477,7 @@ class VindiRoutes
 
     $response = $this->api->request(sprintf(
       'bills/%s',
-      $bill_id
+      filter_var($bill_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'GET');
 
     if (isset($response['bill']))
@@ -484,7 +488,7 @@ class VindiRoutes
 
   public function refundCharge($charge_id, $data)
   {
-    $response = $this->api->request(sprintf('charges/%s/refund', $charge_id), 'POST', $data);
+    $response = $this->api->request(sprintf('charges/%s/refund', filter_var($charge_id, FILTER_SANITIZE_NUMBER_INT)), 'POST', $data);
     
     if (isset($response['charge'])) {
       return $response['charge'];

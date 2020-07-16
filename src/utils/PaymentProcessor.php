@@ -126,12 +126,12 @@ class VindiPaymentProcessor
 
     return array(
       'customer_id' => $customer_id,
-      'holder_name' => $_POST['vindi_cc_fullname'],
-      'card_expiration' => $_POST['vindi_cc_monthexpiry'] . '/' . $_POST['vindi_cc_yearexpiry'],
-      'card_number' => $_POST['vindi_cc_number'],
-      'card_cvv' => $_POST['vindi_cc_cvc'],
+      'holder_name' => sanitize_text_field($_POST['vindi_cc_fullname']),
+      'card_expiration' => filter_var($_POST['vindi_cc_monthexpiry'], FILTER_SANITIZE_NUMBER_INT) . '/' . filter_var($_POST['vindi_cc_yearexpiry'], FILTER_SANITIZE_NUMBER_INT),
+      'card_number' => filter_var($_POST['vindi_cc_number'], FILTER_SANITIZE_NUMBER_INT),
+      'card_cvv' => filter_var($_POST['vindi_cc_cvc'], FILTER_SANITIZE_NUMBER_INT),
       'payment_method_code' => $this->payment_method_code() ,
-      'payment_company_code' => $_POST['vindi_cc_paymentcompany'],
+      'payment_company_code' => sanitize_text_field($_POST['vindi_cc_paymentcompany']),
     );
   }
 
@@ -748,7 +748,12 @@ class VindiPaymentProcessor
    */
   protected function installments()
   {
-    if ('credit_card' == $this->payment_method_code() && isset($_POST['vindi_cc_installments'])) return $_POST['vindi_cc_installments'];
+    if (
+      'credit_card' == $this->payment_method_code() &&
+      isset($_POST['vindi_cc_installments'])
+    ) {
+      return filter_var($_POST['vindi_cc_installments'], FILTER_SANITIZE_NUMBER_INT);
+    }
 
     return 1;
   }

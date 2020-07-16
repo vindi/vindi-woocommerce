@@ -41,18 +41,18 @@ class InterestPriceHandler {
     }
 
     if (isset($_POST['post_data'] ) ) {
-      parse_str($_POST['post_data'], $post_data );
+      parse_str(sanitize_text_field($_POST['post_data']), $post_data);
     } else {
       $post_data = $_POST;
     }
 
     if (isset($post_data['vindi_cc_installments']) &&
-      $post_data['vindi_cc_installments'] > 1 &&
+      filter_var($post_data['vindi_cc_installments'], FILTER_SANITIZE_NUMBER_INT) > 1 &&
       $post_data['payment_method'] === 'vindi-credit-card'
     ) {
       global $woocommerce;
       $interest_rate = get_option('woocommerce_vindi-credit-card_settings', true)['interest_rate'];
-      $installments = intval($post_data['vindi_cc_installments']);
+      $installments = intval(filter_var($post_data['vindi_cc_installments'], FILTER_SANITIZE_NUMBER_INT));
       $tax_total = 0;
       $taxes = $cart->get_taxes(); 
       foreach($taxes as $tax) $tax_total += $tax;
