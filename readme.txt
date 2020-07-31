@@ -1,11 +1,16 @@
 === Vindi WooCommerce 2 (BETA) ===
 Contributors: MatheusKindrazki, thihxm
+Plugin Name: Vindi WooCommerce 2 (BETA)
+Plugin URI: https://github.com/vindi/vindi-woocommerce
 Website Link: https://www.vindi.com.br
 Tags: vindi, subscriptions, pagamento-recorrente, cobranca-recorrente, cobrança-recorrente, recurring, site-de-assinatura, assinaturas, faturamento-recorrente, recorrencia, assinatura, woocommerce-subscriptions, vindi-woocommerce, vindi-payment-gateway
+Author URI: https://mentores.com.br/
+Author: Mentores Digital
 Requires at least: 4.4
 Tested up to: 5.4.2
 WC requires at least: 3.0.0
 WC tested up to: 4.2.1
+Requires PHP: 5.6
 Stable Tag: 1.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,6 +30,14 @@ Para verificar os requisitos e efetuar a instalação do plugin, [siga as instru
 
 Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através da nossa [central de atendimento](https://atendimento.vindi.com.br/hc/pt-br).
 
+== Screenshots ==
+
+1. Nova campo de inserção de informações do cartão de crédito
+2. Página de cofiguração do plugin
+3. Página de pagamento com os boletos para impressão
+4. Opção de reembolso automático do pedido
+5. Configurações de pagamentos via cartão de crédito
+
 == Changelog ==
 = 1.0.0 - 22/06/2020 =
 - Lançamento da versão inicial.
@@ -39,6 +52,10 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - **Melhoria**: Estorno automático pelo painel do woocommerce do valor total de compras por cartão de crédito.
 - **Melhoria**: Separação de assinaturas no painel.
 - **Melhoria**: Juros configuráveis em compras parceladas.
+
+== Upgrade Notice ==
+= 1.0.0 - 22/06/2020 =
+Lançamento de novas funcionalidades para a integração entre a Vindi e o Woocommerce!
 
 == License ==
 
