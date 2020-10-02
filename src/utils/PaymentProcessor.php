@@ -364,13 +364,17 @@ class VindiPaymentProcessor
   private function get_cycle_from_product_type($item)
   {
     $product = method_exists($item, 'get_product') ? $item->get_product() : false;
+    $this->logger->log(sprintf("Cycles get_product: %s", $product));
     if ($item['type'] == 'shipping' || $item['type'] == 'tax') {
       if ($this->vindi_settings->get_shipping_and_tax_config()) return 1;
     }
     elseif (!$this->is_subscription_type($product) || $this->is_one_time_shipping($product)) {
       return 1;
     }
-    $cycles = get_post_meta($product->get_id(), '_subscription_length', true);
+    $cycles = 1;
+    if($product){
+        $cycles = get_post_meta($product->get_id(), '_subscription_length', true);
+    }
     return $cycles > 0 ? $cycles : 0;
   }
 
@@ -657,7 +661,7 @@ class VindiPaymentProcessor
   {
 	
     $plan_cycles = $this->get_cycle_from_product_type($order_item);
-	$this->logger->log(sprintf("ORDER ITEM: %s",$order_item));
+	$this->logger->log(sprintf("PLAN CYCLES: %s",$plan_cycles));
     $product_item = array(
       'product_id' => $order_item['vindi_id'],
       'quantity' => $order_item['qty'],

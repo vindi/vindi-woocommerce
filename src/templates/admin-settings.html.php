@@ -56,10 +56,8 @@ if (!empty($api_key)) {
         <?php if ((isset($api_key) || strlen($api_key)) == 43 && !empty($api_key)): ?>
 			  <script type="text/javascript">
           jQuery(document).ready(function(){
-                  jQuery('.wc-settings-sub-title')
-              .parent()
-              .append('<div class="alert alert-info">Aguarde! Reconectando ao Vindi.</div>');
-            setTimeout(function(){jQuery("button[name='save']").click();},2e3);
+                  jQuery('.wc-settings-sub-title').parent().append('<div class="alert alert-info">Aguarde! Reconectando ao Vindi.</div>');
+                  setTimeout(function(){jQuery("button[name='save']").click();},2e3);
           });
 			  </script>
 		  <?php endif;?>

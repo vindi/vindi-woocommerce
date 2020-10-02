@@ -15,10 +15,17 @@ class VindiWebhooks
   /**
 	 * @param VindiSettings $vindi_settings
 	 */
+  
+  /**
+   * @var VindiLogger
+   */
+  private $logger;
+
 	public function __construct(VindiSettings $vindi_settings)
   {
     $this->vindi_settings = $vindi_settings;
     $this->routes = $vindi_settings->routes;
+    $this->logger = $vindi_settings->logger;
 	}
 
 	/**
@@ -108,7 +115,7 @@ class VindiWebhooks
     $order = $this->find_order_by_id($order_id);
     $subscription_id = $renew_infos['vindi_subscription_id'];
     $order_post_meta = get_post_meta($order->id, 'vindi_order', true);
-
+    $this->logger->log(sprintf("[Webhooks] Order Post Meta: %s", $order_post_meta));
     $order_post_meta[$subscription_id]['cycle'] = $renew_infos['cycle'];
     $order_post_meta[$subscription_id]['product'] = $renew_infos['plan_name'];
     $order_post_meta[$subscription_id]['bill'] = array(
