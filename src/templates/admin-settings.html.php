@@ -1,9 +1,8 @@
 <?php if (!defined('ABSPATH')) {
     exit;
 }
-?>
-
-<?php if (!$settings->check_ssl()): ?>
+$_SESSION['counter_err'] = isset($_SESSION['counter_err']) ? $_SESSION['counter_err'] : 0;
+if (!$settings->check_ssl()): ?>
 <div class="error">
   <p>
     <strong><?php _e('Vindi WooCommerce Desabilitado', VINDI);?></strong>:
@@ -36,9 +35,10 @@ if (!empty($api_key)) {
   <input type="text" value="<?php echo $settings->get_webhooks_url(); ?>" readonly="readonly"
     onClick="this.select(); this.setSelectionRange(0, this.value.length); document.execCommand('copy');"/>
   <hr>
-
+  
 	<div class="test-return-infos">
     <?php if ($merchant): ?>
+
         <div>
           <h3 class="wc-settings-sub-title title-2"><?php _e('Teste de conexão com a Vindi', VINDI);?></h3>
           <p><?php _e('Conectado com sucesso!', VINDI)?></p>
@@ -54,7 +54,9 @@ if (!empty($api_key)) {
           <h3 class="wc-settings-sub-title title-2"><?php _e('Teste de conexão com a Vindi', VINDI);?></h3>
           <p><?php echo sprintf(__('Falha na conexão! <br><strong>%s</strong>', VINDI), $settings->api->last_error); ?></p>
         </div>
-        <?php if (isset($api_key)): ?>
+        <?php if ((isset($api_key) || strlen($api_key) > 40 || !empty($api_key) && $_SESSION['counter_err']<=2)): ?>
+        <?php $_SESSION['counter_err']++;?>
+        <pre><?php $counter = $_SESSION['counter_err'];  echo  ($counter+1). 'ª tentativa de conexão.'; ?>
 			<script type="text/javascript">
 			  jQuery(document).ready(function(){
          	      jQuery('.wc-settings-sub-title')
