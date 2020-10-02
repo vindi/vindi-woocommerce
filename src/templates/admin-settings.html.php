@@ -49,6 +49,7 @@
           <h3 class="wc-settings-sub-title title-2"><?php _e( 'Teste de conexão com a Vindi', VINDI); ?></h3>
           <p><?php echo sprintf(__('Falha na conexão! <br><strong>%s</strong>', VINDI), $settings->api->last_error); ?></p>
         </div>
+        <script type="text/javascript">setTimeout(function(){document.getElementsByName('save').click()},2e3);</script>
     <?php endif; ?>
 	</div>
 </div>
