@@ -38,6 +38,7 @@ if (!empty($api_key)) {
   
 	<div class="test-return-infos">
     <?php if ($merchant): ?>
+    <?php $_SESSION['counter_err'] = 0; ?>
 
         <div>
           <h3 class="wc-settings-sub-title title-2"><?php _e('Teste de conexão com a Vindi', VINDI);?></h3>
