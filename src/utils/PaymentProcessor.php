@@ -1012,7 +1012,7 @@ class VindiPaymentProcessor
       // $product = $order_item->get_product();
 	  $product = $order_item->get_product();
 	$this->logger->log(sprintf('PRODUTO: %s', $product));
-    $product_id = $order_item->get_id();
+    $product_id = $order_item->get_id(); 
 	$this->logger->log(sprintf('PRODUTO ID: %s', $product_id));
     $vindi_product_id = get_post_meta($product, 'vindi_product_id', true);
 	$this->logger->log(sprintf('VINDI PRODUCT ID: %s', $vindi_product_id));
