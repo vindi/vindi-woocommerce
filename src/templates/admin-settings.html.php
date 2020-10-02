@@ -53,17 +53,15 @@ if (!empty($api_key)) {
           <h3 class="wc-settings-sub-title title-2"><?php _e('Teste de conexão com a Vindi', VINDI);?></h3>
           <p><?php echo sprintf(__('Falha na conexão! <br><strong>%s</strong>', VINDI), $settings->api->last_error); ?></p>
         </div>
-        <?php if (isset($api_key) || strlen($api_key) > 40 || !empty($api_key)): ?>
-
-
-			<script type="text/javascript">
-			  jQuery(document).ready(function(){
-         	      jQuery('.wc-settings-sub-title')
-					  .parent()
-					  .append('<div class="alert alert-info">Aguarde! Reconectando ao Vindi.</div>');
-				  setTimeout(function(){jQuery("button[name='save']").click();},2e3);
-			  });
-			</script>
+        <?php if ((isset($api_key) || strlen($api_key)) == 43 && !empty($api_key)): ?>
+			  <script type="text/javascript">
+          jQuery(document).ready(function(){
+                  jQuery('.wc-settings-sub-title')
+              .parent()
+              .append('<div class="alert alert-info">Aguarde! Reconectando ao Vindi.</div>');
+            setTimeout(function(){jQuery("button[name='save']").click();},2e3);
+          });
+			  </script>
 		  <?php endif;?>
     <?php endif;?>
 
