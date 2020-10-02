@@ -1,7 +1,6 @@
 <?php if (!defined('ABSPATH')) {
     exit;
 }
-$_SESSION['counter_err'] = isset($_SESSION['counter_err']) ? $_SESSION['counter_err'] : 0;
 if (!$settings->check_ssl()): ?>
 <div class="error">
   <p>
@@ -38,7 +37,6 @@ if (!empty($api_key)) {
   
 	<div class="test-return-infos">
     <?php if ($merchant): ?>
-    <?php $_SESSION['counter_err'] = 0; ?>
 
         <div>
           <h3 class="wc-settings-sub-title title-2"><?php _e('Teste de conexão com a Vindi', VINDI);?></h3>
@@ -55,9 +53,9 @@ if (!empty($api_key)) {
           <h3 class="wc-settings-sub-title title-2"><?php _e('Teste de conexão com a Vindi', VINDI);?></h3>
           <p><?php echo sprintf(__('Falha na conexão! <br><strong>%s</strong>', VINDI), $settings->api->last_error); ?></p>
         </div>
-        <?php if ((isset($api_key) || strlen($api_key) > 40 || !empty($api_key) && $_SESSION['counter_err']<=2)): ?>
-        <?php $_SESSION['counter_err']++;?>
-        <pre><?php $counter = $_SESSION['counter_err'];  echo  ($counter+1). 'ª tentativa de conexão.'; ?>
+        <?php if (isset($api_key) || strlen($api_key) > 40 || !empty($api_key)): ?>
+
+
 			<script type="text/javascript">
 			  jQuery(document).ready(function(){
          	      jQuery('.wc-settings-sub-title')
