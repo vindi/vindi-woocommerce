@@ -21,7 +21,7 @@ function VindiRedirectToMyAccount() {
 
 
 function VindiRedirectInfo() {
-
+  /* (fix:issue:#6) */
   if(is_user_logged_in() || get_option('woocommerce_enable_guest_checkout') == "yes") return;
   ?>
   <div class="woocommerce-info">
