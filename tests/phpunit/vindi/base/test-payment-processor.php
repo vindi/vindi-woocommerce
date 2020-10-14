@@ -96,7 +96,7 @@ class Vindi_Test_Payment_Processor extends Vindi_Test_Base
     $this->assertEquals(
       array(
         array(
-          'product_id' => 1239812039,
+          'product_id' => 63,
           'quantity' => 4,
           'pricing_schema' => array(
             'price' => 20.0,
