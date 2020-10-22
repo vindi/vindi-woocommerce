@@ -65,6 +65,7 @@ class VindiSettings extends WC_Settings_API
     $this->dependencies  = new VindiDependencies;
     $this->invalidApiKey = get_option( 'vindi_invalid_api_key', false );
     
+    
     if (is_admin()) {
       
       
@@ -257,7 +258,7 @@ class VindiSettings extends WC_Settings_API
   {
     $api_key = $this->get_api_key();
     $this->api = new VindiApi($api_key, $this->logger, $this->get_is_active_sandbox());
-
+    
     if (!$api_key) {
       return;
     }
@@ -279,8 +280,10 @@ class VindiSettings extends WC_Settings_API
   public function is_api_key_valid()
   {
     if($this->invalidApiKey) {
+      $this->logger->log('[warning] A Key é inválida');
       include_once VINDI_SRC . 'views/invalid-api-key.php';
     }
+    $this->logger->log('[info] A Key é válida');
   }
 
   /**
