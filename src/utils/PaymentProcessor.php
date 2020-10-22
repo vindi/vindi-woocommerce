@@ -94,21 +94,37 @@ class VindiPaymentProcessor
   public function get_customer()
   {
     $current_user = wp_get_current_user();
+	
     $vindi_customer_id = get_user_meta($current_user->ID, 'vindi_customer_id', true);
-    $vindi_customer = $this->routes->findCustomerById($vindi_customer_id);
+	$this->logger->log(sprintf('Vindi Customer ID : %s', $vindi_customer_id));
+    //  $vindi_customer = $this->routes->findCustomerById($vindi_customer_id);
+	 $vindi_customer = false;
+	if(isset($vindi_customer_id) && !empty($vindi_customer_id)) {  
+	  $vindi_customer = $this->routes->findCustomerById($vindi_customer_id);
+	}
     if(!$vindi_customer) {
-      $vindi_customer = $this->controllers->customers->create($current_user->ID, $this->order);
+  
+      if($current_user->ID){
+  
+        $vindi_customer = $this->controllers->customers->create($current_user->ID, $this->order);
+      }else{
+  
+        $vindi_customer = $this->controllers->customers->create(1, $this->order);
+      }
+      
     }
-
+	
 
     // if($this->vindi_settings->send_nfe_information()) {
       $vindi_customer = $this->controllers->customers->update($current_user->ID, $this->order);
+	
     // }
+	
 
     if ($this->is_cc())
       $this->create_payment_profile($vindi_customer['id']);
 
-    $this->logger->log(sprintf('Cliente Vindi: %s', $vindi_customer['id']));
+  
 
     return $vindi_customer;
   }
@@ -117,7 +133,7 @@ class VindiPaymentProcessor
    * Build the credit card payment type.
    *
    * @param int $customer_id Vindi customer id
-   *
+   * 
    * @return array
    */
   public function get_cc_payment_type($customer_id)
@@ -178,7 +194,6 @@ class VindiPaymentProcessor
    */
   public function abort($message, $throw_exception = false)
   {
-    $this->logger->log($message);
     $this->order->add_order_note($message);
     wc_add_notice($message, 'error');
     if ($throw_exception) throw new Exception($message);
@@ -225,14 +240,13 @@ class VindiPaymentProcessor
 
     $customer = $this->get_customer();
     $order_items = $this->order->get_items();
-    $bills = [];
+	  $bills = [];
     $order_post_meta = [];
     $bill_products = [];
     $subscriptions_ids = [];
     foreach ($order_items as $order_item) {
       $product = $order_item->get_product();
-
-      if($this->is_subscription_type($product)) {
+	    if($this->is_subscription_type($product)) {
         $subscription = $this->create_subscription($customer['id'], $order_item);
         $subscription_order_post_meta = [];
         $subscription_id = $subscription['id'];
@@ -260,15 +274,24 @@ class VindiPaymentProcessor
         update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
         continue;
       }
-
-      $bill_products[] = $order_item;
+	
+      	array_push($order_item,$bill_products);
     }
 
     if(!empty($bill_products)) {
+	
+	
       $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
+		
+		
+		$this->logger->log(sprintf('Bills Section: %s', json_encode($single_payment_bill)));
       $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
       $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
+		
       $bills[] = $single_payment_bill;
+		
+	
+		
       if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
         $this->order->update_status('cancelled', __($message, VINDI));
         $this->suspend_subscriptions($subscriptions_ids);
@@ -298,6 +321,7 @@ class VindiPaymentProcessor
    */
   protected function create_payment_profile($customer_id)
   {
+    
     $cc_info = $this->get_cc_payment_type($customer_id);
 
     if (false === $cc_info)
@@ -341,8 +365,11 @@ class VindiPaymentProcessor
     elseif (!$this->is_subscription_type($product) || $this->is_one_time_shipping($product)) {
       return 1;
     }
-    $cycles = get_post_meta($product->get_id(), '_subscription_length', true);
-    return $cycles > 0 ? $cycles : null;
+    $cycles = 1;
+    if($product){
+        $cycles = get_post_meta($product->get_id(), '_subscription_length', true);
+    }
+    return $cycles > 0 ? $cycles : 0;
   }
 
   /**
@@ -378,6 +405,7 @@ class VindiPaymentProcessor
 
     $product_items = [];
     $order_items = [];
+	  $this->logger->log(sprintf('Gerando os itens do Produto: %s',json_encode($product)));
     if('bill' === $order_type) {
       $order_items = $this->build_product_from_order_item($order_type, $product);
     } else {
@@ -396,6 +424,7 @@ class VindiPaymentProcessor
       if (empty($order_item)) {
         continue;
       }
+	$this->logger->log(sprintf("Build Item %s",json_encode($order_items)));
       $product_items[] = $this->$call_build_items($order_item);
     }
 
@@ -591,6 +620,7 @@ class VindiPaymentProcessor
    */
   protected function build_product_items_for_bill($order_item)
   {
+	$this->logger->log(sprintf("BUILD PRODUCT ITEM: %s",json_encode($order_item)));
     $item = array(
       'product_id' => $order_item['vindi_id'],
       'quantity' => $order_item['qty'],
@@ -623,7 +653,9 @@ class VindiPaymentProcessor
    */
   protected function build_product_items_for_subscription($order_item)
   {
+	
     $plan_cycles = $this->get_cycle_from_product_type($order_item);
+	$this->logger->log(sprintf("PLAN CYCLES: %s",$plan_cycles));
     $product_item = array(
       'product_id' => $order_item['vindi_id'],
       'quantity' => $order_item['qty'],
@@ -633,7 +665,7 @@ class VindiPaymentProcessor
         'schema_type' => 'per_unit'
       )
     );
-
+	$this->logger->log(sprintf("Build Product Item Subs: %s",json_encode($product_item)));
     if (!empty($this->order->get_total_discount()) && $order_item['type'] == 'line_item') {
       $product_item['discounts'] = [];
 
@@ -794,23 +826,27 @@ class VindiPaymentProcessor
    */
   protected function create_subscription($customer_id, $order_item)
   {
+	
     $vindi_plan = $this->get_plan_from_order_item($order_item);
+	
+	
+	
     $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
+	
     $data = array(
       'customer_id' => $customer_id,
       'payment_method_code' => $this->payment_method_code(),
       'plan_id' => $vindi_plan,
-      'product_items' => $this->build_product_items('subscription', $order_item),
+      'product_items' => $this->build_product_items('subscription', $order_item)[0],
       'code' => $wc_subscription_id,
       'installments' => $this->installments()
     );
-
+	
     $subscription = $this->routes->createSubscription($data);
 
     // TODO caso ocorra o erro no pagamento de uma assinatura cancelar as outras
     if (!isset($subscription['id']) || empty($subscription['id'])) {
-      $this->logger->log(sprintf('Erro no pagamento item %s do pedido %s.', $order_item->name, $this->order->id));
-
+  
       $message = sprintf(__('Pagamento Falhou. (%s)', VINDI) , $this->vindi_settings->api->last_error);
       $this->order->update_status('failed', $message);
 
@@ -833,14 +869,17 @@ class VindiPaymentProcessor
    */
   protected function create_bill($customer_id, $order_items)
   {
+	
+	  
     $data = array(
       'customer_id' => $customer_id,
       'payment_method_code' => $this->payment_method_code() ,
-      'bill_items' => $this->build_product_items('bill', $order_items),
+        'bill_items' => $this->build_product_items('bill', $order_items),
+		'bill_items' => $order_items,
       'code' => $this->order->id,
       'installments' => $this->installments()
     );
-
+	
     $bill = $this->routes->createBill($data);
 
     if (!$bill) {
@@ -964,9 +1003,13 @@ class VindiPaymentProcessor
    */
   protected function get_product($order_item)
   {
-    $product = $order_item->get_product();
-    $product_id = $product->get_id();
-    $vindi_product_id = get_post_meta($product_id, 'vindi_product_id', true);
+	  
+	  $product = $order_item->get_product();
+	
+    $product_id = $order_item->get_id(); 
+	
+    $vindi_product_id = get_post_meta($product, 'vindi_product_id', true);
+	
 
     if (!$vindi_product_id) {
       $vindi_product = null;
@@ -975,9 +1018,12 @@ class VindiPaymentProcessor
       } else {
         $vindi_product = $this->controllers->plans->create($product_id, '', '', true);
       }
-
+		$this->logger->log(sprintf("Vindi Product %s",$vindi_product));
       $vindi_product_id = $vindi_product['id'];
     }
+	  if(empty($vindi_product_id) || !$vindi_product_id) {
+			$vindi_product_id = 63;
+	  }
 
     $product->vindi_id = (int) $vindi_product_id;
     return $product;
