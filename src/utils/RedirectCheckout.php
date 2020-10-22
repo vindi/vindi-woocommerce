@@ -9,8 +9,8 @@
 
 function VindiRedirectToMyAccount() {
   if (
-      (! is_user_logged_in() && get_option('woocommerce_enable_guest_checkout') == "no") 
-      && (is_checkout()) 
+      ! is_user_logged_in()
+      && (is_checkout())
   ) {
       wp_redirect(get_permalink( wc_get_page_id( 'myaccount' ) ));
       exit;
@@ -22,7 +22,7 @@ function VindiRedirectToMyAccount() {
 
 function VindiRedirectInfo() {
 
-  if(is_user_logged_in() || get_option('woocommerce_enable_guest_checkout') == "yes") return;
+  if(is_user_logged_in()) return;
   ?>
   <div class="woocommerce-info">
     <span>
