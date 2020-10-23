@@ -36,7 +36,6 @@ if (!empty($api_key)) {
   <hr>
 	<div class="test-return-infos">
     <?php if ($merchant): ?>
-
         <div>
           <h3 class="wc-settings-sub-title title-2"><?php _e('Teste de conexão com a Vindi', VINDI);?></h3>
           <p><?php _e('Conectado com sucesso!', VINDI)?></p>
