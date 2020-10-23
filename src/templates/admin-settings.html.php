@@ -34,7 +34,6 @@ if (!empty($api_key)) {
   <input type="text" value="<?php echo $settings->get_webhooks_url(); ?>" readonly="readonly"
     onClick="this.select(); this.setSelectionRange(0, this.value.length); document.execCommand('copy');"/>
   <hr>
-  
 	<div class="test-return-infos">
     <?php if ($merchant): ?>
 
