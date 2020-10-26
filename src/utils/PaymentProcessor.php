@@ -844,8 +844,7 @@ class VindiPaymentProcessor
     $data = array(
       'customer_id' => $customer_id,
       'payment_method_code' => $this->payment_method_code() ,
-        'bill_items' => $this->build_product_items('bill', $order_items),
-		'bill_items' => $order_items,
+      'bill_items' => $this->build_product_items('bill', $order_items),
       'code' => $this->order->id,
       'installments' => $this->installments()
     );
