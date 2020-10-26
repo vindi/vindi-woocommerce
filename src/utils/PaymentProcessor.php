@@ -103,13 +103,10 @@ class VindiPaymentProcessor
 	}
     if(!$vindi_customer) {
       if($current_user->ID){
-  
         $vindi_customer = $this->controllers->customers->create($current_user->ID, $this->order);
-      }else{
-  
+      } else {
         $vindi_customer = $this->controllers->customers->create(1, $this->order);
       }
-      
     }
 
     // if($this->vindi_settings->send_nfe_information()) {
@@ -268,7 +265,7 @@ class VindiPaymentProcessor
         update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
         continue;
       }
-     	array_push($order_item,$bill_products);
+     	array_push($order_item, $bill_products);
     }
 
     if(!empty($bill_products)) {
@@ -811,7 +808,6 @@ class VindiPaymentProcessor
   {
     $vindi_plan = $this->get_plan_from_order_item($order_item);
     $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
-	
     $data = array(
       'customer_id' => $customer_id,
       'payment_method_code' => $this->payment_method_code(),
