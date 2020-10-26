@@ -34,10 +34,8 @@ if (!empty($api_key)) {
   <input type="text" value="<?php echo $settings->get_webhooks_url(); ?>" readonly="readonly"
     onClick="this.select(); this.setSelectionRange(0, this.value.length); document.execCommand('copy');"/>
   <hr>
-  
 	<div class="test-return-infos">
     <?php if ($merchant): ?>
-
         <div>
           <h3 class="wc-settings-sub-title title-2"><?php _e('Teste de conexão com a Vindi', VINDI);?></h3>
           <p><?php _e('Conectado com sucesso!', VINDI)?></p>
@@ -53,8 +51,8 @@ if (!empty($api_key)) {
           <h3 class="wc-settings-sub-title title-2"><?php _e('Teste de conexão com a Vindi', VINDI);?></h3>
           <p><?php echo sprintf(__('Falha na conexão! <br><strong>%s</strong>', VINDI), $settings->api->last_error); ?></p>
         </div>
-        <?php if ((isset($api_key) || strlen($api_key)) == 43 && !empty($api_key)): ?>
-			  <script type="text/javascript">
+        <?php if (isset($api_key) && strlen($api_key) === 43 && $settings->api->last_error !== "unauthorized|authorization"): ?>
+        <script type="text/javascript">
           jQuery(document).ready(function(){
                   jQuery('.wc-settings-sub-title').parent().append('<div class="alert alert-info">Aguarde! Reconectando ao Vindi.</div>');
                   setTimeout(function(){jQuery("button[name='save']").click();},2e3);
