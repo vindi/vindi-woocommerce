@@ -139,7 +139,7 @@ class VindiSubscriptionStatusHandler
       $order = wc_get_order($order);
     }
 
-    $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+    $vindi_order = array(get_post_meta($order->id, 'vindi_order', true));
     if(!is_array($vindi_order)) {
       return;
     }
