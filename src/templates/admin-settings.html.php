@@ -60,7 +60,5 @@ if (!empty($api_key)) {
 			  </script>
 		  <?php endif;?>
     <?php endif;?>
-
-
 	</div>
 </div>
