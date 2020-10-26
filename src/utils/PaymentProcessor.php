@@ -269,7 +269,6 @@ class VindiPaymentProcessor
 
     if(!empty($bill_products)) {
       $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
-      $this->logger->log(sprintf('Bills Section: %s', json_encode($single_payment_bill)));
       $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
       $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
       $bills[] = $single_payment_bill;
@@ -404,7 +403,6 @@ class VindiPaymentProcessor
       if (empty($order_item)) {
         continue;
       }
-	$this->logger->log(sprintf("Build Item %s",json_encode($order_items)));
       $product_items[] = $this->$call_build_items($order_item);
     }
 
@@ -600,7 +598,6 @@ class VindiPaymentProcessor
    */
   protected function build_product_items_for_bill($order_item)
   {
-	$this->logger->log(sprintf("BUILD PRODUCT ITEM: %s",json_encode($order_item)));
     $item = array(
       'product_id' => $order_item['vindi_id'],
       'quantity' => $order_item['qty'],
@@ -634,7 +631,6 @@ class VindiPaymentProcessor
   protected function build_product_items_for_subscription($order_item)
   {
     $plan_cycles = $this->get_cycle_from_product_type($order_item);
-	$this->logger->log(sprintf("PLAN CYCLES: %s",$plan_cycles));
     $product_item = array(
       'product_id' => $order_item['vindi_id'],
       'quantity' => $order_item['qty'],
@@ -644,7 +640,6 @@ class VindiPaymentProcessor
         'schema_type' => 'per_unit'
       )
     );
-	$this->logger->log(sprintf("Build Product Item Subs: %s",json_encode($product_item)));
     if (!empty($this->order->get_total_discount()) && $order_item['type'] == 'line_item') {
       $product_item['discounts'] = [];
 
@@ -972,7 +967,7 @@ class VindiPaymentProcessor
   protected function get_product($order_item)
   {
     $product = $order_item->get_product();
-    $product_id = $order_item->get_id(); 
+    $product_id = $order_item->get_id();
     $vindi_product_id = get_post_meta($product, 'vindi_product_id', true);
 
     if (!$vindi_product_id) {
@@ -982,7 +977,6 @@ class VindiPaymentProcessor
       } else {
         $vindi_product = $this->controllers->plans->create($product_id, '', '', true);
       }
-		$this->logger->log(sprintf("Vindi Product %s",$vindi_product));
       $vindi_product_id = $vindi_product['id'];
     }
 	  if(empty($vindi_product_id) || !$vindi_product_id) {
