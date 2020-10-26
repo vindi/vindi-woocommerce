@@ -95,12 +95,11 @@ class VindiPaymentProcessor
   {
     $current_user = wp_get_current_user();
     $vindi_customer_id = get_user_meta($current_user->ID, 'vindi_customer_id', true);
-	$this->logger->log(sprintf('Vindi Customer ID : %s', $vindi_customer_id));
-    //  $vindi_customer = $this->routes->findCustomerById($vindi_customer_id);
-	 $vindi_customer = false;
-	if(isset($vindi_customer_id) && !empty($vindi_customer_id)) {  
-	  $vindi_customer = $this->routes->findCustomerById($vindi_customer_id);
-	}
+
+    if(isset($vindi_customer_id) && !empty($vindi_customer_id)) {  
+      $vindi_customer = $this->routes->findCustomerById($vindi_customer_id);
+    }
+
     if(!$vindi_customer) {
       if($current_user->ID){
         $vindi_customer = $this->controllers->customers->create($current_user->ID, $this->order);
