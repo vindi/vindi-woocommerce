@@ -53,9 +53,14 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - **Melhoria**: Separação de assinaturas no painel.
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
+= 1.0.1 - 28/10/2020 =
+- Lançamento da versão de patch.
+- **Correção**: Removido obrigatoriedade de login do usuário para compras avulsas.
+- **Correção**: Corrigido a instabilidade na conexão com a API da Vindi nas configurações do Woocommerce.
+
 == Upgrade Notice ==
-= 1.0.0 - 22/06/2020 =
-Lançamento de novas funcionalidades para a integração entre a Vindi e o Woocommerce!
+= 1.0.1 - 28/10/2020 =
+Patch de correções para o plugin da Vindi
 
 == License ==
 
