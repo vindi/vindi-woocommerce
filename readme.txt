@@ -58,7 +58,6 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - **Correção**: Removido obrigatoriedade de login do usuário para compras avulsas.
 - **Correção**: Corrigido a instabilidade na conexão com a API da Vindi nas configurações do Woocommerce.
 
-
 == Upgrade Notice ==
 = 1.0.1 - 28/10/2020 =
 Patch de correções para o plugin da Vindi
