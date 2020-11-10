@@ -33,7 +33,7 @@ class VindiControllers
   function __construct(VindiSettings $vindi_settings)
   {
     $this->includes();
-
+    
     $this->plans = new PlansController($vindi_settings);
     $this->customers = new CustomerController($vindi_settings);
     $this->products = new ProductController($vindi_settings);
