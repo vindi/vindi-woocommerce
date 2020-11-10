@@ -36,6 +36,7 @@ class VindiSubscriptionStatusHandler
    */
   public function filter_pre_status($wc_subscription, $new_status, $old_status)
   {
+    
     switch ($new_status) {
       case 'on-hold':
         $this->suspend_status($wc_subscription);
@@ -47,6 +48,7 @@ class VindiSubscriptionStatusHandler
         $this->cancelled_status($wc_subscription);
         break;
       case 'pending-cancel':
+        
         if (!$this->vindi_settings->dependencies->is_wc_memberships_active()) {
           $wc_subscription->update_status('cancelled');
         }
@@ -81,8 +83,10 @@ class VindiSubscriptionStatusHandler
    */
   public function active_status($wc_subscription, $old_status)
   {
+    
     if ('pending' == $old_status)
       return;
+      
     $subscription_id = $this->get_vindi_subscription_id($wc_subscription);
     if ($this->vindi_settings->get_synchronism_status()
       && !$this->routes->isSubscriptionActive($subscription_id)) {
@@ -95,6 +99,7 @@ class VindiSubscriptionStatusHandler
    */
   public function get_vindi_subscription_id($wc_subscription)
   {
+    
     $subscription_id = method_exists($wc_subscription, 'get_id')
     ? $wc_subscription->get_id()
     : $wc_subscription->id;
@@ -106,6 +111,7 @@ class VindiSubscriptionStatusHandler
    */
   public function order_fully_refunded($order)
   {
+    
     if (!is_object($order)) {
       $order = wc_get_order($order);
     }
@@ -135,18 +141,19 @@ class VindiSubscriptionStatusHandler
    */
   public function order_canceled($order)
   {
+    
     if (!is_object($order)) {
       $order = wc_get_order($order);
     }
 
-    $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+    $vindi_order = array(get_post_meta($order->id, 'vindi_order', true));
     if(!is_array($vindi_order)) {
       return;
     }
     $single_payment_bill_id = 0;
     foreach ($vindi_order as $key => $item) {
-      if($key == 'single_payment' && $vindi_order[$key]['bill']['status'] != 'canceled') {
-        $single_payment_bill_id = $vindi_order[$key]['bill']['id'];
+      if($key == 'single_payment' && @$vindi_order[$key]['bill']['status'] != 'canceled') {
+        $single_payment_bill_id = @$vindi_order[$key]['bill']['id'];
       }
       $vindi_order[$key]['bill']['status'] = 'canceled';
     }
