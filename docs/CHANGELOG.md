@@ -1,5 +1,8 @@
 ## Changelog
 
+## 1.0.1
+* **Correção**: Alguns pedidos ao realizar a finalização retornavam Internal Server Error.
+
 ## 1.0.0
 * Lançamento da versão inicial.
 * **Adição**: Template para tradução do plugin.
