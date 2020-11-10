@@ -182,8 +182,6 @@ class VindiRoutes
    */
   public function createSubscription($data)
   {
-    // $json = json_encode($data);
-    // die($json);
     if (($response = $this->api->request('subscriptions', 'POST', $data)) &&
       isset($response['subscription']['id'])) {
 

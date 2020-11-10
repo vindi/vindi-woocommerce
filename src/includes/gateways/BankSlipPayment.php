@@ -72,7 +72,6 @@ class VindiBankSlipGateway extends VindiPaymentGateway
    */
   public function type()
   {
-    
     return 'bank_slip';
   }
 

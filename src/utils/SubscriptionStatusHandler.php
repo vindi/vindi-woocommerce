@@ -36,7 +36,6 @@ class VindiSubscriptionStatusHandler
    */
   public function filter_pre_status($wc_subscription, $new_status, $old_status)
   {
-    
     switch ($new_status) {
       case 'on-hold':
         $this->suspend_status($wc_subscription);
@@ -48,7 +47,6 @@ class VindiSubscriptionStatusHandler
         $this->cancelled_status($wc_subscription);
         break;
       case 'pending-cancel':
-        
         if (!$this->vindi_settings->dependencies->is_wc_memberships_active()) {
           $wc_subscription->update_status('cancelled');
         }
@@ -83,7 +81,6 @@ class VindiSubscriptionStatusHandler
    */
   public function active_status($wc_subscription, $old_status)
   {
-    
     if ('pending' == $old_status)
       return;
       
@@ -99,7 +96,6 @@ class VindiSubscriptionStatusHandler
    */
   public function get_vindi_subscription_id($wc_subscription)
   {
-    
     $subscription_id = method_exists($wc_subscription, 'get_id')
     ? $wc_subscription->get_id()
     : $wc_subscription->id;
@@ -111,7 +107,6 @@ class VindiSubscriptionStatusHandler
    */
   public function order_fully_refunded($order)
   {
-    
     if (!is_object($order)) {
       $order = wc_get_order($order);
     }
@@ -141,7 +136,6 @@ class VindiSubscriptionStatusHandler
    */
   public function order_canceled($order)
   {
-    
     if (!is_object($order)) {
       $order = wc_get_order($order);
     }
