@@ -208,10 +208,12 @@ class PlansController
       set_transient('vindi_product_message', 'error', 60);
     }
 
-    return array(
+    $response = array(
       'product' => $createdProduct,
       'plan' => $createdPlan,
     );
+    
+    return $response;
   }
 
   function update($post_id)
@@ -369,11 +371,11 @@ class PlansController
     } else {
       set_transient('vindi_product_message', 'error', 60);
     }
-
-    return array(
+    $response = array(
       'product' => $updatedProduct,
       'plan' => $updatedPlan,
     );
+    return $response;
   }
 
   /**
