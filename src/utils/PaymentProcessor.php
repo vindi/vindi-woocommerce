@@ -70,6 +70,7 @@ class VindiPaymentProcessor
         $this->routes = $vindi_settings->routes;
         $this->controllers = $controllers;
         $this->shipping_added = false;
+        $this->single_freight = $this->vindi_settings->get_option('shipping_and_tax_config') == "yes" ? true : false;
     }
 
     /**
@@ -356,18 +357,20 @@ class VindiPaymentProcessor
      */
     private function get_cycle_from_product_type($item)
     {
-
+        $cycles = null;
         $product = method_exists($item, 'get_product') ? $item->get_product() : false;
 
         if ($item['type'] == 'shipping' || $item['type'] == 'tax') {
             if ($this->vindi_settings->get_shipping_and_tax_config()) {
                 return 1;
+                
             }
+            return $this->single_freight ? 1 : null;
 
         } elseif (!$this->is_subscription_type($product) || $this->is_one_time_shipping($product)) {
             return 1;
         }
-        $cycles = 1;
+        
         if ($product) {
             $cycles = get_post_meta($product->get_id(), '_subscription_length', true);
         }
