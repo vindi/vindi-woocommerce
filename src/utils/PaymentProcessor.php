@@ -162,7 +162,7 @@ class VindiPaymentProcessor
      */
     public function is_bank_slip()
     {
-      
+
         return 'bank_slip' === $this->gateway->type();
     }
 
@@ -173,7 +173,6 @@ class VindiPaymentProcessor
      */
     public function payment_method_code()
     {
-      
         return $this->is_cc() ? 'credit_card' : 'bank_slip';
     }
 
@@ -208,7 +207,7 @@ class VindiPaymentProcessor
      */
     public function process()
     {
-        var_dump($this->get_order_type());
+
         switch ($orderType = $this->get_order_type()) {
             case static::ORDER_TYPE_SINGLE:
             case static::ORDER_TYPE_SUBSCRIPTION:
@@ -535,7 +534,7 @@ class VindiPaymentProcessor
      */
     protected function build_shipping_item($order_items)
     {
-        
+
         $shipping_item = [];
         $shipping_method = $this->order->get_shipping_method();
 
@@ -991,7 +990,6 @@ class VindiPaymentProcessor
      */
     protected function finish_payment($bills)
     {
-      
         $this->vindi_settings->woocommerce->cart->empty_cart();
 
         $bills_status = [];
@@ -1041,7 +1039,7 @@ class VindiPaymentProcessor
             } else {
                 $vindi_product = $this->controllers->plans->create($product_id, '', '', true);
             }
-            $vindi_product_id = '63';
+            $vindi_product_id = $vindi_product['id'];
         }
 
         if (empty($vindi_product_id) || !$vindi_product_id) {
@@ -1049,7 +1047,7 @@ class VindiPaymentProcessor
             
         }
 
-        $product->vindi_id = (int) $vindi_product_id;
+        $product->vindi_id = (int) $vindi_product_id > 0 ? $vindi_product_id : 63;
         return $product;
     }
 
@@ -1124,7 +1122,6 @@ class VindiPaymentProcessor
      */
     protected function get_trial_matching_subscription_item(WC_Order_Item_Product $order_item)
     {
-      
         $subscription = VindiHelpers::get_matching_subscription($this->order, $order_item);
         $matching_item = VindiHelpers::get_matching_subscription_item($subscription, $order_item);
         return $matching_item;
