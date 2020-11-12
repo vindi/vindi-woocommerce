@@ -243,8 +243,10 @@ class VindiPaymentProcessor
         $order_post_meta = [];
         $bill_products = [];
         $subscriptions_ids = [];
+        
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
+            
             if ($this->is_subscription_type($product)) {
               try{
                 $subscription = $this->create_subscription($customer['id'], $order_items);
@@ -277,17 +279,21 @@ class VindiPaymentProcessor
                 update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
                 continue;
             }
-            array_push($order_item, $bill_products);
-        }
 
+            array_push($bill_products,$order_item);
+        }
+        
         if (!empty($bill_products)) {
+          
+          
             $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
             $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
             $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
             $bills[] = $single_payment_bill;
             if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
                 $this->order->update_status('cancelled', __($message, VINDI));
-                $this->suspend_subscriptions($subscriptions_ids);
+                if($subscription_ids) $this->suspend_subscriptions($subscriptions_ids);
+                
                 $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
                 $this->abort(__($message, VINDI), true);
             }
@@ -450,17 +456,18 @@ class VindiPaymentProcessor
      */
     protected function build_product_from_order_item($order_type, $order_items)
     {
-        $product = $this->get_product($order_items);
+      
+        
         if ('bill' === $order_type) {
             foreach ($order_items as $key => $order_item) {
-                $product = $this->get_product($order_item);
+                $product = $this->get_product($order_item);      
                 $order_items[$key]['type'] = 'product';
                 $order_items[$key]['vindi_id'] = $product->vindi_id;
                 $order_items[$key]['price'] = (float) $order_items[$key]['subtotal'] / $order_items[$key]['qty'];
             }
             return $order_items;
         }
-
+        $product = $this->get_product($order_items);
         $order_items['type'] = 'product';
         $get_vindi = $this->get_vindi_code($product->id);
         $order_items['vindi_id'] = $get_vindi ? $get_vindi : $product->vindi_id;
@@ -632,7 +639,7 @@ class VindiPaymentProcessor
      */
     protected function build_product_items_for_bill($order_item)
     {
-
+      
         $item = array(
             'product_id' => $order_item['vindi_id'],
             'quantity' => $order_item['qty'],
@@ -890,6 +897,7 @@ class VindiPaymentProcessor
             'code' => $this->order->id,
             'installments' => $this->installments(),
         );
+        
         $bill = $this->routes->createBill($data);
 
         if (!$bill) {
@@ -1019,7 +1027,7 @@ class VindiPaymentProcessor
         $product = $order_item->get_product();
         $product_id = $order_item->get_id();
         $vindi_product_id = get_post_meta($product, 'vindi_product_id', true);
-
+        
         if (!$vindi_product_id) {
             $vindi_product = null;
             if (!$this->is_subscription_type($product)) {
@@ -1031,7 +1039,8 @@ class VindiPaymentProcessor
         }
 
         if (empty($vindi_product_id) || !$vindi_product_id) {
-            $vindi_product_id = $product_id;
+           $vindi_product_id = $this->routes->findProductByCode('WC-'.$product->id)['id'];
+            
         }
 
         $product->vindi_id = (int) $vindi_product_id;
