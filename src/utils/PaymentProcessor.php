@@ -859,7 +859,7 @@ class VindiPaymentProcessor
              $vindi_plan =  $this->get_plan_from_order_item($order_item);  
              $data['plan_id'] = $vindi_plan;
              $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
-             $data['code'] = strpos($wc_subscription_id, 'WC') > 0 ? $wc_subscription_id : 'WC-'.$wc_subscription_id;
+             $data['code'] = strpos($wc_subscription_id, 'WC') > 0 ? $wc_subscription_id : VINDI_PREFIX_PLAN.$wc_subscription_id;
           }
           $data['product_items'] = array_merge($data['product_items'],$this->build_product_items('subscription', $order_item));
         }
@@ -1039,7 +1039,7 @@ class VindiPaymentProcessor
         }
 
         if (empty($vindi_product_id) || !$vindi_product_id) {
-           $vindi_product_id = $this->routes->findProductByCode('WC-'.$product->id)['id'];
+           $vindi_product_id = $this->routes->findProductByCode(VINDI_PREFIX_PLAN.$product->id)['id'];
             
         }
 
@@ -1126,7 +1126,7 @@ class VindiPaymentProcessor
     protected function get_vindi_code(String $product)
     {
         try {
-            $response = $this->routes->findProductByCode('WC-' . $product);
+            $response = $this->routes->findProductByCode(VINDI_PREFIX_PLAN . $product);
             return $response['id'];
         } catch (Exception $err) {
             return $product;
