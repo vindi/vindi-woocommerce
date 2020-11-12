@@ -83,6 +83,7 @@ class VindiSubscriptionStatusHandler
   {
     if ('pending' == $old_status)
       return;
+      
     $subscription_id = $this->get_vindi_subscription_id($wc_subscription);
     if ($this->vindi_settings->get_synchronism_status()
       && !$this->routes->isSubscriptionActive($subscription_id)) {
@@ -139,14 +140,14 @@ class VindiSubscriptionStatusHandler
       $order = wc_get_order($order);
     }
 
-    $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+    $vindi_order = array(get_post_meta($order->id, 'vindi_order', true));
     if(!is_array($vindi_order)) {
       return;
     }
     $single_payment_bill_id = 0;
     foreach ($vindi_order as $key => $item) {
-      if($key == 'single_payment' && $vindi_order[$key]['bill']['status'] != 'canceled') {
-        $single_payment_bill_id = $vindi_order[$key]['bill']['id'];
+      if($key == 'single_payment' && @$vindi_order[$key]['bill']['status'] != 'canceled') {
+        $single_payment_bill_id = @$vindi_order[$key]['bill']['id'];
       }
       $vindi_order[$key]['bill']['status'] = 'canceled';
     }
