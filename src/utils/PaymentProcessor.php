@@ -991,7 +991,7 @@ class VindiPaymentProcessor
      */
     protected function finish_payment($bills)
     {
-      die("ASDF");
+      
         $this->vindi_settings->woocommerce->cart->empty_cart();
 
         $bills_status = [];
