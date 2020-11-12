@@ -42,6 +42,7 @@ class PlansController
    */
   function create($post_id, $post, $update, $recreated = false)
   {
+    
     // Check if the post is a draft
     if (strpos(get_post_status($post_id), 'draft') !== false) {
       return;
@@ -194,6 +195,7 @@ class PlansController
       ),
     ));
 
+    
     // Saving product id and plan in the WC goal
     if ($createdProduct) {
       update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
