@@ -243,7 +243,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
     $order_meta = get_post_meta($order->id, 'vindi_order', true);
     foreach ($order_meta as $key => $order_item) {
       $bill_id = $order_item['bill']['id'];
-      
+
       $result = $this->refund_transaction($bill_id, null, $reason);
 
       $this->logger->log('Resultado do reembolso: ' . wc_print_r($result, true));
@@ -259,7 +259,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
         throw new Exception($result->errors[0]->message);
         return false;
       }
-    }     
+    }
     return true;
   }
 
@@ -284,7 +284,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
 		}
 		return apply_filters('vindi_refund_request', $request, $bill_id, $amount, $reason);
   }
-  
+
   /**
 	 * Refund an order via PayPal.
 	 *
@@ -309,7 +309,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
 
 		return $refund['last_transaction'];
   }
-  
+
   private function find_bill_last_charge($bill_id)
   {
     $bill_id = filter_var($bill_id, FILTER_SANITIZE_NUMBER_INT);
@@ -318,7 +318,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
     if(!$bill) {
       throw new Exception(sprintf(__('A fatura com bill_id #%s não foi encontrada!', VINDI), $bill_id), 2);
     }
-    
+
     $charges = $bill['charges'];
     return end($charges);
 	}
