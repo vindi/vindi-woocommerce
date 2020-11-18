@@ -89,14 +89,14 @@ class CustomerController
         'email' => ($user['email']) ? $user['email'] : '',
         'code' => 'WC-USER-'.$user['id'],
         'address' => array(
-          'street' => ($customer->get_billing_address_1()) ? $customer->get_billing_address_1() : $user['billing_street'],
-          'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : $user['billing_number'],
-          'additional_details' => ($customer->get_billing_address_2()) ?  $customer->get_billing_address_2() : $user['billing_address_2'],
-          'zipcode' => ($customer->get_billing_postcode()) ? $customer->get_billing_postcode() : $user['billing_zipcode'],
-          'neighborhood' => ($customer->get_meta('billing_neighborhood')) ? $customer->get_meta('billing_neighborhood') : $user['billing_neighborhood'],
-          'city' => ($customer->get_billing_city()) ? $customer->get_billing_city() : $user['billing_city'],
-          'state' => ($customer->get_billing_state()) ? $customer->get_billing_state() : $user['billing_state'],
-          'country' => ($customer->get_billing_country()) ? $customer->get_billing_country() : $user['billing_country']
+          'street' => ($customer->get_billing_address_1()) ? $customer->get_billing_address_1() : '',
+          'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '',
+          'additional_details' => ($customer->get_billing_address_2()) ?  $customer->get_billing_address_2() : '',
+          'zipcode' => ($customer->get_billing_postcode()) ? $customer->get_billing_postcode() : '',
+          'neighborhood' => ($customer->get_meta('billing_neighborhood')) ? $customer->get_meta('billing_neighborhood') : '',
+          'city' => ($customer->get_billing_city()) ? $customer->get_billing_city() : '',
+          'state' => ($customer->get_billing_state()) ? $customer->get_billing_state() : '',
+          'country' => ($customer->get_billing_country()) ? $customer->get_billing_country() : ''
         ),
         'phones' => $phones,
         'registry_code' => $cpf_or_cnpj ? $cpf_or_cnpj : '',
