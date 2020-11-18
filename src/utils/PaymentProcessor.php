@@ -1087,7 +1087,7 @@ class VindiPaymentProcessor
         $vindi_product_id = get_post_meta($product, 'vindi_product_id', true);
 
         if (!$vindi_product_id) {
-            $vindi_product = null;
+            $vindi_product = 63;
             if (!$this->is_subscription_type($product)) {
                 $vindi_product = $this->controllers->products->create($product_id, '', '', true);
             } else {
