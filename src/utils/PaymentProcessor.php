@@ -925,7 +925,7 @@ class VindiPaymentProcessor
 
         $subscription['wc_id'] = $wc_subscription_id;
         if (isset($subscription['bill']['id'])) {
-            $this->order->update_post_meta($this->order->id, 'vindi_bill_id', $subscription['bill']['id'], $wc_subscription_id);
+            update_post_meta($this->order->id, 'vindi_bill_id', $subscription['bill']['id']);
         }
 
         return $subscription;
