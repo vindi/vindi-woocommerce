@@ -1,5 +1,5 @@
 === Vindi WooCommerce 2 (BETA) ===
-Contributors: MatheusKindrazki, thihxm
+Contributors: rodasistemas | cleberbonifacio
 Plugin Name: Vindi WooCommerce 2 (BETA)
 Plugin URI: https://github.com/vindi/vindi-woocommerce
 Website Link: https://www.vindi.com.br
@@ -39,6 +39,15 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.0.2 - 17/11/2020 =
+- Lançamento da versão de patch.
+- **Correção**: Corrigido a falha para pedidos de produtos avulsos.
+- **Correção**: Corrigido a falha da inserção dos juros e fretes.
+- **Correção**: Corrigido a falha crítica para pedidos por boletos e cartão.
+- **Correção**: Corrigido o parcelamento do pedido no cartão.
+- **Correção**: Corrigido o frete único / permanente para assinaturas recorrentes.
+
+
 = 1.0.1 - 28/10/2020 =
 - Lançamento da versão de patch.
 - **Correção**: Removido obrigatoriedade de login do usuário para compras avulsas.
@@ -59,6 +68,8 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
+= 1.0.2 - 17/11/2020 =
+Patch de correções para o plugin da Vindi
 = 1.0.1 - 28/10/2020 =
 Patch de correções para o plugin da Vindi
 

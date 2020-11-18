@@ -74,7 +74,7 @@ class Vindi_Test_Payment_Processor extends Vindi_Test_Base
     $product->set_price(20);
     $product->save();
 
-    update_post_meta($product->get_id(), 'vindi_product_id', 1239812039);
+    update_post_meta($product->get_id(), 'vindi_product_id', 63);
 
     // Arrange: Set up an order
     $order = WC_Helper_Order::create_order($this->customer->get_id());
