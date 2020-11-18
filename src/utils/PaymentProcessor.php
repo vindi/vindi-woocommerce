@@ -133,12 +133,12 @@ class VindiPaymentProcessor
      * @throws Exception
      *
      */
-    public function create_payment_profile_bank_slip($id)
+    public function create_payment_profile_bank_slip($customer_id)
     {
 
         if ($this->is_bank_slip) {
 
-            $payment_info = $this->get_bank_slip_payment_type($id);
+            $payment_info = $this->get_bank_slip_payment_type($customer_id);
             $payment_profile = $this->routes->createCustomerPaymentProfile($payment_info);
 
             if (!$payment_profile) {
@@ -333,7 +333,9 @@ class VindiPaymentProcessor
         }
         if (!empty($bill_products)) {
             try {
+
                 $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
+
                 $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
                 $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
                 $bills[] = $single_payment_bill;
@@ -430,7 +432,7 @@ class VindiPaymentProcessor
         }
 
         if ($product) {
-            $cycles = get_post_meta($product->get_id(), '_subscription_length', true);
+            $cycles = (int) get_post_meta($product->get_id(), '_subscription_length', true);
         }
         return $cycles > 0 ? $cycles : null;
     }
@@ -616,18 +618,20 @@ class VindiPaymentProcessor
      */
     protected function build_tax_item($order_items)
     {
-
+        $total_tax = 0;
         $taxItem = [];
-        foreach ($order_items as $order_item) {
-            if (!empty($order_item['type'])) {
-                if ($order_item['type'] === 'shipping') {
-                    $total_tax += (float) ($this->order->get_shipping_tax());
-                } else {
-                    $total_tax += (float) ($order_item->get_total_tax());
+        if (get_option('woocommerce_tax_total_display') === 'itemized') {
+            foreach ($order_items as $order_item) {
+                if (!empty($order_item['type'])) {
+                    if ($order_item['type'] === 'shipping') {
+                        $total_tax += (float) ($this->order->get_shipping_tax());
+                    } else {
+                        $total_tax += (float) ($order_item->get_total_tax());
+                    }
                 }
             }
         }
-        if($total_tax > 0){
+        if ($total_tax > 0) {
             $item = $this->routes->findOrCreateProduct("Taxa", 'wc-tax');
             $taxItem = array(
                 'type' => 'tax',
@@ -947,6 +951,10 @@ class VindiPaymentProcessor
             $this->order->update_status('failed', $message);
 
             throw new Exception($message);
+        }
+        $this->logger->log(sprintf('Create Bill Response: %s', json_encode($bill)));
+        if ($bill['id']) {
+            update_post_meta($this->order->id, 'vindi_bill_id', $bill['id']);
         }
         return $bill;
     }
