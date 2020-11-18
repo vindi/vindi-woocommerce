@@ -42,6 +42,7 @@ class PlansController
    */
   function create($post_id, $post, $update, $recreated = false)
   {
+    
     // Check if the post is a draft
     if (strpos(get_post_status($post_id), 'draft') !== false) {
       return;
@@ -194,6 +195,7 @@ class PlansController
       ),
     ));
 
+    
     // Saving product id and plan in the WC goal
     if ($createdProduct) {
       update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
@@ -208,10 +210,12 @@ class PlansController
       set_transient('vindi_product_message', 'error', 60);
     }
 
-    return array(
+    $response = array(
       'product' => $createdProduct,
       'plan' => $createdPlan,
     );
+    
+    return $response;
   }
 
   function update($post_id)
@@ -369,11 +373,11 @@ class PlansController
     } else {
       set_transient('vindi_product_message', 'error', 60);
     }
-
-    return array(
+    $response = array(
       'product' => $updatedProduct,
       'plan' => $updatedPlan,
     );
+    return $response;
   }
 
   /**
