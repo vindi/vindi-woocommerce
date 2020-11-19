@@ -11,7 +11,7 @@ Tested up to: 5.4.2
 WC requires at least: 3.0.0
 WC tested up to: 4.2.1
 Requires PHP: 5.6
-Stable Tag: 1.0.0
+Stable Tag: 1.0.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.0.1 - 28/10/2020 =
+- Lançamento da versão de patch.
+- **Correção**: Removido obrigatoriedade de login do usuário para compras avulsas.
+- **Correção**: Corrigido a instabilidade na conexão com a API da Vindi nas configurações do Woocommerce.
+
 = 1.0.0 - 22/06/2020 =
 - Lançamento da versão inicial.
 - **Adição**: Template para tradução do plugin.
@@ -54,8 +59,8 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
-= 1.0.0 - 22/06/2020 =
-Lançamento de novas funcionalidades para a integração entre a Vindi e o Woocommerce!
+= 1.0.1 - 28/10/2020 =
+Patch de correções para o plugin da Vindi
 
 == License ==
 

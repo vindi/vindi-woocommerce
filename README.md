@@ -17,6 +17,14 @@ Para verificar os requisitos e efetuar a instalação do plugin, [siga as instru
 
 Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através da nossa [central de atendimento](https://atendimento.vindi.com.br/hc/pt-br).
 
+## Contribuindo
+Leia o arquivo [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Caso tenha alguma sugestão ou bug para reportar, por favor nos comunique através das [issues](https://github.com/vindi/vindi-woocommerce/issues).
+
+## Changelog
+Todas as informações sobre cada versão estão na página de [releases](https://github.com/vindi/vindi-woocommerce/releases).
+
 ## Créditos
 
 - [Mentores Digital](https://mentores.com.br)
