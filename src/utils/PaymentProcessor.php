@@ -1080,24 +1080,31 @@ class VindiPaymentProcessor
      * @return WC_Product Woocommerce product array with a vindi id
      */
     protected function get_product($order_item)
-    {
-      $product = $order_item->get_product();
-      $product_id = $product->get_id();
-      $vindi_product_id = get_post_meta($product_id, 'vindi_product_id', true);
+     {
 
-      if (!$vindi_product_id) {
-        $vindi_product = null;
-        if(!$this->is_subscription_type($product)) {
-          $vindi_product = $this->controllers->products->create($product_id, '', '', true);
-        } else {
-          $vindi_product = $this->controllers->plans->create($product_id, '', '', true);
+        $product = $order_item->get_product();
+        $product_id = $order_item->get_id();
+        $vindi_product_id = get_post_meta($product, 'vindi_product_id', true);
+
+        if (!$vindi_product_id) {
+            $vindi_product = 63;
+            if (!$this->is_subscription_type($product)) {
+                $vindi_product = $this->controllers->products->create($product_id, '', '', true);
+            } else {
+                $vindi_product = $this->controllers->plans->create($product_id, '', '', true);
+            }
+            $vindi_product_id = $vindi_product['id'];
         }
 
-        $vindi_product_id = $vindi_product['id'];
-      }
+        if (empty($vindi_product_id) || !$vindi_product_id) {
+            $vindi_product_id = $this->routes->findProductByCode('WC-' . $product->id)['id'];
 
-      $product->vindi_id = (int) $vindi_product_id;
-      return $product;
+        }
+        
+        $product->vindi_id = (int) $vindi_product_id > 0 ? $vindi_product_id : 63;
+        if($product->id === null) $product->id = 63;
+      
+        return $product;
     }
 
     /**
