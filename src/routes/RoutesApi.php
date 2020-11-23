@@ -1,4 +1,3 @@
-
 <?php
 
 class VindiRoutes
@@ -239,7 +238,7 @@ class VindiRoutes
 
 		return false;
   }
-  
+
   /**
    * @param string $subscription_id
    *
@@ -256,7 +255,7 @@ class VindiRoutes
     }
 
     $response = $this->getSubscription($subscription_id);
-      
+
     if ($response && array_key_exists('status', $response)) {
       if ($response['status'] != 'canceled') {
         $this->recentRequest = $response;
@@ -394,10 +393,10 @@ class VindiRoutes
       return true;
 
     $merchant = $is_config ? $this->getMerchant($is_config) : $this->getMerchant();
-    
+
     if ('trial' === $merchant['status'])
       return true;
-    
+
     return false;
   }
 
@@ -489,7 +488,7 @@ class VindiRoutes
   public function refundCharge($charge_id, $data)
   {
     $response = $this->api->request(sprintf('charges/%s/refund', filter_var($charge_id, FILTER_SANITIZE_NUMBER_INT)), 'POST', $data);
-    
+
     if (isset($response['charge'])) {
       return $response['charge'];
     }
