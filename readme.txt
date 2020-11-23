@@ -1,5 +1,5 @@
 === Vindi WooCommerce 2 (BETA) ===
-Contributors: rodasistemas | cleberbonifacio
+Contributors: laertejr, rodasistemas, cleberbonifacio
 Plugin Name: Vindi WooCommerce 2 (BETA)
 Plugin URI: https://github.com/vindi/vindi-woocommerce
 Website Link: https://www.vindi.com.br
