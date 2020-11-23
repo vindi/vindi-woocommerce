@@ -1100,8 +1100,10 @@ class VindiPaymentProcessor
             $vindi_product_id = $this->routes->findProductByCode('WC-' . $product->id)['id'];
 
         }
-
+        
         $product->vindi_id = (int) $vindi_product_id > 0 ? $vindi_product_id : 63;
+        if($product->vindi_id === null) $product->vindi_id = 63;
+      
         return $product;
     }
 
