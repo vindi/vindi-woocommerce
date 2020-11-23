@@ -1102,7 +1102,7 @@ class VindiPaymentProcessor
         }
         
         $product->vindi_id = (int) $vindi_product_id > 0 ? $vindi_product_id : 63;
-        if($product->vindi_id === null) $product->vindi_id = 63;
+        if($product->id === null) $product->id = 63;
       
         return $product;
     }
