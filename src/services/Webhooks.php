@@ -306,7 +306,9 @@ class VindiWebhooks
    */
   private function find_subscription_by_id($id)
   {
-    $subscription = wcs_get_subscription($id);
+    // Webhooks Ids has "WC-" prefix
+    $sanitized_id = explode('-', $id);
+    $subscription = wcs_get_subscription(end($sanitized_id));
 
     if(empty($subscription))
       throw new Exception(sprintf(__('Assinatura #%s não encontrada!', VINDI), $id), 2);
