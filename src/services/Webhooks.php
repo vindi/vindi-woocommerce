@@ -307,7 +307,7 @@ class VindiWebhooks
   private function find_subscription_by_id($id)
   {
     // Webhooks Ids has "WC-" prefix
-    $sanitized_id = explode('-', $code);
+    $sanitized_id = explode('-', $id);
     $subscription = wcs_get_subscription(end($sanitized_id));
 
     if(empty($subscription))
