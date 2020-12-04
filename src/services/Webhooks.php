@@ -180,7 +180,7 @@ class VindiWebhooks
     }
     update_post_meta($order->id, 'vindi_order', $vindi_order);
 
-    // As informações sobre o pedido são atualizadas sempre no último elemento do array
+    // Order informations always be updated in last array element
     $vindi_order_info = end($vindi_order);
 
     if ($vindi_order_info['bill']['status'] == 'paid') {
