@@ -180,20 +180,13 @@ class VindiWebhooks
     }
     update_post_meta($order->id, 'vindi_order', $vindi_order);
 
-    $all_bills_paid = [];
-    foreach ($vindi_order as $item) {
-      if ($item['bill']['status'] == 'paid') {
-        array_push($all_bills_paid, true);
-      } else {
-        array_push($all_bills_paid, false);
-      }
-    }
+    // Order informations always be updated in last array element
+    $vindi_order_info = end($vindi_order);
 
-    if(!empty($all_bills_paid) && !in_array(false, $all_bills_paid)) {
-      $new_status = $this->vindi_settings->get_return_status();
-      $order->update_status($new_status, __('O Pagamento foi realizado com sucesso pela Vindi.',
-        VINDI));
-      $this->update_next_payment($data);
+    if ($vindi_order_info['bill']['status'] == 'paid') {
+        $new_status = $this->vindi_settings->get_return_status();
+        $order->update_status($new_status, __('O Pagamento foi realizado com sucesso pela Vindi.', VINDI));
+        $this->update_next_payment($data);
     }
   }
 
@@ -306,7 +299,9 @@ class VindiWebhooks
    */
   private function find_subscription_by_id($id)
   {
-    $subscription = wcs_get_subscription($id);
+    // Webhooks Ids has "WC-" prefix
+    $sanitized_id = explode('-', $id);
+    $subscription = wcs_get_subscription(end($sanitized_id));
 
     if(empty($subscription))
       throw new Exception(sprintf(__('Assinatura #%s não encontrada!', VINDI), $id), 2);
