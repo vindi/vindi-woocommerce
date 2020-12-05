@@ -288,7 +288,12 @@ class VindiWebhooks
     if ($this->vindi_settings->get_synchronism_status()){
       $subscription_id = $data->subscription->code;
       $subscription = $this->find_subscription_by_id($subscription_id);
-      $subscription->update_status('active', sprintf(__('Assinatura %s reativada pela Vindi.', VINDI), $subscription_id));
+      $order_id = $subscription->get_last_order();
+      $order = $this->find_order_by_id($order_id);
+      $status_available = array('processing', 'completed', 'on-hold');
+      if (in_array($order->get_status(), $status_available)) {
+          $subscription->update_status('active', sprintf(__('Assinatura %s reativada pela Vindi.', VINDI), $subscription_id));
+      }
     }
   }
 
