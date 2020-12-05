@@ -305,7 +305,6 @@ class VindiWebhooks
             if (in_array($order->get_status(), $status_available)) {
                 $subscription->update_status('active', sprintf(__('Assinatura %s reativada pela Vindi.', VINDI), $subscription_id));
             }
-
         }
     }
 
