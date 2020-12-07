@@ -2,12 +2,15 @@
 
 /**
  * Plugin Name: Vindi WooCommerce 2 (BETA)
- * Plugin URI: #!
+ * Plugin URI: https://github.com/vindi/vindi-woocommerce
  * Description: Adiciona o gateway de pagamento da Vindi para o WooCommerce.
  * Author: Vindi
  * Author URI: https://www.vindi.com.br
- * Version: 1.0.2
+ * Version: 1.0.3
  * Requires at least: 4.4
+ * Tested up to: 5.5.3
+ * WC requires at least: 3.0.0
+ * WC tested up to: 4.7.1
  * Text Domain: vindi-payment-gateway
  *
  * Domain Path: ./src/languages/
