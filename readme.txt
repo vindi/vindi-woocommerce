@@ -4,14 +4,14 @@ Plugin Name: Vindi WooCommerce 2 (BETA)
 Plugin URI: https://github.com/vindi/vindi-woocommerce
 Website Link: https://www.vindi.com.br
 Tags: vindi, subscriptions, pagamento-recorrente, cobranca-recorrente, cobrança-recorrente, recurring, site-de-assinatura, assinaturas, faturamento-recorrente, recorrencia, assinatura, woocommerce-subscriptions, vindi-woocommerce, vindi-payment-gateway
-Author URI: https://mentores.com.br/
-Author: Mentores Digital
+Author URI: https://vindi.com.br/ | https://mentores.com.br
+Author: Vindi | Mentores Digital
 Requires at least: 4.4
-Tested up to: 5.4.2
+Tested up to: 5.5.3
 WC requires at least: 3.0.0
-WC tested up to: 4.2.1
+WC tested up to: 4.7.1
 Requires PHP: 5.6
-Stable Tag: 1.0.2
+Stable Tag: 1.0.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,14 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.0.3 - 08/12/2020 =
+- Lançamento da versão de patch.
+- **Correção**: Corrigida a falha no ciclo de renovação de assinaturas.
+- **Correção**: Corrigida a falha em assinaturas de planos com período trial.
+- **Correção**: Corrigida a falha na função de sincronismo de assinaturas.
+- **Adição**: Compatibilidade nas renovações de assinatura do plugin anterior. 
+
+
 = 1.0.2 - 25/11/2020 =
 - Lançamento da versão de patch.
 - **Correção**: Corrigido a falha crítica na adesão de assinaturas por boleto e cartão.
@@ -65,10 +73,8 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
-= 1.0.2 - 25/11/2020 =
-Patch de correções para o plugin da Vindi
-= 1.0.1 - 28/10/2020 =
-Patch de correções para o plugin da Vindi
+= 1.0.3 - 08/12/2020 =
+Patch de correções para o plugin Vindi
 
 == License ==
 
