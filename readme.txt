@@ -43,7 +43,6 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - Lançamento da versão de patch.
 - **Correção**: Corrigida a falha no ciclo de renovação de assinaturas.
 - **Correção**: Corrigida a falha em assinaturas de planos com período trial.
-- **Correção**: Corrigida a falha na função de sincronismo de assinaturas.
 - **Adição**: Compatibilidade nas renovações de assinatura do plugin anterior. 
 
 
