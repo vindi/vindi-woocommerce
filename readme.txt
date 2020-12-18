@@ -11,7 +11,7 @@ Tested up to: 5.5.3
 WC requires at least: 3.0.0
 WC tested up to: 4.7.1
 Requires PHP: 5.6
-Stable Tag: 1.0.3
+Stable Tag: 1.0.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.0.4 - 18/12/2020 =
+- Lançamento da versão de patch.
+- **Correção**: Corrigido o problema de reembolso via painel administrativo.
+
+
 = 1.0.3 - 08/12/2020 =
 - Lançamento da versão de patch.
 - **Correção**: Corrigida a falha no ciclo de renovação de assinaturas.
@@ -72,7 +77,7 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
-= 1.0.3 - 08/12/2020 =
+= 1.0.4 - 18/12/2020 =
 Patch de correções para o plugin Vindi
 
 == License ==
