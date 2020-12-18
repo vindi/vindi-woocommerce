@@ -276,9 +276,9 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
     $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_FLOAT);
     $reason = sanitize_text_field($reason);
 		$request = array(
-			'cancel_bill' => true,
-      'comments' => strip_tags(wc_trim_string($reason, 255)),
-      'amount' => null
+            'cancel_bill' => true,
+            'comments' => strip_tags(wc_trim_string($reason, 255)),
+            'amount' => null
 		);
 		if (!is_null($amount) ) {
 			$request['amount'] = substr($amount, 0, strlen($amount)-2) . "." . substr($amount, -2);
@@ -305,7 +305,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
     $refund = $this->routes->refundCharge($charge_id, $data);
 
 		if (empty($refund)) {
-      return new WP_Error('error', __('Reembolso na Vindi falhou. Verifique o log do plugin', VINDI));
+            return new WP_Error('error', __('Reembolso na Vindi falhou. Verifique o log do plugin', VINDI));
 		}
 
 		return $refund['last_transaction'];
