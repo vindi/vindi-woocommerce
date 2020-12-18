@@ -244,7 +244,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
     foreach ($order_meta as $key => $order_item) {
       $bill_id = $order_item['bill']['id'];
 
-      $result = $this->refund_transaction($bill_id, null, $reason);
+      $result = $this->refund_transaction($bill_id, $amount, $reason);
 
       $this->logger->log('Resultado do reembolso: ' . wc_print_r($result, true));
       switch (strtolower($result['status'])) {
@@ -276,13 +276,14 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
     $amount = filter_var($amount, FILTER_SANITIZE_NUMBER_FLOAT);
     $reason = sanitize_text_field($reason);
 		$request = array(
-			'cancel_bill' => true,
-			'comments' => strip_tags(wc_trim_string($reason, 255)),
+            'cancel_bill' => true,
+            'comments' => strip_tags(wc_trim_string($reason, 255)),
+            'amount' => null
 		);
 		if (!is_null($amount) ) {
-			$request['amount'] = $amount;
+			$request['amount'] = substr($amount, 0, strlen($amount)-2) . "." . substr($amount, -2);
 		}
-		return apply_filters('vindi_refund_request', $request, $bill_id, $amount, $reason);
+		return apply_filters('vindi_refund_request', $request, $bill_id, $request['amount'], $reason);
   }
 
   /**
@@ -304,7 +305,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
     $refund = $this->routes->refundCharge($charge_id, $data);
 
 		if (empty($refund)) {
-			throw new Exception(__('Resposta vazia', VINDI));
+            return new WP_Error('error', __('Reembolso na Vindi falhou. Verifique o log do plugin', VINDI));
 		}
 
 		return $refund['last_transaction'];
