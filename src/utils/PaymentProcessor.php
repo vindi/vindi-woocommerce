@@ -297,7 +297,6 @@ class VindiPaymentProcessor
         $subscriptions_ids = [];
         $subscription_order_post_meta = [];
 
-        $all_order_items_grouped_by_period = [];
         $daily_order_items = [];
         $weekly_order_items = [];
         $monthly_order_items = [];
