@@ -1,5 +1,4 @@
 # Este arquivo define revisores obrigatórios para determinados arquivos.
 # Para mais informações, ver https://help.github.com/articles/about-codeowners/
 
-*                 @vindi/suporte-tecnico
-*                 @laerte-guimaraes
+*                 @vindi/suporte-tecnico @laerte-guimaraes
