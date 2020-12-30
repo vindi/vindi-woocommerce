@@ -457,6 +457,10 @@ class VindiPaymentProcessor
         $cycles = null;
         $product = method_exists($item, 'get_product') ? $item->get_product() : false;
 
+        if ($item['type'] == 'sign_up_fee') {
+            return 1;
+        }
+
         if ($item['type'] == 'shipping' || $item['type'] == 'tax') {
             if ($this->vindi_settings->get_shipping_and_tax_config()) {
                 return 1;
@@ -517,6 +521,8 @@ class VindiPaymentProcessor
         $order_items[] = $this->build_shipping_item($order_items);
         $order_items[] = $this->build_tax_item($order_items);
 
+        $order_items[] = $this->build_sign_up_fee_item($order_items);
+
         if ('bill' === $order_type) {
             $order_items[] = $this->build_discount_item_for_bill($order_items);
             $order_items[] = $this->build_interest_rate_item($order_items);
@@ -571,6 +577,42 @@ class VindiPaymentProcessor
             return $order_items;
         }
 
+    }
+
+    /**
+     * Create the sign-up fee item to be added to the bill.
+     *
+     * @param WC_Order_Item_Product[] $order_items. Array with all items to add
+     * the respective delivered value
+     *
+     * @return array
+     */
+    protected function build_sign_up_fee_item($order_items)
+    {
+        foreach ($order_items as $order_item) {
+            $product = method_exists($order_item, 'get_product') ? $order_item->get_product() : false;
+            
+            if(!$product)
+                continue;
+
+            $sign_up_fee = $product->get_meta('_subscription_sign_up_fee');
+
+            if ($sign_up_fee != null && $sign_up_fee > 0) {
+                
+                $item = $this->routes->findOrCreateProduct("[WC] Taxa de adesão", "WC-SUF");
+                
+                $sign_up_fee_item = array(
+                    'type' => 'sign_up_fee',
+                    'vindi_id' => $item['id'],
+                    'price' => (float) $sign_up_fee,
+                    'qty' => 1,
+                );
+                
+                $order_item['price'] -= $sign_up_fee;
+                
+                return $sign_up_fee_item;
+            }
+        }
     }
 
     /**
@@ -740,7 +782,7 @@ class VindiPaymentProcessor
 
         if (
             'discount' == $order_item['type'] || 'shipping' == $order_item['type'] ||
-            'tax' == $order_item['type'] || 'interest_rate' == $order_item['type']
+            'tax' == $order_item['type'] || 'interest_rate' == $order_item['type'] || 'sign_up_fee' == $order_item['type']
         ) {
             $item = array(
                 'product_id' => $order_item['vindi_id'],
