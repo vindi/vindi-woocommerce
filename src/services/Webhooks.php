@@ -103,7 +103,24 @@ class VindiWebhooks
       ));
     }
 
-    WC_Subscriptions_Manager::prepare_renewal($subscription->id);
+    try {
+      $renewal_ok = WC_Subscriptions_Manager::prepare_renewal($subscription->id);
+
+      if(!$renewal_ok) {
+        throw new Exception(sprintf(
+          __('Não foi possível criar o novo pedido para a renovação da assinatura #%s', VINDI),
+          $renew_infos['vindi_subscription_id']));
+      }
+    }
+    catch (Exception $err) {
+      
+      throw new Exception(sprintf(
+        __('Não foi possível criar o novo pedido para a renovação da assinatura #%s', VINDI),
+        $renew_infos['vindi_subscription_id']));
+
+        $this->vindi_settings->logger->log('A exceção no momento da criação do pedido de renovação foi: '.$err->getMessage());
+    }
+    
     $order_id = $subscription->get_last_order();
     $order = $this->find_order_by_id($order_id);
     $subscription_id = $renew_infos['vindi_subscription_id'];
