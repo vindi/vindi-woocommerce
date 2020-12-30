@@ -334,7 +334,6 @@ class VindiPaymentProcessor
                                                     "year" => $yearly_order_items);
         
         foreach($all_order_items_grouped_by_period as $key => $subscription_order_items) {
-            
             if(empty($subscription_order_items))
                 continue;
 
