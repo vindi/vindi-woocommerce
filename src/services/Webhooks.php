@@ -268,7 +268,8 @@ class VindiWebhooks
     if ($this->vindi_settings->get_synchronism_status()
       && ($subscription->has_status('cancelled')
       || $subscription->has_status('pending-cancel')
-      || $subscription->has_status('on-hold'))) {
+      || $subscription->has_status('on-hold'))
+      || $this->routes->hasPendingSubscriptionBills($data->subscription->id)) {
       return;
     }
 
@@ -276,7 +277,12 @@ class VindiWebhooks
       $subscription->update_status('pending-cancel');
       return;
     }
-    $subscription->update_status('cancelled');
+
+    // Last safe check on subscription status before cancellation
+    $synchronized_subscription = $this->routes->getSubscription($data->subscription->id);
+
+    if ($synchronized_subscription['status'] === 'canceled')
+        $subscription->update_status('cancelled');
   }
 
   /**
