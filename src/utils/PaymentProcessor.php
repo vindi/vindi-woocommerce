@@ -294,6 +294,7 @@ class VindiPaymentProcessor
         $order_post_meta = [];
         $bill_products = [];
         $subscriptions_ids = [];
+        $wc_subscriptions_ids = [];
         
         $daily_order_items = [];
         $weekly_order_items = [];
@@ -340,6 +341,8 @@ class VindiPaymentProcessor
                 $subscription_id = $subscription['id'];
 
                 array_push($subscriptions_ids, $subscription_id);
+                array_push($wc_subscriptions_ids, $subscription['wc_id']);
+
                 $wc_subscription_id = $subscription['wc_id'];
                 $subscription_bill = $subscription['bill'];
                 
@@ -355,19 +358,15 @@ class VindiPaymentProcessor
                 $bills[] = $subscription['bill'];
                 
                 if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
-                    $wc_subscription = wcs_get_subscription($wc_subscription_id);
-                    $wc_subscription->update_status('cancelled', __($message, VINDI));
-                    $this->order->update_status('cancelled', __($message, VINDI));
-                    $this->suspend_subscriptions($subscriptions_ids);
-                    $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
-                    $this->abort(__($message, VINDI), true);
+                    $this->cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscription_ids, $bills, $message);
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
                 continue;
 
             } catch (Exception $err) {
-                $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $err->getMessage()), VINDI), true);
+                $message = $err->getMessage();
+                $this->cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscription_ids, $bills, $message);
             }
         }
 
@@ -1000,11 +999,8 @@ class VindiPaymentProcessor
         }
         $subscription = $this->routes->createSubscription($data);
 
-        // TODO caso ocorra o erro no pagamento de uma assinatura cancelar as outras
         if (!isset($subscription['id']) || empty($subscription['id'])) {
             $message = sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error);
-            $this->order->update_status('failed', $message);
-
             throw new Exception($message);
         }
 
@@ -1014,6 +1010,28 @@ class VindiPaymentProcessor
         }
 
         return $subscription;
+    }
+
+    /**
+     * Cancel subscriptions and order in case of error on payment
+     *
+     * @param array $wc_subscriptions_ids Array with the IDs of woocommerce subscriptions that must be canceled
+     * @param array $subscriptions_ids Array with the IDs of vindi subscriptions that must be suspended
+     * @param array $bills Array with the IDs of vindi bills that must be deleted
+     * @param string $message Error message
+     */
+    private function cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscriptions_ids, $bills, $message)
+    {
+
+        foreach($wc_subscriptions_ids as $wc_subscription_id) {
+            $wc_subscription = wcs_get_subscription($wc_subscription_id);
+            $wc_subscription->update_status('cancelled', __($message, VINDI));
+        }
+        
+        $this->suspend_subscriptions($subscriptions_ids);
+        $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
+        $this->order->update_status('cancelled', __($message, VINDI));
+        $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $message), VINDI), true);
     }
 
     /**
