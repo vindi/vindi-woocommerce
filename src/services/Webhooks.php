@@ -268,7 +268,8 @@ class VindiWebhooks
     if ($this->vindi_settings->get_synchronism_status()
       && ($subscription->has_status('cancelled')
       || $subscription->has_status('pending-cancel')
-      || $subscription->has_status('on-hold'))) {
+      || $subscription->has_status('on-hold'))
+      || $this->routes->hasPendingSubscriptionBills($data->subscription->id)) {
       return;
     }
 
