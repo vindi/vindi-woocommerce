@@ -278,7 +278,6 @@ class VindiPaymentProcessor
      */
     public function process_order()
     {
-
         if ($this->order_has_trial_and_simple_product()) {
             $message = __('Não é possível comprar produtos simples e assinaturas com trial no mesmo pedido!', VINDI);
             $this->order->update_status('failed', $message);
@@ -295,8 +294,7 @@ class VindiPaymentProcessor
         $order_post_meta = [];
         $bill_products = [];
         $subscriptions_ids = [];
-        $subscription_order_post_meta = [];
-
+        
         $daily_order_items = [];
         $weekly_order_items = [];
         $monthly_order_items = [];
@@ -344,10 +342,16 @@ class VindiPaymentProcessor
                 array_push($subscriptions_ids, $subscription_id);
                 $wc_subscription_id = $subscription['wc_id'];
                 $subscription_bill = $subscription['bill'];
+                
+                foreach($subscription_order_items as $key => $subscription_order_item) {
+                    if($subscription_order_item->get_product())
+                    {
+                        $order_post_meta[$subscription_id]['product'] .= $subscription_order_item->get_product()->name . " ";
+                    }
+                }
+                
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
-                $subscription_order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
-                $subscription_order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
                 $bills[] = $subscription['bill'];
                 
                 if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
@@ -360,11 +364,10 @@ class VindiPaymentProcessor
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
-                update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
                 continue;
 
             } catch (Exception $err) {
-                continue;
+                $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $err->getMessage()), VINDI), true);
             }
         }
 
