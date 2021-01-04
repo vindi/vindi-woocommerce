@@ -276,7 +276,12 @@ class VindiWebhooks
       $subscription->update_status('pending-cancel');
       return;
     }
-    $subscription->update_status('cancelled');
+
+    // Last safe check on subscription status before cancellation
+    $synchronized_subscription = $this->routes->getSubscription($data->subscription->id);
+
+    if ($synchronized_subscription['status'] === 'canceled')
+        $subscription->update_status('cancelled');
   }
 
   /**
