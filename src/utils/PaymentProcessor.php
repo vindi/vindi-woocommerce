@@ -1030,15 +1030,13 @@ class VindiPaymentProcessor
      */
     private function cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscriptions_ids, $bills, $message)
     {
-
+        $this->suspend_subscriptions($subscriptions_ids);
+        
         foreach($wc_subscriptions_ids as $wc_subscription_id) {
             $wc_subscription = wcs_get_subscription($wc_subscription_id);
             $wc_subscription->update_status('cancelled', __($message, VINDI));
         }
         
-        $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
-        $this->remove_subscriptions_codes($subscriptions_ids);
-        $this->suspend_subscriptions($subscriptions_ids);
         $this->order->update_status('cancelled', __($message, VINDI));
         $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $message), VINDI), true);
     }
