@@ -325,8 +325,7 @@ class VindiPaymentProcessor
                 $bills[] = $subscription['bill'];
                 
                 if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
-                    $this->cancel_subscriptions_bills_and_order(
-                      , $subscription_ids, $bills, $message);
+                    $this->cancel_subscriptions_bills_and_order($subscription_ids, $bills, $message);
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
