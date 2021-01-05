@@ -295,6 +295,7 @@ class VindiPaymentProcessor
         $bill_products = [];
         $subscriptions_ids = [];
         $wc_subscriptions_ids = [];
+        $subscription_order_post_meta = [];
         
         $daily_order_items = [];
         $weekly_order_items = [];
@@ -349,12 +350,20 @@ class VindiPaymentProcessor
                 foreach($subscription_order_items as $key => $subscription_order_item) {
                     if($subscription_order_item->get_product())
                     {
-                        $order_post_meta[$subscription_id]['product'] .= $subscription_order_item->get_product()->name . " ";
+                        if($key >= 1)
+                            $product_name .= " / " . $subscription_order_item->get_product()->name;
+                        else
+                            $product_name = $subscription_order_item->get_product()->name;
+
+                        $order_post_meta[$subscription_id]['product'] = $product_name;
+                        $subscription_order_post_meta[$subscription_id]['product'] = $product_name;
                     }
                 }
                 
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
+                $subscription_order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
+                $subscription_order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
                 $bills[] = $subscription['bill'];
                 
                 if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
@@ -362,6 +371,7 @@ class VindiPaymentProcessor
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
+                update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
                 continue;
 
             } catch (Exception $err) {
@@ -1028,8 +1038,9 @@ class VindiPaymentProcessor
             $wc_subscription->update_status('cancelled', __($message, VINDI));
         }
         
-        $this->suspend_subscriptions($subscriptions_ids);
         $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
+        $this->remove_subscriptions_codes($subscriptions_ids);
+        $this->suspend_subscriptions($subscriptions_ids);
         $this->order->update_status('cancelled', __($message, VINDI));
         $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $message), VINDI), true);
     }
@@ -1123,6 +1134,18 @@ class VindiPaymentProcessor
 
         foreach ($subscriptions_ids as $subscription_id) {
             $this->routes->suspendSubscription($subscription_id, true);
+        }
+    }
+
+    /**
+     * Remove subscriptions codes within Vindi
+     *
+     * @param array $subscriptions_ids Array with the IDs of subscriptions that were processed
+     */
+    protected function remove_subscriptions_codes($subscriptions_ids)
+    {
+        foreach ($subscriptions_ids as $subscription_id) {
+            $this->routes->updateSubscriptionCode($subscription_id, '');
         }
     }
 
