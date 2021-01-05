@@ -495,5 +495,19 @@ class VindiRoutes
 
     return false;
   }
+
+    public function hasPendingSubscriptionBills($subscription_id)
+    {
+        $bill_subscription_id = filter_var($subscription_id, FILTER_SANITIZE_NUMBER_INT);
+        $query = urlencode("subscription_id={$bill_subscription_id} status=pending");
+
+        $response = $this->api->request('bills?query=' . $query, 'GET');
+
+        if (empty($response['bills'])) {
+            return false;
+        }
+
+        return true;
+    }
 }
 ?>
