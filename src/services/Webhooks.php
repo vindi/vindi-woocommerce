@@ -268,7 +268,8 @@ class VindiWebhooks
     if ($this->vindi_settings->get_synchronism_status()
       && ($subscription->has_status('cancelled')
       || $subscription->has_status('pending-cancel')
-      || $subscription->has_status('on-hold'))) {
+      || $subscription->has_status('on-hold'))
+      || $this->routes->hasPendingSubscriptionBills($data->subscription->id)) {
       return;
     }
 
@@ -276,26 +277,36 @@ class VindiWebhooks
       $subscription->update_status('pending-cancel');
       return;
     }
-    $subscription->update_status('cancelled');
+
+    // Last safe check on subscription status before cancellation
+    $synchronized_subscription = $this->routes->getSubscription($data->subscription->id);
+
+    if ($synchronized_subscription['status'] === 'canceled')
+        $subscription->update_status('cancelled');
   }
 
-  /**
-   * Process subscription_reactivated event from webhook
-   * @param $data array
-   */
-  private function subscription_reactivated($data)
-  {
-    if ($this->vindi_settings->get_synchronism_status()){
-      $subscription_id = $data->subscription->code;
-      $subscription = $this->find_subscription_by_id($subscription_id);
-      $order_id = $subscription->get_last_order();
-      $order = $this->find_order_by_id($order_id);
-      $status_available = array('processing', 'completed', 'on-hold');
-      if (in_array($order->get_status(), $status_available)) {
-          $subscription->update_status('active', sprintf(__('Assinatura %s reativada pela Vindi.', VINDI), $subscription_id));
-      }
+    /**
+    * Process subscription_reactivated event from webhook
+    * @param $data array
+    */
+    private function subscription_reactivated($data)
+    {
+        if ($this->vindi_settings->get_synchronism_status()
+            && !$this->routes->hasPendingSubscriptionBills($data->subscription->id))) {
+            $subscription_id = $data->subscription->code;
+            $subscription = $this->find_subscription_by_id($subscription_id);
+            $order_id = $subscription->get_last_order();
+            $order = $this->find_order_by_id($order_id);
+            $status_available = array('processing', 'completed', 'on-hold');
+
+            if (in_array($order->get_status(), $status_available)) {
+                $subscription->update_status(
+                    'active',
+                    sprintf(__('Assinatura %s reativada pela Vindi.', VINDI), $subscription_id)
+                );
+            }
+        }
     }
-  }
 
   /**
    * find a subscription by id
