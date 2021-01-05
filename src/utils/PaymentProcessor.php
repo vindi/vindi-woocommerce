@@ -278,7 +278,6 @@ class VindiPaymentProcessor
      */
     public function process_order()
     {
-
         if ($this->order_has_trial_and_simple_product()) {
             $message = __('Não é possível comprar produtos simples e assinaturas com trial no mesmo pedido!', VINDI);
             $this->order->update_status('failed', $message);
@@ -290,47 +289,95 @@ class VindiPaymentProcessor
 
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
+        
         $bills = [];
         $order_post_meta = [];
         $bill_products = [];
         $subscriptions_ids = [];
+        $wc_subscriptions_ids = [];
+        $subscription_order_post_meta = [];
+        
+        $daily_order_items = [];
+        $weekly_order_items = [];
+        $monthly_order_items = [];
+        $yearly_order_items = [];
 
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
-
             if ($this->is_subscription_type($product)) {
-                try {
-                    $subscription = $this->create_subscription($customer['id'], $order_items);
-                } catch (Exception $err) {
-                    continue;
+                $billing_period = WC_Subscriptions_Product::get_period($product);
+                
+                switch ($billing_period) {
+                    case "day":
+                        array_push($daily_order_items, $order_item);
+                        break;
+                    case "week":
+                        array_push($weekly_order_items, $order_item);
+                        break;
+                    case "month":
+                        array_push($monthly_order_items, $order_item);
+                        break;
+                    case "year":
+                        array_push($yearly_order_items, $order_item);
+                        break;
                 }
-                $subscription_order_post_meta = [];
+            }
+            else {
+                array_push($bill_products, $order_item);
+            }
+        }
+
+        $all_order_items_grouped_by_period = array ("day" => $daily_order_items, 
+                                                    "week" => $weekly_order_items, 
+                                                    "monthly" => $monthly_order_items,
+                                                    "year" => $yearly_order_items);
+        
+        foreach($all_order_items_grouped_by_period as $key => $subscription_order_items) {
+            if(empty($subscription_order_items))
+                continue;
+
+            try {
+                $subscription = $this->create_subscription($customer['id'], $subscription_order_items);
                 $subscription_id = $subscription['id'];
+
                 array_push($subscriptions_ids, $subscription_id);
+                array_push($wc_subscriptions_ids, $subscription['wc_id']);
                 $wc_subscription_id = $subscription['wc_id'];
                 $subscription_bill = $subscription['bill'];
+                
+                foreach($subscription_order_items as $key => $subscription_order_item) {
+                    if($subscription_order_item->get_product())
+                    {
+                        if($key >= 1)
+                            $product_name .= " / " . $subscription_order_item->get_product()->name;
+                        else
+                            $product_name = $subscription_order_item->get_product()->name;
+
+                        $order_post_meta[$subscription_id]['product'] = $product_name;
+                        $subscription_order_post_meta[$subscription_id]['product'] = $product_name;
+                    }
+                }
+                
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
-                $order_post_meta[$subscription_id]['product'] = $product->name;
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
                 $subscription_order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
-                $subscription_order_post_meta[$subscription_id]['product'] = $product->name;
                 $subscription_order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
                 $bills[] = $subscription['bill'];
+                
                 if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
-                    $wc_subscription = wcs_get_subscription($wc_subscription_id);
-                    $wc_subscription->update_status('cancelled', __($message, VINDI));
-                    $this->order->update_status('cancelled', __($message, VINDI));
-                    $this->suspend_subscriptions($subscriptions_ids);
-                    $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
-                    $this->abort(__($message, VINDI), true);
+                    $this->cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscription_ids, $bills, $message);
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
                 update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
                 continue;
+
+            } catch (Exception $err) {
+                $message = $err->getMessage();
+                $this->cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscription_ids, $bills, $message);
             }
-            array_push($bill_products, $order_item);
         }
+
         if (!empty($bill_products)) {
             try {
 
@@ -939,6 +986,9 @@ class VindiPaymentProcessor
      */
     protected function create_subscription($customer_id, $order_items)
     {
+        if($order_items == null || empty($order_items)) {
+            return;
+        }
 
         $data['customer_id'] = $customer_id;
         $data['payment_method_code'] = $this->payment_method_code();
@@ -957,11 +1007,8 @@ class VindiPaymentProcessor
         }
         $subscription = $this->routes->createSubscription($data);
 
-        // TODO caso ocorra o erro no pagamento de uma assinatura cancelar as outras
         if (!isset($subscription['id']) || empty($subscription['id'])) {
             $message = sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error);
-            $this->order->update_status('failed', $message);
-
             throw new Exception($message);
         }
 
@@ -971,6 +1018,27 @@ class VindiPaymentProcessor
         }
 
         return $subscription;
+    }
+
+    /**
+     * Cancel subscriptions and order in case of error on payment
+     *
+     * @param array $wc_subscriptions_ids Array with the IDs of woocommerce subscriptions that must be canceled
+     * @param array $subscriptions_ids Array with the IDs of vindi subscriptions that must be suspended
+     * @param array $bills Array with the IDs of vindi bills that must be deleted
+     * @param string $message Error message
+     */
+    private function cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscriptions_ids, $bills, $message)
+    {
+        $this->suspend_subscriptions($subscriptions_ids);
+        
+        foreach($wc_subscriptions_ids as $wc_subscription_id) {
+            $wc_subscription = wcs_get_subscription($wc_subscription_id);
+            $wc_subscription->update_status('cancelled', __($message, VINDI));
+        }
+        
+        $this->order->update_status('cancelled', __($message, VINDI));
+        $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $message), VINDI), true);
     }
 
     /**
@@ -1062,6 +1130,18 @@ class VindiPaymentProcessor
 
         foreach ($subscriptions_ids as $subscription_id) {
             $this->routes->suspendSubscription($subscription_id, true);
+        }
+    }
+
+    /**
+     * Remove subscriptions codes within Vindi
+     *
+     * @param array $subscriptions_ids Array with the IDs of subscriptions that were processed
+     */
+    protected function remove_subscriptions_codes($subscriptions_ids)
+    {
+        foreach ($subscriptions_ids as $subscription_id) {
+            $this->routes->updateSubscriptionCode($subscription_id, '');
         }
     }
 

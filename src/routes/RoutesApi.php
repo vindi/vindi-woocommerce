@@ -196,6 +196,25 @@ class VindiRoutes
 
   /**
    * @param int $subscription_id
+   *
+   * @return array|bool|mixed
+   */
+  public function updateSubscriptionCode($subscription_id, $code)
+  {
+
+    $data = [];
+    $data['code'] = $code;
+
+    $response = $this->api->request(sprintf(
+      'subscriptions/%s',
+      filter_var($subscription_id, FILTER_SANITIZE_NUMBER_INT)
+    ), 'PUT', $data);
+
+    return $response['plan'];
+  }
+
+  /**
+   * @param int $subscription_id
    * @param bool $cancel_bills
    *
    * @return array|bool|mixed
