@@ -292,7 +292,7 @@ class VindiWebhooks
     private function subscription_reactivated($data)
     {
         if ($this->vindi_settings->get_synchronism_status()
-            && !$this->routes->hasPendingSubscriptionBills($data->subscription->id))) {
+            && !$this->routes->hasPendingSubscriptionBills($data->subscription->id)) {
             $subscription_id = $data->subscription->code;
             $subscription = $this->find_subscription_by_id($subscription_id);
             $order_id = $subscription->get_last_order();
