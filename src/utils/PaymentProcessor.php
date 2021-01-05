@@ -342,7 +342,6 @@ class VindiPaymentProcessor
 
                 array_push($subscriptions_ids, $subscription_id);
                 array_push($wc_subscriptions_ids, $subscription['wc_id']);
-
                 $wc_subscription_id = $subscription['wc_id'];
                 $subscription_bill = $subscription['bill'];
                 
