@@ -285,23 +285,28 @@ class VindiWebhooks
         $subscription->update_status('cancelled');
   }
 
-  /**
-   * Process subscription_reactivated event from webhook
-   * @param $data array
-   */
-  private function subscription_reactivated($data)
-  {
-    if ($this->vindi_settings->get_synchronism_status()){
-      $subscription_id = $data->subscription->code;
-      $subscription = $this->find_subscription_by_id($subscription_id);
-      $order_id = $subscription->get_last_order();
-      $order = $this->find_order_by_id($order_id);
-      $status_available = array('processing', 'completed', 'on-hold');
-      if (in_array($order->get_status(), $status_available)) {
-          $subscription->update_status('active', sprintf(__('Assinatura %s reativada pela Vindi.', VINDI), $subscription_id));
-      }
+    /**
+    * Process subscription_reactivated event from webhook
+    * @param $data array
+    */
+    private function subscription_reactivated($data)
+    {
+        if ($this->vindi_settings->get_synchronism_status()
+            && !$this->routes->hasPendingSubscriptionBills($data->subscription->id))) {
+            $subscription_id = $data->subscription->code;
+            $subscription = $this->find_subscription_by_id($subscription_id);
+            $order_id = $subscription->get_last_order();
+            $order = $this->find_order_by_id($order_id);
+            $status_available = array('processing', 'completed', 'on-hold');
+
+            if (in_array($order->get_status(), $status_available)) {
+                $subscription->update_status(
+                    'active',
+                    sprintf(__('Assinatura %s reativada pela Vindi.', VINDI), $subscription_id)
+                );
+            }
+        }
     }
-  }
 
   /**
    * find a subscription by id
