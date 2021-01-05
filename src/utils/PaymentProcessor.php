@@ -321,9 +321,7 @@ class VindiPaymentProcessor
                 $order_post_meta[$subscription_id]['product'] .= $subscription_order_item->get_product()->name . " ";
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
-                
-              [$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
-                $subscription_order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
+
                 $bills[] = $subscription['bill'];
                 
                 if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
@@ -332,7 +330,6 @@ class VindiPaymentProcessor
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
-                update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
                 continue;
 
             } catch (Exception $err) {
