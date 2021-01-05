@@ -293,83 +293,42 @@ class VindiPaymentProcessor
         $bills = [];
         $order_post_meta = [];
         $bill_products = [];
+        $subscription_products = [];
         $subscriptions_ids = [];
-        $wc_subscriptions_ids = [];
-        $subscription_order_post_meta = [];
-        
-        $daily_order_items = [];
-        $weekly_order_items = [];
-        $monthly_order_items = [];
-        $yearly_order_items = [];
 
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
+
             if ($this->is_subscription_type($product)) {
-                $billing_period = WC_Subscriptions_Product::get_period($product);
-                
-                switch ($billing_period) {
-                    case "day":
-                        array_push($daily_order_items, $order_item);
-                        break;
-                    case "week":
-                        array_push($weekly_order_items, $order_item);
-                        break;
-                    case "month":
-                        array_push($monthly_order_items, $order_item);
-                        break;
-                    case "year":
-                        array_push($yearly_order_items, $order_item);
-                        break;
-                }
-            }
-            else {
+                array_push($subscription_products, $order_item);
+            } else {
                 array_push($bill_products, $order_item);
             }
         }
-
-        $all_order_items_grouped_by_period = array ("day" => $daily_order_items, 
-                                                    "week" => $weekly_order_items, 
-                                                    "monthly" => $monthly_order_items,
-                                                    "year" => $yearly_order_items);
         
-        foreach($all_order_items_grouped_by_period as $key => $subscription_order_items) {
-            if(empty($subscription_order_items))
+        foreach($subscription_products as $key => $subscription_order_item) {
+            if(empty($subscription_order_item))
                 continue;
 
             try {
-                $subscription = $this->create_subscription($customer['id'], $subscription_order_items);
+                $subscription = $this->create_subscription($customer['id'], $subscription_order_item);
                 $subscription_id = $subscription['id'];
 
                 array_push($subscriptions_ids, $subscription_id);
-                array_push($wc_subscriptions_ids, $subscription['wc_id']);
+
                 $wc_subscription_id = $subscription['wc_id'];
                 $subscription_bill = $subscription['bill'];
-                
-                foreach($subscription_order_items as $key => $subscription_order_item) {
-                    if($subscription_order_item->get_product())
-                    {
-                        if($key >= 1)
-                            $product_name .= " / " . $subscription_order_item->get_product()->name;
-                        else
-                            $product_name = $subscription_order_item->get_product()->name;
-
-                        $order_post_meta[$subscription_id]['product'] = $product_name;
-                        $subscription_order_post_meta[$subscription_id]['product'] = $product_name;
-                    }
-                }
-                
+                $order_post_meta[$subscription_id]['product'] .= $subscription_order_item->get_product()->name . " ";
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
-                $subscription_order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
-                $subscription_order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
+
                 $bills[] = $subscription['bill'];
                 
                 if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
-                    $this->cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscription_ids, $bills, $message);
+                    $this->cancel_subscriptions_bills_and_order($subscription_ids, $bills, $message);
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
-                update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
                 continue;
 
             } catch (Exception $err) {
@@ -984,9 +943,9 @@ class VindiPaymentProcessor
      * @return array
      * @throws Exception
      */
-    protected function create_subscription($customer_id, $order_items)
+    protected function create_subscription($customer_id, $order_item)
     {
-        if($order_items == null || empty($order_items)) {
+        if($order_item == null || empty($order_item)) {
             return;
         }
 
@@ -994,17 +953,18 @@ class VindiPaymentProcessor
         $data['payment_method_code'] = $this->payment_method_code();
         $data['installments'] = $this->installments();
         $data['product_items'] = array();
-        foreach ($order_items as $order_item) {
 
-            $type = $order_item->get_product()->get_type();
-            if ($type == 'subscription') {
-                $vindi_plan = $this->get_plan_from_order_item($order_item);
-                $data['plan_id'] = $vindi_plan;
-                $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
-                $data['code'] = strpos($wc_subscription_id, 'WC') > 0 ? $wc_subscription_id : 'WC-' . $wc_subscription_id;
-            }
-            $data['product_items'] = array_merge($data['product_items'], $this->build_product_items('subscription', $order_item));
+        $type = $order_item->get_product()->get_type();
+
+        if ($type == 'subscription') {
+            $vindi_plan = $this->get_plan_from_order_item($order_item);
+            $data['plan_id'] = $vindi_plan;
+            $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
+            $data['code'] = strpos($wc_subscription_id, 'WC') > 0 ? $wc_subscription_id : 'WC-' . $wc_subscription_id;
         }
+
+        $data['product_items'] = array_merge($data['product_items'], $this->build_product_items('subscription', $order_item));
+
         $subscription = $this->routes->createSubscription($data);
 
         if (!isset($subscription['id']) || empty($subscription['id'])) {
