@@ -321,22 +321,23 @@ class VindiPaymentProcessor
                 $order_post_meta[$subscription_id]['product'] .= $subscription_order_item->get_product()->name . " ";
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
+                
+              [$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
+                $subscription_order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
                 $bills[] = $subscription['bill'];
                 
                 if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
-                    $wc_subscription = wcs_get_subscription($wc_subscription_id);
-                    $wc_subscription->update_status('cancelled', __($message, VINDI));
-                    $this->order->update_status('cancelled', __($message, VINDI));
-                    $this->suspend_subscriptions($subscriptions_ids);
-                    $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
-                    $this->abort(__($message, VINDI), true);
+                    $this->cancel_subscriptions_bills_and_order(
+                      , $subscription_ids, $bills, $message);
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
+                update_post_meta($wc_subscription_id, 'vindi_order', $subscription_order_post_meta);
                 continue;
 
             } catch (Exception $err) {
-                $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $err->getMessage()), VINDI), true);
+                $message = $err->getMessage();
+                $this->cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscription_ids, $bills, $message);
             }
         }
 
@@ -972,8 +973,6 @@ class VindiPaymentProcessor
 
         if (!isset($subscription['id']) || empty($subscription['id'])) {
             $message = sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error);
-            $this->order->update_status('failed', $message);
-
             throw new Exception($message);
         }
 
@@ -983,6 +982,27 @@ class VindiPaymentProcessor
         }
 
         return $subscription;
+    }
+
+    /**
+     * Cancel subscriptions and order in case of error on payment
+     *
+     * @param array $wc_subscriptions_ids Array with the IDs of woocommerce subscriptions that must be canceled
+     * @param array $subscriptions_ids Array with the IDs of vindi subscriptions that must be suspended
+     * @param array $bills Array with the IDs of vindi bills that must be deleted
+     * @param string $message Error message
+     */
+    private function cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscriptions_ids, $bills, $message)
+    {
+        $this->suspend_subscriptions($subscriptions_ids);
+        
+        foreach($wc_subscriptions_ids as $wc_subscription_id) {
+            $wc_subscription = wcs_get_subscription($wc_subscription_id);
+            $wc_subscription->update_status('cancelled', __($message, VINDI));
+        }
+        
+        $this->order->update_status('cancelled', __($message, VINDI));
+        $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $message), VINDI), true);
     }
 
     /**
@@ -1074,6 +1094,18 @@ class VindiPaymentProcessor
 
         foreach ($subscriptions_ids as $subscription_id) {
             $this->routes->suspendSubscription($subscription_id, true);
+        }
+    }
+
+    /**
+     * Remove subscriptions codes within Vindi
+     *
+     * @param array $subscriptions_ids Array with the IDs of subscriptions that were processed
+     */
+    protected function remove_subscriptions_codes($subscriptions_ids)
+    {
+        foreach ($subscriptions_ids as $subscription_id) {
+            $this->routes->updateSubscriptionCode($subscription_id, '');
         }
     }
 
