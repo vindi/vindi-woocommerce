@@ -304,7 +304,6 @@ class VindiPaymentProcessor
 
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
-            
             if ($this->is_subscription_type($product)) {
                 $billing_period = WC_Subscriptions_Product::get_period($product);
                 
