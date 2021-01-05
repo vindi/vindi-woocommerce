@@ -318,7 +318,7 @@ class VindiPaymentProcessor
 
                 $wc_subscription_id = $subscription['wc_id'];
                 $subscription_bill = $subscription['bill'];
-                $order_post_meta[$subscription_id]['product'] .= $subscription_order_item->get_product()->name . " ";
+                $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->name;
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
 
@@ -1090,18 +1090,6 @@ class VindiPaymentProcessor
 
         foreach ($subscriptions_ids as $subscription_id) {
             $this->routes->suspendSubscription($subscription_id, true);
-        }
-    }
-
-    /**
-     * Remove subscriptions codes within Vindi
-     *
-     * @param array $subscriptions_ids Array with the IDs of subscriptions that were processed
-     */
-    protected function remove_subscriptions_codes($subscriptions_ids)
-    {
-        foreach ($subscriptions_ids as $subscription_id) {
-            $this->routes->updateSubscriptionCode($subscription_id, '');
         }
     }
 
