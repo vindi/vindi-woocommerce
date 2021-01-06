@@ -48,11 +48,6 @@ class VindiPaymentProcessor
     private $controllers;
 
     /**
-     * @var bool
-     */
-    private $shipping_added;
-
-    /**
      * Payment Processor contructor.
      *
      * @param WC_Order $order The order to be processed
@@ -69,7 +64,6 @@ class VindiPaymentProcessor
         $this->logger = $vindi_settings->logger;
         $this->routes = $vindi_settings->routes;
         $this->controllers = $controllers;
-        $this->shipping_added = false;
         $this->single_freight = $this->vindi_settings->get_option('shipping_and_tax_config') == "yes" ? true : false;
 
     }
@@ -486,7 +480,6 @@ class VindiPaymentProcessor
         } else {
             $order_items[] = $this->build_product_from_order_item($order_type, $product);
         }
-        // TODO Buscar separadamente o valor de entrega
         $order_items[] = $this->build_shipping_item($order_items);
         $order_items[] = $this->build_tax_item($order_items);
 
@@ -640,19 +633,64 @@ class VindiPaymentProcessor
         if (empty($shipping_method)) {
             return $shipping_item;
         }
-
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
-            if ($product->needs_shipping() && !$this->shipping_added) {
+            if ($product->needs_shipping()) {
+                $cost = $this->get_shipping_cost_by_product($product);
                 $item = $this->routes->findOrCreateProduct("Frete ($shipping_method)", sanitize_title($shipping_method));
                 $shipping_item = array(
                     'type' => 'shipping',
                     'vindi_id' => $item['id'],
-                    'price' => (float) $this->order->get_total_shipping(),
+                    'price' => $cost,
                     'qty' => 1,
                 );
-                $this->shipping_added = true;
-                return $shipping_item;
+            }
+        }
+        return $shipping_item;
+    }
+
+    /**
+     * Get Shipping cost by product
+     *
+     * @param WC_Product $product
+     *
+     * @return float
+     */
+    private function get_shipping_cost_by_product($product)
+    {
+        $targeted_shipping_method_id = 'flat_rate';
+        $product_class_id = $product->get_shipping_class_id();
+        $zone_ids = array_keys( array('') + WC_Shipping_Zones::get_zones() );
+
+        foreach ( $zone_ids as $zone_id ) {
+            $shipping_zone = new WC_Shipping_Zone($zone_id);
+            $shipping_methods = $shipping_zone->get_shipping_methods( true, 'values' );
+
+            foreach ( $shipping_methods as $instance_id => $shipping_method ) {
+                $rate_id = $shipping_method->get_rate_id();
+                $method_id = explode( ':', $rate_id);
+                $method_id = reset($method_id);
+
+                if( $method_id === $targeted_shipping_method_id ) {
+                    $title = $shipping_method->get_title();
+                    $title = empty($title) ? $shipping_method->get_method_title() : $title;
+
+                    $data = $shipping_method->instance_settings;
+
+                    if( isset($product_class_id) && ! empty($product_class_id) 
+                        && isset($data['class_cost_'.$product_class_id]) ) {
+                        $cost = $data['class_cost_'.$product_class_id];
+                    }
+                    elseif( isset($product_class_id) && empty($product_class_id) 
+                        && isset($data['no_class_cost']) && $data['no_class_cost'] > 0 ) {
+                        $cost = $data['no_class_cost'];
+                    } 
+                    else {
+                        $cost = $data['cost'];
+                    }
+
+                    return $cost;
+                }
             }
         }
     }
