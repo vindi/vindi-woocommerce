@@ -633,7 +633,6 @@ class VindiPaymentProcessor
         if (empty($shipping_method)) {
             return $shipping_item;
         }
-        
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
             if ($product->needs_shipping()) {
