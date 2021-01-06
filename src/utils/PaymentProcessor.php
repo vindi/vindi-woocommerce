@@ -48,11 +48,6 @@ class VindiPaymentProcessor
     private $controllers;
 
     /**
-     * @var bool
-     */
-    private $shipping_added;
-
-    /**
      * Payment Processor contructor.
      *
      * @param WC_Order $order The order to be processed
@@ -69,7 +64,6 @@ class VindiPaymentProcessor
         $this->logger = $vindi_settings->logger;
         $this->routes = $vindi_settings->routes;
         $this->controllers = $controllers;
-        $this->shipping_added = false;
         $this->single_freight = $this->vindi_settings->get_option('shipping_and_tax_config') == "yes" ? true : false;
 
     }
@@ -486,7 +480,6 @@ class VindiPaymentProcessor
         } else {
             $order_items[] = $this->build_product_from_order_item($order_type, $product);
         }
-        // TODO Buscar separadamente o valor de entrega
         $order_items[] = $this->build_shipping_item($order_items);
         $order_items[] = $this->build_tax_item($order_items);
 
@@ -640,21 +633,21 @@ class VindiPaymentProcessor
         if (empty($shipping_method)) {
             return $shipping_item;
         }
-
+        
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
-            if ($product->needs_shipping() && !$this->shipping_added) {
+            if ($product->needs_shipping()) {
                 $item = $this->routes->findOrCreateProduct("Frete ($shipping_method)", sanitize_title($shipping_method));
                 $shipping_item = array(
                     'type' => 'shipping',
                     'vindi_id' => $item['id'],
-                    'price' => (float) $this->order->get_total_shipping(),
+                    'price' => (float) $this->order->get_total_shipping(), // necessário alterar para o preço unitário do frete
                     'qty' => 1,
                 );
-                $this->shipping_added = true;
-                return $shipping_item;
             }
         }
+
+        return $shipping_item;
     }
 
     /**
