@@ -7,11 +7,11 @@ Tags: vindi, subscriptions, pagamento-recorrente, cobranca-recorrente, cobrança
 Author URI: https://vindi.com.br/ | https://mentores.com.br
 Author: Vindi | Mentores Digital
 Requires at least: 4.4
-Tested up to: 5.5.3
+Tested up to: 5.6
 WC requires at least: 3.0.0
-WC tested up to: 4.7.1
+WC tested up to: 4.8.0
 Requires PHP: 5.6
-Stable Tag: 1.0.4
+Stable Tag: 1.1.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,17 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.1.0 - 08/01/2021 =
+- Lançamento da versão de patch.
+- **Correção**: Corrigido o comportamento da taxa de adesão para assinaturas, que agora é cobrado apenas no primeiro ciclo da assinatura;
+- **Adição**: Foi inserida uma mensagem de configuração de renovação automática das assinaturas;
+Essa configuração é necessária para garantir o correto funcionamento do plugin.
+- **Correção**: Foi corrigido o comportamento de cancelamento indevido de assinaturas após a reativação via painel administrativo;
+- **Adição**: Foi inserido o suporte para múltiplas assinaturas no mesmo checkout;
+Múltiplas assinaturas exibirão múltiplos boletos no checkout;
+Os valores referentes a fretes serão enviados especificamente por assinaturas;
+
+
 = 1.0.4 - 18/12/2020 =
 - Lançamento da versão de patch.
 - **Correção**: Corrigido o problema de reembolso via painel administrativo.
@@ -67,7 +78,6 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - **Adição**: Template para tradução do plugin.
 - **Adição**: Vizualização dos boletos dentro do pedido.
 - **Melhoria**: Novo campo de cartão de crédito.
-- **Melhoria**: Checkout de múltiplas assinaturas em uma única compra.
 - **Melhoria**: Checkout de assinaturas e produtos simples em uma única compra.
 - **Melhoria**: Centralização da configuração da chave api.
 - **Melhoria**: Criação dos produtos via Woocommerce sem precisar acessar o painel da Vindi.
@@ -77,7 +87,7 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
-= 1.0.4 - 18/12/2020 =
+= 1.1.0 - 08/01/2021 =
 Patch de correções para o plugin Vindi
 
 == License ==
