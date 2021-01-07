@@ -632,11 +632,16 @@ class VindiPaymentProcessor
         if (empty($shipping_method)) {
             return $shipping_item;
         }
+
         foreach ($order_items as $order_item) {
             $wc_subscription = VindiHelpers::get_matching_subscription($this->order, $order_item);
             $product = $order_item->get_product();
+
             if ($product->needs_shipping()) {
-                $item = $this->routes->findOrCreateProduct(sprintf("Frete (%s)", $wc_subscription->get_shipping_method()), sanitize_title($wc_subscription->get_shipping_method()));
+                $item = $this->routes->findOrCreateProduct(
+                    sprintf("Frete (%s)", $wc_subscription->get_shipping_method()),
+                    sanitize_title($wc_subscription->get_shipping_method())
+                );
                 $shipping_item = array(
                     'type' => 'shipping',
                     'vindi_id' => $item['id'],
