@@ -8,7 +8,7 @@
 					<?php _e('Aqui estão os boletos de suas compras.', VINDI); ?>
 				</p>
 				<p class="message_description">
-					<?php _e('Você pode imprimi-los e pagá-los via internet banking ou em agências bancárias e loréricas. Após recebermos a confirmação do pagamento, seu pedido será processado.', VINDI); ?>
+					<?php _e('Você pode imprimi-los e pagá-los via internet banking ou em agências bancárias e lotéricas. Após recebermos a confirmação do pagamento, seu pedido será processado.', VINDI); ?>
 				</p>
 			</div>
 		</div>
