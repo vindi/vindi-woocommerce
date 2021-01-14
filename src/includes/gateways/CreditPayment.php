@@ -269,10 +269,9 @@ class VindiCreditGateway extends VindiPaymentGateway
       if (!empty($plan_id)) {
         $plan = $this->routes->getPlan($plan_id);
         
-        if($installments == 0) {
+        if ($installments == 0) {
           $installments = $plan['installments'];
-        }
-        elseif($plan['installments'] < $installments) {
+        } elseif ($plan['installments'] < $installments) {
           $installments = $plan['installments'];
         }
       }
