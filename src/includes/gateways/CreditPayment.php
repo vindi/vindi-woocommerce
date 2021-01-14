@@ -261,21 +261,25 @@ class VindiCreditGateway extends VindiPaymentGateway
     if($this->is_single_order())
       return $this->installments;
 
+    $installments = 0;
+
     foreach($this->vindi_settings->woocommerce->cart->cart_contents as $item) {
-      $plan_id = $item['data']->get_meta('vindi_subscription_plan');
-      if (!empty($plan_id))
-        break;
+      $plan_id = $item['data']->get_meta('vindi_plan_id');
+      
+      if (!empty($plan_id)) {
+        $plan = $this->routes->getPlan($plan_id);
+        
+        if ($installments == 0) {
+          $installments = $plan['installments'];
+        } elseif ($plan['installments'] < $installments) {
+          $installments = $plan['installments'];
+        }
+      }
     }
     
-    $current_plan = WC()->session->get('current_plan');
-    if ($current_plan && $current_plan['id'] == $plan_id && !empty($current_plan['installments']))
-      return $current_plan['installments'];
-
-    $plan = $this->routes->getPlan($plan_id);
-    WC()->session->set('current_plan', $plan);
-    if($plan['installments'] > 1)
-      return $plan['installments'];               
-            
-    return 1;
+    if($installments != 0)
+      return $installments;
+    else
+      return 1;
   }
 }
