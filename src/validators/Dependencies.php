@@ -213,13 +213,10 @@ class VindiDependencies
             $plugin = $required_plugin['plugin'];
             $search = array_search($plugin['name'], array_column(self::$active_plugins, 'name'));
 
-            if ($search) {
-                if (version_compare(self::$active_plugins[$search]['version'], 
-                    $plugin['version']['number'], 
-                    $plugin['version']['validation'])
-                ) {
-                    continue;
-                }
+            if ($search && version_compare(self::$active_plugins[$search]['version'], 
+                $plugin['version']['number'], $plugin['version']['validation'])) {
+
+                continue;
             }
 
             $notice = self::missing_notice(
