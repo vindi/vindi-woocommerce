@@ -6,6 +6,8 @@ engines:
         enabled: false
       Controversial/CamelCaseMethodName:
         enabled: false
+      Controversial/CamelCaseParameterName:
+        enabled: false
       Controversial/CamelCaseVariableName:
         enabled: false
       Naming/LongVariable:
