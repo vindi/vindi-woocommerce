@@ -1,0 +1,14 @@
+engines:
+  phpmd:
+    enabled: true
+    checks:
+      UnusedPrivateMethod:
+        enabled: false
+      Controversial/CamelCaseMethodName:
+        enabled: false
+      Controversial/CamelCaseParameterName:
+        enabled: false
+      Controversial/CamelCaseVariableName:
+        enabled: false
+      Naming/LongVariable:
+        enabled: false
