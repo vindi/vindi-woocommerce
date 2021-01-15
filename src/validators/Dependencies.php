@@ -1,272 +1,249 @@
 <?php
 
 if (!function_exists('get_plugins')) {
-  require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+    require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 }
 
 class VindiDependencies
 {
-  /**
-   * @var array
-   */
-  private static $active_plugins;
+    /**
+    * @var array
+    */
+    private static $active_plugins;
 
-  /**
-   * Init VindiDependencies.
-   */
-  public static function init()
-  {
-    self::$active_plugins = (array) get_option('active_plugins', array());
-
-    if (is_multisite()) {
-      self::$active_plugins = array_merge(self::$active_plugins, get_site_option('active_sitewide_plugins', array()));
+    /**
+    * Init VindiDependencies.
+    */
+    public static function init()
+    {
+        self::$active_plugins = self::get_active_plugins();
     }
-  }
 
-  /**
-   * Check required critical dependencies
-   *
-   * @return  boolean
-   */
-  public static function check_critical_dependencies()
-  {
-    $critical_dependencies = [
-      [
-        'name' => 'PHP',
-        'version' => [
-          'validation' => '>=',
-          'number' => VINDI_MININUM_PHP_VERSION
-        ]
-      ],
-      [
-        'name' => 'WordPress',
-        'version' => [
-          'validation' => '>=',
-          'number' => VINDI_MININUM_WP_VERSION
-        ]
-      ]
-    ];
+    private static function get_active_plugins()
+    {
+        if (!function_exists('get_plugin_data')) {
+            return array();
+        }
 
-    $errors = [];
+        $active_plugins = (array) get_option('active_plugins', array());
+        if (is_multisite()) {
+            $network_activated_plugins = array_keys(
+                get_site_option('active_sitewide_plugins', array())
+            );
 
-    foreach ($critical_dependencies as $dependency) {
-      $version = $dependency['version'];
-      if (!version_compare(PHP_VERSION, $version['number'], $version['validation'])) {
-        $name = $dependency['name'];
-        $number = $version['number'];
-        $notice = function () use ($name, $number) {
-          self::critical_dependency_missing_notice($name, $number);
-        };
-        add_action(
-          'admin_notices',
-          $notice
+            $active_plugins = array_merge($active_plugins, $network_activated_plugins);
+        }
+
+        $active_plugins_data = array();
+
+        foreach ($active_plugins as $plugin) {
+            $data                  = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin);
+            $active_plugins_data[] = self::format_plugin_data($plugin, $data);
+        }
+
+        return $active_plugins_data;
+    }
+
+    private static function format_plugin_data($plugin, $data)
+    {
+        return array(
+            'plugin'            => $plugin,
+            'name'              => $data['Name'],
+            'version'           => $data['Version'],
+            'url'               => $data['PluginURI'],
+            'author_name'       => $data['AuthorName'],
+            'author_url'        => esc_url_raw($data['AuthorURI']),
+            'network_activated' => $data['Network'],
         );
-        array_push($errors, $plugin);
-      }
-    }
-    if(!empty($errors)) {
-      return false;
     }
 
-    return true;
-  }
+    /**
+    * Check required critical dependencies
+    *
+    * @return  boolean
+    */
+    public static function check_critical_dependencies()
+    {
+        $critical_dependencies = [
+            [
+                'name'    => 'PHP',
+                'version' => [
+                    'validation' => '>=',
+                    'number'     => VINDI_MININUM_PHP_VERSION
+                ]
+            ],
+            [
+                'name'    => 'WordPress',
+                'version' => [
+                    'validation' => '>=',
+                    'number'     => VINDI_MININUM_WP_VERSION
+                ]
+            ]
+        ];
 
-  /**
-   * Check required plugins
-   *
-   * @return  boolean
-   */
-  public static function check()
-  {
-    if(!self::check_critical_dependencies()) {
-      return false;
+        $errors = [];
+
+        foreach ($critical_dependencies as $dependency) {
+            $version = $dependency['version'];
+
+            if (!version_compare(PHP_VERSION, $version['number'], $version['validation'])) {
+                $name   = $dependency['name'];
+                $number = $version['number'];
+                $notice = function () use ($name, $number) {
+                    self::critical_dependency_missing_notice($name, $number);
+                };
+
+                add_action('admin_notices', $notice);
+                array_push($errors, $plugin);
+            }
+        }
+
+        if(!empty($errors)) {
+            return false;
+        }
+
+        return true;
     }
 
-    if (!self::$active_plugins) {
-      self::init();
-    }
-    if (current_user_can('install_plugins')) {
-      $woocommerce_url = wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=woocommerce'), 'install-plugin_woocommerce');
-      $ecfb_url = wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=woocommerce-extra-checkout-fields-for-brazil'), 'install-plugin_woocommerce-extra-checkout-fields-for-brazil');
-    } else {
-      $woocommerce_url = 'https://wordpress.org/extend/plugins/woocommerce/';
-      $ecfb_url = 'https://wordpress.org/extend/plugins/woocommerce-extra-checkout-fields-for-brazil/';
-    }
+    /**
+    * Check required plugins
+    *
+    * @return  boolean
+    */
+    public static function check()
+    {
+        if(!self::check_critical_dependencies()) {
+            return false;
+        }
 
-    $required_plugins = [
-      [
-        'path' => 'woocommerce/woocommerce.php',
-        'plugin' => [
-          'name' => 'WooCommerce',
-          'url' =>  $woocommerce_url,
-          'version' => [
-            'validation' => '>=',
-            'number' => '3.0'
-          ]
-        ]
-      ],
-      [
-        'path' => 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php',
-        'plugin' => [
-          'name' => 'Brazilian Market on WooCommerce',
-          'url' => $ecfb_url,
-          'version' => [
-            'validation' => '>=',
-            'number' => '3.5'
-          ]
-        ]
-      ]
-    ];
+        if (!self::$active_plugins) {
+            self::init();
+        }
 
-    self::is_wc_subscriptions_active();
+        $woocommerce_url = self::woocommerce_url();
+        $ecfb_url = self::ecfb_url();
 
-    $errors = [];
+        $required_plugins = [
+            [
+                'path' => 'woocommerce/woocommerce.php',
+                'plugin' => [
+                    'name' => 'WooCommerce',
+                    'url' =>  $woocommerce_url,
+                    'version' => [
+                        'validation' => '>=',
+                        'number' => '3.0'
+                    ]
+                ]
+            ],
+            [
+                'path' => 'woocommerce-extra-checkout-fields-for-brazil/
+                    woocommerce-extra-checkout-fields-for-brazil.php',
+                'plugin' => [
+                    'name' => 'Brazilian Market on WooCommerce',
+                    'url' => $ecfb_url,
+                    'version' => [
+                        'validation' => '>=',
+                        'number' => '3.5'
+                    ]
+                ]
+            ],
+            [
+                'path' => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
+                'plugin' => [
+                    'name' => 'WooCommerce Subscriptions',
+                    'url' => 'http://www.woothemes.com/products/woocommerce-subscriptions/',
+                    'version' => [
+                        'validation' => '>=',
+                        'number' => '2.2'
+                    ]
+                ]
+            ]
+        ];
 
-    foreach ($required_plugins as $plugin) {
-      if (self::is_plugin_active($plugin) == false) {
-        $name = $plugin['plugin']['name'];
-        $number = $plugin['plugin']['version']['number'];
-        $url = $plugin['plugin']['url'];
-        $notice = function () use ($name, $number, $url) {
-          self::missing_notice($name, $number, $url);
-        };
-        add_action(
-          'admin_notices',
-          $notice
-        );
-
-        array_push($errors, $plugin);
-      }
-
-      if (!defined('VINDI_TESTS') && self::verify_plugin_version($plugin) == false) {
-        array_push($errors, $plugin);
-      }
+        return self::check_plugin_dependencies($required_plugins);
     }
 
-    if(!empty($errors)) {
-      return false;
+    /**
+    * Generate notice content
+    *
+    * @param string $name Plugin name
+    * @param string $version Plugin version
+    * @param string $link Plugin url
+    *
+    * @return  string
+    */
+    public static function missing_notice($name, $version, $link)
+    {
+        include plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
     }
 
-    return true;
-  }
-
-  /**
-   * Generate notice content
-   *
-   * @param string $name Plugin name
-   * @param string $version Plugin version
-   * @param string $link Plugin url
-   *
-   * @return  string
-   */
-  public static function missing_notice($name, $version, $link)
-  {
-    include plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
-  }
-
-  /**
-   * Generate critical dependency notice content
-   *
-   * @param string $name Dependency name
-   * @param string $version Dependency version
-   *
-   * @return  string
-   */
-  public static function critical_dependency_missing_notice($name, $version)
-  {
-    include plugin_dir_path(VINDI_SRC) . 'src/views/missing-critical-dependency.php';
-  }
-
-  /**
-   * Check if the plugin is active
-   *
-   * @param array $plugin
-   *
-   * @return boolean
-   */
-  public static function is_plugin_active($plugin)
-  {
-    if(in_array($plugin['path'], self::$active_plugins) && is_plugin_active($plugin['path'])) {
-      return true;
+    /**
+    * Generate critical dependency notice content
+    *
+    * @param string $name Dependency name
+    * @param string $version Dependency version
+    *
+    * @return  string
+    */
+    public static function critical_dependency_missing_notice($name, $version)
+    {
+        include plugin_dir_path(VINDI_SRC) . 'src/views/missing-critical-dependency.php';
     }
 
-    return false;
-  }
+    private static function check_plugin_dependencies($required_plugins)
+    {
+        $checked = true;
 
-  /**
-   * Check if the current version of the plugin is at least the minimum required version
-   *
-   * @param array $plugin
-   *
-   * @return boolean
-   */
-  public static function verify_plugin_version($plugin)
-  {
-    $plugin_data = get_plugin_data(WP_PLUGIN_DIR . "/" . $plugin['path']);
-    $version_match = $plugin['plugin']['version'];
-    $version_compare = version_compare(
-      $plugin_data['Version'],
-      $version_match['number'],
-      $version_match['validation']
-    );
+        foreach ($required_plugins as $required_plugin) {
+            $plugin = $required_plugin['plugin'];
+            $search = array_search($plugin['name'], array_column(self::$active_plugins, 'name'));
 
-    if ($version_compare == false) {
-      $name = $plugin['plugin']['name'];
-      $number = $version_match['number'];
-      $url = $plugin['plugin']['url'];
-      $notice = function () use ($name, $number, $url) {
-        self::missing_notice($name, $number, $url);
-      };
-      add_action(
-        'admin_notices',
-        $notice
-      );
+            if ($search &&
+                version_compare(
+                    self::$active_plugins[$search]['version'],
+                    $plugin['version']['number'],
+                    $plugin['version']['validation']
+                )) {
+                continue;
+            }
 
-      return false;
+            $notice = self::missing_notice(
+                $plugin['name'],
+                $plugin['version']['number'],
+                $plugin['url']
+            );
+
+            add_action('admin_notices', $notice);
+            $checked = false;
+        }
+
+        return $checked;
     }
 
-    return true;
-  }
+    private static function woocommerce_url()
+    {
+        if (current_user_can('install_plugins')) {
+            return wp_nonce_url(
+                self_admin_url('update.php?action=install-plugin&plugin=woocommerce'),
+                'install-plugin_woocommerce'
+            );
+        }
 
-  /**
-   * Check if WC Subscriptions is active
-   *
-   * @return boolean
-   */
-  public static function is_wc_subscriptions_active()
-  {
-    $wc_subscriptions = [
-      'path' => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
-      'plugin' => [
-        'name' => 'WooCommerce Subscriptions',
-        'url' => 'http://www.woothemes.com/products/woocommerce-subscriptions/',
-        'version' => [
-          'validation' => '>=',
-          'number' => '2.2'
-        ]
-      ],
-    ];
-
-    return self::is_plugin_active($wc_subscriptions) || class_exists('WC_Subscriptions');
-  }
-
-  /**
-   * Check if WC Memberships is active
-   *
-   * @return boolean
-   */
-  public static function is_wc_memberships_active()
-  {
-    $wc_memberships = [
-      'path' => 'woocommerce-memberships/woocommerce-memberships.php',
-      'plugin' => [
-        'name' => 'WooCommerce Memberships',
-        'url' => 'http://www.woothemes.com/products/woocommerce-memberships/'
-      ]
-    ];
-    if(self::is_plugin_active($wc_memberships)) {
-      return true;
+        return 'https://wordpress.org/extend/plugins/woocommerce/';
     }
-    return false;
-  }
+
+    private static function ecfb_url()
+    {
+        if (current_user_can('install_plugins')) {
+            return wp_nonce_url(
+                self_admin_url(
+                    'update.php?action=install-plugin&plugin=' .
+                    'woocommerce-extra-checkout-fields-for-brazil'
+                ),
+                'install-plugin_woocommerce-extra-checkout-fields-for-brazil'
+            );
+        }
+
+        return 'https://wordpress.org/extend/plugins/woocommerce-extra-checkout-fields-for-brazil/';
+    }
 }
