@@ -127,15 +127,15 @@ class VindiDependencies
             );
 
             $ecfb_url = wp_nonce_url(
-                self_admin_url('update.php?action=install-plugin&plugin=
-                    woocommerce-extra-checkout-fields-for-brazil'
+                self_admin_url('update.php?action=install-plugin&plugin=' .
+                    'woocommerce-extra-checkout-fields-for-brazil'
                 ),
                 'install-plugin_woocommerce-extra-checkout-fields-for-brazil'
             );
         } else {
             $woocommerce_url = 'https://wordpress.org/extend/plugins/woocommerce/';
-            $ecfb_url = 'https://wordpress.org/extend/plugins/
-                woocommerce-extra-checkout-fields-for-brazil/';
+            $ecfb_url = 'https://wordpress.org/extend/plugins/' .
+                'woocommerce-extra-checkout-fields-for-brazil/';
         }
 
         $required_plugins = [
@@ -213,9 +213,12 @@ class VindiDependencies
             $plugin = $required_plugin['plugin'];
             $search = array_search($plugin['name'], array_column(self::$active_plugins, 'name'));
 
-            if ($search && version_compare(self::$active_plugins[$search]['version'], 
-                $plugin['version']['number'], $plugin['version']['validation'])) {
-
+            if ($search &&
+                version_compare(
+                    self::$active_plugins[$search]['version'],
+                    $plugin['version']['number'],
+                    $plugin['version']['validation']
+                )) {
                 continue;
             }
 
