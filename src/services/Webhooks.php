@@ -245,16 +245,25 @@ class VindiWebhooks
    */
   private function charge_rejected($data)
   {
-    $order = $this->find_order_by_bill_id($data->charge->bill->id);
+      try {
+          $order = $this->find_order_by_bill_id($data->charge->bill->id);
+      } catch (Exception $e) {
+          if ($e.getCode == 2) {
+            $bill = $this->routes->findBillById($data->charge->bill->id);
+            $vindi_subscription_id = $bill->subscription->id;
+            $cycle = $bill->period->cycle;
+            $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
+          }
+      }
 
-    if($order->get_status() == 'pending'){
-      $order->update_status('failed', __('Pagamento rejeitado!', VINDI));
-    }else{
-      throw new Exception(sprintf(
-        __('Erro ao trocar status da fatura para "failed" pois a fatura #%s não está mais pendente!', VINDI),
-        $data->charge->bill->id
-      ));
-    }
+      if($order->get_status() == 'pending'){
+          $order->update_status('failed', __('Pagamento rejeitado!', VINDI));
+      } else{
+          throw new Exception(sprintf(
+            __('Erro ao trocar status da fatura para "failed" pois a fatura #%s não está mais pendente!', VINDI),
+            $data->charge->bill->id
+          ));
+      }
   }
 
   /**
