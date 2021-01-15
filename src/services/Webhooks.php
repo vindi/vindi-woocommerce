@@ -461,7 +461,7 @@ class VindiWebhooks
       // quando isso acontecer, o next_payment do wc deve ser null
       // (a issue #134 tem mais informações do problema)
 
-      if ($next_billing_at > $end_at) {
+      if ($end_at != null && $next_billing_at > $end_at) {
         return false;
       }
 
