@@ -116,7 +116,6 @@ class VindiWebhooks
       'bank_slip_url' => $renew_infos['bill_print_url'],
     );
     update_post_meta($order->id, 'vindi_order', $order_post_meta);
-
     $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
 
     // We've already processed the renewal
@@ -148,6 +147,7 @@ class VindiWebhooks
       $renew_infos['cycle']
     )) {
       $this->subscription_renew($renew_infos);
+      $this->update_next_payment($data);
     }
   }
 
@@ -474,7 +474,7 @@ class VindiWebhooks
       // quando isso acontecer, o next_payment do wc deve ser null
       // (a issue #134 tem mais informações do problema)
 
-      if ($next_billing_at > $end_at) {
+      if ($end_at != null && $next_billing_at > $end_at) {
         return false;
       }
 

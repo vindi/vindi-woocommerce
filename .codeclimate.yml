@@ -1,4 +1,6 @@
 engines:
+  csslint:
+    enabled: true
   phpmd:
     enabled: true
     checks:
@@ -6,7 +8,13 @@ engines:
         enabled: false
       Controversial/CamelCaseMethodName:
         enabled: false
+      Controversial/CamelCaseParameterName:
+        enabled: false
       Controversial/CamelCaseVariableName:
         enabled: false
       Naming/LongVariable:
         enabled: false
+  phpcodesniffer:
+    enabled: true
+    config:
+      standard: "PSR1,PSR2"  
