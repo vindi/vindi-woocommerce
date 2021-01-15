@@ -335,17 +335,20 @@ class VindiPaymentProcessor
 
         if (!empty($bill_products)) {
             try {
-
                 $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
 
                 $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
                 $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
+
                 $bills[] = $single_payment_bill;
+
                 if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
                     $this->order->update_status('cancelled', __($message, VINDI));
+
                     if ($subscriptions_ids) {
                         $this->suspend_subscriptions($subscriptions_ids);
                     }
+
                     $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
                     $this->abort(__($message, VINDI), true);
                 }
