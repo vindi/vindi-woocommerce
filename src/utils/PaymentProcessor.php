@@ -343,7 +343,7 @@ class VindiPaymentProcessor
                 $bills[] = $single_payment_bill;
                 if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
                     $this->order->update_status('cancelled', __($message, VINDI));
-                    if ($subscription_ids) {
+                    if ($subscriptions_ids) {
                         $this->suspend_subscriptions($subscriptions_ids);
                     }
                     $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
