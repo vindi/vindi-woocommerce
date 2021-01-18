@@ -312,8 +312,8 @@ class VindiPaymentProcessor
 
                 $wc_subscription_id = $subscription['wc_id'];
                 $subscription_bill = $subscription['bill'];
-                $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->name;
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
+                $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->name;
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
 
                 $bills[] = $subscription['bill'];
