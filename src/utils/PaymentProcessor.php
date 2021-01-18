@@ -90,7 +90,7 @@ class VindiPaymentProcessor
      */
     public function get_customer()
     {
-        $current_user = wp_get_current_user();
+        $current_user = $this->order->get_user();
         
         if ($current_user->ID) {
             $vindi_customer = $this->controllers->customers->update($current_user->ID, $this->order);
@@ -306,9 +306,8 @@ class VindiPaymentProcessor
 
                 $bills[] = $subscription['bill'];
                 
-                if ($this->cancel_if_denied_bill_status($subscription['bill'])) {
-                    $this->cancel_subscriptions_and_order($wc_subscriptions_ids, $subscriptions_ids, '');
-                    return false;
+                if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
+                    throw new Exception($message);
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
@@ -985,8 +984,9 @@ class VindiPaymentProcessor
         }
         
         $this->order->update_status('cancelled', __($message, VINDI));
+        
         if ($message)
-            $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $message), VINDI), true);
+            $this->abort(__(sprintf('Erro ao criar o pedido: %s', $message), VINDI), true);
     }
 
     /**
@@ -1059,10 +1059,14 @@ class VindiPaymentProcessor
 
         $last_charge = end($bill['charges']);
         $transaction_status = $last_charge['last_transaction']['status'];
-        $denied_status = ['rejected' => 'Não foi possível autorizar seu pagamento. Por favor verifique os dados informados e tente novamente.', 'failure' => 'Ocorreu um erro ao tentar aprovar a transação, tente novamente.'];
+        
+        $denied_status = ['rejected' => 'Não foi possível processar seu pagamento. Por favor verifique os dados informados. ', 'failure' => 'Ocorreu um erro ao tentar aprovar a transação, tente novamente.'];
 
         if (array_key_exists($transaction_status, $denied_status)) {
-            return $denied_status[$transaction_status];
+            if ($this->is_cc() && $last_charge['last_transaction']['gateway_message'] != null)
+                return $denied_status[$transaction_status] . $last_charge['last_transaction']['gateway_message'];
+            else
+                return $denied_status[$transaction_status];
         }
 
         return false;
