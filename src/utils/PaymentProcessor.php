@@ -91,21 +91,7 @@ class VindiPaymentProcessor
     public function get_customer()
     {
         $current_user = wp_get_current_user();
-        $vindi_customer_id = get_user_meta($current_user->ID, 'vindi_customer_id', true);
-
-        if (isset($vindi_customer_id) && !empty($vindi_customer_id)) {
-            $vindi_customer = $this->routes->findCustomerById($vindi_customer_id);
-        }
-
-        if (!$vindi_customer) {
-            if ($current_user->ID) {
-                $vindi_customer = $this->controllers->customers->create($current_user->ID, $this->order);
-            } else {
-                $vindi_customer = $this->controllers->customers->create(1, $this->order);
-            }
-        }
-
-        // if($this->vindi_settings->send_nfe_information()) {
+        
         if ($current_user->ID) {
             $vindi_customer = $this->controllers->customers->update($current_user->ID, $this->order);
         }
@@ -113,7 +99,7 @@ class VindiPaymentProcessor
         if ($this->is_cc()) {
             $this->create_payment_profile($vindi_customer['id']);
         } else {
-            $this->create_payment_profile_bank_slip($vindi_customer_id);
+            $this->create_payment_profile_bank_slip($vindi_customer['id']);
         }
 
         return $vindi_customer;
@@ -289,6 +275,7 @@ class VindiPaymentProcessor
         $bill_products = [];
         $subscription_products = [];
         $subscriptions_ids = [];
+        $wc_subscriptions_ids = [];
 
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
@@ -307,10 +294,11 @@ class VindiPaymentProcessor
             try {
                 $subscription = $this->create_subscription($customer['id'], $subscription_order_item);
                 $subscription_id = $subscription['id'];
+                $wc_subscription_id = $subscription['wc_id'];
 
                 array_push($subscriptions_ids, $subscription_id);
+                array_push($wc_subscriptions_ids, $wc_subscription_id);
 
-                $wc_subscription_id = $subscription['wc_id'];
                 $subscription_bill = $subscription['bill'];
                 $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->name;
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
@@ -318,8 +306,9 @@ class VindiPaymentProcessor
 
                 $bills[] = $subscription['bill'];
                 
-                if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
-                    $this->cancel_subscriptions_bills_and_order($subscription_ids, $bills, $message);
+                if ($this->cancel_if_denied_bill_status($subscription['bill'])) {
+                    $this->cancel_subscriptions_and_order($wc_subscriptions_ids, $subscriptions_ids, '');
+                    return false;
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
@@ -327,23 +316,26 @@ class VindiPaymentProcessor
 
             } catch (Exception $err) {
                 $message = $err->getMessage();
-                $this->cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscription_ids, $bills, $message);
+                $this->cancel_subscriptions_and_order($wc_subscriptions_ids, $subscriptions_ids, $message);
             }
         }
 
         if (!empty($bill_products)) {
             try {
-
                 $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
 
                 $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
                 $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
+
                 $bills[] = $single_payment_bill;
+
                 if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
                     $this->order->update_status('cancelled', __($message, VINDI));
-                    if ($subscription_ids) {
+
+                    if ($subscriptions_ids) {
                         $this->suspend_subscriptions($subscriptions_ids);
                     }
+
                     $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
                     $this->abort(__($message, VINDI), true);
                 }
@@ -981,10 +973,9 @@ class VindiPaymentProcessor
      *
      * @param array $wc_subscriptions_ids Array with the IDs of woocommerce subscriptions that must be canceled
      * @param array $subscriptions_ids Array with the IDs of vindi subscriptions that must be suspended
-     * @param array $bills Array with the IDs of vindi bills that must be deleted
      * @param string $message Error message
      */
-    private function cancel_subscriptions_bills_and_order($wc_subscriptions_ids, $subscriptions_ids, $bills, $message)
+    private function cancel_subscriptions_and_order($wc_subscriptions_ids, $subscriptions_ids, $message)
     {
         $this->suspend_subscriptions($subscriptions_ids);
         
@@ -994,7 +985,8 @@ class VindiPaymentProcessor
         }
         
         $this->order->update_status('cancelled', __($message, VINDI));
-        $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $message), VINDI), true);
+        if ($message)
+            $this->abort(__(sprintf('Não foi possível criar o pedido. Erro: %s', $message), VINDI), true);
     }
 
     /**
@@ -1067,7 +1059,7 @@ class VindiPaymentProcessor
 
         $last_charge = end($bill['charges']);
         $transaction_status = $last_charge['last_transaction']['status'];
-        $denied_status = ['rejected' => 'Infelizmente não foi possível autorizar seu pagamento.', 'failure' => 'Ocorreu um erro ao aprovar a transação, tente novamente.'];
+        $denied_status = ['rejected' => 'Não foi possível autorizar seu pagamento. Por favor verifique os dados informados e tente novamente.', 'failure' => 'Ocorreu um erro ao tentar aprovar a transação, tente novamente.'];
 
         if (array_key_exists($transaction_status, $denied_status)) {
             return $denied_status[$transaction_status];
