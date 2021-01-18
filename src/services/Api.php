@@ -41,7 +41,6 @@ class VindiApi
     'invalid_parameter|card_number'          => 'Número do cartão inválido.',
     'invalid_parameter|registry_code'        => 'CPF ou CNPJ Invalidos',
     'invalid_parameter|payment_company_code' => 'Método de pagamento Inválido',
-    'invalid_parameter|payment_company_id'   => 'Método de pagamento Inválido',
     'invalid_parameter|phones.number'        => 'Número de telefone inválido',
     'invalid_parameter|phones'               => 'Erro ao cadastrar o telefone'
   );
@@ -142,7 +141,7 @@ class VindiApi
       foreach ($response['errors'] as $error) {
         $message = $this->get_error_message($error);
 
-        if (function_exists('wc_add_notice')) {
+        if (function_exists('wc_add_notice') && !strpos($message, '|')) {
           wc_add_notice(__($message, VINDI), 'error');
         }
 
