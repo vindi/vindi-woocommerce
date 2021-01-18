@@ -130,31 +130,31 @@ class VindiApi
     return __($this->errors_list[$error_identifier], VINDI);
   }
 
-  /**
-   * @param array $response
-   *
-   * @return bool
-   */
-  private function check_response($response)
-  {
-    if (isset($response['errors']) && !empty($response['errors'])) {
-      foreach ($response['errors'] as $error) {
-        $message = $this->get_error_message($error);
+    /**
+    * @param array $response
+    *
+    * @return bool
+    */
+    private function check_response($response)
+    {
+        if (isset($response['errors']) && !empty($response['errors'])) {
+            foreach ($response['errors'] as $error) {
+                $message = $this->get_error_message($error);
 
-        if (function_exists('wc_add_notice') && !strpos($message, '|')) {
-          wc_add_notice(__($message, VINDI), 'error');
+                if (function_exists('wc_add_notice') && !strpos($message, '|')) {
+                    wc_add_notice(__($message, VINDI), 'error');
+                }
+
+                $this->last_error = $message;
+            }
+
+            return false;
         }
 
-        $this->last_error = $message;
-      }
+        $this->last_error = '';
 
-      return false;
+        return true;
     }
-
-    $this->last_error = '';
-
-    return true;
-  }
 
   /**
    * Verify API key authorization and clear
