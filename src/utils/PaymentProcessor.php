@@ -1060,13 +1060,15 @@ class VindiPaymentProcessor
         $last_charge = end($bill['charges']);
         $transaction_status = $last_charge['last_transaction']['status'];
         
-        $denied_status = ['rejected' => 'Não foi possível processar seu pagamento. Por favor verifique os dados informados. ', 'failure' => 'Ocorreu um erro ao tentar aprovar a transação, tente novamente.'];
+        $denied_status = ['rejected' => 'Não foi possível processar seu pagamento. Por favor verifique os dados informados. ', 
+                          'failure' => 'Ocorreu um erro ao tentar aprovar a transação, tente novamente.'];
 
         if (array_key_exists($transaction_status, $denied_status)) {
-            if ($this->is_cc() && $last_charge['last_transaction']['gateway_message'] != null)
+            if ($this->is_cc() && $last_charge['last_transaction']['gateway_message'] != null) {
                 return $denied_status[$transaction_status] . $last_charge['last_transaction']['gateway_message'];
-            else
+            } else {
                 return $denied_status[$transaction_status];
+            }
         }
 
         return false;
