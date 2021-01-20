@@ -196,11 +196,11 @@ class VindiDependencies
 
         foreach ($required_plugins as $required_plugin) {
             $plugin = $required_plugin['plugin'];
-            $search = array_search($plugin['name'], array_column(self::$active_plugins, 'name'));
+            $search = self::search_plugin_name($plugin['name'], self::$active_plugins);
 
             if ($search &&
                 version_compare(
-                    self::$active_plugins[$search]['version'],
+                    $search['version'],
                     $plugin['version']['number'],
                     $plugin['version']['validation']
                 )) {
@@ -219,6 +219,15 @@ class VindiDependencies
 
         return $checked;
     }
+
+    private static function search_plugin_name($name, $array) {
+        foreach ($array as $key => $val) {
+            if ($val['name'] === $name) {
+                return $val;
+            }
+        }
+        return null;
+     }
 
     private static function woocommerce_url()
     {
