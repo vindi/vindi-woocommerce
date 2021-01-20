@@ -220,14 +220,15 @@ class VindiDependencies
         return $checked;
     }
 
-    private static function search_plugin_name($name, $array) {
-        foreach ($array as $key => $val) {
+    private static function search_plugin_name($name, $array) 
+    {
+        foreach ($array as $val) {
             if ($val['name'] === $name) {
                 return $val;
             }
         }
         return null;
-     }
+    }
 
     private static function woocommerce_url()
     {
