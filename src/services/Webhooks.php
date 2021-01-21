@@ -248,7 +248,7 @@ class VindiWebhooks
         try {
             $order = $this->find_order_by_bill_id($data->charge->bill->id);
         } catch (Exception $e) {
-            if ($e.getCode == 2) {
+            if ($e->getCode() == 2) {
                 $bill = $this->routes->findBillById($data->charge->bill->id);
                 $vindi_subscription_id = $bill->subscription->id;
                 $cycle = $bill->period->cycle;
