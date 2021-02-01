@@ -9,9 +9,9 @@ Author: Vindi | Mentores Digital
 Requires at least: 4.4
 Tested up to: 5.6
 WC requires at least: 3.0.0
-WC tested up to: 4.8.0
+WC tested up to: 4.9.0
 Requires PHP: 5.6
-Stable Tag: 1.1.0
+Stable Tag: 1.1.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,15 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.1.1 - 01/02/2021 =
+- Lançamento da versão de patch.
+- **Adição**: Foi inserida a opção para selecionar a quantidade de parcelas nas assinaturas conforme o cadastro do plano;
+- **Correção**: Corrigida a mensagem de rejeição de pagamento no checkout;
+- **Correção**: Corrigido o comportamento quando o pagamento é rejeitado em planos com a cobrança é no término do período;
+- **Correção**: Corrigida a verificação de dependências necessárias para o correto funcionamento do plugin;
+- **Correção**: Corrigida a informação sobre a data do próximo pagamento em caso de renovação de assinaturas;
+
+
 = 1.1.0 - 08/01/2021 =
 - Lançamento da versão de patch.
 - **Correção**: Corrigido o comportamento da taxa de adesão para assinaturas, que agora é cobrado apenas no primeiro ciclo da assinatura;
@@ -87,7 +96,7 @@ Os valores referentes a fretes serão enviados especificamente por assinaturas;
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
-= 1.1.0 - 08/01/2021 =
+= 1.1.1 - 01/02/2021 =
 Patch de correções para o plugin Vindi
 
 == License ==
