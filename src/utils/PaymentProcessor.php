@@ -516,26 +516,25 @@ class VindiPaymentProcessor
 
             }
             return $order_items;
-        } else {
-            $product = $this->get_product($order_items);
-            $order_items['type'] = 'product';
-            $product_id = $product->id;
-            
-            if ($this->is_variable($product)) {
-                $product_id = $order_items['variation_id'];
-            }
-
-            $get_vindi = $this->get_vindi_code($product->id);
-            $order_items['vindi_id'] = $get_vindi ? $get_vindi : $product->vindi_id;
-            if ($this->subscription_has_trial($product)) {
-                $matching_item = $this->get_trial_matching_subscription_item($order_items);
-                $order_items['price'] = (float) $matching_item['subtotal'] / $matching_item['qty'];
-            } else {
-                $order_items['price'] = (float) $order_items['subtotal'] / $order_items['qty'];
-            }
-            return $order_items;
         }
 
+        $product = $this->get_product($order_items);
+        $order_items['type'] = 'product';
+        $product_id = $product->id;
+
+        if ($this->is_variable($product)) {
+            $product_id = $order_items['variation_id'];
+        }
+
+        $get_vindi = $this->get_vindi_code($product->id);
+        $order_items['vindi_id'] = $get_vindi ? $get_vindi : $product->vindi_id;
+        if ($this->subscription_has_trial($product)) {
+            $matching_item = $this->get_trial_matching_subscription_item($order_items);
+            $order_items['price'] = (float) $matching_item['subtotal'] / $matching_item['qty'];
+        } else {
+            $order_items['price'] = (float) $order_items['subtotal'] / $order_items['qty'];
+        }
+        return $order_items;
     }
 
     /**
@@ -946,8 +945,6 @@ class VindiPaymentProcessor
         $data['payment_method_code'] = $this->payment_method_code();
         $data['installments'] = $this->installments();
         $data['product_items'] = array();
-
-        $type = $order_item->get_product()->get_type();
 
         if ($this->is_subscription_type($product) || $this->is_variable($product)) {
             $vindi_plan = $this->get_plan_from_order_item($order_item);
