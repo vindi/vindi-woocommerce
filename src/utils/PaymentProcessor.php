@@ -519,6 +519,13 @@ class VindiPaymentProcessor
         } else {
             $product = $this->get_product($order_items);
             $order_items['type'] = 'product';
+            
+            if ($this->is_variable($product)) {
+                $product_id = $order_items['variation_id'];
+            } else {
+                $product_id = $product->id;
+            }
+
             $get_vindi = $this->get_vindi_code($product->id);
             $order_items['vindi_id'] = $get_vindi ? $get_vindi : $product->vindi_id;
             if ($this->subscription_has_trial($product)) {
@@ -943,7 +950,7 @@ class VindiPaymentProcessor
 
         $type = $order_item->get_product()->get_type();
 
-        if ($type == 'subscription') {
+        if ($this->is_subscription_type($product) || $this->is_variable($product)) {
             $vindi_plan = $this->get_plan_from_order_item($order_item);
             $data['plan_id'] = $vindi_plan;
             $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
