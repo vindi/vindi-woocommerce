@@ -519,11 +519,10 @@ class VindiPaymentProcessor
         } else {
             $product = $this->get_product($order_items);
             $order_items['type'] = 'product';
+            $product_id = $product->id;
             
             if ($this->is_variable($product)) {
                 $product_id = $order_items['variation_id'];
-            } else {
-                $product_id = $product->id;
             }
 
             $get_vindi = $this->get_vindi_code($product->id);
