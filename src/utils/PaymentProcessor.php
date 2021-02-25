@@ -946,6 +946,8 @@ class VindiPaymentProcessor
         $data['installments'] = $this->installments();
         $data['product_items'] = array();
 
+        $product = $order_item->get_product();
+
         if ($this->is_subscription_type($product) || $this->is_variable($product)) {
             $vindi_plan = $this->get_plan_from_order_item($order_item);
             $data['plan_id'] = $vindi_plan;
