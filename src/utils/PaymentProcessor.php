@@ -526,7 +526,7 @@ class VindiPaymentProcessor
             $product_id = $order_items['variation_id'];
         }
 
-        $get_vindi = $this->get_vindi_code($product->id);
+        $get_vindi = $this->get_vindi_code($product_id);
         $order_items['vindi_id'] = $get_vindi ? $get_vindi : $product->vindi_id;
         if ($this->subscription_has_trial($product)) {
             $matching_item = $this->get_trial_matching_subscription_item($order_items);
