@@ -276,14 +276,31 @@ class VindiPaymentProcessor
         $subscription_products = [];
         $subscriptions_ids = [];
         $wc_subscriptions_ids = [];
+        $subscriptions_grouped_by_period = array();
 
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
-
+            
             if ($this->is_subscription_type($product)) {
+                $product_id = $product->id;
+
+                if ($this->is_variable($product)) {
+                    $product_id = $order_item['variation_id'];
+                }
+
+                $period = get_post_meta($product_id, '_subscription_period', true);
+                $interval = get_post_meta($product_id, '_subscription_period_interval', true);
+                $subscriptions_grouped_by_period[$period . $interval][] = $order_item;
                 array_push($subscription_products, $order_item);
-            } else {
+            }
+            else {
                 array_push($bill_products, $order_item);
+            }
+        }
+
+        foreach ($subscriptions_grouped_by_period as $key => $subscription_group) {
+            if (count($subscription_group) > 1) {
+                $this->abort(__('Não é permitido criar um único pedido com múltiplas assinaturas de mesma periodicidade ', VINDI), true);
             }
         }
         
