@@ -258,15 +258,7 @@ class VindiPaymentProcessor
      */
     public function process_order()
     {
-        if ($this->order_has_trial_and_simple_product()) {
-            $message = __('Não é possível comprar produtos simples e assinaturas com trial no mesmo pedido!', VINDI);
-            $this->order->update_status('failed', $message);
-            wc_add_notice($message, 'error');
-
-            throw new Exception($message);
-            return false;
-        }
-
+        $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
         
@@ -294,16 +286,10 @@ class VindiPaymentProcessor
                 array_push($subscription_products, $order_item);
                 continue;
             }
-            
             array_push($bill_products, $order_item);
         }
 
-        foreach ($subscriptions_grouped_by_period as $key => $subscription_group) {
-            if (count($subscription_group) > 1) {
-                $msg = 'Não é permitido criar um único pedido com múltiplas assinaturas de mesma periodicidade';
-                $this->abort(__($msg, VINDI), true);
-            }
-        }
+        $this->check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period);
         
         foreach($subscription_products as $key => $subscription_order_item) {
             if(empty($subscription_order_item))
@@ -330,7 +316,6 @@ class VindiPaymentProcessor
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
                 continue;
-
             } catch (Exception $err) {
                 $message = $err->getMessage();
                 $this->cancel_subscriptions_and_order($wc_subscriptions_ids, $subscriptions_ids, $message);
@@ -340,10 +325,8 @@ class VindiPaymentProcessor
         if (!empty($bill_products)) {
             try {
                 $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
-
                 $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
                 $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
-
                 $bills[] = $single_payment_bill;
 
                 if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
@@ -360,17 +343,35 @@ class VindiPaymentProcessor
                 $this->logger->log(sprintf('Deu erro na criação da conta %s', $single_payment_bill));
                 $this->abort(__('Não foi possível criar o pedido.', VINDI), true);
             }
-
         }
 
         update_post_meta($this->order->id, 'vindi_order', $order_post_meta);
-
         WC()->session->__unset('current_payment_profile');
         WC()->session->__unset('current_customer');
-
         remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
 
         return $this->finish_payment($bills);
+    }
+
+    private function check_trial_and_single_product()
+    {
+        if ($this->order_has_trial_and_simple_product()) {
+            $message = __('Não é possível comprar produtos simples e assinaturas com trial no mesmo pedido!', VINDI);
+            $this->order->update_status('failed', $message);
+            wc_add_notice($message, 'error');
+
+            throw new Exception($message);
+        }
+    }
+
+    private function check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period)
+    {
+        foreach ($subscriptions_grouped_by_period as $key => $subscription_group) {
+            if (count($subscription_group) > 1) {
+                $msg = 'Não é permitido criar um único pedido com múltiplas assinaturas de mesma periodicidade';
+                $this->abort(__($msg, VINDI), true);
+            }
+        }
     }
 
     /**
