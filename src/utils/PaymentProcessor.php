@@ -291,7 +291,7 @@ class VindiPaymentProcessor
 
         $this->check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period);
         
-        foreach($subscription_products as $subscription_order_item) {
+        foreach ($subscription_products as $subscription_order_item) {
             if(empty($subscription_order_item))
                 continue;
 
@@ -366,7 +366,7 @@ class VindiPaymentProcessor
 
     private function check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period)
     {
-        foreach ($subscriptions_grouped_by_period as $key => $subscription_group) {
+        foreach ($subscriptions_grouped_by_period as $subscription_group) {
             if (count($subscription_group) > 1) {
                 $msg = 'Não é permitido criar um único pedido com múltiplas assinaturas de mesma periodicidade';
                 $this->abort(__($msg, VINDI), true);
