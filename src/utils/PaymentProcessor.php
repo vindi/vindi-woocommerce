@@ -291,7 +291,7 @@ class VindiPaymentProcessor
 
         $this->check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period);
         
-        foreach($subscription_products as $key => $subscription_order_item) {
+        foreach($subscription_products as $subscription_order_item) {
             if(empty($subscription_order_item))
                 continue;
 
