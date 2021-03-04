@@ -258,15 +258,7 @@ class VindiPaymentProcessor
      */
     public function process_order()
     {
-        if ($this->order_has_trial_and_simple_product()) {
-            $message = __('Não é possível comprar produtos simples e assinaturas com trial no mesmo pedido!', VINDI);
-            $this->order->update_status('failed', $message);
-            wc_add_notice($message, 'error');
-
-            throw new Exception($message);
-            return false;
-        }
-
+        $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
         
@@ -276,18 +268,30 @@ class VindiPaymentProcessor
         $subscription_products = [];
         $subscriptions_ids = [];
         $wc_subscriptions_ids = [];
+        $subscriptions_grouped_by_period = array();
 
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
-
+            
             if ($this->is_subscription_type($product)) {
+                $product_id = $product->id;
+
+                if ($this->is_variable($product)) {
+                    $product_id = $order_item['variation_id'];
+                }
+
+                $period = get_post_meta($product_id, '_subscription_period', true);
+                $interval = get_post_meta($product_id, '_subscription_period_interval', true);
+                $subscriptions_grouped_by_period[$period . $interval][] = $order_item;
                 array_push($subscription_products, $order_item);
-            } else {
-                array_push($bill_products, $order_item);
+                continue;
             }
+            array_push($bill_products, $order_item);
         }
+
+        $this->check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period);
         
-        foreach($subscription_products as $key => $subscription_order_item) {
+        foreach ($subscription_products as $subscription_order_item) {
             if(empty($subscription_order_item))
                 continue;
 
@@ -312,7 +316,6 @@ class VindiPaymentProcessor
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
                 continue;
-
             } catch (Exception $err) {
                 $message = $err->getMessage();
                 $this->cancel_subscriptions_and_order($wc_subscriptions_ids, $subscriptions_ids, $message);
@@ -322,10 +325,8 @@ class VindiPaymentProcessor
         if (!empty($bill_products)) {
             try {
                 $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
-
                 $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
                 $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
-
                 $bills[] = $single_payment_bill;
 
                 if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
@@ -342,17 +343,35 @@ class VindiPaymentProcessor
                 $this->logger->log(sprintf('Deu erro na criação da conta %s', $single_payment_bill));
                 $this->abort(__('Não foi possível criar o pedido.', VINDI), true);
             }
-
         }
 
         update_post_meta($this->order->id, 'vindi_order', $order_post_meta);
-
         WC()->session->__unset('current_payment_profile');
         WC()->session->__unset('current_customer');
-
         remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
 
         return $this->finish_payment($bills);
+    }
+
+    private function check_trial_and_single_product()
+    {
+        if ($this->order_has_trial_and_simple_product()) {
+            $message = __('Não é possível comprar produtos simples e assinaturas com trial no mesmo pedido!', VINDI);
+            $this->order->update_status('failed', $message);
+            wc_add_notice($message, 'error');
+
+            throw new Exception($message);
+        }
+    }
+
+    private function check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period)
+    {
+        foreach ($subscriptions_grouped_by_period as $subscription_group) {
+            if (count($subscription_group) > 1) {
+                $msg = 'Não é permitido criar um único pedido com múltiplas assinaturas de mesma periodicidade';
+                $this->abort(__($msg, VINDI), true);
+            }
+        }
     }
 
     /**
@@ -509,27 +528,32 @@ class VindiPaymentProcessor
     {
         if ('bill' === $order_type) {
             foreach ($order_items as $key => $order_item) {
-                $product = $this->get_product($order_item);
+                $product = $order_item->get_product();
                 $order_items[$key]['type'] = 'product';
                 $order_items[$key]['vindi_id'] = $this->routes->findProductByCode('WC-' . $product->id)['id'];
                 $order_items[$key]['price'] = (float) $order_items[$key]['subtotal'] / $order_items[$key]['qty'];
 
             }
             return $order_items;
-        } else {
-            $product = $this->get_product($order_items);
-            $order_items['type'] = 'product';
-            $get_vindi = $this->get_vindi_code($product->id);
-            $order_items['vindi_id'] = $get_vindi ? $get_vindi : $product->vindi_id;
-            if ($this->subscription_has_trial($product)) {
-                $matching_item = $this->get_trial_matching_subscription_item($order_items);
-                $order_items['price'] = (float) $matching_item['subtotal'] / $matching_item['qty'];
-            } else {
-                $order_items['price'] = (float) $order_items['subtotal'] / $order_items['qty'];
-            }
-            return $order_items;
         }
 
+        $product = $order_items->get_product();
+        $order_items['type'] = 'product';
+        $product_id = $product->id;
+
+        if ($this->is_variable($product)) {
+            $product_id = $order_items['variation_id'];
+        }
+
+        $get_vindi = $this->get_vindi_code($product_id);
+        $order_items['vindi_id'] = $get_vindi ? $get_vindi : $product->vindi_id;
+        if ($this->subscription_has_trial($product)) {
+            $matching_item = $this->get_trial_matching_subscription_item($order_items);
+            $order_items['price'] = (float) $matching_item['subtotal'] / $matching_item['qty'];
+        } else {
+            $order_items['price'] = (float) $order_items['subtotal'] / $order_items['qty'];
+        }
+        return $order_items;
     }
 
     /**
@@ -941,9 +965,9 @@ class VindiPaymentProcessor
         $data['installments'] = $this->installments();
         $data['product_items'] = array();
 
-        $type = $order_item->get_product()->get_type();
+        $product = $order_item->get_product();
 
-        if ($type == 'subscription') {
+        if ($this->is_subscription_type($product) || $this->is_variable($product)) {
             $vindi_plan = $this->get_plan_from_order_item($order_item);
             $data['plan_id'] = $vindi_plan;
             $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
