@@ -1,4 +1,4 @@
-=== Vindi WooCommerce 2 (BETA) ===
+=== Vindi WooCommerce 2 ===
 Contributors: laertejr, rodasistemas, cleberbonifacio
 Plugin Name: Vindi WooCommerce 2 (BETA)
 Plugin URI: https://github.com/vindi/vindi-woocommerce
@@ -11,7 +11,7 @@ Tested up to: 5.6
 WC requires at least: 3.0.0
 WC tested up to: 4.9.0
 Requires PHP: 5.6
-Stable Tag: 1.1.1
+Stable Tag: 1.1.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.1.2 - 15/03/2021 =
+- Lançamento da versão de patch.
+- **Correção**: Foi corrigido o comportamento na compra de assinaturas variantes do mesmo produto (ex.: tamanho P e G), cujos planos/periodicidades são diferentes (ex.: mensal e anual). Essas assinaturas serão criadas separadamente na Plataforma Vindi.
+
+
 = 1.1.1 - 01/02/2021 =
 - Lançamento da versão de patch.
 - **Adição**: Foi inserida a opção para selecionar a quantidade de parcelas nas assinaturas conforme o cadastro do plano;
@@ -96,7 +101,7 @@ Os valores referentes a fretes serão enviados especificamente por assinaturas;
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
-= 1.1.1 - 01/02/2021 =
+= 1.1.2 - 15/03/2021 =
 Patch de correções para o plugin Vindi
 
 == License ==
