@@ -57,6 +57,15 @@ class VindiDependencies
         );
     }
 
+    public static function is_wc_memberships_active()
+    {
+        $wc_memberships = 'woocommerce-memberships/woocommerce-memberships.php';
+        if (is_plugin_active($wc_memberships)) {
+            return true;
+        }
+        return false;
+    }
+
     /**
     * Check required critical dependencies
     *
