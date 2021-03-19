@@ -11,7 +11,7 @@ Tested up to: 5.6
 WC requires at least: 3.0.0
 WC tested up to: 4.9.0
 Requires PHP: 5.6
-Stable Tag: 1.1.2
+Stable Tag: 1.1.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.1.3 - 18/03/2021 =
+- Lançamento da versão de patch.
+- **Correção**: Foi corrigido um comportamento que impedia a atualização correta de status de assinaturas caso o plugin WooCommerce Memberships estivesse ativo
+
+
 = 1.1.2 - 15/03/2021 =
 - Lançamento da versão de patch.
 - **Correção**: Foi corrigido o comportamento na compra de assinaturas variantes do mesmo produto (ex.: tamanho P e G), cujos planos/periodicidades são diferentes (ex.: mensal e anual). Essas assinaturas serão criadas separadamente na Plataforma Vindi.
