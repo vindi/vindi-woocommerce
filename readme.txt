@@ -39,9 +39,9 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
-= 1.1.3 - 18/03/2021 =
+= 1.1.3 - 19/03/2021 =
 - Lançamento da versão de patch.
-- **Correção**: Foi corrigido um comportamento que impedia a atualização correta de status de assinaturas caso o plugin WooCommerce Memberships estivesse ativo
+- **Correção**: Foi corrigido o comportamento de atualização de status das assinaturas caso o plugin WooCommerce Memberships esteja ativo.
 
 
 = 1.1.2 - 15/03/2021 =
@@ -106,7 +106,7 @@ Os valores referentes a fretes serão enviados especificamente por assinaturas;
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
-= 1.1.2 - 15/03/2021 =
+= 1.1.3 - 19/03/2021 =
 Patch de correções para o plugin Vindi
 
 == License ==
