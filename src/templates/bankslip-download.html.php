@@ -2,7 +2,7 @@
 function bank_slip_quantity_to_render($order)
 {
     if (is_null($order[0])) {
-      return $order;		
+      return $order;
     }
 
     return $order[0];
@@ -23,7 +23,7 @@ function bank_slip_quantity_to_render($order)
 			</div>
 		</div>
 		<div class="bankslips">
-			<?php foreach (bank_slip_quantity_to_render($vindi_order) as $subscription): ?>
+    <?php foreach (bank_slip_quantity_to_render($vindi_order) as $subscription) : ?>
 				<?php if (is_array($subscription) && array_key_exists('product', $subscription) && !in_array($subscription['bill']['status'], array('paid', 'canceled'))): ?>
 						<div class="bankslip">
 							<span class="product_title">
