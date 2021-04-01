@@ -1,14 +1,14 @@
+<?php if (!defined('ABSPATH')) exit; ?>
 <?php
 function bank_slip_quantity_to_render($order)
 {
     if (is_null($order[0])) {
-      return $order;
+        return $order;
     }
 
     return $order[0];
 }
 ?>
-<?php if (!defined('ABSPATH')) exit; ?>
 <?php if (isset($vindi_order)): ?>
 	<div class="vindi_bankslip_listing">
 		<div class="info_message">
@@ -47,7 +47,7 @@ function bank_slip_quantity_to_render($order)
 						<?php endif; ?>
 					<?php endforeach; ?>
 				<?php endif; ?>
-			<?php endforeach; ?>
+    <?php endforeach; ?>
 		</div>
 	</div>
 <?php endif; ?>
