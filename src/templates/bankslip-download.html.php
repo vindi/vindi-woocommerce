@@ -47,7 +47,7 @@ function bank_slip_quantity_to_render($order)
 						<?php endif; ?>
 					<?php endforeach; ?>
 				<?php endif; ?>
-     <?php endforeach; ?>
+    <?php endforeach; ?>
 		</div>
 	</div>
 <?php endif; ?>
