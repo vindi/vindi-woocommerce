@@ -11,7 +11,7 @@ Tested up to: 5.6
 WC requires at least: 3.0.0
 WC tested up to: 4.9.0
 Requires PHP: 5.6
-Stable Tag: 1.1.3
+Stable Tag: 1.1.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.1.4 - 01/04/2021 =
+- Lançamento da versão de patch.
+- **Correção**: Foi corrigido o comportamento que não exibia o link para download do boleto bancário no checkout.
+
+
 = 1.1.3 - 19/03/2021 =
 - Lançamento da versão de patch.
 - **Correção**: Foi corrigido o comportamento de atualização de status das assinaturas caso o plugin WooCommerce Memberships esteja ativo.
@@ -106,7 +111,7 @@ Os valores referentes a fretes serão enviados especificamente por assinaturas;
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
-= 1.1.3 - 19/03/2021 =
+= 1.1.4 - 01/04/2021 =
 Patch de correções para o plugin Vindi
 
 == License ==
