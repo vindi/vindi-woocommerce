@@ -94,14 +94,14 @@ class VindiBankSlipGateway extends VindiPaymentGateway
     );
   }
 
-  public function bank_slip_quantity_to_render($order)
-  {
+    public function bank_slip_quantity_to_render($order)
+    {
         if (is_null($order[0])) {
             return $order;
         }
 
         return $order[0];
-  }
+    }
 
   public function payment_fields()
   {
@@ -131,7 +131,9 @@ class VindiBankSlipGateway extends VindiPaymentGateway
       if ($order->get_payment_method() == 'vindi-bank-slip') {
             $vindi_order = get_post_meta($order_id, 'vindi_order', true);
             $order_to_iterate = $this->bank_slip_quantity_to_render($vindi_order);
-            $this->vindi_settings->get_template('bankslip-download.html.php', compact('vindi_order', 'order_to_iterate'));
+            $this->vindi_settings->get_template(
+                'bankslip-download.html.php', compact('vindi_order', 'order_to_iterate')
+            );
       }
   }
 
