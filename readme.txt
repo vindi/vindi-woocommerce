@@ -39,7 +39,7 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
-= 1.1.4 - 01/04/2021 =
+= 1.1.4 - 05/04/2021 =
 - Lançamento da versão de patch.
 - **Correção**: Foi corrigido o comportamento que impossibilitava a visualização de boletos no checkout na adesão de uma ou mais assinaturas.
 
