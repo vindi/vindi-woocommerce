@@ -13,7 +13,7 @@
 			</div>
 		</div>
 		<div class="bankslips">
-			<?php foreach ($vindi_order[0] as $subscription): ?>
+    <?php foreach ($order_to_iterate as $subscription) : ?>
 				<?php if (is_array($subscription) && array_key_exists('product', $subscription) && !in_array($subscription['bill']['status'], array('paid', 'canceled'))): ?>
 						<div class="bankslip">
 							<span class="product_title">
@@ -37,7 +37,7 @@
 						<?php endif; ?>
 					<?php endforeach; ?>
 				<?php endif; ?>
-			<?php endforeach; ?>
+    <?php endforeach; ?>
 		</div>
 	</div>
 <?php endif; ?>

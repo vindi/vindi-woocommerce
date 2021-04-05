@@ -94,6 +94,18 @@ class VindiBankSlipGateway extends VindiPaymentGateway
     );
   }
 
+    # Essa função é responsável por verificar a compra que está sendo feita
+    # No caso de uma assinatura única, o $order[0] não existirá e retornará ela mesmo
+    # Issue: https://github.com/vindi/vindi-woocommerce/issues/75
+    public function bank_slip_quantity_to_render($order)
+    {
+        if (is_null($order[0])) {
+            return $order;
+        }
+
+        return $order[0];
+    }
+
   public function payment_fields()
   {
     $user_country = $this->get_country_code();
@@ -118,11 +130,15 @@ class VindiBankSlipGateway extends VindiPaymentGateway
 
   public function thank_you_page($order_id)
   {
-    $order = wc_get_order($order_id);
-    if ($order->get_payment_method() == 'vindi-bank-slip') {
-      $vindi_order = get_post_meta($order_id, 'vindi_order', true);
-      $this->vindi_settings->get_template('bankslip-download.html.php', compact('vindi_order'));
-    }
+      $order = wc_get_order($order_id);
+      if ($order->get_payment_method() == 'vindi-bank-slip') {
+            $vindi_order = get_post_meta($order_id, 'vindi_order', true);
+            $order_to_iterate = $this->bank_slip_quantity_to_render($vindi_order);
+            $this->vindi_settings->get_template(
+                'bankslip-download.html.php',
+                compact('vindi_order', 'order_to_iterate')
+            );
+      }
   }
 
   public function show_bank_slip_download($order_id) {
