@@ -1,5 +1,4 @@
-<?php if (!defined('ABSPATH')) exit; ?>
-<?php
+<?php if (!defined('ABSPATH')) exit;
 function bank_slip_quantity_to_render($order)
 {
     if (is_null($order[0])) {
