@@ -111,7 +111,7 @@ Os valores referentes a fretes serão enviados especificamente por assinaturas;
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
-= 1.1.4 - 01/04/2021 =
+= 1.1.4 - 05/04/2021 =
 Patch de correções para o plugin Vindi
 
 == License ==
