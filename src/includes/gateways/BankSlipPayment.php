@@ -94,11 +94,9 @@ class VindiBankSlipGateway extends VindiPaymentGateway
     );
   }
 
-    # Essa função é responsável
-    # por verificar se a compra que está sendo feita
-    # se trata de apenas uma subscription ou mais
-    # se for uma subscription, o $order[0] não existirá
-    # issue: https://github.com/vindi/vindi-woocommerce/issues/75
+    # Essa função é responsável por verificar a compra que está sendo feita
+    # No caso de uma assinatura única, o $order[0] não existirá e retornará ela mesmo
+    # Issue: https://github.com/vindi/vindi-woocommerce/issues/75
     public function bank_slip_quantity_to_render($order)
     {
         if (is_null($order[0])) {
