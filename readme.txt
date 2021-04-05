@@ -41,7 +41,7 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 == Changelog ==
 = 1.1.4 - 01/04/2021 =
 - Lançamento da versão de patch.
-- **Correção**: Foi corrigido o comportamento que não exibia o link para download do boleto bancário no checkout.
+- **Correção**: Foi corrigido o comportamento que impossibilitava a visualização de boletos no checkout na adesão de uma ou mais assinaturas.
 
 
 = 1.1.3 - 19/03/2021 =
