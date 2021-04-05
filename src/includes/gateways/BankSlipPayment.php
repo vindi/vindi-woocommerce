@@ -96,9 +96,9 @@ class VindiBankSlipGateway extends VindiPaymentGateway
 
   public function bank_slip_quantity_to_render($order)
   {
-      if (is_null($order[0])) {
+        if (is_null($order[0])) {
             return $order;
-      }
+        }
 
         return $order[0];
   }
