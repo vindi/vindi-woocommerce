@@ -178,7 +178,7 @@ jQuery(document).ready(function($) {
           ccicon.innerHTML = jcb;
           ccsingle.innerHTML = jcb_single;
           payment_company_input.value = card_type;
-          swapColor('red');
+          swapColor('lime');
           break;
         default:
           ccicon.innerHTML = '';
