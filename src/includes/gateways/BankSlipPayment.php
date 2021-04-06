@@ -145,8 +145,9 @@ class VindiBankSlipGateway extends VindiPaymentGateway
     $order = wc_get_order($order_id);
     if ($order->get_payment_method() == 'vindi-bank-slip') {
       $vindi_order = get_post_meta($order_id, 'vindi_order', true);
+      $order_to_iterate = $this->bank_slip_quantity_to_render($vindi_order);
       if(!$order->is_paid() && !$order->has_status('cancelled')) {
-        $this->vindi_settings->get_template('bankslip-download.html.php', compact('vindi_order'));
+        $this->vindi_settings->get_template('bankslip-download.html.php', compact('vindi_order', 'order_to_iterate'));
       }
     }
   }
