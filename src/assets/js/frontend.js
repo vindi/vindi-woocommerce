@@ -136,31 +136,31 @@ jQuery(document).ready(function($) {
           ccicon.innerHTML = amex;
           ccsingle.innerHTML = amex_single;
           payment_company_input.value = card_type;
-          swapColor('green');
+          swapColor('greendark');
           break;
         case 'visa':
           ccicon.innerHTML = visa;
           ccsingle.innerHTML = visa_single;
           payment_company_input.value = card_type;
-          swapColor('red');
+          swapColor('bluedark');
           break;
         case 'mastercard':
           ccicon.innerHTML = mastercard;
           ccsingle.innerHTML = mastercard_single;
           payment_company_input.value = card_type;
-          swapColor('blue');
+          swapColor('purpledark');
           break;
         case 'diners_club':
           ccicon.innerHTML = diners;
           ccsingle.innerHTML = diners_single;
           payment_company_input.value = card_type;
-          swapColor('orange');
+          swapColor('blue');
           break;
         case 'discover':
           ccicon.innerHTML = discover;
           ccsingle.innerHTML = discover_single;
           payment_company_input.value = card_type;
-          swapColor('purple');
+          swapColor('grey');
           break;
         case 'elo':
           ccicon.innerHTML = elo;
@@ -172,13 +172,13 @@ jQuery(document).ready(function($) {
           ccicon.innerHTML = hipercard;
           ccsingle.innerHTML = hipercard_single;
           payment_company_input.value = card_type;
-          swapColor('cyan');
+          swapColor('reddark');
           break;
         case 'jcb':
           ccicon.innerHTML = jcb;
           ccsingle.innerHTML = jcb_single;
           payment_company_input.value = card_type;
-          swapColor('lime');
+          swapColor('orangedark');
           break;
         default:
           ccicon.innerHTML = '';
