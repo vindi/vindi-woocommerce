@@ -132,36 +132,6 @@ jQuery(document).ready(function($) {
       let card_type = cardnumber_mask.masked.currentMask.cardtype;
       
       switch (card_type) {
-        case 'american_express':
-          ccicon.innerHTML = amex;
-          ccsingle.innerHTML = amex_single;
-          payment_company_input.value = card_type;
-          swapColor('greendark');
-          break;
-        case 'visa':
-          ccicon.innerHTML = visa;
-          ccsingle.innerHTML = visa_single;
-          payment_company_input.value = card_type;
-          swapColor('bluedark');
-          break;
-        case 'mastercard':
-          ccicon.innerHTML = mastercard;
-          ccsingle.innerHTML = mastercard_single;
-          payment_company_input.value = card_type;
-          swapColor('purpledark');
-          break;
-        case 'diners_club':
-          ccicon.innerHTML = diners;
-          ccsingle.innerHTML = diners_single;
-          payment_company_input.value = card_type;
-          swapColor('blue');
-          break;
-        case 'discover':
-          ccicon.innerHTML = discover;
-          ccsingle.innerHTML = discover_single;
-          payment_company_input.value = card_type;
-          swapColor('grey');
-          break;
         case 'elo':
           ccicon.innerHTML = elo;
           ccsingle.innerHTML = elo_single;
@@ -173,6 +143,36 @@ jQuery(document).ready(function($) {
           ccsingle.innerHTML = hipercard_single;
           payment_company_input.value = card_type;
           swapColor('reddark');
+          break;
+        case 'diners_club':
+          ccicon.innerHTML = diners;
+          ccsingle.innerHTML = diners_single;
+          payment_company_input.value = card_type;
+          swapColor('blue');
+          break;
+        case 'american_express':
+          ccicon.innerHTML = amex;
+          ccsingle.innerHTML = amex_single;
+          payment_company_input.value = card_type;
+          swapColor('greendark');
+          break;
+        case 'mastercard':
+          ccicon.innerHTML = mastercard;
+          ccsingle.innerHTML = mastercard_single;
+          payment_company_input.value = card_type;
+          swapColor('purpledark');
+          break;
+        case 'visa':
+          ccicon.innerHTML = visa;
+          ccsingle.innerHTML = visa_single;
+          payment_company_input.value = card_type;
+          swapColor('bluedark');
+          break;
+        case 'discover':
+          ccicon.innerHTML = discover;
+          ccsingle.innerHTML = discover_single;
+          payment_company_input.value = card_type;
+          swapColor('grey');
           break;
         case 'jcb':
           ccicon.innerHTML = jcb;
