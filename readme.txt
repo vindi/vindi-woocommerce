@@ -7,9 +7,9 @@ Tags: vindi, subscriptions, pagamento-recorrente, cobranca-recorrente, cobrança
 Author URI: https://vindi.com.br/ | https://mentores.com.br
 Author: Vindi | Mentores Digital
 Requires at least: 4.4
-Tested up to: 5.6
+Tested up to: 5.7
 WC requires at least: 3.0.0
-WC tested up to: 4.9.0
+WC tested up to: 5.1.0
 Requires PHP: 5.6
 Stable Tag: 1.1.5
 License: GPLv3
