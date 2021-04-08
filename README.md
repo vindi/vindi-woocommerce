@@ -2,7 +2,7 @@
 
 Gateway de pagamentos recorrentes para Wordpress | Woocommerce.
 
-![Banner](./docs/banner.png)
+![Banner](./assets/banner.png)
 
 [![Licença do Software][badge-license]](LICENSE)
 [![Última Versão no WordPress][badge-version]][link-version]
