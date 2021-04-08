@@ -53,7 +53,7 @@ Lista de bandeiras aceitas:
 - Diners Club
 - JCB
 
-**Importante**: Caso não tenha alguma dessas bandeiras habilitadas na plataforma Vindi e haja uma tentativa de compra, não será possível criar o cartão de crédito, gerando um erro em tela.
+**Importante**: Caso alguma dessas bandeiras não esteja habilitada na plataforma Vindi e haja uma tentativa de compra, não será possível criar o perfil de pagamento, impossibilitando a conclusão da compra.
 
 
 = 1.1.4 - 05/04/2021 =
