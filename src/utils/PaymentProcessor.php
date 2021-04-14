@@ -657,7 +657,6 @@ class VindiPaymentProcessor
             $wc_subscription->get_total_shipping() : $this->order->get_total_shipping();
 
             $product = $order_item->get_product();
-
             if ($product->needs_shipping()) {
                 $item = $this->routes->findOrCreateProduct(
                     sprintf("Frete (%s)", $shipping_method),
