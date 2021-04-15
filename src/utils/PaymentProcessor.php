@@ -673,12 +673,10 @@ class VindiPaymentProcessor
     
     private function create_shipping_product($shipping_method)
     {
-        $product = $this->routes->findOrCreateProduct(
+        return $this->routes->findOrCreateProduct(
             sprintf("Frete (%s)", $shipping_method),
             sanitize_title($shipping_method)
         );
-        
-        return $product;
     }
 
     /**
