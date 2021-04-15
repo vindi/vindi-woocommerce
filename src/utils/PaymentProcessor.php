@@ -643,6 +643,7 @@ class VindiPaymentProcessor
     {
         $shipping_item = [];
         $shipping_method = $this->order->get_shipping_method();
+        $get_total_shipping = $this->order->get_total_shipping();
 
         if (empty($shipping_method)) {
             return $shipping_item;
@@ -652,20 +653,30 @@ class VindiPaymentProcessor
             $wc_subscription = VindiHelpers::get_matching_subscription($this->order, $order_item);
             $product = $order_item->get_product();
 
+            if ($this->is_subscription_type($product)) {
+                $shipping_method = $wc_subscription->get_shipping_method();
+                $get_total_shipping = $wc_subscription->get_total_shipping();
+            }
+
             if ($product->needs_shipping()) {
-                $item = $this->routes->findOrCreateProduct(
-                    sprintf("Frete (%s)", $wc_subscription->get_shipping_method()),
-                    sanitize_title($wc_subscription->get_shipping_method())
-                );
+                $item = $this->create_shipping_product($shipping_method);
                 $shipping_item = array(
                     'type' => 'shipping',
                     'vindi_id' => $item['id'],
-                    'price' => $wc_subscription->get_total_shipping(),
+                    'price' => $get_total_shipping,
                     'qty' => 1,
                 );
             }
         }
         return $shipping_item;
+    }
+    
+    private function create_shipping_product($shipping_method)
+    {
+        $this->routes->findOrCreateProduct(
+            sprintf("Frete (%s)", $shipping_method),
+            sanitize_title($shipping_method)
+        );
     }
 
     /**
