@@ -643,6 +643,7 @@ class VindiPaymentProcessor
     {
         $shipping_item = [];
         $shipping_method = $this->order->get_shipping_method();
+        $get_total_shipping = $this->order->get_total_shipping();
 
         if (empty($shipping_method)) {
             return $shipping_item;
@@ -655,8 +656,6 @@ class VindiPaymentProcessor
             if ($this->is_subscription_type($product)) {
                 $shipping_method = $wc_subscription->get_shipping_method();
                 $get_total_shipping = $wc_subscription->get_total_shipping();
-            } else {
-                $get_total_shipping = $this->order->get_total_shipping();
             }
 
             if ($product->needs_shipping()) {
