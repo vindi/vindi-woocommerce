@@ -652,14 +652,15 @@ class VindiPaymentProcessor
             $wc_subscription = VindiHelpers::get_matching_subscription($this->order, $order_item);
             $product = $order_item->get_product();
 
-            $shipping_method = $this->is_subscription_type($product) ?
-            $wc_subscription->get_shipping_method() : $shipping_method;
-
-            $get_total_shipping = $this->is_subscription_type($product) ?
-            $wc_subscription->get_total_shipping() : $this->order->get_total_shipping();
+            if ($this->is_subscription_type($product)) {
+                $shipping_method = $wc_subscription->get_shipping_method();
+                $get_total_shipping = $wc_subscription->get_total_shipping();
+            } else {
+                $get_total_shipping = $this->order->get_total_shipping();
+            }
 
             if ($product->needs_shipping()) {
-                $item = create_shipping_product($shipping_method);
+                $item = $this->create_shipping_product($shipping_method);
                 $shipping_item = array(
                     'type' => 'shipping',
                     'vindi_id' => $item['id'],
