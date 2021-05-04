@@ -902,16 +902,15 @@ class VindiPaymentProcessor
             return $cycle_count;
         };
         
-        if ($coupon->get_discount_type() != 'recurring_percent') {
-            $cycle_count = get_post_meta($coupon->id, 'cycle_count', true);
-        }
-        else {
+        $cycle_count = get_post_meta($coupon->id, 'cycle_count', true);
+
+        if ($coupon->get_discount_type() == 'recurring_percent') {
             $cycle_count = WC_Subscriptions_Coupon::get_coupon_limit($coupon->id);
         }
-        
+
         switch ($cycle_count) {
             case '0':
-                return null;    
+                return null;
             default:
                 return $get_plan_length($cycle_count, $plan_cycles);
         }
