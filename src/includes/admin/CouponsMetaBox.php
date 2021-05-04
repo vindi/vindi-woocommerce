@@ -13,7 +13,7 @@ class CouponsMetaBox {
      * Output the metabox.
      *
      * @param int $coupon_id
-	 * @param WC_Coupon $coupon
+     * @param WC_Coupon $coupon
      */
     public static function output($coupon_id, $coupon)
     {
