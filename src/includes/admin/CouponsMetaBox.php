@@ -53,7 +53,7 @@ class CouponsMetaBox {
     public static function save($post_id, $post)
     {
         // Check the nonce (again).
-        if (empty( VindiHelpers::sanitize_xss($post['woocommerce_meta_nonce'])) || 
+        if (empty(VindiHelpers::sanitize_xss($post['woocommerce_meta_nonce'])) ||
             !wp_verify_nonce(VindiHelpers::sanitize_xss($post['woocommerce_meta_nonce']), 'woocommerce_save_data')) {
             return;
         }
