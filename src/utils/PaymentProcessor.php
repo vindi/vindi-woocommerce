@@ -870,7 +870,7 @@ class VindiPaymentProcessor
         } elseif (strpos($discount_type, 'fixed') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = $amount;
-        } elseif (strpos($discount_type, 'percent') !== false || 
+        } elseif (strpos($discount_type, 'percent') !== false ||
                   strpos($discount_type, 'recurring_percent') !== false) {
             $discount_item['discount_type'] = 'percentage';
             $discount_item['percentage'] = $amount;
@@ -902,14 +902,16 @@ class VindiPaymentProcessor
             return $cycle_count;
         };
         
-        if ($coupon->get_discount_type() != 'recurring_percent')
+        if ($coupon->get_discount_type() != 'recurring_percent') {
             $cycle_count = get_post_meta($coupon->id, 'cycle_count', true);
-        else
+        }
+        else {
             $cycle_count = WC_Subscriptions_Coupon::get_coupon_limit($coupon->id);
-
+        }
+        
         switch ($cycle_count) {
             case '0':
-                return null;
+                return null;    
             default:
                 return $get_plan_length($cycle_count, $plan_cycles);
         }
