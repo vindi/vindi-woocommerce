@@ -16,28 +16,32 @@ class CouponsMetaBox {
 	 */
   public static function output( $coupon_id, $coupon )
   {
-		woocommerce_wp_select(
-			array(
-				'id'      => 'cycle_count',
-				'label'   => __( 'Número de ciclos do cupom', VINDI ),
-				'value'   => get_post_meta($coupon->get_id(), 'cycle_count')[0],
-				'options' => array(
-					'0'  => 'Todos os ciclos',
-					'1'  => '1 ciclo',
-					'2'  => '2 ciclos',
-					'3'  => '3 ciclos',
-					'4'  => '4 ciclos',
-					'5'  => '5 ciclos',
-					'6'  => '6 ciclos',
-					'7'  => '7 ciclos',
-					'8'  => '8 ciclos',
-					'9'  => '9 ciclos',
-					'10' => '10 ciclos',
-					'11' => '11 ciclos',
-					'12' => '12 ciclos',
-				),
-			)
+		$arr = array(
+			'id'      => 'cycle_count',
+			'label'   => __( 'Número de ciclos do cupom', VINDI ),
+			'value'   => get_post_meta($coupon->get_id(), 'cycle_count')[0],
+			'options' => array(
+				'0'  => 'Todos os ciclos',
+				'1'  => '1 ciclo',
+				'2'  => '2 ciclos',
+				'3'  => '3 ciclos',
+				'4'  => '4 ciclos',
+				'5'  => '5 ciclos',
+				'6'  => '6 ciclos',
+				'7'  => '7 ciclos',
+				'8'  => '8 ciclos',
+				'9'  => '9 ciclos',
+				'10' => '10 ciclos',
+				'11' => '11 ciclos',
+				'12' => '12 ciclos',
+			),
 		);
+
+		if ($coupon->get_discount_type() == 'recurring_percent') {
+			array_push($arr, 'class', 'hidden');
+		}
+
+		woocommerce_wp_select($arr);
   }
 
   /**
@@ -71,8 +75,7 @@ class CouponsMetaBox {
 			array(
 				'sign_up_fee'         => __( 'Sign Up Fee Discount', 'woocommerce-subscriptions' ),
 				'sign_up_fee_percent' => __( 'Sign Up Fee % Discount', 'woocommerce-subscriptions' ),
-				'recurring_fee'       => __( 'Recurring Product Discount', 'woocommerce-subscriptions' ),
-				'recurring_percent'   => __( 'Recurring Product % Discount', 'woocommerce-subscriptions' ),
+				'recurring_fee'       => __( 'Recurring Product Discount', 'woocommerce-subscriptions' )
 			)
 		);
   }
