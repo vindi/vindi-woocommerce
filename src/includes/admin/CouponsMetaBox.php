@@ -12,7 +12,8 @@ class CouponsMetaBox {
     /**
      * Output the metabox.
      *
-     * @param WP_Post $post
+     * @param int $coupon_id
+	 * @param WC_Coupon $coupon
      */
     public static function output($coupon_id, $coupon)
     {
@@ -53,12 +54,12 @@ class CouponsMetaBox {
     public static function save($post_id, $post)
     {
         // Check the nonce (again).
-        if (empty(VindiHelpers::sanitize_xss($post['woocommerce_meta_nonce'])) ||
-            !wp_verify_nonce(VindiHelpers::sanitize_xss($post['woocommerce_meta_nonce']), 'woocommerce_save_data')) {
+        if (empty(VindiHelpers::sanitize_xss($_POST['woocommerce_meta_nonce'])) ||
+            !wp_verify_nonce(VindiHelpers::sanitize_xss($_POST['woocommerce_meta_nonce']), 'woocommerce_save_data')) {
             return;
         }
         $coupon = new WC_Coupon($post_id);
-        $coupon->update_meta_data('cycle_count', intval(filter_var($post['cycle_count'], FILTER_SANITIZE_NUMBER_INT)));
+        $coupon->update_meta_data('cycle_count', intval(filter_var($_POST['cycle_count'], FILTER_SANITIZE_NUMBER_INT)));
         $coupon->save();
     }
 
@@ -66,8 +67,7 @@ class CouponsMetaBox {
      * Remove Woocommerce Subscriptions recurring discount options.
      * This is done to force the user to select a vindi cicle count discount
      *
-     * @param int     $post_id
-     * @param WP_Post $post
+     * @param array $discount_types
      */
     public static function remove_ws_recurring_discount($discount_types)
     {
