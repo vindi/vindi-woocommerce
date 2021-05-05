@@ -35,13 +35,16 @@ jQuery(document).ready(function($) {
     }
   });
 
-  $wcs_number_payments.on('change', function() {
-    var val = $(this).val();
-    var regex = new RegExp(/^(1|2|3|4|5|6|7|8|9|10|11|12)$/);
-    if (val != '' && !regex.test(val)) {
-      $(this).val('');
-    }
-  });
+  if ($wcs_number_payments)
+  {
+    $wcs_number_payments.on('change', function() {
+      var val = $(this).val();
+      var regex = new RegExp(/^(1|2|3|4|5|6|7|8|9|10|11|12)$/);
+      if (val != '' && !regex.test(val)) {
+        $(this).val('');
+      }
+    });
+  }
   
   /**
    * Subscription coupon actions.
@@ -67,16 +70,25 @@ jQuery(document).ready(function($) {
 
       switch (discount_type) {
         case 'recurring_percent':
-          $cycles_field.hide();
-          $cycles_input.val('0');
+          if ($cycles_field.is(':visible'))
+          {
+            $cycles_field.hide();
+            $cycles_input.val('0');
+          }
           break;
         case 'fixed_cart':
-          $cycles_field.hide();
-          $cycles_input.val('1');
+          if ($cycles_field.is(':visible'))
+          {
+            $cycles_field.hide();
+            $cycles_input.val('1');
+          }
           break;
         default:
-          $cycles_field.show();
-          $cycles_input.val('0');
+          if ($cycles_field.is(':hidden'))
+          {
+            $cycles_field.show();
+            $cycles_input.val('0');
+          }
           break;
       }
     },
