@@ -7,6 +7,8 @@ jQuery(document).ready(function($) {
     $cycles_field = $(cycles_field);
   var interest_rate_input = document.querySelector('#woocommerce_vindi-credit-card_interest_rate'),
     $interest_rate_input = $(interest_rate_input);
+  var wcs_number_payments = document.querySelector('#wcs_number_payments'),
+    $wcs_number_payments = $(wcs_number_payments);
   
   $interest_rate_input.mask('##0.00%', {
     reverse: true,
@@ -33,6 +35,17 @@ jQuery(document).ready(function($) {
     }
   });
 
+  if ($wcs_number_payments)
+  {
+    $wcs_number_payments.on('change', function() {
+      var val = $(this).val();
+      var regex = new RegExp(/^(1|2|3|4|5|6|7|8|9|10|11|12)$/);
+      if (val != '' && !regex.test(val)) {
+        $(this).val('');
+      }
+    });
+  }
+  
   /**
    * Subscription coupon actions.
    * @type {{init: function, type_options: function, move_field: function}}
@@ -56,13 +69,26 @@ jQuery(document).ready(function($) {
       var discount_type = $(this).val();
 
       switch (discount_type) {
+        case 'recurring_percent':
+          if ($cycles_field.is(':visible'))
+          {
+            $cycles_field.hide();
+            $cycles_input.val('0');
+          }
+          break;
         case 'fixed_cart':
-          $cycles_field.hide();
-          $cycles_input.val('1');
+          if ($cycles_field.is(':visible'))
+          {
+            $cycles_field.hide();
+            $cycles_input.val('1');
+          }
           break;
         default:
-          $cycles_field.show();
-          $cycles_input.val('0');
+          if ($cycles_field.is(':hidden'))
+          {
+            $cycles_field.show();
+            $cycles_input.val('0');
+          }
           break;
       }
     },

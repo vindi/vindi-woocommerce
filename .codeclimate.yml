@@ -4,6 +4,8 @@ engines:
   phpmd:
     enabled: true
     checks:
+      StaticAccess:
+        enabled: false
       UnusedPrivateMethod:
         enabled: false
       Controversial/CamelCaseMethodName:
