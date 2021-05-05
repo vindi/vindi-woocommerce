@@ -11,7 +11,7 @@ Tested up to: 5.7
 WC requires at least: 3.0.0
 WC tested up to: 5.1.0
 Requires PHP: 5.6
-Stable Tag: 1.1.6
+Stable Tag: 1.1.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.1.7 - 05/05/2021 =
+- Lançamento da versão de minor.
+- **Adição**: Foi adicionado o tipo de cupom de desconto Recurring Product % Discount (nativo do Woocommerce Subscriptions) integrado com a API da Vindi.
+
+
 = 1.1.6 - 16/04/2021 =
 - Lançamento da versão de patch.
 - **Correção**: Foi corrigido o comportamento que impedia que compras avulsas com frete pudessem ser realizadas.
@@ -133,8 +138,8 @@ Os valores referentes a fretes serão enviados especificamente por assinaturas;
 - **Melhoria**: Juros configuráveis em compras parceladas.
 
 == Upgrade Notice ==
-= 1.1.6 - 16/04/2021 =
-Patch de correções para o plugin Vindi
+= 1.1.7 - 05/05/2021 =
+Minor upgrade com nova funcionalidade para o plugin Vindi
 
 == License ==
 
