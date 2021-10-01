@@ -1,7 +1,7 @@
 jQuery(document).ready(function ($) {
   'use strict';
   const vindi_cc_input = function () {
-    if (!document.getElementById('vindi_cc_form-container')) return;
+    if (!document.querySelector('.vindi_cc_form-container')) return;
 
     const name = document.getElementById('vindi_cc_name');
     const cardnumber = document.getElementById('vindi_cc_cardnumber');
