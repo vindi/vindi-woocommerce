@@ -2,6 +2,6 @@
 # Para mais informações, ver https://help.github.com/articles/about-codeowners/
 
 *                                 @vindi/suporte-tecnico
-readme.txt                        @laerte-guimaraes @luizdalcicovindi
-vindi.php                         @laerte-guimaraes @luizdalcicovindi
-src/utils/DefinitionVariables.php @laerte-guimaraes @luizdalcicovindi
+readme.txt                        @laerte-guimaraes
+vindi.php                         @laerte-guimaraes
+src/utils/DefinitionVariables.php @laerte-guimaraes
