@@ -95,15 +95,20 @@ class VindiSubscriptionStatusHandler
     /**
      * @param WC_Subscription $wc_subscription
      */
+    public function get_wc_subscription_id($subscription_id)
+    {
+        $new_subscription_id = get_post_meta($subscription_id, 'vindi_subscription_id', true);
+        $old_subscription_id = get_post_meta($subscription_id, 'vindi_wc_subscription_id', true);
+
+        return !empty($new_subscription_id) ? $new_subscription_id : $old_subscription_id;
+    }
+
     public function get_vindi_subscription_id($wc_subscription)
     {
         $subscription_id = method_exists($wc_subscription, 'get_id')
         ? $wc_subscription->get_id()
         : $wc_subscription->id;
-        $new_subscription_id = get_post_meta($subscription_id, 'vindi_subscription_id', true);
-        $old_subscription_id = get_post_meta($subscription_id, 'vindi_wc_subscription_id', true);
-
-        return !empty($new_subscription_id) ? $new_subscription_id : $old_subscription_id;
+        return $this->get_wc_subscription_id($subscription_id); 
     }
 
     /**
