@@ -108,7 +108,7 @@ class VindiSubscriptionStatusHandler
         $subscription_id = method_exists($wc_subscription, 'get_id')
         ? $wc_subscription->get_id()
         : $wc_subscription->id;
-        return $this->get_wc_subscription_id($subscription_id); 
+        return $this->get_wc_subscription_id($subscription_id);
     }
 
     /**
