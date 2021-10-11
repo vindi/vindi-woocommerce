@@ -97,10 +97,8 @@ class VindiSubscriptionStatusHandler
      */
     public function get_wc_subscription_id($subscription_id)
     {
-        $new_subscription_id = get_post_meta($subscription_id, 'vindi_subscription_id', true);
-        $old_subscription_id = get_post_meta($subscription_id, 'vindi_wc_subscription_id', true);
-
-        return !empty($new_subscription_id) ? $new_subscription_id : $old_subscription_id;
+        return get_post_meta($subscription_id, 'vindi_subscription_id', true) ? :
+            get_post_meta($subscription_id, 'vindi_wc_subscription_id', true);
     }
 
     public function get_vindi_subscription_id($wc_subscription)
