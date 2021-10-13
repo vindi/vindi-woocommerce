@@ -39,7 +39,7 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
-=1.1.10 - 13/10/2021 =
+= 1.1.10 - 13/10/2021 =
 -Lançamento da versão path.
 - **Correção**: Foi corrigido um comportamento em que assinaturas do plugin antigo do WooCommerce não conseguiam ser canceladas pelo plugin novo.
 
