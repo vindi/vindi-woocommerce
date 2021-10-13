@@ -41,7 +41,8 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 == Changelog ==
 =1.1.10 - 13/10/2021 =
 -Lançamento da versão path.
-- **Correção**: Foi adicionado retrocompatibilidade de cancelamento no plugin
+- **Correção**: Foi corrigido um comportamento em que assinaturas do plugin antigo do WooCommerce não conseguiam ser canceladas pelo plugin novo.
+
 
 = 1.1.9 - 04/10/2021 =
 - Lançamento da versão de patch.
