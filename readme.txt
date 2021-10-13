@@ -11,7 +11,7 @@ Tested up to: 5.8.1
 WC requires at least: 3.0.0
 WC tested up to: 5.7.0
 Requires PHP: 5.6
-Stable Tag: 1.1.9
+Stable Tag: 1.1.10
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+=1.1.10 - 13/10/2021 =
+-Lançamento da versão path.
+- **Correção**: Foi corrigido um comportamento em que assinaturas do plugin antigo do WooCommerce não conseguiam ser canceladas pelo plugin novo.
+
+
 = 1.1.9 - 04/10/2021 =
 - Lançamento da versão de patch.
 - **Correção**: Foi corrigido o comportamento que permitia inserir qualquer tipo de dado no campo referente a numeração do cartão no checkout.
