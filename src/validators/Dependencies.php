@@ -163,7 +163,7 @@ class VindiDependencies
                     'url' => 'http://www.woothemes.com/products/woocommerce-subscriptions/',
                     'version' => [
                         'validation' => '>=',
-                        'number' => '2.2'
+                        'number' => '2.6.1'
                     ]
                 ]
             ]
