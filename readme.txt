@@ -41,7 +41,7 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 == Changelog ==
 = 1.1.11 - 07/12/2021 =
 -Lançamento da versão de patch.
-- **Correção**: Foi corrigida a versão da dependência necessária para funcionamento do plugin em conjunto ao WooCommerce Subscriptions.
+- **Correção**: Foi corrigida a versão da dependência WooCommerce Subscriptions, necessária para funcionamento do plugin.
 
 
 = 1.1.10 - 13/10/2021 =
