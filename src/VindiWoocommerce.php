@@ -50,6 +50,11 @@ class WC_Vindi_Payment extends AbstractInstance
    */
   private $subscription_status_handler;
 
+  /**
+   * @var VindiSubscriptionItemsHandler
+   */
+  private $subscription_items_handler;
+
   public function __construct()
   {
 
@@ -64,6 +69,7 @@ class WC_Vindi_Payment extends AbstractInstance
     $this->webhooks = new VindiWebhooks($this->settings);
     $this->frontend_files_loader = new FrontendFilesLoader();
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
+    $this->subscription_items_handler = new VindiSubscriptionItemsHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
     $this->interest_price_handler = new InterestPriceHandler();
 
@@ -105,6 +111,7 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
     require_once $this->getPath() . '/includes/gateways/BankSlipPayment.php';
     require_once $this->getPath() . '/utils/SubscriptionStatusHandler.php';
+    require_once $this->getPath() . '/utils/SubscriptionItemsHandler.php';
     require_once $this->getPath() . '/utils/InterestPriceHandler.php';
 
     require_once $this->getPath() . '/includes/admin/ProductStatus.php';
