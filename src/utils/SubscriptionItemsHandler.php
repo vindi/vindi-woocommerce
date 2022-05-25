@@ -104,10 +104,16 @@ class VindiSubscriptionItemsHandler
                     || $value['price'] != $vindi_subscription_product_items[$key]['price']) {
                     $this->update_product_item($vindi_subscription_product_items[$key]['product_item_id'], $value);
                 }
+
+                // removes already updated product items
+                unset($vindi_subscription_product_items[$key]);
             } else {
                 $this->insert_product_item($key, $value);
             }
         }
+
+        // removes underlying vindi product items
+        $this->remove_underlying_product_items($vindi_subscription_product_items);
 
     }
 
@@ -145,5 +151,17 @@ class VindiSubscriptionItemsHandler
         );
 
         $this->routes->createSubscriptionProductItem($data);
+    }
+
+    /**
+     * @param array $underlying_product_items
+     */
+    public function remove_underlying_product_items($underlying_product_items)
+    {
+        if (!empty($underlying_product_items)) {
+            foreach ($underlying_product_items as $product_item) {
+                $this->routes->deleteProductItem($product_item['product_item_id']);
+            }
+        }
     }
 }
