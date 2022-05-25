@@ -509,5 +509,21 @@ class VindiRoutes
 
         return true;
     }
+
+    public function updateSubscriptionProductItem($product_item_id, $data)
+    {
+        $response = $this->api->request(
+            sprintf('product_items/%s', filter_var($product_item_id, FILTER_SANITIZE_NUMBER_INT) ), 'PUT', $data
+        );
+
+        return $response;
+    }
+
+    public function createSubscriptionProductItem($data)
+    {
+        $response = $this->api->request('product_items', 'POST', $data);
+
+        return $response;
+    }
 }
 ?>
