@@ -17,16 +17,45 @@ class VindiSubscriptionItemsHandler
         $this->vindi_settings = $vindi_settings;
         $this->routes = $vindi_settings->routes;
 
-        add_action('woocommerce_saved_order_items', array(&$this, 'synchronize_order_items'), 10, 2);
+        add_action(
+            'woocommerce_saved_order_items', array(&$this, 'saved_order_items_hook_handler'),
+            10, 2
+        );
+        add_action(
+            'woocommerce_order_after_calculate_totals', array(&$this, 'after_calculate_totals_hook_handler'),
+            10, 2
+        );
     }
 
     /**
      * @param string $order_id
      * @param array $items
      */
-    public function synchronize_order_items($order_id, $items)
+    public function saved_order_items_hook_handler($order_id, $items)
     {
         $order = wc_get_order($order_id);
+
+        if (is_a($order, 'WC_Subscription')) {
+            $this->synchronize_order_items($order);
+        }
+    }
+
+    /**
+     * @param array $and_taxes
+     * @param WC_Subscription $order
+     */
+    public function after_calculate_totals_hook_handler($and_taxes, $order)
+    {
+        if (! is_admin() && is_a($order, 'WC_Subscription')) {
+            $this->synchronize_order_items($order);
+        }
+    }
+
+    /**
+     * @param WC_Subscription $order
+     */
+    public function synchronize_order_items($order)
+    {
         $this->vindi_subscription_id = $order->get_meta('vindi_subscription_id', true);
         if (!$this->vindi_subscription_id) {
             return;
