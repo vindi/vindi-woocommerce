@@ -8,18 +8,28 @@ engines:
         enabled: false
       UnusedPrivateMethod:
         enabled: false
+      UnusedFormalParameter:
+        enabled: false
+      Controversial/CamelCaseClassName:
+        enabled: false
       Controversial/CamelCaseMethodName:
         enabled: false
       Controversial/CamelCaseParameterName:
         enabled: false
       Controversial/CamelCaseVariableName:
         enabled: false
+      Controversial/CamelCasePropertyName:
+        enabled: false
       Naming/LongVariable:
+        enabled: false
+      CleanCode/MissingImport:
         enabled: false
   phpcodesniffer:
     enabled: true
     config:
       standard: "PSR1,PSR2"
     checks:
+      PSR1 Classes ClassDeclaration MissingNamespace:
+        enabled: false
       PSR1 Methods CamelCapsMethodName NotCamelCaps:
         enabled: false

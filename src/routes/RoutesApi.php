@@ -513,7 +513,12 @@ class VindiRoutes
     public function updateSubscriptionProductItem($product_item_id, $data)
     {
         $response = $this->api->request(
-            sprintf('product_items/%s', filter_var($product_item_id, FILTER_SANITIZE_NUMBER_INT) ), 'PUT', $data
+            sprintf(
+                'product_items/%s',
+                filter_var($product_item_id, FILTER_SANITIZE_NUMBER_INT)
+            ),
+            'PUT',
+            $data
         );
 
         return $response;
@@ -529,7 +534,11 @@ class VindiRoutes
     public function deleteProductItem($product_item_id)
     {
         $response = $this->api->request(
-            sprintf('product_items/%s', filter_var($product_item_id, FILTER_SANITIZE_NUMBER_INT)), 'DELETE'
+            sprintf(
+                'product_items/%s',
+                filter_var($product_item_id, FILTER_SANITIZE_NUMBER_INT)
+            ),
+            'DELETE'
         );
 
         return $response;

@@ -12,12 +12,16 @@ class VindiSubscriptionItemsHandler
         $this->routes = $vindi_settings->routes;
 
         add_action(
-            'woocommerce_saved_order_items', array(&$this, 'saved_order_items_hook_handler'),
-            10, 2
+            'woocommerce_saved_order_items',
+            array(&$this, 'saved_order_items_hook_handler'),
+            10,
+            2
         );
         add_action(
-            'woocommerce_order_after_calculate_totals', array(&$this, 'after_calculate_totals_hook_handler'),
-            10, 2
+            'woocommerce_order_after_calculate_totals',
+            array(&$this, 'after_calculate_totals_hook_handler'),
+            10,
+            2
         );
     }
 
@@ -61,7 +65,7 @@ class VindiSubscriptionItemsHandler
         || !array_key_exists('status', $vindi_subscription)
         || $vindi_subscription['status'] != 'active'
         ) {
-            return;            
+            return;
         }
 
         $vindi_subscription_product_items = $this->vindi_subscription_product_items($vindi_subscription);
@@ -130,14 +134,14 @@ class VindiSubscriptionItemsHandler
 
                 // removes already updated product items
                 unset($vindi_subscription_product_items[$key]);
-            } else {
-                $this->insert_product_item($key, $value);
+                continue;
             }
+
+            $this->insert_product_item($key, $value);
         }
 
         // removes underlying vindi product items
         $this->remove_underlying_product_items($vindi_subscription_product_items);
-
     }
 
     /**
