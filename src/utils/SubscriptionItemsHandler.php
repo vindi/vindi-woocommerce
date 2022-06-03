@@ -71,7 +71,7 @@ class VindiSubscriptionItemsHandler
         $vindi_subscription_product_items = $this->vindi_subscription_product_items($vindi_subscription);
         $wc_product_items = $this->wc_product_items($order);
         
-        $this->check_product_items($vindi_subscription_product_items, $wc_product_items);
+        $this->prepare_product_items($vindi_subscription_product_items, $wc_product_items);
     }
 
     /**
@@ -123,42 +123,44 @@ class VindiSubscriptionItemsHandler
      * @param array $vindi_subscription_product_items
      * @param array $wc_product_items
      */
-    public function check_product_items($vindi_subscription_product_items, $wc_product_items)
+    public function prepare_product_items($vindi_subscription_product_items, $wc_product_items)
     {
         foreach ($wc_product_items as $key => $value) {
-            if (array_key_exists($key, $vindi_subscription_product_items)) {
-                if ($value['quantity'] != $vindi_subscription_product_items[$key]['quantity']
-                    || $value['price'] != $vindi_subscription_product_items[$key]['price']) {
-                    $this->update_product_item($vindi_subscription_product_items[$key]['product_item_id'], $value);
-                }
-
-                // removes already updated product items
+            if (!array_key_exists($key, $vindi_subscription_product_items)) {
+                $this->insert_product_item($key, $value);
                 unset($vindi_subscription_product_items[$key]);
                 continue;
             }
 
-            $this->insert_product_item($key, $value);
+            $this->update_product_item($key, $value, $vindi_subscription_product_items);
+            unset($vindi_subscription_product_items[$key]);
         }
 
-        // removes underlying vindi product items
         $this->remove_underlying_product_items($vindi_subscription_product_items);
     }
 
     /**
-     * @param string $product_item_id
-     * @param array $params
+     * @param string $key
+     * @param array $value
+     * @param array $vindi_subscription_product_items
      */
-    public function update_product_item($product_item_id, $params)
+    public function update_product_item($key, $value, $vindi_subscription_product_items)
     {
-        $data = array(
-            'quantity' => $params['quantity'],
-            'pricing_schema' => array(
-                'price' => $params['price'],
-                'schema_type' => 'per_unit'
-            )
-        );
+        if ($value['quantity'] != $vindi_subscription_product_items[$key]['quantity']
+            || $value['price'] != $vindi_subscription_product_items[$key]['price']) {
+            $data = array(
+                'quantity' => $value['quantity'],
+                'pricing_schema' => array(
+                    'price' => $value['price'],
+                    'schema_type' => 'per_unit'
+                )
+            );
 
-        $this->routes->updateSubscriptionProductItem($product_item_id, $data);
+            $this->routes->updateSubscriptionProductItem(
+                $vindi_subscription_product_items[$key]['product_item_id'],
+                $data
+            );
+        }
     }
 
     /**
