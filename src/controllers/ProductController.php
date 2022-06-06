@@ -76,7 +76,6 @@ class ProductController
       'name' => VINDI_PREFIX_PRODUCT . $data['name'],
       'code' => 'WC-' . $data['id'],
       'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
-      'description' => $data['description'],
       'invoice' => 'always',
       'pricing_schema' => array(
         'price' => ($data['price']) ? $data['price'] : 0,
@@ -123,7 +122,6 @@ class ProductController
         'name' => VINDI_PREFIX_PRODUCT . $data['name'],
         'code' => 'WC-' . $data['id'],
         'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
-        'description' => $data['description'],
         'invoice' => 'always',
         'pricing_schema' => array(
           'price' => ($data['price']) ? $data['price'] : 0,

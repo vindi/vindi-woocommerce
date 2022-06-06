@@ -96,7 +96,6 @@ class PlansController
             'name' => VINDI_PREFIX_PRODUCT . $data['name'],
             'code' => 'WC-' . $data['id'],
             'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
-            'description' => $data['description'],
             'invoice' => 'always',
             'pricing_schema' => array(
               'price' => ($data['price']) ? $data['price'] : 0,
@@ -114,7 +113,6 @@ class PlansController
           'billing_trigger_day' => $trigger_day,
           'billing_cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
           'code' => 'WC-' . $data['id'],
-          'description' => $data['description'],
           'installments' => 1,
           'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
           'plan_items' => array(
@@ -164,7 +162,6 @@ class PlansController
         'name' => VINDI_PREFIX_PRODUCT . $data['name'],
         'code' => 'WC-' . $data['id'],
         'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
-        'description' => $data['description'],
         'invoice' => 'always',
         'pricing_schema' => array(
           'price' => ($data['price']) ? $data['price'] : 0,
@@ -182,7 +179,6 @@ class PlansController
       'billing_trigger_day' => $trigger_day,
       'billing_cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
       'code' => 'WC-' . $data['id'],
-      'description' => $data['description'],
       'installments' => 1,
       'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
       'plan_items' => array(
@@ -277,7 +273,6 @@ class PlansController
             'name' => VINDI_PREFIX_PRODUCT . $data['name'],
             'code' => 'WC-' . $data['id'],
             'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
-            'description' => $data['description'],
             'invoice' => 'always',
             'pricing_schema' => array(
               'price' => ($data['price']) ? $data['price'] : 0,
@@ -297,7 +292,6 @@ class PlansController
             'billing_trigger_day' => $trigger_day,
             'billing_cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
             'code' => 'WC-' . $data['id'],
-            'description' => $data['description'],
             'installments' => 1,
             'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
           )
@@ -340,7 +334,6 @@ class PlansController
         'name' => VINDI_PREFIX_PRODUCT . $data['name'],
         'code' => 'WC-' . $data['id'],
         'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
-        'description' => $data['description'],
         'invoice' => 'always',
         'pricing_schema' => array(
           'price' => ($data['price']) ? $data['price'] : 0,
@@ -362,7 +355,6 @@ class PlansController
         'billing_trigger_day' => $trigger_day,
         'billing_cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
         'code' => 'WC-' . $data['id'],
-        'description' => $data['description'],
         'installments' => 1,
         'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
       )
