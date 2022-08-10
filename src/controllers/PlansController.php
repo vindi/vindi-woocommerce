@@ -51,6 +51,15 @@ class PlansController
     if (get_post_type($post_id) != 'product') {
       return;
     }
+
+    if ( $this->check_vindi_item_id( $post_id, 'vindi_plan_id' ) > 1 ) {
+      update_post_meta( $post_id, 'vindi_plan_id', '' );
+    }
+
+    if ( $this->check_vindi_item_id( $post_id, 'vindi_product_id' ) > 1 ) {
+      update_post_meta( $post_id, 'vindi_product_id', '' );
+    }
+
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
     if(!$recreated && get_post_status($post_id) != 'publish' || (
@@ -216,7 +225,6 @@ class PlansController
 
   function update($post_id)
   {
-
     $product = wc_get_product($post_id);
 
     // Check if the post is of the signature type
@@ -454,5 +462,33 @@ class PlansController
       'product' => $activatedProduct,
       'plan' => $activatedPlan,
     );
+  }
+
+   /**
+   * Check if exists a duplicate $meta on database
+   * @param int $post_id
+   * @param string $meta
+   * @return int $post_id
+   */
+  function check_vindi_item_id( $post_id, $meta )
+  {
+    global $wpdb;
+    $vindi_id = get_post_meta( $post_id, $meta, true );
+
+    $sql = "SELECT 
+              post_id as id 
+            FROM {$wpdb->prefix}postmeta
+            WHERE 
+              meta_key LIKE '$meta' AND
+              meta_value LIKE $vindi_id
+            ";
+
+    $result = $wpdb->get_results( $sql );
+
+    if ( is_array( $result ) && ! empty( $result ) ) {
+      return count( $result );
+    }
+
+    return 0;
   }
 }

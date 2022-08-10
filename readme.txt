@@ -1,5 +1,5 @@
 === Vindi WooCommerce 2 ===
-Contributors: laertejr, rodasistemas, cleberbonifacio
+Contributors: apiki, aguiart0, laertejr, rodasistemas, cleberbonifacio
 Plugin Name: Vindi WooCommerce 2 (BETA)
 Plugin URI: https://github.com/vindi/vindi-woocommerce
 Website Link: https://www.vindi.com.br
@@ -11,7 +11,7 @@ Tested up to: 6.0
 WC requires at least: 3.0.0
 WC tested up to: 6.5.1
 Requires PHP: 5.6
-Stable Tag: 1.1.12
+Stable Tag: 1.1.13
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.1.13 - 10/06/2022 =
+-Lançamento da versão de patch.
+- **Correção**: Duplicação de produtos dentro do WooCommerce
+
+
 = 1.1.12 - 08/06/2022 =
 -Lançamento da versão de patch.
 - **Correção**: Foi removido o envio da descrição do produto para a plataforma Vindi para evitar possíveis erros no cadastro de produtos.
