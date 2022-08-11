@@ -441,7 +441,7 @@ class VindiPaymentProcessor
             }
             return $this->single_freight ? 1 : null;
 
-        } elseif (!$this->is_subscription_type($product) || $this->is_one_time_shipping($product)) {
+        } elseif (!$this->is_subscription_type($product)) {
             return 1;
         }
 
