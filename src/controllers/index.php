@@ -41,7 +41,6 @@ class VindiControllers
     $this->plans = new PlansController($vindi_settings);
     $this->customers = new CustomerController($vindi_settings);
     $this->products = new ProductController($vindi_settings);
-    $this->status = new StatusController();
   }
 
 
@@ -50,6 +49,5 @@ class VindiControllers
     require_once WC_Vindi_Payment::getPath() . '/controllers/PlansController.php';
     require_once WC_Vindi_Payment::getPath() . '/controllers/CustomerController.php';
     require_once WC_Vindi_Payment::getPath() . '/controllers/ProductController.php';
-    require_once WC_Vindi_Payment::getPath() . '/controllers/StatusController.php';
   }
 }
