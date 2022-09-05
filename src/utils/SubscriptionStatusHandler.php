@@ -50,7 +50,7 @@ class VindiSubscriptionStatusHandler
     public function filter_pre_status($wc_subscription, $new_status, $old_status)
     {
         switch ($new_status) {
-            case 'waiting':
+            case 'waiting-payment':
                 $this->suspend_status($wc_subscription);
                 break;
             case 'active':
@@ -187,7 +187,7 @@ class VindiSubscriptionStatusHandler
      */
     public function register_subscription_waiting_status($subscription_statuses)
     {
-        $status['wc-waiting'] = _nx_noop(
+        $status['wc-waiting-payment'] = _nx_noop(
             'Waiting Payment <span class="count">(%s)</span>',
             'Waiting Payment <span class="count">(%s)</span>',
             'post status label including post count',
@@ -205,7 +205,7 @@ class VindiSubscriptionStatusHandler
      */
     public function add_subscription_waiting_status($subscription_statuses)
     {
-        $status['wc-waiting'] =  _x('Waiting Payment', 'vindi-payment-gateway');
+        $status['wc-waiting-payment'] =  _x('Waiting Payment', 'vindi-payment-gateway');
 
         $subscription_statuses = array_merge($status, $subscription_statuses);
         return $subscription_statuses;
@@ -219,7 +219,7 @@ class VindiSubscriptionStatusHandler
      */
     public function update_subscription_waiting_status($can_be_updated, $new_status, $subscription)
     {
-        if ( $new_status == 'waiting' ) {
+        if ( $new_status == 'waiting-payment' ) {
             if ( $subscription->payment_method_supports( 'subscription_suspension' ) && $subscription->has_status( array( 'active', 'pending', 'on-hold', 'cancelled' ) ) ) {
                 $can_be_updated = true;
             } else {

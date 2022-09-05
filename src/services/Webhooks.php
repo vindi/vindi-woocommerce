@@ -103,9 +103,16 @@ class VindiWebhooks
       ));
     }
 
-    WC_Subscriptions_Manager::prepare_renewal($subscription->id);
+    if ($subscription->get_status() != 'on-hold') {
+      WC_Subscriptions_Manager::prepare_renewal($subscription->id);
+    } 
+
+    $subscription->update_status('waiting-payment');
+    
     $order_id = $subscription->get_last_order();
     $order = $this->find_order_by_id($order_id);
+
+
     $subscription_id = $renew_infos['vindi_subscription_id'];
     $order_post_meta = array(get_post_meta($order->id, 'vindi_order', true));
     $order_post_meta[$subscription_id]['cycle'] = $renew_infos['cycle'];
@@ -281,7 +288,7 @@ class VindiWebhooks
     if ($this->vindi_settings->get_synchronism_status()
       && ($subscription->has_status('cancelled')
       || $subscription->has_status('pending-cancel')
-      || $subscription->has_status('waiting'))
+      || $subscription->has_status('waiting-payment'))
       || $this->routes->hasPendingSubscriptionBills($data->subscription->id)) {
       return;
     }
@@ -310,7 +317,7 @@ class VindiWebhooks
             $subscription = $this->find_subscription_by_id($subscription_id);
             $order_id = $subscription->get_last_order();
             $order = $this->find_order_by_id($order_id);
-            $status_available = array('processing', 'completed', 'waiting');
+            $status_available = array('processing', 'completed', 'waiting-payment');
 
             if (in_array($order->get_status(), $status_available)) {
                 $subscription->update_status(
