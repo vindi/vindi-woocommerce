@@ -281,7 +281,7 @@ class VindiWebhooks
     if ($this->vindi_settings->get_synchronism_status()
       && ($subscription->has_status('cancelled')
       || $subscription->has_status('pending-cancel')
-      || $subscription->has_status('on-hold'))
+      || $subscription->has_status('waiting'))
       || $this->routes->hasPendingSubscriptionBills($data->subscription->id)) {
       return;
     }
@@ -310,7 +310,7 @@ class VindiWebhooks
             $subscription = $this->find_subscription_by_id($subscription_id);
             $order_id = $subscription->get_last_order();
             $order = $this->find_order_by_id($order_id);
-            $status_available = array('processing', 'completed', 'on-hold');
+            $status_available = array('processing', 'completed', 'waiting');
 
             if (in_array($order->get_status(), $status_available)) {
                 $subscription->update_status(
