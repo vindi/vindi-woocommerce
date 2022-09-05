@@ -50,7 +50,7 @@ class VindiSubscriptionStatusHandler
     public function filter_pre_status($wc_subscription, $new_status, $old_status)
     {
         switch ($new_status) {
-            case 'on-hold':
+            case 'waiting':
                 $this->suspend_status($wc_subscription);
                 break;
             case 'active':
