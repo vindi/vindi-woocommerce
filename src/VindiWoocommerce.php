@@ -152,8 +152,4 @@ class WC_Vindi_Payment extends AbstractInstance
   }
 }
 
-add_action('init', function() {
-  $subscription = wcs_get_subscription(158);
-  error_log( var_export( $subscription->get_status(), true));
-});
 add_action('plugins_loaded', array('WC_Vindi_Payment', 'get_instance'));
