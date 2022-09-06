@@ -153,7 +153,7 @@
           <?php _e("Validade (mm/aa)", VINDI) ?>
           <span class="required">*</span>
         </label>
-        <input id="vindi_cc_expirationdate" type="text" pattern="[0-9]*" inputmode="numeric" placeholder="mm/aa" autocomplete="off">
+        <input id="vindi_cc_expirationdate" name="vindi_cc_expiry_date" type="text" pattern="[0-9]*" inputmode="numeric" placeholder="mm/aa" autocomplete="off">
       </div>
       <div class="field-container">
         <label for="vindi_cc_securitycode">
