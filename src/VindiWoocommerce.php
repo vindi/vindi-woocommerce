@@ -78,6 +78,9 @@ class WC_Vindi_Payment extends AbstractInstance
     add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
       $this->webhooks, 'handle'
     ));
+
+    remove_action('woocommerce_before_calculate_totals', 'WC_Subscriptions_Cart::add_calculation_price_filter', 10);
+		add_action('woocommerce_before_calculate_totals', [ $this, 'add_calculation_price_filter' ], 99);
   }
 
   /**
@@ -149,6 +152,15 @@ class WC_Vindi_Payment extends AbstractInstance
     $methods[] = new VindiBankSlipGateway($this->settings, $this->controllers);
 
     return $methods;
+  }
+
+  /**
+   * Sobrescreve o método que remove os métodos de pagamento para assinaturas com trial
+   * @return bool
+   */
+  public function add_calculation_price_filter()
+  {
+    return false;
   }
 }
 
