@@ -79,8 +79,7 @@ class WC_Vindi_Payment extends AbstractInstance
       $this->webhooks, 'handle'
     ));
 
-    remove_action('woocommerce_before_calculate_totals', 'WC_Subscriptions_Cart::add_calculation_price_filter', 10);
-		add_action('woocommerce_before_calculate_totals', [ $this, 'add_calculation_price_filter' ], 99);
+    add_filter( 'woocommerce_cart_needs_payment', [ $this, 'filter_woocommerce_cart_needs_payment' ], 10, 2 );
   }
 
   /**
@@ -158,9 +157,9 @@ class WC_Vindi_Payment extends AbstractInstance
    * Sobrescreve o método que remove os métodos de pagamento para assinaturas com trial
    * @return bool
    */
-  public function add_calculation_price_filter()
+  public function filter_woocommerce_cart_needs_payment()
   {
-    return false;
+    return true;
   }
 }
 

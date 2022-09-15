@@ -1170,7 +1170,13 @@ class VindiPaymentProcessor
             $status = $this->vindi_settings->get_return_status();
         } else {
             $status = 'pending';
+
+            if ($this->order_has_trial()) {
+                $status = $this->vindi_settings->get_return_status();
+                $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
+            }
         }
+        
         $this->order->update_status($status, $status_message);
 
         return array(
@@ -1276,6 +1282,27 @@ class VindiPaymentProcessor
     protected function subscription_has_trial(WC_Product $product)
     {
         return $this->is_subscription_type($product) && class_exists('WC_Subscriptions_Product') && WC_Subscriptions_Product::get_trial_length($product->get_id()) > 0;
+    }
+
+
+    /**
+     * Check if the order has a subscription with trial period
+     *
+     * @return bool
+     */
+    protected function order_has_trial()
+    {
+        $has_trial   = false;
+        $order_items = $this->order->get_items();
+
+        foreach ($order_items as $order_item) {
+            $product = $order_item->get_product();
+            if ($this->subscription_has_trial($product)) {
+                $has_trial = true;
+            }
+        }
+        
+        return $has_trial;
     }
 
     /**
