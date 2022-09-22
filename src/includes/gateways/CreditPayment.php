@@ -155,16 +155,17 @@ class VindiCreditGateway extends VindiPaymentGateway
     $is_trial = $this->is_trial;
 
     $cart = $this->vindi_settings->woocommerce->cart;
-    $total = $cart->total;
+    $total = $this->get_cart_total( $cart );
+    
     foreach ($cart->get_fees() as $index => $fee) {
       if($fee->name == __('Juros', VINDI)) {
         $total -= $fee->amount;
       }
     }
 
-    $max_times  = 12;
-    $max_times  = $this->get_order_max_installments($total);
-    
+    $max_times = 12;
+    $max_times = $this->get_order_max_installments($total);
+
     if ($max_times > 1) {
       for ($times = 1; $times <= $max_times; $times++) {
         if ($this->is_interest_rate_enabled()) {
@@ -192,6 +193,23 @@ class VindiCreditGateway extends VindiPaymentGateway
       'user_payment_profile',
       'payment_methods'
     ));
+  }
+
+  public function get_cart_total( $cart )
+  {
+    $items = $cart->get_cart();
+    $price = 0;
+
+    foreach ( $items as $item ) {
+      if ( isset( $item['product_id'] ) ) {
+        $product = wc_get_product( $item['product_id'] );
+        if ( $product ) {
+          $price += floatval( $product->get_price() );
+        }
+      }
+    }
+
+    return $price;
   }
 
   public function verify_user_payment_profile()
@@ -268,7 +286,7 @@ class VindiCreditGateway extends VindiPaymentGateway
       
       if (!empty($plan_id)) {
         $plan = $this->routes->getPlan($plan_id);
-        
+
         if ($installments == 0) {
           $installments = $plan['installments'];
         } elseif ($plan['installments'] < $installments) {
