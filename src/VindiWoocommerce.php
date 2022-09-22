@@ -50,6 +50,11 @@ class WC_Vindi_Payment extends AbstractInstance
    */
   private $subscription_status_handler;
 
+  /**
+   * @var ProductsMetabox
+   */
+  private $product_metabox;
+
   public function __construct()
   {
 
@@ -66,6 +71,7 @@ class WC_Vindi_Payment extends AbstractInstance
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
     $this->interest_price_handler = new InterestPriceHandler();
+    $this->product_metabox = new ProductsMetaBox;
 
     /**
       * Add Gateway to Woocommerce
@@ -101,6 +107,7 @@ class WC_Vindi_Payment extends AbstractInstance
     require_once $this->getPath() . '/utils/RedirectCheckout.php';
 
     require_once $this->getPath() . '/includes/admin/CouponsMetaBox.php';
+    require_once $this->getPath() . '/includes/admin/ProductsMetabox.php';
     require_once $this->getPath() . '/includes/admin/Settings.php';
     require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
     require_once $this->getPath() . '/includes/gateways/BankSlipPayment.php';
