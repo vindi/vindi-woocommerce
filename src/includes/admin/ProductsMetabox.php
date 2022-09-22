@@ -51,7 +51,6 @@ class ProductsMetaBox
 
     public function save_woocommerce_product_custom_fields( $post_id )
     {
-        error_log( var_export( $_POST, true ) );
         $subscription_period = isset( $_POST['_subscription_period'] ) ? $_POST['_subscription_period'] : false; 
         $installments = isset( $_POST['vindi_max_credit_installments'] ) ? intval( $_POST['vindi_max_credit_installments'] ) : false;
 
