@@ -20,7 +20,7 @@ class ProductsMetaBox
 
         if ( isset( $post->ID ) ) {
             $product = wc_get_product( $post->ID );
-            if ( $product->is_type( 'subscription' ) ) {
+            if ( $product->is_type( 'subscription' ) || $post->post_status === 'auto-draft' ) {
 
                 if( $this->check_credit_payment_active( $woocommerce ) ) {
 
@@ -53,6 +53,9 @@ class ProductsMetaBox
     {
         $subscription_period = isset( $_POST['_subscription_period'] ) ? $_POST['_subscription_period'] : false; 
         $installments = isset( $_POST['vindi_max_credit_installments'] ) ? intval( $_POST['vindi_max_credit_installments'] ) : false;
+        $product_type = isset( $_POST['product-type'] ) ? sanitize_text_field( $_POST['product-type'] ) : false;
+
+        if ( strpos( $product_type, 'subscription' ) === false ) return;
 
         if ( $subscription_period ) {
             if ( $subscription_period === 'year' ) {

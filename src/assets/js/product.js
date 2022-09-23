@@ -4,10 +4,15 @@ class Product {
     }
 
     setEvents() {
-        const type = document.querySelector("#_subscription_period");
-        if (!type) return;
+        const period = document.querySelector("#_subscription_period");
+        const type   = document.querySelector("#product-type");
+        if (!type || !period) return;
 
         this.showCustom();
+        period.addEventListener("change", () => {
+            this.showCustom();
+        });
+
         type.addEventListener("change", () => {
             this.showCustom();
         });
@@ -15,11 +20,13 @@ class Product {
 
     showCustom() {
         const custom = document.querySelector("#vindi_max_credit_installments");
-        const type   = document.querySelector("#_subscription_period");
+        const period = document.querySelector("#_subscription_period");
+        const type   = document.querySelector("#product-type");
+
         if (!custom) return;
 
         const parent = custom.parentElement;
-        if (type.value === 'year') {
+        if (period.value === 'year' && type.value.includes("subscription") ) {
             parent.style.display = "block";
         } else {
             parent.style.display = "none";
