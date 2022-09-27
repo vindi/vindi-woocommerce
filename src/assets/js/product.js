@@ -6,30 +6,68 @@ class Product {
     setEvents() {
         const period = document.querySelector("#_subscription_period");
         const type   = document.querySelector("#product-type");
-        if (!type || !period) return;
+        const middle = document.querySelector("#_subscription_period_interval");
 
-        this.showCustom();
-        period.addEventListener("change", () => {
-            this.showCustom();
-        });
+        const elements = [period, type, middle];
 
-        type.addEventListener("change", () => {
-            this.showCustom();
+        this.showCustom(this.getMaxInstallments());
+        elements.forEach(element => {
+            if (element) {
+                element.addEventListener("change", () => {
+                    this.showCustom(this.getMaxInstallments());
+                });
+            }
         });
     }
 
-    showCustom() {
+    showCustom(show) {
         const custom = document.querySelector("#vindi_max_credit_installments");
-        const period = document.querySelector("#_subscription_period");
-        const type   = document.querySelector("#product-type");
 
         if (!custom) return;
 
         const parent = custom.parentElement;
-        if (period.value === 'year' && type.value.includes("subscription") ) {
+        if (show) {
             parent.style.display = "block";
+
+            this.setMaxInstallments(show);
         } else {
             parent.style.display = "none";
+        }
+
+    }
+
+    getMaxInstallments() {
+        const period = document.querySelector("#_subscription_period");
+        const middle = document.querySelector("#_subscription_period_interval");
+
+        const type   = document.querySelector("#product-type");
+
+        if ( ! type.value.includes("subscription") ) return;
+
+        if ( period.value === 'year' ) {
+            return 12;
+        }
+
+        if( period.value === 'month' ) {
+            if (middle.value) {
+                if (middle.value == 1) return;
+                return middle.value;
+            }
+        }
+
+        return false;
+    }
+
+    setMaxInstallments(max) {
+        if (!max) return;
+
+        const custom = document.querySelector("#vindi_max_credit_installments");
+        if (custom) {
+            custom.setAttribute("max", max);
+
+            if (custom.value > max) {
+                custom.value = max;
+            }
         }
     }
 }
