@@ -65,7 +65,7 @@ class Product {
         if (custom) {
             custom.setAttribute("max", max);
 
-            if (custom.value > max) {
+            if (parseInt(custom.value) > parseInt(max)) {
                 custom.value = max;
             }
         }
