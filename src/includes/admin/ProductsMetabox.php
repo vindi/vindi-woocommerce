@@ -51,17 +51,22 @@ class ProductsMetaBox
 
     public function save_woocommerce_product_custom_fields( $post_id )
     {
-        $subscription_period = isset( $_POST['_subscription_period'] ) ? $_POST['_subscription_period'] : false; 
-        $installments = isset( $_POST['vindi_max_credit_installments'] ) ? intval( $_POST['vindi_max_credit_installments'] ) : false;
-        $product_type = isset( $_POST['product-type'] ) ? sanitize_text_field( $_POST['product-type'] ) : false;
+        $subscription_period = isset( $_POST['_subscription_period'] ) ? sanitize_text_field( $_POST['_subscription_period'] ) : false; 
+        $product_type        = isset( $_POST['product-type'] ) ? sanitize_text_field( $_POST['product-type'] ) : false;
+        $installments        = isset( $_POST['vindi_max_credit_installments'] ) ? intval( $_POST['vindi_max_credit_installments'] ) : 1;
+        $interval_time       = isset( $_POST['_subscription_period_interval'] ) ? intval( $_POST['_subscription_period_interval'] ) : 1;
 
         if ( strpos( $product_type, 'subscription' ) === false ) return;
 
         if ( $subscription_period ) {
             if ( $subscription_period === 'year' ) {
                 if ( $installments > 12 ) $installments = 12;
-            } else {
-                $installments = 0;
+            }
+
+            if(  $subscription_period === 'month' ) {
+                if ( $installments > $interval_time ) {
+                    $installments = $interval_time;
+                }
             }
         }
 
