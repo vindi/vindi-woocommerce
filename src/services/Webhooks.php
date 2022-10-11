@@ -35,12 +35,12 @@ class VindiWebhooks
       die('invalid access token');
     }
 
-    $this->vindi_settings->logger->log(sprintf(__('Novo Webhook chamado: %s', VINDI), $raw_body));
+    $this->vindi_settings->logger->webhook(sprintf(__('Novo Webhook chamado: %s', VINDI), $raw_body));
 
     try {
       $this->process_event($body);
     } catch (Exception $e) {
-      $this->vindi_settings->logger->log($e->getMessage());
+      $this->vindi_settings->logger->webhook($e->getMessage());
 
       if(2 === $e->getCode()) {
         header("HTTP/1.0 422 Unprocessable Entity");
@@ -70,11 +70,11 @@ class VindiWebhooks
     $data = $body->event->data;
 
     if(method_exists($this, $type)) {
-      $this->vindi_settings->logger->log(sprintf(__('Novo Evento processado: %s', VINDI), $type));
+      $this->vindi_settings->logger->webhook(sprintf(__('Novo Evento processado: %s', VINDI), $type));
       return $this->{$type}($data);
     }
 
-    $this->vindi_settings->logger->log(sprintf(__('Evento do webhook ignorado pelo plugin: ', VINDI), $type));
+    $this->vindi_settings->logger->webhook(sprintf(__('Evento do webhook ignorado pelo plugin: ', VINDI), $type));
   }
 
   /**
@@ -83,7 +83,7 @@ class VindiWebhooks
    */
   private function test($data)
   {
-    $this->vindi_settings->logger->log(__('Evento de teste do webhook.', VINDI));
+    $this->vindi_settings->logger->webhook(__('Evento de teste do webhook.', VINDI));
   }
 
   /**
@@ -116,7 +116,7 @@ class VindiWebhooks
       'bank_slip_url' => $renew_infos['bill_print_url'],
     );
     update_post_meta($order->id, 'vindi_order', $order_post_meta);
-    $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
+    $this->vindi_settings->logger->webhook('Novo Período criado: Pedido #'.$order->id);
 
     // We've already processed the renewal
     remove_action( 'woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal' );
