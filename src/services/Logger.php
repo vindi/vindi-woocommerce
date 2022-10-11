@@ -31,7 +31,7 @@ class VindiLogger
    */
   public function order($message)
   {
-    return $this->log($message, 'order');
+    return $this->log($message, '-order');
   }
 
   /**
@@ -40,7 +40,7 @@ class VindiLogger
    */
   public function product($message)
   {
-    return $this->log($message, 'product');
+    return $this->log($message, '-product');
   }
 
   /**
@@ -49,7 +49,7 @@ class VindiLogger
    */
   public function plan($message)
   {
-    return $this->log($message, 'plan');
+    return $this->log($message, '-plan');
   }
 
   /**
@@ -58,7 +58,7 @@ class VindiLogger
    */
   public function webhook($message)
   {
-    return $this->log($message, 'webhook');
+    return $this->log($message, '-webhook');
   }
 
   /**
@@ -67,7 +67,7 @@ class VindiLogger
    */
   public function customer($message)
   {
-    return $this->log($message, 'customer');
+    return $this->log($message, '-customer');
   }
 
   /**
@@ -76,7 +76,7 @@ class VindiLogger
    */
   public function request($message)
   {
-    return $this->log($message, 'request-response');
+    return $this->log($message, '-request-response');
   }
 
   /**
