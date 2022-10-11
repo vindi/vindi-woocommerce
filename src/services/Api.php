@@ -237,7 +237,7 @@ class VindiApi
 
     $data_to_log = null !== $data_to_log ? $this->build_body($data_to_log) : $body;
 
-    $this->logger->log(sprintf("[Request #%s]: Novo Request para a API.\n%s %s\n%s", $request_id, $method, $url, $data_to_log));
+    $this->logger->request(sprintf("[Request #%s]: Novo Request para a API.\n%s %s\n%s", $request_id, $method, $url, $data_to_log));
 
     $response = wp_remote_post($url, array(
       'headers' => array(
@@ -252,18 +252,18 @@ class VindiApi
     ));
 
     if (is_wp_error($response)) {
-      $this->logger->log(sprintf("[Request #%s]: Erro ao fazer request! %s", $request_id, print_r($response, true)));
+      $this->logger->request(sprintf("[Request #%s]: Erro ao fazer request! %s", $request_id, print_r($response, true)));
 
       return false;
     }
 
     $status = sprintf('%s %s', $response['response']['code'], $response['response']['message']);
-    $this->logger->log(sprintf("[Request #%s]: Nova Resposta da API.\n%s\n%s", $request_id, $status, print_r($response['body'], true)));
+    $this->logger->request(sprintf("[Request #%s]: Nova Resposta da API.\n%s\n%s", $request_id, $status, print_r($response['body'], true)));
 
     $response_body = wp_remote_retrieve_body($response);
 
     if (!$response_body) {
-      $this->logger->log(sprintf('[Request #%s]: Erro ao recuperar corpo do request! %s', $request_id, print_r($response, true)));
+      $this->logger->request(sprintf('[Request #%s]: Erro ao recuperar corpo do request! %s', $request_id, print_r($response, true)));
 
       return false;
     }

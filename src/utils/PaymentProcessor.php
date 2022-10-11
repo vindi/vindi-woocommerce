@@ -340,7 +340,7 @@ class VindiPaymentProcessor
                     $this->abort(__($message, VINDI), true);
                 }
             } catch (Exception $err) {
-                $this->logger->log(sprintf('Deu erro na criação da conta %s', $single_payment_bill));
+                $this->logger->customer(sprintf('Deu erro na criação da conta %s', $single_payment_bill));
                 $this->abort(__('Não foi possível criar o pedido.', VINDI), true);
             }
         }
@@ -1054,7 +1054,7 @@ class VindiPaymentProcessor
         $bill = $this->routes->createBill($data);
 
         if (!$bill) {
-            $this->logger->log(sprintf('Erro no pagamento do pedido %s.', $this->order->id));
+            $this->logger->order(sprintf('Erro no pagamento do pedido %s.', $this->order->id));
             $message = sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error);
             $this->order->update_status('failed', $message);
 
@@ -1062,7 +1062,7 @@ class VindiPaymentProcessor
         }
 
         if ($bill['id']) {
-            $this->logger->log(sprintf('Update Bill: %s', json_encode($bill)));
+            $this->logger->order(sprintf('Update Bill: %s', json_encode($bill)));
             update_post_meta($this->order->id, 'vindi_bill_id', $bill['id']);
         }
         return $bill;
@@ -1164,7 +1164,7 @@ class VindiPaymentProcessor
                 $status_message = __('Aguardando pagamento do pedido.', VINDI);
             }
             array_push($bills_status, $bill['status']);
-            $this->logger->log($data_to_log);
+            $this->logger->order($data_to_log);
         }
         if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
             $status = $this->vindi_settings->get_return_status();

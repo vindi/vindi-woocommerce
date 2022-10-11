@@ -175,7 +175,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
   public function process_payment($order_id)
   {
     $order_id = filter_var($order_id, FILTER_SANITIZE_NUMBER_INT);
-    $this->logger->log(sprintf('Processando pedido %s.', $order_id));
+    $this->logger->order(sprintf('Processando pedido %s.', $order_id));
     $order   = wc_get_order($order_id);
     $payment = new VindiPaymentProcessor($order, $this, $this->vindi_settings, $this->controllers);
 
@@ -246,7 +246,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
 
       $result = $this->refund_transaction($bill_id, $amount, $reason);
 
-      $this->logger->log('Resultado do reembolso: ' . wc_print_r($result, true));
+      $this->logger->order('Resultado do reembolso: ' . wc_print_r($result, true));
       switch (strtolower($result['status'])) {
         case 'success':
           $order->add_order_note(

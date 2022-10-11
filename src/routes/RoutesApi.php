@@ -18,6 +18,7 @@ class VindiRoutes
 
     $this->vindi_settings = $vindi_settings;
     $this->api = $this->vindi_settings->api;
+    $this->logger = $vindi_settings->logger;
   }
 
   /**
@@ -51,6 +52,7 @@ class VindiRoutes
   {
 
     $response = $this->api->request('plans', 'POST', $data);
+    $this->logger->plan(sprintf("\nCreate Plan:\n %s", json_encode($response)));
 
     return $response['plan'];
   }
@@ -70,6 +72,7 @@ class VindiRoutes
       filter_var($plan_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'PUT', $data);
 
+    $this->logger->plan(sprintf("\nUpdate Plan:\n %s", json_encode($response)));
     return $response['plan'];
   }
 
@@ -82,8 +85,9 @@ class VindiRoutes
    */
   public function createProduct($data)
   {
-
     $response = $this->api->request('products', 'POST', $data);
+    $this->logger->product(sprintf("\nCreate product:\n %s", json_encode($response)));
+
     return $response['product'];
   }
 
@@ -96,11 +100,12 @@ class VindiRoutes
    */
   public function updateProduct($product_id, $data)
   {
-
     $response = $this->api->request(sprintf(
       'products/%s',
       filter_var($product_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'PUT', $data);
+
+    $this->logger->product(sprintf("\nUpdate product:\n %s", json_encode($response)));
     return $response['product'];
   }
 
@@ -113,8 +118,9 @@ class VindiRoutes
    */
   public function createCustomer($data)
   {
-
     $response = $this->api->request('customers', 'POST', $data);
+
+    $this->logger->customer(sprintf("\nCreate customer:\n %s", json_encode($response)));
     return $response['customer'];
   }
 
@@ -127,12 +133,12 @@ class VindiRoutes
    */
   public function updateCustomer($user_id, $data)
   {
-
     $response = $this->api->request(sprintf(
       'customers/%s',
       filter_var($user_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'PUT', $data);
 
+    $this->logger->customer(sprintf("\nUpdate customer:\n %s", json_encode($response)));
     return $response['customer'];
   }
 
@@ -151,6 +157,7 @@ class VindiRoutes
       filter_var($user_id, FILTER_SANITIZE_NUMBER_INT)
     ), 'DELETE');
 
+    $this->logger->customer(sprintf("\nDelete customer:\n %s", json_encode($response)));
     return $response['customer'];
   }
 
