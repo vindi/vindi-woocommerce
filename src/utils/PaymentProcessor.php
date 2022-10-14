@@ -441,7 +441,7 @@ class VindiPaymentProcessor
             }
             return $this->single_freight ? 1 : null;
 
-        } elseif (!$this->is_subscription_type($product) || $this->is_one_time_shipping($product)) {
+        } elseif (!$this->is_subscription_type($product)) {
             return 1;
         }
 
@@ -653,7 +653,9 @@ class VindiPaymentProcessor
             $wc_subscription = VindiHelpers::get_matching_subscription($this->order, $order_item);
             $product = $order_item->get_product();
 
-            if ($this->is_subscription_type($product)) {
+            $one_time_shipping = $this->is_one_time_shipping($product) && $this->single_freight ? true : false;
+
+            if ($this->is_subscription_type($product) && !$one_time_shipping) {
                 $shipping_method = $wc_subscription->get_shipping_method();
                 $get_total_shipping = $wc_subscription->get_total_shipping();
             }
