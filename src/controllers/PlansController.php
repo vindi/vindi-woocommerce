@@ -52,13 +52,13 @@ class PlansController
       return;
     }
 
-    if ( $this->check_plan_vindi_item_id( $post_id, 'vindi_plan_id' ) > 1 ) {
-      update_post_meta( $post_id, 'vindi_plan_id', '' );
-    }
+        if ($this->check_plan_vindi_item_id($post_id, 'vindi_plan_id') > 1) {
+            update_post_meta($post_id, 'vindi_plan_id', '');
+        }
 
-    if ( $this->check_plan_vindi_item_id( $post_id, 'vindi_product_id' ) > 1 ) {
-      update_post_meta( $post_id, 'vindi_product_id', '' );
-    }
+        if ($this->check_plan_vindi_item_id($post_id, 'vindi_product_id') > 1) {
+            update_post_meta($post_id, 'vindi_product_id', '');
+        }
 
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
@@ -464,31 +464,31 @@ class PlansController
     );
   }
 
-   /**
-   * Check if exists a duplicate $meta on database
-   * @param int $post_id
-   * @param string $meta
-   * @return int $post_id
-   */
-  function check_plan_vindi_item_id( $post_id, $meta )
-  {
-    global $wpdb;
-    $vindi_id = get_post_meta( $post_id, $meta, true );
+    /**
+     * Check if exists a duplicate $meta on database
+     * @param int $post_id
+     * @param string $meta
+     * @return int $post_id
+     */
+    public function check_plan_vindi_item_id($post_id,$meta)
+    {
+        global $wpdb;
+        $vindi_id = get_post_meta($post_id, $meta, true);
 
-    $sql = "SELECT 
-              post_id as id 
-            FROM {$wpdb->prefix}postmeta
-            WHERE 
-              meta_key LIKE '$meta' AND
-              meta_value LIKE $vindi_id
-            ";
+        $sql = "SELECT 
+                  post_id as id 
+                FROM {$wpdb->prefix}postmeta
+                WHERE 
+                  meta_key LIKE '$meta' AND
+                  meta_value LIKE $vindi_id
+                ";
 
-    $result = $wpdb->get_results( $sql );
+        $result = $wpdb->get_results($sql);
 
-    if ( is_array( $result ) && ! empty( $result ) ) {
-      return count( $result );
+        if (is_array($result) && !empty($result)) {
+          return count($result);
+        }
+
+        return 0;
     }
-
-    return 0;
-  }
 }
