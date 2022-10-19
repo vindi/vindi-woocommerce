@@ -52,11 +52,11 @@ class PlansController
       return;
     }
 
-    if ( $this->check_vindi_item_id( $post_id, 'vindi_plan_id' ) > 1 ) {
+    if ( $this->check_plan_vindi_item_id( $post_id, 'vindi_plan_id' ) > 1 ) {
       update_post_meta( $post_id, 'vindi_plan_id', '' );
     }
 
-    if ( $this->check_vindi_item_id( $post_id, 'vindi_product_id' ) > 1 ) {
+    if ( $this->check_plan_vindi_item_id( $post_id, 'vindi_product_id' ) > 1 ) {
       update_post_meta( $post_id, 'vindi_product_id', '' );
     }
 
@@ -470,7 +470,7 @@ class PlansController
    * @param string $meta
    * @return int $post_id
    */
-  function check_vindi_item_id( $post_id, $meta )
+  function check_plan_vindi_item_id( $post_id, $meta )
   {
     global $wpdb;
     $vindi_id = get_post_meta( $post_id, $meta, true );
