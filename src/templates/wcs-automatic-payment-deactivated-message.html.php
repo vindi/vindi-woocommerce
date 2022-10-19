@@ -3,7 +3,7 @@
 <div class="error notice">
     <h3>
         <?php
-            echo __('Configuração da renovação de assinaturas', VINDI_IDENTIFIER );
+            echo __('Configuração da renovação de assinaturas', VINDI_IDENTIFIER);
         ?>
     </h3>
     <p>
