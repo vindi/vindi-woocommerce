@@ -149,7 +149,7 @@ class ProductController
      * @param string $meta
      * @return int $post_id
      */
-    public function check_product_vindi_item_id($post_id,$meta)
+    public function check_product_vindi_item_id($post_id, $meta)
     {
         global $wpdb;
         $vindi_id = get_post_meta($post_id, $meta, true);
@@ -162,9 +162,9 @@ class ProductController
                   meta_value LIKE $vindi_id
                 ";
 
-        $result = $wpdb->get_results( $sql );
+        $result = $wpdb->get_results($sql);
 
-        if (is_array($result) && !empty($result) ) {
+        if (is_array($result) && !empty($result)) {
             return count($result);
         }
 

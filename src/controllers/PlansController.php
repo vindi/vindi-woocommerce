@@ -470,7 +470,7 @@ class PlansController
      * @param string $meta
      * @return int $post_id
      */
-    public function check_plan_vindi_item_id($post_id,$meta)
+    public function check_plan_vindi_item_id($post_id, $meta)
     {
         global $wpdb;
         $vindi_id = get_post_meta($post_id, $meta, true);
@@ -486,7 +486,7 @@ class PlansController
         $result = $wpdb->get_results($sql);
 
         if (is_array($result) && !empty($result)) {
-          return count($result);
+            return count($result);
         }
 
         return 0;
