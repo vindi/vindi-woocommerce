@@ -176,7 +176,9 @@ class VindiPaymentProcessor
 
     /**
      * Validade card fields
-     * @param array $fields
+     * 
+     * @param array $fields Card fields
+     * 
      * @return bool|void
      */
     private function validade_card_fields($fields)
@@ -191,30 +193,32 @@ class VindiPaymentProcessor
 
     /**
      * Get card message for specific field
-     * @param string $field
+     * 
+     * @param string $field Error field
+     * 
      * @return string
      */
     private function get_card_abort_message($field)
     {
         switch ($field) {
-            case 'holder_name':
+        case 'holder_name':
                 $message = __("O campo 'Nome Impresso no Cartão' deve ser preenchido corretamente!", VINDI);
-                break;
-            case 'card_expiration':
+            break;
+        case 'card_expiration':
                 $message = __("O campo 'Validade (mm/aa)' deve ser preenchido corretamente!", VINDI);
-                break;
-            case 'card_number':
+            break;
+        case 'card_number':
                 $message = __("O campo 'Número do Cartão' deve ser preenchido corretamente!", VINDI);
-                break;
-            case 'card_cvv':
+            break;
+        case 'card_cvv':
                 $message = __("O campo 'Código de Segurança' deve ser preenchido corretamente!", VINDI);
-                break;
-            case 'customer_id':
+            break;
+        case 'customer_id':
                 $message = __("Não foi possível encontrar o usuário! Faça login ou registre-se antes de efetuar a compra", VINDI);
-                break;
-            default:
+            break;
+        default:
                 $message = __("Verifique os dados de cartão de crédito preenchidos!", VINDI);
-                break;
+            break;
         }
 
         return $message;
@@ -222,14 +226,16 @@ class VindiPaymentProcessor
 
     /**
      * Get expiration date from string
-     * @param string $expiry_date
+     * 
+     * @param string $expiry_date Expiration date
+     * 
      * @return string|bool
      */
     private function get_expiration_date($expiry_date)
     {
-        $explode_date = explode( "/", $expiry_date );
+        $explode_date = explode("/", $expiry_date);
 
-        if ( ! isset( $explode_date[0] ) || ! isset( $explode_date[1] ) ) {
+        if (!isset($explode_date[0]) || !isset($explode_date[1])) {
             return false;
         }
 
