@@ -144,18 +144,18 @@ class VindiPaymentProcessor
             return false;
         }
 
-        $month_expiration = filter_var($_POST['vindi_cc_monthexpiry'], FILTER_SANITIZE_NUMBER_INT);
-        $year_expiration  = filter_var($_POST['vindi_cc_yearexpiry'], FILTER_SANITIZE_NUMBER_INT);
-        $expiry_date      = sanitize_text_field($_POST['vindi_cc_expiry_date']);
-        $holder_name      = sanitize_text_field($_POST['vindi_cc_fullname']);
-        $card_number      = filter_var($_POST['vindi_cc_number'], FILTER_SANITIZE_NUMBER_INT);
-        $card_code        = filter_var($_POST['vindi_cc_cvc'], FILTER_SANITIZE_NUMBER_INT);
-        $payment_company  = sanitize_text_field($_POST['vindi_cc_paymentcompany']);
+        $month_expiration = isset($_POST['vindi_cc_monthexpiry']) ? filter_var($_POST['vindi_cc_monthexpiry'], FILTER_SANITIZE_NUMBER_INT) : false;
+        $year_expiration  = isset($_POST['vindi_cc_yearexpiry']) ? filter_var($_POST['vindi_cc_yearexpiry'], FILTER_SANITIZE_NUMBER_INT) : false;
+        $expiry_date      = isset($_POST['vindi_cc_expiry_date']) ? sanitize_text_field($_POST['vindi_cc_expiry_date']) : false;
+        $holder_name      = isset($_POST['vindi_cc_fullname']) ? sanitize_text_field($_POST['vindi_cc_fullname']) : false;
+        $card_number      = isset($_POST['vindi_cc_number']) ? filter_var($_POST['vindi_cc_number'], FILTER_SANITIZE_NUMBER_INT) : false;
+        $card_code        = isset($_POST['vindi_cc_cvc']) ? filter_var($_POST['vindi_cc_cvc'], FILTER_SANITIZE_NUMBER_INT) : false;
+        $payment_company  = isset($_POST['vindi_cc_paymentcompany']) ? sanitize_text_field($_POST['vindi_cc_paymentcompany']) : false;
         $card_expiration  = "";
 
         if ($month_expiration && $year_expiration) {
             $card_expiration = "{$month_expiration}/{$year_expiration}";
-        } 
+        }
 
         if (!$card_expiration) {
             $card_expiration = $this->getExpirationDate($expiry_date);
