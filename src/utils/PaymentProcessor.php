@@ -151,13 +151,15 @@ class VindiPaymentProcessor
         $card_number      = filter_var($_POST['vindi_cc_number'], FILTER_SANITIZE_NUMBER_INT);
         $card_code        = filter_var($_POST['vindi_cc_cvc'], FILTER_SANITIZE_NUMBER_INT);
         $payment_company  = sanitize_text_field($_POST['vindi_cc_paymentcompany']);
+        $card_expiration  = "";
 
         if ($month_expiration && $year_expiration) {
             $card_expiration = "{$month_expiration}/{$year_expiration}";
-        } else {
-            $card_expiration = $this->get_expiration_date($expiry_date);
-        }
+        } 
 
+        if (!$card_expiration) {
+            $card_expiration = $this->getExpirationDate($expiry_date);
+        }
 
         $fields = array(
             'customer_id'          => $customer_id,
@@ -169,7 +171,7 @@ class VindiPaymentProcessor
             'payment_company_code' => $payment_company,
         );
         
-        $this->validade_card_fields($fields);
+        $this->validadeCardFields($fields);
 
         return $fields;
     }
@@ -181,11 +183,11 @@ class VindiPaymentProcessor
      * 
      * @return bool|void
      */
-    private function validade_card_fields($fields)
+    public function validadeCardFields($fields)
     {
         foreach ($fields as $key => $field) {
             if (!$field || empty($field)) {
-                $message = $this->get_card_abort_message($key);
+                $message = $this->getCardAbortMessage($key);
                 return $this->abort($message);
             }
         }
@@ -198,7 +200,7 @@ class VindiPaymentProcessor
      * 
      * @return string
      */
-    private function get_card_abort_message($field)
+    public function getCardAbortMessage($field)
     {
         switch ($field) {
         case 'holder_name':
@@ -220,7 +222,6 @@ class VindiPaymentProcessor
                 $message = __("Verifique os dados de cartão de crédito preenchidos!", VINDI);
             break;
         }
-
         return $message;
     }
 
@@ -231,15 +232,15 @@ class VindiPaymentProcessor
      * 
      * @return string|bool
      */
-    private function get_expiration_date($expiry_date)
+    public function getExpirationDate($expiryDate)
     {
-        $explode_date = explode("/", $expiry_date);
+        $explode = explode("/", $expiryDate);
 
-        if (!isset($explode_date[0]) || !isset($explode_date[1])) {
+        if (!isset($explode[0]) || !isset($explode[1])) {
             return false;
         }
 
-        return "{$explode_date[0]}/20{$explode_date[1]}";
+        return "{$explode[0]}/20{$explode[1]}";
     }
 
     /**
