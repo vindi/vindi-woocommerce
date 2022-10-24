@@ -147,30 +147,93 @@ class VindiPaymentProcessor
         $month_expiration = filter_var($_POST['vindi_cc_monthexpiry'], FILTER_SANITIZE_NUMBER_INT);
         $year_expiration  = filter_var($_POST['vindi_cc_yearexpiry'], FILTER_SANITIZE_NUMBER_INT);
         $expiry_date      = sanitize_text_field($_POST['vindi_cc_expiry_date']);
+        $holder_name      = sanitize_text_field($_POST['vindi_cc_fullname']);
+        $card_number      = filter_var($_POST['vindi_cc_number'], FILTER_SANITIZE_NUMBER_INT);
+        $card_code        = filter_var($_POST['vindi_cc_cvc'], FILTER_SANITIZE_NUMBER_INT);
+        $payment_company  = sanitize_text_field($_POST['vindi_cc_paymentcompany']);
 
-        if ( $month_expiration && $year_expiration ) {
+        if ($month_expiration && $year_expiration) {
             $card_expiration = "{$month_expiration}/{$year_expiration}";
-
         } else {
-            $explode_date = explode( "/", $expiry_date );
-
-            if ( ! isset( $explode_date[0] ) || ! isset( $explode_date[1] ) ) {
-                return false;
-            }
-
-            $card_expiration = "{$explode_date[0]}/20{$explode_date[1]}";
+            $card_expiration = $this->get_expiration_date($expiry_date);
         }
 
 
-        return array(
+        $fields = array(
             'customer_id'          => $customer_id,
-            'holder_name'          => sanitize_text_field($_POST['vindi_cc_fullname']),
+            'holder_name'          => $holder_name,
             'card_expiration'      => $card_expiration,
-            'card_number'          => filter_var($_POST['vindi_cc_number'], FILTER_SANITIZE_NUMBER_INT),
-            'card_cvv'             => filter_var($_POST['vindi_cc_cvc'], FILTER_SANITIZE_NUMBER_INT),
+            'card_number'          => $card_number,
+            'card_cvv'             => $card_code,
             'payment_method_code'  => $this->payment_method_code(),
-            'payment_company_code' => sanitize_text_field($_POST['vindi_cc_paymentcompany']),
+            'payment_company_code' => $payment_company,
         );
+        
+        $this->validade_card_fields($fields);
+
+        return $fields;
+    }
+
+    /**
+     * Validade card fields
+     * @param array $fields
+     * @return bool|void
+     */
+    private function validade_card_fields($fields)
+    {
+        foreach ($fields as $key => $field) {
+            if (!$field || empty($field)) {
+                $message = $this->get_card_abort_message($key);
+                return $this->abort($message);
+            }
+        }
+    }
+
+    /**
+     * Get card message for specific field
+     * @param string $field
+     * @return string
+     */
+    private function get_card_abort_message($field)
+    {
+        switch ($field) {
+            case 'holder_name':
+                $message = __("O campo 'Nome Impresso no Cartão' deve ser preenchido corretamente!", VINDI);
+                break;
+            case 'card_expiration':
+                $message = __("O campo 'Validade (mm/aa)' deve ser preenchido corretamente!", VINDI);
+                break;
+            case 'card_number':
+                $message = __("O campo 'Número do Cartão' deve ser preenchido corretamente!", VINDI);
+                break;
+            case 'card_cvv':
+                $message = __("O campo 'Código de Segurança' deve ser preenchido corretamente!", VINDI);
+                break;
+            case 'customer_id':
+                $message = __("Não foi possível encontrar o usuário! Faça login ou registre-se antes de efetuar a compra", VINDI);
+                break;
+            default:
+                $message = __("Verifique os dados de cartão de crédito preenchidos!", VINDI);
+                break;
+        }
+
+        return $message;
+    }
+
+    /**
+     * Get expiration date from string
+     * @param string $expiry_date
+     * @return string|bool
+     */
+    private function get_expiration_date($expiry_date)
+    {
+        $explode_date = explode( "/", $expiry_date );
+
+        if ( ! isset( $explode_date[0] ) || ! isset( $explode_date[1] ) ) {
+            return false;
+        }
+
+        return "{$explode_date[0]}/20{$explode_date[1]}";
     }
 
     /**
