@@ -39,9 +39,13 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
-= 1.1.13 - 10/06/2022 =
+= 1.1.13 - 10/08/2022 =
 -Lançamento da versão de patch.
 - **Correção**: Duplicação de produtos dentro do WooCommerce
+- **Adição**: Adicionado suporte à funcionalidade de "one time shipping" do WooCommerce
+  Subscriptions, que permite opção de cobrança única (somente no primeiro ciclo de uma assinatura)
+- **Correção**: Correção de um comportamento de alerta de notificação que induzia o usuário a
+  desmarcar a opção "Turn off Automatic Payments" de forma incorreta.
 
 
 = 1.1.12 - 08/06/2022 =
