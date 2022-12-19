@@ -1,4 +1,4 @@
-# Vindi Woocommerce
+# Vindi Woocommerce 2
 
 Gateway de pagamentos recorrentes para Wordpress | Woocommerce.
 
@@ -7,15 +7,15 @@ Gateway de pagamentos recorrentes para Wordpress | Woocommerce.
 [![Licença do Software][badge-license]](LICENSE)
 [![Última Versão no WordPress][badge-version]][link-version]
 
-**Vindi WooCommerce** oferece uma solução completa para pagamentos únicos e assinaturas com cartão de crédito e boleto utilizando o [Woocommerce Subscriptions](https://www.woothemes.com/products/woocommerce-subscriptions/).
+**Vindi WooCommerce 2** oferece uma solução completa para pagamentos únicos e assinaturas com cartão de crédito e boleto utilizando o [Woocommerce Subscriptions](https://www.woothemes.com/products/woocommerce-subscriptions/).
 
 ## Instalação
 
-Para verificar os requisitos e efetuar a instalação do plugin, [siga as instruções na documentação oficial](https://atendimento.vindi.com.br/hc/pt-br/articles/227335608).
+Para verificar os requisitos e efetuar a instalação do plugin, [siga as instruções em nosso GUIA DE INSTALAÇÃO VINDI WOOCOMMERCE 2](https://atendimento.vindi.com.br/hc/pt-br/articles/227335608).
 
 ## Dúvidas
 
-Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através da nossa [central de atendimento](https://atendimento.vindi.com.br/hc/pt-br).
+Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através da nossa [central de atendimento](https://atendimento.vindi.com.br/hc/pt-br/articles/4411755134747).
 
 ## Contribuindo
 Leia o arquivo [CONTRIBUTING.md](CONTRIBUTING.md).
