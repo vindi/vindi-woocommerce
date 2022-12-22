@@ -808,15 +808,18 @@ class VindiPaymentProcessor
             ),
         );
 
-        if (!empty($this->order->get_total_discount()) && $order_item['type'] == 'line_item') {
+        $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
+        
+        if (!empty($coupons) && $order_item['type'] == 'line_item') {
             $product_item['discounts'] = [];
-            $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
+
             foreach ($coupons as $coupon) {
                 if ($this->coupon_supports_product($order_item, $coupon)) {
                     $product_item['discounts'][] = $this->build_discount_item_for_subscription($coupon, $plan_cycles);
                 }
             }
-        }
+        } 
+
         return $product_item;
     }
 
