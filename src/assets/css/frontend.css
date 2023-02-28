@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,1000,2000,3000,4000,5000,6000,7000,8000,9001,1001,2001,3001,4001,5001,6001,7001,8001,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+
 .vindi_cc_form-container {
   display: grid;
   grid-column-gap: 10px;
@@ -47,6 +48,7 @@
   right: 4px;
   top: calc(50% - 8px);
   width: 48px;
+  max-height: inherit !important;
 }
 
 /* CREDIT CARD IMAGE STYLING */
@@ -70,9 +72,9 @@
   top: 15px;
 }
 
-#vindi_cc_ccsingle svg {
+#vindi_cc_ccsingle img {
   width: 75px;
-  max-height: 45px;
+  max-height: 45px !important;
 }
 
 .vindi_cc_creditcard svg#vindi_cc_cardfront,
