@@ -86,9 +86,12 @@ class PlansController
 
         $data = $variation_product->get_data();
 
-        $interval_type = $variation_product->get_meta('_subscription_period');
-        $interval_count = $variation_product->get_meta('_subscription_period_interval');
-        $plan_interval = VindiConversions::convert_interval($interval_count, $interval_type);
+        $interval_type     = $variation_product->get_meta('_subscription_period');
+        $interval_count    = $variation_product->get_meta('_subscription_period_interval');
+        $plan_interval     = VindiConversions::convert_interval($interval_count, $interval_type);
+        $plan_installments = $variation_product->get_meta('vindi_max_credit_installments');
+
+        if ( ! $plan_installments || $plan_installments === 0 ) $plan_installments = 1;
 
         $trigger_day = VindiConversions::convertTriggerToDay(
                         $product->get_meta('_subscription_trial_length'),
@@ -120,7 +123,7 @@ class PlansController
           'billing_trigger_day' => $trigger_day,
           'billing_cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
           'code' => 'WC-' . $data['id'],
-          'installments' => 1,
+          'installments' => $plan_installments,
           'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
           'plan_items' => array(
             ($product->get_meta('_subscription_length') == 0) ? array(
@@ -161,6 +164,9 @@ class PlansController
       $product->get_meta('_subscription_trial_period')
     );
 
+    $plan_installments = $product->get_meta('vindi_max_credit_installments');
+    if ( ! $plan_installments || $plan_installments === 0 ) $plan_installments = 1;
+
     // Creates the product within the Vindi
     $vindi_product_id = get_post_meta($post_id, 'vindi_product_id', true);
     $createdProduct = !empty($vindi_product_id) ?
@@ -186,7 +192,7 @@ class PlansController
       'billing_trigger_day' => $trigger_day,
       'billing_cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
       'code' => 'WC-' . $data['id'],
-      'installments' => 1,
+      'installments' => $plan_installments,
       'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
       'plan_items' => array(
         ($product->get_meta('_subscription_length') == 0) ? array(
@@ -263,9 +269,12 @@ class PlansController
 
         $data = $variation_product->get_data();
 
-        $interval_type = $variation_product->get_meta('_subscription_period');
-        $interval_count = $variation_product->get_meta('_subscription_period_interval');
-        $plan_interval = VindiConversions::convert_interval($interval_count, $interval_type);
+        $interval_type     = $variation_product->get_meta('_subscription_period');
+        $interval_count    = $variation_product->get_meta('_subscription_period_interval');
+        $plan_interval     = VindiConversions::convert_interval($interval_count, $interval_type);
+        $plan_installments = $variation_product->get_meta('vindi_max_credit_installments');
+
+        if ( ! $plan_installments || $plan_installments === 0 ) $plan_installments = 1;
 
         $trigger_day = VindiConversions::convertTriggerToDay(
                         $product->get_meta('_subscription_trial_length'),
@@ -298,7 +307,7 @@ class PlansController
             'billing_trigger_day' => $trigger_day,
             'billing_cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
             'code' => 'WC-' . $data['id'],
-            'installments' => 1,
+            'installments' => $plan_installments,
             'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
           )
         );
@@ -348,7 +357,9 @@ class PlansController
       )
     );
 
-    $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id', true);
+    $vindi_plan_id     = get_post_meta($post_id, 'vindi_plan_id', true);
+    $plan_installments = $product->get_meta('vindi_max_credit_installments');
+    if ( ! $plan_installments || $plan_installments === 0 ) $plan_installments = 1;
 
     // Updates the plan within the Vindi
     $updatedPlan = $this->routes->updatePlan(
@@ -361,7 +372,7 @@ class PlansController
         'billing_trigger_day' => $trigger_day,
         'billing_cycles' => ($product->get_meta('_subscription_length') == 0) ? null : $product->get_meta('_subscription_length'),
         'code' => 'WC-' . $data['id'],
-        'installments' => 1,
+        'installments' => $plan_installments,
         'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
       )
     );
