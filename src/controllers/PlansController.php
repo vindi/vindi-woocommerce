@@ -52,19 +52,17 @@ class PlansController
       return;
     }
 
-        if ($this->check_plan_vindi_item_id($post_id, 'vindi_plan_id') > 1) {
-            update_post_meta($post_id, 'vindi_plan_id', '');
-        }
+    if ($this->check_plan_vindi_item_id($post_id, 'vindi_plan_id') > 1) {
+        update_post_meta($post_id, 'vindi_plan_id', '');
+    }
 
-        if ($this->check_plan_vindi_item_id($post_id, 'vindi_product_id') > 1) {
-            update_post_meta($post_id, 'vindi_product_id', '');
-        }
+    if ($this->check_plan_vindi_item_id($post_id, 'vindi_product_id') > 1) {
+        update_post_meta($post_id, 'vindi_product_id', '');
+    }
 
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
-    if(!$recreated && get_post_status($post_id) != 'publish' || (
-      !empty(get_post_meta($post_id, 'vindi_plan_id', true)) &&
-      !empty(get_post_meta($post_id, 'vindi_product_id', true)))
+    if( !$recreated && get_post_status($post_id) != 'publish' || ( !empty(get_post_meta($post_id, 'vindi_plan_id', true ) ) )
     ) {
 
       return $this->update($post_id);
@@ -475,6 +473,8 @@ class PlansController
         global $wpdb;
         $vindi_id = get_post_meta($post_id, $meta, true);
 
+        if ( ! $vindi_id ) return 0;
+        
         $sql = "SELECT 
                   post_id as id 
                 FROM {$wpdb->prefix}postmeta
