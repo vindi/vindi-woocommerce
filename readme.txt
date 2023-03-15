@@ -1,17 +1,17 @@
 === Vindi WooCommerce 2 ===
 Contributors: apiki, aguiart0, laertejr, rodasistemas, cleberbonifacio
-Plugin Name: Vindi WooCommerce 2 (BETA)
+Plugin Name: Vindi WooCommerce
 Plugin URI: https://github.com/vindi/vindi-woocommerce
 Website Link: https://www.vindi.com.br
 Tags: vindi, subscriptions, pagamento-recorrente, cobranca-recorrente, cobrança-recorrente, recurring, site-de-assinatura, assinaturas, faturamento-recorrente, recorrencia, assinatura, woocommerce-subscriptions, vindi-woocommerce, vindi-payment-gateway
 Author URI: https://vindi.com.br/ | https://mentores.com.br
 Author: Vindi | Mentores Digital
 Requires at least: 4.4
-Tested up to: 6.0
+Tested up to: 6.1
 WC requires at least: 3.0.0
-WC tested up to: 6.5.1
+WC tested up to: 7.5.0
 Requires PHP: 5.6
-Stable Tag: 1.1.13
+Stable Tag: 1.2.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,15 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.2.0 - 15/03/2022 =
+-Lançamento da versão de patch.
+- **Correção:** Correção de scripts que faziam o update das informações do checkout durante a seleção de uma parcela. Algumas informações ocultas eram perdidas no processo.
+- **Correção:** Duplicação de produtos variáveis.
+- **Adição:** Adiciona a funcionalidade de controlar as configurações de parcelamento das assinaturas.
+- **Correção** Corrige a renderização dos métodos de pagamento para assinaturas com free trial ativado.
+- **Correção** Corrige o valor das parcelas, que se mantinham zerados caso o valor do primeiro ciclo fosse zerado.
+- **Correção** Corrige a utilização de cupons em assinaturas que possuem o free trial ativado.
+
 = 1.1.13 - 10/08/2022 =
 -Lançamento da versão de patch.
 - **Correção**: Duplicação de produtos dentro do WooCommerce
