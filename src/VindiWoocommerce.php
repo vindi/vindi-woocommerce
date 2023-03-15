@@ -84,6 +84,8 @@ class WC_Vindi_Payment extends AbstractInstance
     add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
       $this->webhooks, 'handle'
     ));
+
+    add_filter( 'woocommerce_cart_needs_payment', [ $this, 'filter_woocommerce_cart_needs_payment' ], 10, 2 );
   }
 
   /**
@@ -156,6 +158,15 @@ class WC_Vindi_Payment extends AbstractInstance
     $methods[] = new VindiBankSlipGateway($this->settings, $this->controllers);
 
     return $methods;
+  }
+
+  /**
+   * Sobrescreve o método que remove os métodos de pagamento para assinaturas com trial
+   * @return bool
+   */
+  public function filter_woocommerce_cart_needs_payment()
+  {
+    return true;
   }
 }
 
