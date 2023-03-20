@@ -89,7 +89,9 @@ class PlansController
         $interval_type     = $variation_product->get_meta('_subscription_period');
         $interval_count    = $variation_product->get_meta('_subscription_period_interval');
         $plan_interval     = VindiConversions::convert_interval($interval_count, $interval_type);
-        $plan_installments = $variation_product->get_meta('vindi_max_credit_installments');
+        $variation_id      = $variation['variation_id'];
+        
+        $plan_installments = $variation_product->get_meta( "vindi_max_credit_installments_$variation_id" );
 
         if ( ! $plan_installments || $plan_installments === 0 ) $plan_installments = 1;
 
@@ -173,7 +175,7 @@ class PlansController
       $product->get_meta('_subscription_trial_period')
     );
 
-    $plan_installments = $product->get_meta('vindi_max_credit_installments');
+    $plan_installments = $product->get_meta( "vindi_max_credit_installments_$post_id" );
     if ( ! $plan_installments || $plan_installments === 0 ) $plan_installments = 1;
 
     // Creates the product within the Vindi
@@ -281,7 +283,9 @@ class PlansController
         $interval_type     = $variation_product->get_meta('_subscription_period');
         $interval_count    = $variation_product->get_meta('_subscription_period_interval');
         $plan_interval     = VindiConversions::convert_interval($interval_count, $interval_type);
-        $plan_installments = $variation_product->get_meta('vindi_max_credit_installments');
+        $variation_id      = $variation['variation_id'];
+        
+        $plan_installments = $variation_product->get_meta( "vindi_max_credit_installments_$variation_id" );
 
         if ( ! $plan_installments || $plan_installments === 0 ) $plan_installments = 1;
 
@@ -360,7 +364,7 @@ class PlansController
     );
 
     $vindi_plan_id     = get_post_meta($post_id, 'vindi_plan_id', true);
-    $plan_installments = $product->get_meta('vindi_max_credit_installments');
+    $plan_installments = $product->get_meta( "vindi_max_credit_installments_$post_id" );
     if ( ! $plan_installments || $plan_installments === 0 ) $plan_installments = 1;
 
     // Updates the plan within the Vindi
