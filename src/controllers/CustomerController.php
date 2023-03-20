@@ -105,8 +105,10 @@ class CustomerController
       )
     );
 
-    // Saving customer in the user meta WP
-    update_user_meta($user_id, 'vindi_customer_id', $createdUser['id']);
+    if ( $createdUser && isset( $createdUser['id'] ) ) {
+      update_user_meta($user_id, 'vindi_customer_id', $createdUser['id']);
+    }
+    
     return $createdUser;
   }
 
