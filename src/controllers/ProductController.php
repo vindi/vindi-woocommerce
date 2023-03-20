@@ -88,10 +88,10 @@ class ProductController
     ));
 
     // Saving product id and plan in the WC goal
-    if($createdProduct) {
+    if($createdProduct && isset( $createdProduct['id'] ) ) {
       update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
-
       set_transient('vindi_product_message', 'created', 60);
+      
     } else {
       set_transient('vindi_product_message', 'error', 60);
     }

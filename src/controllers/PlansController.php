@@ -137,13 +137,22 @@ class PlansController
         $variations_plans[$variation['variation_id']] = $createdPlan;
 
         // Saving product id and plan in the WC goal
-        update_post_meta( $variation['variation_id'], 'vindi_product_id', $createdProduct['id'] );
+        if ( isset( $variation['variation_id'] ) && $createdProduct['id'] ) {
+          update_post_meta( $variation['variation_id'], 'vindi_product_id', $createdProduct['id'] );
+        }
 
-        update_post_meta( $variation['variation_id'], 'vindi_plan_id', $createdPlan['id'] );
+        if ( isset( $variation['variation_id'] ) && $createdPlan['id'] ) {
+          update_post_meta( $variation['variation_id'], 'vindi_plan_id', $createdPlan['id'] );
+        }
+
       }
-      update_post_meta( $post_id, 'vindi_product_id', end($variations_products)['id'] );
 
-      update_post_meta( $post_id, 'vindi_plan_id', end($variations_products)['id'] );
+      $product_id = end($variations_products)['id'];
+      
+      if ( $product_id ) {
+        update_post_meta( $post_id, 'vindi_product_id', end($variations_products)['id'] );
+        update_post_meta( $post_id, 'vindi_plan_id', end($variations_products)['id'] );
+      }
 
       return array(
         'product' => $variations_products,
@@ -202,10 +211,10 @@ class PlansController
 
     
     // Saving product id and plan in the WC goal
-    if ($createdProduct) {
+    if ($createdProduct && isset( $createdProduct['id'] ) ) {
       update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
     }
-    if ($createdPlan) {
+    if ($createdPlan && isset( $createdPlan['id'] ) ) {
       update_post_meta( $post_id, 'vindi_plan_id', $createdPlan['id'] );
     }
     
@@ -304,17 +313,10 @@ class PlansController
             'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
           )
         );
+
         $variations_products[$variation['variation_id']] = $updatedProduct;
         $variations_plans[$variation['variation_id']] = $updatedPlan;
-
-        // Saving product id and plan in the WC goal
-        update_post_meta( $variation['variation_id'], 'vindi_product_id', $updatedProduct['id'] );
-
-        update_post_meta( $variation['variation_id'], 'vindi_plan_id', $updatedPlan['id'] );
       }
-      update_post_meta( $post_id, 'vindi_product_id', end($variations_products)['id'] );
-
-      update_post_meta( $post_id, 'vindi_plan_id', end($variations_products)['id'] );
 
       return array(
         'product' => $variations_products,
@@ -377,6 +379,7 @@ class PlansController
       'product' => $updatedProduct,
       'plan' => $updatedPlan,
     );
+    
     return $response;
   }
 
