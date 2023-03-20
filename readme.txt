@@ -47,6 +47,7 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 - **Correção** Corrige a renderização dos métodos de pagamento para assinaturas com free trial ativado.
 - **Correção** Corrige o valor das parcelas, que se mantinham zerados caso o valor do primeiro ciclo fosse zerado.
 - **Correção** Corrige a utilização de cupons em assinaturas que possuem o free trial ativado.
+- **Correção** Vinculo com a VINDI eram sobrescritos durante edição de produtos.
 
 = 1.1.13 - 10/08/2022 =
 -Lançamento da versão de patch.
