@@ -567,10 +567,12 @@ class VindiPaymentProcessor
     protected function build_sign_up_fee_item($order_items)
     {
         foreach ($order_items as $order_item) {
-            $product = method_exists($order_item, 'get_product') ? $order_item->get_product() : false;
             
-            if(!$product)
+            if ( is_object($order_item ) && method_exists($order_item, 'get_product') ) {
+                $product = $order_item->get_product();
+            } else {
                 continue;
+            }
 
             $sign_up_fee = $product->get_meta('_subscription_sign_up_fee');
 
@@ -894,31 +896,39 @@ class VindiPaymentProcessor
      * @return int
      */
     protected function config_discount_cycles($coupon, $plan_cycles = 0)
-    {
-        $get_plan_length =
-        function ($cycle_count, $plan_cycles) {
-            if (!$cycle_count) {
-                return null;
-            }
-
-            if ($plan_cycles) {
-                return min($plan_cycles, $cycle_count);
-            }
-            return $cycle_count;
-        };
-        
+    {   
         $cycle_count = get_post_meta($coupon->id, 'cycle_count', true);
 
         if ($coupon->get_discount_type() == 'recurring_percent') {
             $cycle_count = WC_Subscriptions_Coupon::get_coupon_limit($coupon->id);
         }
 
-        switch ($cycle_count) {
-            case '0':
-                return null;
-            default:
-                return $get_plan_length($cycle_count, $plan_cycles);
+        if ( $cycle_count == 0 ) {
+            return null;
+        } else {
+            return $this->get_plan_length($cycle_count, $plan_cycles);
         }
+    }
+
+    /**
+     * Get plan length
+     * 
+     * @param int $cycle_count
+     * @param int $plan_cycles
+     * 
+     * @return int
+     */
+    private function get_plan_length( $cycle_count, $plan_cycles )
+    {
+        if (!$cycle_count) {
+            return null;
+        }
+
+        if ($plan_cycles) {
+            return min($plan_cycles, $cycle_count);
+        }
+
+        return $cycle_count;
     }
 
     /**
