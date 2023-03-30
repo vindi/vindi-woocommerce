@@ -1,9 +1,4 @@
 <?php
-
-if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
-}
-
 /**
  * WC_Meta_Box_Coupon_Data Class updated with custom fields.
  */
@@ -11,9 +6,24 @@ class ProductsMetaBox
 {
     public function __construct()
     {
-        add_action('woocommerce_product_after_variable_attributes', [$this, 'woocommerce_variable_subscription_custom_fields'], 10, 3);
-        add_action('woocommerce_product_options_general_product_data', [$this, 'woocommerce_subscription_custom_fields']);
-        add_action('woocommerce_process_product_meta', [$this, 'filter_woocommerce_product_custom_fields']);
+        if (!defined('ABSPATH')) {
+            exit;
+        }
+        
+        add_action('woocommerce_product_after_variable_attributes', [
+            $this,
+            'woocommerce_variable_subscription_custom_fields'
+        ], 10, 3);
+
+        add_action('woocommerce_product_options_general_product_data', [
+            $this,
+            'woocommerce_subscription_custom_fields']
+        );
+
+        add_action('woocommerce_process_product_meta', [
+            $this,
+            'filter_woocommerce_product_custom_fields'
+        ]);
     }
 
     public function woocommerce_subscription_custom_fields()
@@ -59,7 +69,8 @@ class ProductsMetaBox
                 'label' => __('Máximo de parcelas com cartão de crédito', 'woocommerce'),
                 'type'  => 'number',
                 'description' => sprintf(
-                    'Esse campo controla a quantidade máxima de parcelas para compras com cartão de crédito. <strong> %s </strong>',
+                    'Esse campo controla a quantidade máxima de parcelas 
+                    para compras com cartão de crédito. <strong> %s </strong>',
                     '(Somente para assinaturas anuais!)'
                 ),
                 "desc_tip"    => true,
@@ -89,14 +100,19 @@ class ProductsMetaBox
     private function handle_saving_variable_subscription($product)
     {
         $variations = array_reverse($product->get_children());
-        $periods    = isset($_POST['variable_subscription_period']) ? array_filter($_POST['variable_subscription_period']) : false;
-        $intervals  = isset($_POST['variable_subscription_period_interval']) ? array_filter($_POST['variable_subscription_period_interval']) : 1;
+        $periods = isset($_POST['variable_subscription_period']) ? array_filter($_POST['variable_subscription_period']) : false;
+        $intervals = isset($_POST['variable_subscription_period_interval']) ? array_filter($_POST['variable_subscription_period_interval']) : 1;
 
         foreach ($variations as $key => $variation) {
             if (isset($_POST["vindi_max_credit_installments_$variation"])) {
                 $installments = filter_var($_POST["vindi_max_credit_installments_$variation"]);
                 if (isset($periods[$key]) && isset($intervals[$key])) {
-                    $this->save_woocommerce_product_custom_fields($variation, $installments, $periods[$key], $intervals[$key]);
+                    $this->save_woocommerce_product_custom_fields(
+                        $variation, 
+                        $installments, 
+                        $periods[$key], 
+                        $intervals[$key]
+                    );
                 }
             }
         }
@@ -119,7 +135,9 @@ class ProductsMetaBox
     {
         if ($period) {
             if ($period === 'year') {
-                if ($installments > 12) $installments = 12;
+                if ($installments > 12) {
+                    $installments = 12;
+                }
             }
 
             if ($period === 'month') {
@@ -132,14 +150,18 @@ class ProductsMetaBox
         update_post_meta($post_id, "vindi_max_credit_installments_$post_id", $installments);
     }
 
-    private function check_credit_payment_active($wc)
+    private function check_credit_payment_active($woocommerce)
     {
-        if ($wc) {
-            $gateways = $wc->payment_gateways->get_available_payment_gateways();
+        if ($woocommerce) {
+            $gateways = $woocommerce->payment_gateways->get_available_payment_gateways();
 
             foreach ($gateways as $key) {
-                if ($key === 'vindi-credit-card') return true;
+                if ($key === 'vindi-credit-card') {
+                    return true;
+                }
             }
         }
+
+        return false;
     }
 }
