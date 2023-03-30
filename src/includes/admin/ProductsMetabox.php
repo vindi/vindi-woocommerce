@@ -1,6 +1,7 @@
 <?php
 
 namespace VindiPaymentGateway;
+
 /**
  * WC_Meta_Box_Coupon_Data Class updated with custom fields.
  */
@@ -8,10 +9,8 @@ class ProductsMetabox
 {
     public function __construct()
     {
-        if (!defined('ABSPATH')) {
-            exit;
-        }
-        
+        $this->check_abs_path();
+
         add_action('woocommerce_product_after_variable_attributes', [
             $this,
             'woocommerce_variable_subscription_custom_fields'
@@ -173,5 +172,12 @@ class ProductsMetabox
         }
 
         return false;
+    }
+    
+    private function check_abs_path()
+    {
+        if (!defined('ABSPATH')) {
+            exit;
+        }
     }
 }
