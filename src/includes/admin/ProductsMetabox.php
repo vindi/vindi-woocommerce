@@ -91,19 +91,12 @@ class ProductsMetabox
     private function handle_saving_variable_subscription($product)
     {
         $variations = array_reverse($product->get_children());
-        $periods = isset($_POST['variable_subscription_period'])
-                        ? array_filter($_POST['variable_subscription_period'])
-                        : false;
-
-        $intervals = isset($_POST['variable_subscription_period_interval'])
-                        ? array_filter($_POST['variable_subscription_period_interval'])
-                        : 1;
+        $periods = $this->get_post_vars('variable_subscription_period');
+        $intervals = $this->get_post_vars('variable_subscription_period_interval');
 
 
         foreach ($variations as $key => $variation) {
-            $installments = isset($_POST['variable_subscription_period'])
-                                ? filter_var($_POST["vindi_max_credit_installments_$variation"])
-                                : false;
+            $installments = $this->get_post_vars("vindi_max_credit_installments_$variation");
             if (isset($installments)) {
                 if (isset($periods[$key]) && isset($intervals[$key])) {
                     $this->save_woocommerce_product_custom_fields(
@@ -117,22 +110,23 @@ class ProductsMetabox
         }
     }
 
+    private function get_post_vars($var)
+    {
+        if (!empty($_POST) && isset($_POST[$var])) {
+            return filter_var($_POST[$var]);
+        }
+
+        return false;
+    }
+
     private function handle_saving_simple_subscription($product)
     {
         $post_id = $product->get_id();
 
-        $period = isset($_POST['_subscription_period'])
-                    ? sanitize_text_field($_POST['_subscription_period'])
-                    : false;
-
-        $interval = isset($_POST['_subscription_period_interval'])
-                    ? intval($_POST['_subscription_period_interval'])
-                    : 1;
-
-        $installments = isset($_POST["vindi_max_credit_installments_$post_id"])
-                    ? intval($_POST["vindi_max_credit_installments_$post_id"])
-                    : 1;
-
+        $period = $this->get_post_vars('_subscription_period');
+        $interval = $this->get_post_vars('_subscription_period_interval');
+        $installments = $this->get_post_vars("vindi_max_credit_installments_$post_id");
+        
         if ($period && $interval && $installments) {
             $this->save_woocommerce_product_custom_fields($post_id, $installments, $period, $interval);
         }
