@@ -10,11 +10,11 @@ class Product {
 
         const elements = [period, type, middle];
 
-        this.showCustom(this.getMaxInstallments());
+        this.showCustom(this.handleMaxInstallments());
         elements.forEach(element => {
             if (element) {
                 element.addEventListener("change", () => {
-                    this.showCustom(this.getMaxInstallments());
+                    this.showCustom(this.handleMaxInstallments());
                 });
             }
         });
@@ -36,21 +36,28 @@ class Product {
 
     }
 
-    getMaxInstallments() {
+    handleMaxInstallments() {
         const period = document.querySelector("#_subscription_period");
         const middle = document.querySelector("#_subscription_period_interval");
         const type   = document.querySelector("#product-type");
+        const installments = this.getMaxInstallments(period, middle);
 
-        if (type.value.includes("subscription")) {
-            if ( period.value === 'year' ) {
-                return 12;
-            }
-    
-            if( period.value === 'month' ) {
-                if (middle.value) {
-                    if (!middle.value == 1) {
-                        return middle.value;
-                    }
+        if (type.value.includes("subscription") && installments) {
+            return installments;
+        }
+
+        return false;
+    }
+
+    getMaxInstallments(period, middle) {
+        if ( period.value === 'year' ) {
+            return 12;
+        }
+
+        if( period.value === 'month' ) {
+            if (middle.value) {
+                if (!middle.value == 1) {
+                    return middle.value;
                 }
             }
         }
