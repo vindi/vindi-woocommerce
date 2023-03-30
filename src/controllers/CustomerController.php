@@ -105,7 +105,7 @@ class CustomerController
       )
     );
 
-    if ( isset( $createdUser['id'] ) && $createdUser['id'] ) {
+    if (isset($createdUser['id']) && $createdUser['id']){
       update_user_meta($user_id, 'vindi_customer_id', $createdUser['id']);
     }
     
