@@ -61,10 +61,12 @@ class FrontEnd {
 
     name.value = name.value.toUpperCase();
 
-    if(frontName && backName) {
-      frontName.innerHTML = name.value === '' ? 'João da Silva' : name.value;
-      backName.innerHTML = name.value === '' ? 'João da Silva' : name.value;
+    if(!frontName || !backName) {
+      return;
     }
+
+    frontName.innerHTML = name.value === '' ? 'João da Silva' : name.value;
+    backName.innerHTML = name.value === '' ? 'João da Silva' : name.value;
   }
 
   setExpirationDate(date) {
