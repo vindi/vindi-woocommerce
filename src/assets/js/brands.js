@@ -24,37 +24,17 @@ class Brands {
 
   setCardColor(card) {
     const brand = this.getCard(card.value.replace(/\s/g, ""));
-
     switch (brand) {
-      case 'elo':
-        this.swapColor('black');
-        break;
-      case 'hipercard':
-        this.swapColor('reddark');
-        break;
-      case 'diners_club':
-        this.swapColor('blue');
-        break;
-      case 'american_express':
-        this.swapColor('greendark');
-        break;
-      case 'mastercard':
-        this.swapColor('purpledark');
-        break;
-      case 'visa':
-        this.swapColor('bluedark');
-        break;
-      case 'discover':
-        this.swapColor('grey');
-        break;
-      case 'jcb':
-        this.swapColor('orangedark');
-        break;
-      default:
-        this.swapColor('greydark');
-        break;
+      case 'elo': this.swapColor('black'); break;
+      case 'hipercard': this.swapColor('reddark'); break;
+      case 'diners_club': this.swapColor('blue'); break;
+      case 'american_express': this.swapColor('greendark'); break;
+      case 'mastercard': this.swapColor('purpledark'); break;
+      case 'visa': this.swapColor('bluedark'); break;
+      case 'discover': this.swapColor('grey'); break;
+      case 'jcb': this.swapColor('orangedark'); break;
+      default: this.swapColor('greydark'); break;
     }
-
   }
 
   setBrand(brand) {
