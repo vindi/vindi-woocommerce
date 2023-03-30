@@ -9,8 +9,6 @@ class ProductsMetabox
 {
     public function __construct()
     {
-        $this->check_abs_path();
-
         add_action('woocommerce_product_after_variable_attributes', [
             $this,
             'woocommerce_variable_subscription_custom_fields'
@@ -41,11 +39,11 @@ class ProductsMetabox
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function woocommerce_variable_subscription_custom_fields($loop, $variation_data, $variation)
     {
-        // $loop is not used
-        // $variation_data is not used
-
         global $woocommerce;
         if (isset($variation->ID)) {
             $product = wc_get_product($variation->ID);
@@ -175,12 +173,5 @@ class ProductsMetabox
         }
 
         return false;
-    }
-
-    private function check_abs_path()
-    {
-        if (!defined('ABSPATH')) {
-            exit(0);
-        }
     }
 }
