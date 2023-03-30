@@ -2,7 +2,7 @@
 /**
  * WC_Meta_Box_Coupon_Data Class updated with custom fields.
  */
-class ProductsMetabox
+class productsMetabox
 {
     public function __construct()
     {
@@ -33,7 +33,7 @@ class ProductsMetabox
         if (isset($post->ID)) {
             $product = wc_get_product($post->ID);
 
-            if ($product->is_type('subscription') || $post->post_status === 'auto-draft') {
+            if($product->is_type('subscription') || $post->post_status === 'auto-draft') {
 
                 if ($this->check_credit_payment_active($woocommerce)) {
                     $this->show_meta_custom_data($post->ID);
@@ -46,10 +46,10 @@ class ProductsMetabox
     {
         global $woocommerce;
 
-        if (isset($variation->ID)) {
+        if(isset($variation->ID)){
 
             $product = wc_get_product($variation->ID);
-            if ($product->is_type('subscription_variation') || $variation->post_status === 'auto-draft') {
+            if($product->is_type('subscription_variation') || $variation->post_status === 'auto-draft') {
 
                 if ($this->check_credit_payment_active($woocommerce)) {
                     $this->show_meta_custom_data($variation->ID);
@@ -127,9 +127,17 @@ class ProductsMetabox
     {
         $post_id = $product->get_id();
 
-        $period = isset($_POST['_subscription_period']) ? sanitize_text_field($_POST['_subscription_period']) : false;
-        $interval = isset($_POST['_subscription_period_interval']) ? intval($_POST['_subscription_period_interval']) : 1;
-        $installments = isset($_POST["vindi_max_credit_installments_$post_id"]) ? intval($_POST["vindi_max_credit_installments_$post_id"]) : 1;
+        $period = isset($_POST['_subscription_period'])
+                    ? sanitize_text_field($_POST['_subscription_period'])
+                    : false;
+
+        $interval = isset($_POST['_subscription_period_interval'])
+                    ? intval($_POST['_subscription_period_interval'])
+                    : 1;
+
+        $installments = isset($_POST["vindi_max_credit_installments_$post_id"])
+                    ? intval($_POST["vindi_max_credit_installments_$post_id"])
+                    : 1;
 
         if ($period && $interval && $installments) {
             $this->save_woocommerce_product_custom_fields($post_id, $installments, $period, $interval);
