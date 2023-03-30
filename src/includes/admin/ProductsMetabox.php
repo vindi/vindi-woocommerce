@@ -43,6 +43,9 @@ class ProductsMetabox
 
     public function woocommerce_variable_subscription_custom_fields($loop, $variation_data, $variation)
     {
+        // $loop is not used
+        // $variation_data is not used
+
         global $woocommerce;
         if (isset($variation->ID)) {
             $product = wc_get_product($variation->ID);
@@ -173,11 +176,11 @@ class ProductsMetabox
 
         return false;
     }
-    
+
     private function check_abs_path()
     {
         if (!defined('ABSPATH')) {
-            exit;
+            exit(0);
         }
     }
 }
