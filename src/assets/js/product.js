@@ -38,9 +38,9 @@ class Product {
 
     handleMaxInstallments() {
         const period = document.querySelector("#_subscription_period");
-        const middle = document.querySelector("#_subscription_period_interval");
+        const interval = document.querySelector("#_subscription_period_interval");
         const type   = document.querySelector("#product-type");
-        const installments = this.getMaxInstallments(period, middle);
+        const installments = this.getMaxInstallments(period, interval);
 
         if (type.value.includes("subscription") && installments) {
             return installments;
@@ -49,15 +49,21 @@ class Product {
         return false;
     }
 
-    getMaxInstallments(period, middle) {
+    getMaxInstallments(period, interval) {
         if ( period.value === 'year' ) {
             return 12;
         }
 
-        if( period.value === 'month' && middle.value) {
-            if (middle.value != 1) {
-                return middle.value;
-            }
+        if( period.value === 'month') {
+            return this.getMonthInterval();
+        }
+
+        return false;
+    }
+
+    getMonthInterval(interval) {
+        if (parseInt(interval.value) && parseInt(interval.value) != 1) {
+            return middle.value;
         }
 
         return false;
