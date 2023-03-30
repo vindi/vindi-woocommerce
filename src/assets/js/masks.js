@@ -2,59 +2,47 @@ class Masks {
   constructor() {
     if (!document.querySelector(".wc_payment_method .payment_method_vindi-credit-card")) return;
 
-    this.setEvents();
+    this.handleMask();
   }
 
-  setEvents() {
-    this.cardMask();
-    this.dateMask();
-    this.cvvMask();
-    this.ownerMask();
+  handleMask() {
+    const ids = [
+      "#vindi_cc_cardnumber",
+      "#vindi_cc_expirationdate",
+      "#vindi_cc_securitycode",
+      "#vindi_cc_name"
+    ];
+
+    ids.forEach(id => {
+      const mask  = this.getMask(id);
+      const field = document.querySelector(id);
+
+      if (Object.keys(mask).length > 0 && field) {
+        IMask(field, mask);
+      }
+    });
   }
 
-  cardMask() {
-    const card = document.querySelector("#vindi_cc_cardnumber");
-    
-    if (card) {
-      var mask = {
-        mask: '0000 0000 0000 0000'
-      };
-      IMask(card, mask);
+  getMask(id) {
+    let selected;
+    switch (id) {
+      case "#vindi_cc_cardnumber":
+          selected = { mask: '0000 0000 0000 0000' }
+        break;
+      case "#vindi_cc_expirationdate":
+          selected = { mask: '00/00' };
+        break;
+      case "#vindi_cc_securitycode":
+          selected = { mask: '0000' };
+        break;
+      case "#vindi_cc_name":
+          selected = { mask: /^[A-Za-z\s]*$/ };
+        break;
+      default:
+          selected = {};
+        break;
     }
-  }
-
-  dateMask() {
-    const date = document.querySelector("#vindi_cc_expirationdate");
-
-    if (date) {
-      var mask = {
-        mask: '00/00'
-      };
-      IMask(date, mask);
-    }
-    
-  }
-
-  cvvMask() {
-    const cod = document.querySelector("#vindi_cc_securitycode");
-
-    if (cod) {
-      var mask = {
-        mask: '0000'
-      };
-      IMask(cod, mask);
-    }
-  }
-
-  ownerMask() {
-    const cod = document.querySelector("#vindi_cc_name");
-
-    if (cod) {
-      var mask = {
-        mask: /^[A-Za-z\s]*$/
-      };
-      IMask(cod, mask);
-    }
+    return selected;
   }
 }
 
