@@ -99,9 +99,12 @@ class ProductsMetabox
                         ? array_filter($_POST['variable_subscription_period_interval'])
                         : 1;
 
+
         foreach ($variations as $key => $variation) {
-            if (isset($_POST["vindi_max_credit_installments_$variation"])) {
-                $installments = filter_var($_POST["vindi_max_credit_installments_$variation"]);
+            $installments = isset($_POST['variable_subscription_period'])
+                                ? filter_var($_POST["vindi_max_credit_installments_$variation"])
+                                : false;
+            if (isset($installments)) {
                 if (isset($periods[$key]) && isset($intervals[$key])) {
                     $this->save_woocommerce_product_custom_fields(
                         $variation,
