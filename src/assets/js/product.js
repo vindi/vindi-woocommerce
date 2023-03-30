@@ -39,19 +39,19 @@ class Product {
     getMaxInstallments() {
         const period = document.querySelector("#_subscription_period");
         const middle = document.querySelector("#_subscription_period_interval");
-
         const type   = document.querySelector("#product-type");
 
-        if ( ! type.value.includes("subscription") ) return;
-
-        if ( period.value === 'year' ) {
-            return 12;
-        }
-
-        if( period.value === 'month' ) {
-            if (middle.value) {
-                if (middle.value == 1) return;
-                return middle.value;
+        if (type.value.includes("subscription")) {
+            if ( period.value === 'year' ) {
+                return 12;
+            }
+    
+            if( period.value === 'month' ) {
+                if (middle.value) {
+                    if (!middle.value == 1) {
+                        return middle.value;
+                    }
+                }
             }
         }
 
