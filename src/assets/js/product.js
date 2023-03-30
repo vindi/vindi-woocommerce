@@ -54,11 +54,9 @@ class Product {
             return 12;
         }
 
-        if( period.value === 'month' ) {
-            if (middle.value) {
-                if (!middle.value == 1) {
-                    return middle.value;
-                }
+        if( period.value === 'month' && middle.value) {
+            if (middle.value != 1) {
+                return middle.value;
             }
         }
 
