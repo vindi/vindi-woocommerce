@@ -107,6 +107,9 @@ class ProductsMetabox
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
     private function get_post_vars($var)
     {
         if (!empty($_POST) && isset($_POST[$var])) {
