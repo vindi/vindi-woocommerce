@@ -35,7 +35,6 @@ class ProductsMetabox
         if (isset($post->ID)) {
             $product = wc_get_product($post->ID);
             if ($product->is_type('subscription') || $post->post_status === 'auto-draft') {
-
                 if ($this->check_credit_payment_active($woocommerce)) {
                     $this->show_meta_custom_data($post->ID);
                 }
@@ -49,7 +48,6 @@ class ProductsMetabox
         if (isset($variation->ID)) {
             $product = wc_get_product($variation->ID);
             if ($product->is_type('subscription_variation') || $variation->post_status === 'auto-draft') {
-
                 if ($this->check_credit_payment_active($woocommerce)) {
                     $this->show_meta_custom_data($variation->ID);
                 }
