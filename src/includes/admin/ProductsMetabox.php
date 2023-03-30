@@ -80,11 +80,9 @@ class ProductsMetabox
     public function filter_woocommerce_product_custom_fields($post_id)
     {
         $product = wc_get_product($post_id);
-
         if ($product->is_type('variable-subscription')) {
             $this->handle_saving_variable_subscription($product);
         }
-
         if ($product->is_type('subscription')) {
             $this->handle_saving_simple_subscription($product);
         }
@@ -158,13 +156,11 @@ class ProductsMetabox
 
     private function check_credit_payment_active($woocommerce)
     {
-        if ($woocommerce) {
-            $gateways = $woocommerce->payment_gateways->get_available_payment_gateways();
+        $gateways = $woocommerce->payment_gateways->get_available_payment_gateways();
 
-            foreach ($gateways as $key) {
-                if ($key === 'vindi-credit-card') {
-                    return true;
-                }
+        foreach ($gateways as $key) {
+            if ($key === 'vindi-credit-card') {
+                return true;
             }
         }
 
