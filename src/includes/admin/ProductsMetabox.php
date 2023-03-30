@@ -94,18 +94,15 @@ class ProductsMetabox
         $periods = $this->get_post_vars('variable_subscription_period');
         $intervals = $this->get_post_vars('variable_subscription_period_interval');
 
-
         foreach ($variations as $key => $variation) {
             $installments = $this->get_post_vars("vindi_max_credit_installments_$variation");
-            if (isset($installments)) {
-                if (isset($periods[$key]) && isset($intervals[$key])) {
-                    $this->save_woocommerce_product_custom_fields(
-                        $variation,
-                        $installments,
-                        $periods[$key],
-                        $intervals[$key]
-                    );
-                }
+            if (isset($periods[$key]) && isset($intervals[$key])) {
+                $this->save_woocommerce_product_custom_fields(
+                    $variation,
+                    $installments,
+                    $periods[$key],
+                    $intervals[$key]
+                );
             }
         }
     }
@@ -126,7 +123,7 @@ class ProductsMetabox
         $period = $this->get_post_vars('_subscription_period');
         $interval = $this->get_post_vars('_subscription_period_interval');
         $installments = $this->get_post_vars("vindi_max_credit_installments_$post_id");
-        
+
         if ($period && $interval && $installments) {
             $this->save_woocommerce_product_custom_fields($post_id, $installments, $period, $interval);
         }
@@ -134,18 +131,11 @@ class ProductsMetabox
 
     private function save_woocommerce_product_custom_fields($post_id, $installments, $period, $interval)
     {
-        if ($period) {
-            if ($period === 'year') {
-                if ($installments > 12) {
-                    $installments = 12;
-                }
-            }
-
-            if ($period === 'month') {
-                if ($installments > $interval) {
-                    $installments = $interval;
-                }
-            }
+        if ($period === 'year' && $installments > 12) {
+            $installments = 12;
+        }
+        if ($period === 'month' && $installments > $interval) {
+            $installments = $interval;
         }
 
         update_post_meta($post_id, "vindi_max_credit_installments_$post_id", $installments);
