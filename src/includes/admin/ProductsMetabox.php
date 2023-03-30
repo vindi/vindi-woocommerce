@@ -1,4 +1,6 @@
 <?php
+
+namespace VindiPaymentGateway;
 /**
  * WC_Meta_Box_Coupon_Data Class updated with custom fields.
  */
@@ -32,7 +34,6 @@ class ProductsMetabox
 
         if (isset($post->ID)) {
             $product = wc_get_product($post->ID);
-
             if ($product->is_type('subscription') || $post->post_status === 'auto-draft') {
 
                 if ($this->check_credit_payment_active($woocommerce)) {
@@ -45,9 +46,7 @@ class ProductsMetabox
     public function woocommerce_variable_subscription_custom_fields($loop, $variation_data, $variation)
     {
         global $woocommerce;
-
         if (isset($variation->ID)) {
-
             $product = wc_get_product($variation->ID);
             if ($product->is_type('subscription_variation') || $variation->post_status === 'auto-draft') {
 
