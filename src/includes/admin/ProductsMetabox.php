@@ -2,7 +2,7 @@
 /**
  * WC_Meta_Box_Coupon_Data Class updated with custom fields.
  */
-class ProductsMetaBox
+class ProductsMetabox
 {
     public function __construct()
     {
@@ -17,8 +17,8 @@ class ProductsMetaBox
 
         add_action('woocommerce_product_options_general_product_data', [
             $this,
-            'woocommerce_subscription_custom_fields']
-        );
+            'woocommerce_subscription_custom_fields'
+        ]);
 
         add_action('woocommerce_process_product_meta', [
             $this,
@@ -100,17 +100,22 @@ class ProductsMetaBox
     private function handle_saving_variable_subscription($product)
     {
         $variations = array_reverse($product->get_children());
-        $periods = isset($_POST['variable_subscription_period']) ? array_filter($_POST['variable_subscription_period']) : false;
-        $intervals = isset($_POST['variable_subscription_period_interval']) ? array_filter($_POST['variable_subscription_period_interval']) : 1;
+        $periods = isset($_POST['variable_subscription_period'])
+                        ? array_filter($_POST['variable_subscription_period'])
+                        : false;
+
+        $intervals = isset($_POST['variable_subscription_period_interval'])
+                        ? array_filter($_POST['variable_subscription_period_interval'])
+                        : 1;
 
         foreach ($variations as $key => $variation) {
             if (isset($_POST["vindi_max_credit_installments_$variation"])) {
                 $installments = filter_var($_POST["vindi_max_credit_installments_$variation"]);
                 if (isset($periods[$key]) && isset($intervals[$key])) {
                     $this->save_woocommerce_product_custom_fields(
-                        $variation, 
-                        $installments, 
-                        $periods[$key], 
+                        $variation,
+                        $installments,
+                        $periods[$key],
                         $intervals[$key]
                     );
                 }
@@ -122,9 +127,9 @@ class ProductsMetaBox
     {
         $post_id = $product->get_id();
 
-        $period        = isset($_POST['_subscription_period']) ? sanitize_text_field($_POST['_subscription_period']) : false;
-        $interval      = isset($_POST['_subscription_period_interval']) ? intval($_POST['_subscription_period_interval']) : 1;
-        $installments  = isset($_POST["vindi_max_credit_installments_$post_id"]) ? intval($_POST["vindi_max_credit_installments_$post_id"]) : 1;
+        $period = isset($_POST['_subscription_period']) ? sanitize_text_field($_POST['_subscription_period']) : false;
+        $interval = isset($_POST['_subscription_period_interval']) ? intval($_POST['_subscription_period_interval']) : 1;
+        $installments = isset($_POST["vindi_max_credit_installments_$post_id"]) ? intval($_POST["vindi_max_credit_installments_$post_id"]) : 1;
 
         if ($period && $interval && $installments) {
             $this->save_woocommerce_product_custom_fields($post_id, $installments, $period, $interval);

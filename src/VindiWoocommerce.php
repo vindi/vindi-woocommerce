@@ -71,7 +71,7 @@ class WC_Vindi_Payment extends AbstractInstance
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
     $this->interest_price_handler = new InterestPriceHandler();
-    $this->product_metabox = new ProductsMetaBox;
+    $this->product_metabox = new ProductsMetabox;
 
     /**
       * Add Gateway to Woocommerce
