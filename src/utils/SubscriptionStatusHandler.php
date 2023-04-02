@@ -156,7 +156,7 @@ class VindiSubscriptionStatusHandler
         $single_payment_bill_id = 0;
 
         foreach ($vindi_order as $key => $item) {
-            if ( $key == 'single_payment' && isset( $vindi_order[$key]['bill']['status'] ) ) {
+            if ($key == 'single_payment' && isset($vindi_order[$key]['bill']['status'])) {
                 $status = $vindi_order[$key]['bill']['status'];
                 $single_payment_bill_id = $status != 'canceled' ? $vindi_order[$key]['bill']['id'] : false;
             }
