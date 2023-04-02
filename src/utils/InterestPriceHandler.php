@@ -36,6 +36,7 @@ class InterestPriceHandler {
   }
 
   public function calculate_cost($cart) {
+    global $woocommerce;
     if (!$_POST || (is_admin() && !is_ajax())) {
       return;
     }
@@ -51,8 +52,6 @@ class InterestPriceHandler {
         $post_data['payment_method'] === 'vindi-credit-card' &&
         get_option('woocommerce_vindi-credit-card_settings', true)['enable_interest_rate'] === 'yes'
     ) {
-      global $woocommerce;
-
       $interest_rate = get_option('woocommerce_vindi-credit-card_settings', true)['interest_rate'];
       $installments  = intval(filter_var($post_data['vindi_cc_installments'], FILTER_SANITIZE_NUMBER_INT));
       $tax_total     = 0;

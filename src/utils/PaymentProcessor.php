@@ -1190,10 +1190,8 @@ class VindiPaymentProcessor
                 $status = $this->vindi_settings->get_return_status();
                 $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
             }
-        }
-        
+        }        
         $this->order->update_status($status, $status_message);
-
         return array(
             'result' => 'success',
             'redirect' => $this->order->get_checkout_order_received_url(),
