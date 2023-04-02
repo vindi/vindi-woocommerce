@@ -200,10 +200,10 @@ class VindiCreditGateway extends VindiPaymentGateway
     $items = $cart->get_cart();
     $price = 0;
 
-    foreach ( $items as $item ) {
-      $product = wc_get_product( $item['product_id'] );
-      if ( $product ) {
-        $price += floatval( $product->get_price() );
+    foreach ($items as $item) {
+      $product = wc_get_product($item['product_id']);
+      if ($product) {
+        $price += floatval($product->get_price());
       }
     }
 

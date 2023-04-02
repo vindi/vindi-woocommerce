@@ -903,7 +903,7 @@ class VindiPaymentProcessor
             $cycle_count = WC_Subscriptions_Coupon::get_coupon_limit($coupon->id);
         }
 
-        if ( $cycle_count == 0 ) {
+        if ($cycle_count == 0) {
             return null;
         } else {
             return $this->get_plan_length($cycle_count, $plan_cycles);
