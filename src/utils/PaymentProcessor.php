@@ -567,8 +567,7 @@ class VindiPaymentProcessor
     protected function build_sign_up_fee_item($order_items)
     {
         foreach ($order_items as $order_item) {
-            
-            if ( is_object($order_item ) && method_exists($order_item, 'get_product') ) {
+            if (is_object($order_item) && method_exists($order_item, 'get_product')) {
                 $product = $order_item->get_product();
             } else {
                 continue;
@@ -820,7 +819,7 @@ class VindiPaymentProcessor
                     $product_item['discounts'][] = $this->build_discount_item_for_subscription($coupon, $plan_cycles);
                 }
             }
-        } 
+        }
 
         return $product_item;
     }
@@ -896,7 +895,7 @@ class VindiPaymentProcessor
      * @return int
      */
     protected function config_discount_cycles($coupon, $plan_cycles = 0)
-    {   
+    {
         $cycle_count = get_post_meta($coupon->id, 'cycle_count', true);
 
         if ($coupon->get_discount_type() == 'recurring_percent') {
@@ -912,13 +911,13 @@ class VindiPaymentProcessor
 
     /**
      * Get plan length
-     * 
+     *
      * @param int $cycle_count
      * @param int $plan_cycles
-     * 
+     *
      * @return int
      */
-    private function get_plan_length( $cycle_count, $plan_cycles )
+    private function get_plan_length($cycle_count, $plan_cycles)
     {
         if (!$cycle_count) {
             return null;
@@ -1188,7 +1187,7 @@ class VindiPaymentProcessor
                 $status = $this->vindi_settings->get_return_status();
                 $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
             }
-        }        
+        }
         $this->order->update_status($status, $status_message);
         return array(
             'result' => 'success',
