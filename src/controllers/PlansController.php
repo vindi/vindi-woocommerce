@@ -52,21 +52,22 @@ class PlansController
       return;
     }
 
-    if ($this->check_plan_vindi_item_id($post_id, 'vindi_plan_id') > 1) {
-        update_post_meta($post_id, 'vindi_plan_id', '');
-    }
+        if ($this->check_plan_vindi_item_id($post_id, 'vindi_plan_id') > 1) {
+            update_post_meta($post_id, 'vindi_plan_id', '');
+        }
 
-    if ($this->check_plan_vindi_item_id($post_id, 'vindi_product_id') > 1) {
-        update_post_meta($post_id, 'vindi_product_id', '');
-    }
+        if ($this->check_plan_vindi_item_id($post_id, 'vindi_product_id') > 1) {
+            update_post_meta($post_id, 'vindi_product_id', '');
+        }
 
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
-    if( !$recreated && get_post_status($post_id) != 'publish' || ( !empty(get_post_meta($post_id, 'vindi_plan_id', true ) ) )
-    ) {
+        if(!$recreated && get_post_status($post_id) != 'publish'|| 
+        (!empty(get_post_meta($post_id, 'vindi_plan_id', true)))
+        ) {
 
-      return $this->update($post_id);
-    }
+          return $this->update($post_id);
+        }
 
     $product = wc_get_product($post_id);
 
@@ -89,11 +90,13 @@ class PlansController
         $interval_type     = $variation_product->get_meta('_subscription_period');
         $interval_count    = $variation_product->get_meta('_subscription_period_interval');
         $plan_interval     = VindiConversions::convert_interval($interval_count, $interval_type);
-        $variation_id      = $variation['variation_id'];
+                $variation_id      = $variation['variation_id'];
         
-        $plan_installments = $variation_product->get_meta( "vindi_max_credit_installments_$variation_id" );
+                $plan_installments = $variation_product->get_meta("vindi_max_credit_installments_$variation_id");
 
-        if (!$plan_installments || $plan_installments === 0) $plan_installments = 1;
+                if (!$plan_installments || $plan_installments === 0) {
+                    $plan_installments = 1;
+                }
 
         $trigger_day = VindiConversions::convertTriggerToDay(
                         $product->get_meta('_subscription_trial_length'),
@@ -175,8 +178,10 @@ class PlansController
       $product->get_meta('_subscription_trial_period')
     );
 
-    $plan_installments = $product->get_meta( "vindi_max_credit_installments_$post_id" );
-    if (!$plan_installments || $plan_installments === 0) $plan_installments = 1;
+            $plan_installments = $product->get_meta("vindi_max_credit_installments_$post_id");
+            if (!$plan_installments || $plan_installments === 0) {
+                $plan_installments = 1;
+            }
 
     // Creates the product within the Vindi
     $vindi_product_id = get_post_meta($post_id, 'vindi_product_id', true);
@@ -285,9 +290,11 @@ class PlansController
         $plan_interval     = VindiConversions::convert_interval($interval_count, $interval_type);
         $variation_id      = $variation['variation_id'];
         
-        $plan_installments = $variation_product->get_meta( "vindi_max_credit_installments_$variation_id" );
+                $plan_installments = $variation_product->get_meta("vindi_max_credit_installments_$variation_id");
 
-        if (!$plan_installments || $plan_installments === 0) $plan_installments = 1;
+                if (!$plan_installments || $plan_installments === 0) {
+                    $plan_installments = 1;
+                }
 
         $trigger_day = VindiConversions::convertTriggerToDay(
                         $product->get_meta('_subscription_trial_length'),
@@ -365,7 +372,9 @@ class PlansController
 
     $vindi_plan_id     = get_post_meta($post_id, 'vindi_plan_id', true);
     $plan_installments = $product->get_meta( "vindi_max_credit_installments_$post_id" );
-    if (!$plan_installments || $plan_installments === 0) $plan_installments = 1;
+    if (!$plan_installments || $plan_installments === 0) {
+        $plan_installments = 1;
+    }
 
     // Updates the plan within the Vindi
     $updatedPlan = $this->routes->updatePlan(

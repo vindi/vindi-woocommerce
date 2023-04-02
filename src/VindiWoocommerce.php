@@ -53,7 +53,7 @@ class WcVindiPayment extends AbstractInstance
   /**
    * @var ProductsMetabox
    */
-  private $product_metabox;
+    private $product_metabox;
 
   public function __construct()
   {
@@ -71,7 +71,7 @@ class WcVindiPayment extends AbstractInstance
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
     $this->interest_price_handler = new InterestPriceHandler();
-    $this->product_metabox = new ProductsMetabox();
+        $this->product_metabox = new ProductsMetabox();
 
     /**
       * Add Gateway to Woocommerce
@@ -85,7 +85,7 @@ class WcVindiPayment extends AbstractInstance
       $this->webhooks, 'handle'
     ));
 
-    add_filter( 'woocommerce_cart_needs_payment', [ $this, 'filter_woocommerce_cart_needs_payment' ], 10, 2 );
+    add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
   }
 
   /**
@@ -109,7 +109,7 @@ class WcVindiPayment extends AbstractInstance
     require_once $this->getPath() . '/utils/RedirectCheckout.php';
 
     require_once $this->getPath() . '/includes/admin/CouponsMetaBox.php';
-    require_once $this->getPath() . '/includes/admin/ProductsMetabox.php';
+        require_once $this->getPath() . '/includes/admin/ProductsMetabox.php';
     require_once $this->getPath() . '/includes/admin/Settings.php';
     require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
     require_once $this->getPath() . '/includes/gateways/BankSlipPayment.php';
@@ -164,10 +164,10 @@ class WcVindiPayment extends AbstractInstance
    * Sobrescreve o método que remove os métodos de pagamento para assinaturas com trial
    * @return bool
    */
-  public function filter_woocommerce_cart_needs_payment()
-  {
-    return true;
-  }
+    public function filter_woocommerce_cart_needs_payment()
+    {
+      return true;
+    }
 }
 
 add_action('plugins_loaded', array('WcVindiPayment', 'get_instance'));
