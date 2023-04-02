@@ -147,13 +147,13 @@ class PlansController
                           update_post_meta( $variation['variation_id'], 'vindi_product_id', $createdProduct['id'] );
                       }
 
-                      if (isset($variation['variation_id']) && $createdPlan['id']) {
-                          update_post_meta( $variation['variation_id'], 'vindi_plan_id', $createdPlan['id'] );
-                      }
+                        if (isset($variation['variation_id']) && $createdPlan['id']) {
+                            update_post_meta( $variation['variation_id'], 'vindi_plan_id', $createdPlan['id'] );
+                        }
 
       }
 
-      $product_id = end($variations_products)['id'];
+            $product_id = end($variations_products)['id'];
       
             if ($product_id) {
                 update_post_meta( $post_id, 'vindi_product_id', end($variations_products)['id'] );
@@ -222,12 +222,12 @@ class PlansController
 
     
     // Saving product id and plan in the WC goal
-    if ($createdProduct && isset( $createdProduct['id'])) {
-      update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
-    }
-    if ($createdPlan && isset( $createdPlan['id'])) {
-      update_post_meta( $post_id, 'vindi_plan_id', $createdPlan['id'] );
-    }
+          if ($createdProduct && isset($createdProduct['id'])) {
+            update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
+          }
+            if ($createdPlan && isset($createdPlan['id'])) {
+              update_post_meta( $post_id, 'vindi_plan_id', $createdPlan['id'] );
+            }
     
     if ($createdPlan && $createdProduct) {
       set_transient('vindi_product_message', 'created', 60);
