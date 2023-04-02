@@ -500,7 +500,9 @@ class PlansController
         global $wpdb;
         $vindi_id = get_post_meta($post_id, $meta, true);
 
-        if (!$vindi_id) return 0;
+        if (!$vindi_id) {
+          return 0;
+        }
         
         $sql = "SELECT 
                   post_id as id 

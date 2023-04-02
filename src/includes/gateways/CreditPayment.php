@@ -155,7 +155,7 @@ class VindiCreditGateway extends VindiPaymentGateway
     $is_trial = $this->is_trial;
 
     $cart = $this->vindi_settings->woocommerce->cart;
-    $total = $this->get_cart_total( $cart );
+        $total = $this->get_cart_total($cart);
     
     foreach ($cart->get_fees() as $index => $fee) {
       if($fee->name == __('Juros', VINDI)) {
@@ -195,20 +195,20 @@ class VindiCreditGateway extends VindiPaymentGateway
     ));
   }
 
-  public function get_cart_total( $cart )
-  {
-    $items = $cart->get_cart();
-    $price = 0;
+      public function get_cart_total($cart)
+      {
+        $items = $cart->get_cart();
+        $price = 0;
 
-    foreach ($items as $item) {
-      $product = wc_get_product($item['product_id']);
-      if ($product) {
-        $price += floatval($product->get_price());
+        foreach ($items as $item) {
+          $product = wc_get_product($item['product_id']);
+          if ($product) {
+            $price += floatval($product->get_price());
+          }
+        }
+
+        return $price;
       }
-    }
-
-    return $price;
-  }
 
   public function verify_user_payment_profile()
   {
