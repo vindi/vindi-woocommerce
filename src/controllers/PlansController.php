@@ -62,7 +62,7 @@ class PlansController
 
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
-        if(!$recreated && get_post_status($post_id) != 'publish'|| 
+        if (!$recreated && get_post_status($post_id) != 'publish'|| 
         (!empty(get_post_meta($post_id, 'vindi_plan_id', true)))
         ) {
 
@@ -77,7 +77,7 @@ class PlansController
     }
 
     // Checks if the plan is a variation and creates it
-    if($product->get_type() == 'variable-subscription') {
+    if ($product->get_type() == 'variable-subscription') {
 
       $variations = $product->get_available_variations();
       $variations_products = $variations_plans = [];
@@ -229,7 +229,7 @@ class PlansController
       update_post_meta( $post_id, 'vindi_plan_id', $createdPlan['id'] );
     }
     
-    if($createdPlan && $createdProduct) {
+    if ($createdPlan && $createdProduct) {
       set_transient('vindi_product_message', 'created', 60);
     } else {
       set_transient('vindi_product_message', 'error', 60);
@@ -253,11 +253,11 @@ class PlansController
     }
 
     // Checks whether there is a vindi plan ID created within
-    if($product->get_type() == 'subscription') {
+    if ($product->get_type() == 'subscription') {
 
       $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id', true);
 
-      if(empty($vindi_plan_id)) {
+      if (empty($vindi_plan_id)) {
 
         return $this->create($post_id, '', '', true);
       }
@@ -265,7 +265,7 @@ class PlansController
     }
 
     // Checks if the plan is a variation and creates it
-    if($product->get_type() == 'variable-subscription') {
+    if ($product->get_type() == 'variable-subscription') {
 
       $variations = $product->get_available_variations();
       $variations_products = $variations_plans = [];
@@ -277,7 +277,7 @@ class PlansController
         $vindi_plan_id = get_post_meta($variation['variation_id'], 'vindi_plan_id', true);
         $vindi_product_id = get_post_meta($variation['variation_id'], 'vindi_product_id', true);
 
-        if(empty($vindi_plan_id)) {
+        if (empty($vindi_plan_id)) {
 
           return $this->create($post_id, '', '', true);
           break;
@@ -392,7 +392,7 @@ class PlansController
       )
     );
 
-    if($updatedPlan && $updatedProduct) {
+    if ($updatedPlan && $updatedProduct) {
       set_transient('vindi_product_message', 'updated', 60);
     } else {
       set_transient('vindi_product_message', 'error', 60);
@@ -427,7 +427,7 @@ class PlansController
     $vindi_product_id = get_post_meta($product->id, 'vindi_product_id', true);
     $vindi_plan_id = get_post_meta($product->id, 'vindi_plan_id', true);
 
-    if(empty($vindi_product_id) || empty($vindi_plan_id)) {
+    if (empty($vindi_product_id) || empty($vindi_plan_id)) {
       return;
     }
 
@@ -469,7 +469,7 @@ class PlansController
     $vindi_product_id = get_post_meta($product->id, 'vindi_product_id', true);
     $vindi_plan_id = get_post_meta($product->id, 'vindi_plan_id', true);
 
-    if(empty($vindi_product_id) || empty($vindi_plan_id)) {
+    if (empty($vindi_product_id) || empty($vindi_plan_id)) {
       return;
     }
 
