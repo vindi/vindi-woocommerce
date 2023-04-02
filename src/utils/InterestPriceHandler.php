@@ -58,7 +58,7 @@ class InterestPriceHandler {
       $taxes         = $cart->get_taxes(); 
 
             foreach ($taxes as $tax) {
-              $tax_total += $tax;
+                $tax_total += $tax;
             }
       $cart_total     = ($cart->get_cart_contents_total() + $cart->get_shipping_total() + $tax_total);
       $total_price    = $cart_total * (1 + (($interest_rate / 100) * ($installments - 1)));

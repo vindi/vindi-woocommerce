@@ -19,7 +19,7 @@ class FrontendFilesLoader {
     wp_enqueue_script('vindi_woocommerce_admin_js');
     wp_register_style('vindi_woocommerce_admin_style', plugins_url('/assets/css/admin.css', plugin_dir_path(__FILE__)), array(), VINDI_VERSION);
     wp_enqueue_style('vindi_woocommerce_admin_style');
-    wp_enqueue_script("vindi_products",  plugins_url('/assets/js/product.js', plugin_dir_path(__FILE__)));
+        wp_enqueue_script("vindi_products", plugins_url('/assets/js/product.js', plugin_dir_path(__FILE__)));
   }
   public static function frontendFiles()
   {
@@ -30,18 +30,19 @@ class FrontendFilesLoader {
 
         wp_register_script(
             'vindi_woocommerce_masks_js',
-            plugins_url('/assets/js/masks.js',
-            plugin_dir_path(__FILE__)),
+            plugins_url('/assets/js/masks.js', plugin_dir_path(__FILE__)),
             array('imask'),
-            VINDI_VERSION, true
+            VINDI_VERSION,
+            true
         );
         wp_enqueue_script('vindi_woocommerce_masks_js');
 
         wp_register_script(
             'vindi_woocommerce_brands_js',
-            plugins_url('/assets/js/brands.js',
-            plugin_dir_path(__FILE__)),
-            array(), VINDI_VERSION, true
+            plugins_url('/assets/js/brands.js',plugin_dir_path(__FILE__)),
+            array(),
+            VINDI_VERSION,
+            true
         );
         wp_enqueue_script('vindi_woocommerce_brands_js');
 
