@@ -371,7 +371,7 @@ class PlansController
     );
 
     $vindi_plan_id     = get_post_meta($post_id, 'vindi_plan_id', true);
-    $plan_installments = $product->get_meta("vindi_max_credit_installments_$post_id");
+          $plan_installments = $product->get_meta("vindi_max_credit_installments_$post_id");
           if (!$plan_installments || $plan_installments === 0) {
               $plan_installments = 1;
           }
