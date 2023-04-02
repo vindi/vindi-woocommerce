@@ -1,7 +1,7 @@
 <?php
 require_once VINDI_SRC . '/utils/AbstractInstance.php';
 
-class WC_Vindi_Payment extends AbstractInstance
+class WcVindiPayment extends AbstractInstance
 {
   /**
    * @var string
@@ -71,7 +71,7 @@ class WC_Vindi_Payment extends AbstractInstance
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
     $this->interest_price_handler = new InterestPriceHandler();
-    $this->product_metabox = new ProductsMetabox;
+    $this->product_metabox = new ProductsMetabox();
 
     /**
       * Add Gateway to Woocommerce
@@ -170,4 +170,4 @@ class WC_Vindi_Payment extends AbstractInstance
   }
 }
 
-add_action('plugins_loaded', array('WC_Vindi_Payment', 'get_instance'));
+add_action('plugins_loaded', array('WcVindiPayment', 'get_instance'));

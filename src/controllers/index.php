@@ -41,8 +41,8 @@ class VindiControllers
 
   function includes()
   {
-    require_once WC_Vindi_Payment::getPath() . '/controllers/PlansController.php';
-    require_once WC_Vindi_Payment::getPath() . '/controllers/CustomerController.php';
-    require_once WC_Vindi_Payment::getPath() . '/controllers/ProductController.php';
+    require_once WcVindiPayment::getPath() . '/controllers/PlansController.php';
+    require_once WcVindiPayment::getPath() . '/controllers/CustomerController.php';
+    require_once WcVindiPayment::getPath() . '/controllers/ProductController.php';
   }
 }

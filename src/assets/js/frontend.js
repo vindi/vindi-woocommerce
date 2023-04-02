@@ -113,25 +113,22 @@ class FrontEnd {
     const cardnumber = document.getElementById('vindi_cc_cardnumber');
     const expirationdate = document.getElementById('vindi_cc_expirationdate');
     const securitycode = document.getElementById('vindi_cc_securitycode');
+    const card = document.querySelector('.vindi_cc_creditcard');
     const removeFocusElements = [
       name,
       cardnumber,
       expirationdate,
       securitycode
     ];
-
-    const card = document.querySelector('.vindi_cc_creditcard');
     removeFocusElements.forEach(element => {
       if (element) {
         element.addEventListener('focus', () => {
-
           if ( element === securitycode ) {
             card.classList.add('flipped');
           } else {
             card.classList.remove('flipped');
           }
         })
-
         if (element === securitycode) {
           element.addEventListener('blur', () => {
             card.classList.remove('flipped');

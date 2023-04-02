@@ -38,5 +38,5 @@ require_once VINDI_PATH . 'src/VindiWoocommerce.php';
 
 if (!defined('VINDI_TESTS')) {
   // In tests we run the instance manually.
-  // $GLOBALS['vindi'] = WC_Vindi_Payment::get_instance();
+  // $GLOBALS['vindi'] = WcVindiPayment::get_instance();
 }

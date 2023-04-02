@@ -1168,7 +1168,6 @@ class VindiPaymentProcessor
     protected function finish_payment($bills)
     {
         $this->vindi_settings->woocommerce->cart->empty_cart();
-
         $bills_status = [];
         foreach ($bills as $bill) {
             if ($bill['status'] == 'paid') {
@@ -1185,7 +1184,6 @@ class VindiPaymentProcessor
             $status = $this->vindi_settings->get_return_status();
         } else {
             $status = 'pending';
-
             if ($this->order_has_trial()) {
                 $status = $this->vindi_settings->get_return_status();
                 $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
