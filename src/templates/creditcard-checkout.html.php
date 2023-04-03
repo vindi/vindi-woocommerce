@@ -39,7 +39,9 @@
         <div class="front">
           <div id="vindi_cc_ccsingle">
             <img 
-                src="<?php echo esc_url(get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/single/unknown.svg')?>" 
+                src="<?php echo esc_url(
+                    get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/single/unknown.svg'
+                    ) ?>" 
                 data-img="single/unknown">
             </img>
           </div>
@@ -151,7 +153,9 @@
         <input id="vindi_cc_cardnumber" name="vindi_cc_number" type="text" pattern="[0-9]*" inputmode="numeric" autocomplete="off" placeholder="•••• •••• •••• ••••">
         <img 
             id="vindi_cc_ccicon" class="vindi_cc_ccicon" 
-            src="<?php echo esc_url(get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/unknown.svg') ?>" 
+            src="<?php echo esc_url(
+                    get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/unknown.svg')
+                ?>" 
             data-img="unknown">
         </img>
       </div>
