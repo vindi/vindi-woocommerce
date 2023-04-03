@@ -1182,7 +1182,7 @@ class VindiPaymentProcessor
         $status = 'pending';
         if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
             $status = $this->vindi_settings->get_return_status();
-        } else if ($this->order_has_trial()){
+        } elseif ($this->order_has_trial()) {
             $status = $this->vindi_settings->get_return_status();
             $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
         }
