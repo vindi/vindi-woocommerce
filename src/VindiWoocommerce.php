@@ -134,7 +134,7 @@ class WcVindiPayment extends AbstractInstance
 
   public static function get_instance()
   {
-    require_once plugin_dir_path(__FILE__) . '/utils/FrontendFilesLoader.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/FrontendFilesLoader.php';
     new FrontendFilesLoader();
 
     if (VindiDependencies::check()) {
