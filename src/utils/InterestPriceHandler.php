@@ -35,6 +35,9 @@ class InterestPriceHandler {
     <?php endif;
   }
 
+  /**
+   * @SuppressWarnings(PHPMD.Superglobals)
+   */
   public function calculate_cost($cart) {
     global $woocommerce;
         if (is_admin() && !is_ajax()) {
