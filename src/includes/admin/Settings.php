@@ -115,9 +115,9 @@ class VindiSettings extends WC_Settings_API
       $args,
       '',
       sprintf(
-        '%s/../../%s',
-        dirname(__FILE__),
-        WcVindiPayment::TEMPLATE_DIR
+          '%s/../../%s',
+          dirname(__FILE__),
+          WcVindiPayment::TEMPLATE_DIR
       )
     );
   }
@@ -304,9 +304,9 @@ class VindiSettings extends WC_Settings_API
 
 	public function get_webhooks_url() {
 		return sprintf('%s/index.php/wc-api/%s?token=%s',
-      get_site_url(),
-      WcVindiPayment::WC_API_CALLBACK,
-      $this->get_token()
+            get_site_url(),
+            WcVindiPayment::WC_API_CALLBACK,
+            $this->get_token()
     );
   }
   

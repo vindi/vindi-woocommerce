@@ -1,4 +1,6 @@
 <?php
+namespace VindiPaymentGateway;
+
 require_once VINDI_SRC . '/utils/AbstractInstance.php';
 
 class WcVindiPayment extends AbstractInstance
@@ -85,7 +87,7 @@ class WcVindiPayment extends AbstractInstance
       $this->webhooks, 'handle'
     ));
 
-    add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
+        add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
   }
 
   /**
@@ -166,7 +168,7 @@ class WcVindiPayment extends AbstractInstance
    */
     public function filter_woocommerce_cart_needs_payment()
     {
-      return true;
+        return true;
     }
 }
 

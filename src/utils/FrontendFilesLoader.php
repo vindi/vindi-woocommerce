@@ -39,7 +39,7 @@ class FrontendFilesLoader {
 
         wp_register_script(
             'vindi_woocommerce_brands_js',
-            plugins_url('/assets/js/brands.js',plugin_dir_path(__FILE__)),
+            plugins_url('/assets/js/brands.js', plugin_dir_path(__FILE__)),
             array(),
             VINDI_VERSION,
             true

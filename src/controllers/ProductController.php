@@ -56,9 +56,9 @@ class ProductController
       return;
     }
 
-    if ($this->check_product_vindi_item_id($post_id, 'vindi_product_id') > 1) {
-        update_post_meta($post_id, 'vindi_product_id', '');
-    }
+        if ($this->check_product_vindi_item_id($post_id, 'vindi_product_id') > 1) {
+            update_post_meta($post_id, 'vindi_product_id', '');
+        }
 
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
@@ -88,10 +88,9 @@ class ProductController
     ));
 
     // Saving product id and plan in the WC goal
-    if($createdProduct && isset( $createdProduct['id'] ) ) {
+    if($createdProduct && isset( $createdProduct['id'])) {
       update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
       set_transient('vindi_product_message', 'created', 60);
-      
     } else {
       set_transient('vindi_product_message', 'error', 60);
     }
@@ -155,7 +154,7 @@ class ProductController
         $vindi_id = get_post_meta($post_id, $meta, true);
 
         if (!$vindi_id) {
-          return 0;
+            return 0;
         }
 
         $sql = "SELECT 
