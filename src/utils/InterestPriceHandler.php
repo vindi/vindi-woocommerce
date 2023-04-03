@@ -37,9 +37,9 @@ class InterestPriceHandler {
 
   public function calculate_cost($cart) {
     global $woocommerce;
-    if (is_admin() && !is_ajax()) {
-      return;
-    }
+        if (is_admin() && !is_ajax()) {
+          return;
+        }
 
     if (isset($_POST['post_data'] ) ) {
       parse_str(sanitize_text_field($_POST['post_data']), $post_data);
