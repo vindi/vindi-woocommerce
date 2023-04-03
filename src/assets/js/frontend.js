@@ -27,11 +27,11 @@ class FrontEnd {
     });
 
     card.addEventListener('keyup', () => {
-      this.setCardNumber(card);
+      this.setCardNumber(card, 'vindi_cc_svgnumber', '0123 4567 8910 1112');
     });
 
     cvv.addEventListener('keyup', () => {
-      this.setCvvNumber(cvv);
+      this.setCardNumber(cvv, 'vindi_cc_svgsecurity', '985');
     });
 
     date.addEventListener('keyup', () => {
@@ -39,19 +39,11 @@ class FrontEnd {
     });
   }
 
-  setCardNumber(card) {
-    const number = document.getElementById('vindi_cc_svgnumber');
+  setCardNumber(element, id, number) {
+    const svg = document.getElementById(id);
     
-    if (number) {
-      number.innerHTML = card.value === '' ? '0123 4567 8910 1112' : card.value 
-    }
-  }
-
-  setCvvNumber(cvv) {
-    const number = document.getElementById('vindi_cc_svgsecurity');
-    
-    if (number) {
-      number.innerHTML = cvv.value === '' ? '985' : cvv.value;
+    if (svg) {
+      svg.innerHTML = element.value === '' ? number : element.value 
     }
   }
 
