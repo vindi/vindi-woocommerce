@@ -10,7 +10,6 @@
 
 class PlansController
 {
-
   /**
    * @var array
    */
@@ -52,11 +51,11 @@ class PlansController
       return;
     }
 
-        if ($this->check_plan_vindi_item_id($post_id, 'vindi_plan_id') > 1) {
+        if (PostMeta::check_vindi_item_id($post_id, 'vindi_plan_id') > 1) {
             update_post_meta($post_id, 'vindi_plan_id', '');
         }
 
-        if ($this->check_plan_vindi_item_id($post_id, 'vindi_product_id') > 1) {
+        if (PostMeta::check_vindi_item_id($post_id, 'vindi_product_id') > 1) {
             update_post_meta($post_id, 'vindi_product_id', '');
         }
 

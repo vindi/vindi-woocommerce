@@ -128,6 +128,7 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/controllers/index.php';
 
         require_once plugin_dir_path(__FILE__) . '/utils/PaymentProcessor.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/PostMeta.php';
   }
 
   public static function getPath()
