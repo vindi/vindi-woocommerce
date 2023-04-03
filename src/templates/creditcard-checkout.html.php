@@ -38,7 +38,10 @@
       <div class="vindi_cc_creditcard">
         <div class="front">
           <div id="vindi_cc_ccsingle">
-            <img src="<?php echo esc_url( get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/single/unknown.svg') ?>" data-img="single/unknown"></img>
+            <img 
+                src="<?php echo esc_url(get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/single/unknown.svg')?>" 
+                data-img="single/unknown">
+            </img>
           </div>
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="vindi_cc_cardfront" x="0px" y="0px" viewBox="0 0 750 471" style="enable-background:new 0 0 750 471;" xml:space="preserve">
             <mask id="vindi_cc_lightmask" x="0" y="0" width="600" height="370" maskUnits="userSpaceOnUse">
@@ -146,7 +149,11 @@
           <span class="required">*</span>
         </label>
         <input id="vindi_cc_cardnumber" name="vindi_cc_number" type="text" pattern="[0-9]*" inputmode="numeric" autocomplete="off" placeholder="•••• •••• •••• ••••">
-        <img id="vindi_cc_ccicon" class="vindi_cc_ccicon" src="<?php echo esc_url( get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/unknown.svg') ?>" data-img="unknown"></img>
+        <img 
+            id="vindi_cc_ccicon" class="vindi_cc_ccicon" 
+            src="<?php echo esc_url(get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/unknown.svg') ?>" 
+            data-img="unknown">
+        </img>
       </div>
       <div class="field-container">
         <label for="vindi_cc_expirationdate">
