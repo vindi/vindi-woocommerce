@@ -144,6 +144,7 @@ class ProductController
 
     /**
      * Check if exists a duplicate $meta on database
+     * @SuppressWarnings(PHPMD)
      * @param int $post_id
      * @param string $meta
      * @return int $post_id

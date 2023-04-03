@@ -40,13 +40,11 @@ class InterestPriceHandler {
         if (is_admin() && !is_ajax()) {
           return;
         }
-
     if (isset($_POST['post_data'] ) ) {
       parse_str(sanitize_text_field($_POST['post_data']), $post_data);
     } else {
       $post_data = $_POST;
     }
-
     if (isset($post_data['vindi_cc_installments']) &&
         filter_var($post_data['vindi_cc_installments'], FILTER_SANITIZE_NUMBER_INT) > 1 &&
         $post_data['payment_method'] === 'vindi-credit-card' &&
