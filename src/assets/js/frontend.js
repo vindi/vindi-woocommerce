@@ -114,12 +114,7 @@ class FrontEnd {
     const expirationdate = document.getElementById('vindi_cc_expirationdate');
     const securitycode = document.getElementById('vindi_cc_securitycode');
     const card = document.querySelector('.vindi_cc_creditcard');
-    const removeFocusElements = [
-      name,
-      cardnumber,
-      expirationdate,
-      securitycode
-    ];
+    const removeFocusElements = [ name, cardnumber, expirationdate, securitycode ];
     removeFocusElements.forEach(element => {
       if (element) {
         element.addEventListener('focus', () => {

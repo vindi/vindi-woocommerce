@@ -996,14 +996,11 @@ class VindiPaymentProcessor
         if($order_item == null || empty($order_item)) {
             return;
         }
-
         $data = [];
-
         $data['customer_id'] = $customer_id;
         $data['payment_method_code'] = $this->payment_method_code();
         $data['installments'] = $this->installments();
         $data['product_items'] = array();
-
         $product = $order_item->get_product();
 
         if ($this->is_subscription_type($product) || $this->is_variable($product)) {
@@ -1019,7 +1016,6 @@ class VindiPaymentProcessor
         );
 
         $subscription = $this->routes->createSubscription($data);
-
         if (!isset($subscription['id']) || empty($subscription['id'])) {
             $message = sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error);
             throw new Exception($message);
@@ -1029,7 +1025,6 @@ class VindiPaymentProcessor
         if (isset($subscription['bill']['id'])) {
             update_post_meta($this->order->id, 'vindi_bill_id', $subscription['bill']['id']);
         }
-
         return $subscription;
     }
 
