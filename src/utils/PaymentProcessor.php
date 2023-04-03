@@ -567,11 +567,11 @@ class VindiPaymentProcessor
     protected function build_sign_up_fee_item($order_items)
     {
         foreach ($order_items as $order_item) {
-            if (is_object($order_item) && method_exists($order_item, 'get_product')) {
-                $product = $order_item->get_product();
-            } else {
+            if (!is_object($order_item) || !method_exists($order_item, 'get_product')) {
                 continue;
             }
+
+            $product = $order_item->get_product();
 
             $sign_up_fee = $product->get_meta('_subscription_sign_up_fee');
 
@@ -904,9 +904,9 @@ class VindiPaymentProcessor
 
         if ($cycle_count == 0) {
             return null;
-        } else {
-            return $this->get_plan_length($cycle_count, $plan_cycles);
-        }
+        } 
+
+        return $this->get_plan_length($cycle_count, $plan_cycles);
     }
 
     /**
@@ -1179,14 +1179,12 @@ class VindiPaymentProcessor
             array_push($bills_status, $bill['status']);
             $this->logger->log($data_to_log);
         }
+        $status = 'pending';
         if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
             $status = $this->vindi_settings->get_return_status();
-        } else {
-            $status = 'pending';
-            if ($this->order_has_trial()) {
-                $status = $this->vindi_settings->get_return_status();
-                $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
-            }
+        } else if ($this->order_has_trial()){
+            $status = $this->vindi_settings->get_return_status();
+            $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
         }
         $this->order->update_status($status, $status_message);
         return array(
