@@ -55,8 +55,8 @@ class ProductController
     if (get_post_type($post_id) != 'product') {
       return;
     }
-
-        if (PostMeta::check_vindi_item_id($post_id, 'vindi_product_id') > 1) {
+        $post_meta = new PostMeta();
+        if ($post_meta->check_vindi_item_id($post_id, 'vindi_product_id') > 1) {
             update_post_meta($post_id, 'vindi_product_id', '');
         }
 
