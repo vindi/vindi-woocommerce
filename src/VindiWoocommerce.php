@@ -1,6 +1,9 @@
 <?php
 require_once plugin_dir_path(__FILE__)  . '/utils/AbstractInstance.php';
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class WcVindiPayment extends AbstractInstance
 {
   /**
