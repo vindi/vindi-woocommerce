@@ -997,6 +997,8 @@ class VindiPaymentProcessor
             return;
         }
 
+        $data = [];
+        
         $data['customer_id'] = $customer_id;
         $data['payment_method_code'] = $this->payment_method_code();
         $data['installments'] = $this->installments();
@@ -1011,7 +1013,10 @@ class VindiPaymentProcessor
             $data['code'] = strpos($wc_subscription_id, 'WC') > 0 ? $wc_subscription_id : 'WC-' . $wc_subscription_id;
         }
 
-        $data['product_items'] = array_merge($data['product_items'], $this->build_product_items($order_item,'subscription'));
+        $data['product_items'] = array_merge(
+            $data['product_items'],
+            $this->build_product_items($order_item,'subscription')
+        );
 
         $subscription = $this->routes->createSubscription($data);
 
