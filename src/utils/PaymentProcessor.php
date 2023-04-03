@@ -474,8 +474,10 @@ class VindiPaymentProcessor
      *
      * @throws Exception
      */
-    public function build_product_items($order_type = 'bill', $product = false)
+    public function build_product_items($product, $order_type = 'bill')
     {
+        $order_type = 'bill';
+
         if (!$product) {
             $this->abort(__("Ocorreu um erro ao gerar o seu pedido!", VINDI), true);
         }
@@ -1009,7 +1011,7 @@ class VindiPaymentProcessor
             $data['code'] = strpos($wc_subscription_id, 'WC') > 0 ? $wc_subscription_id : 'WC-' . $wc_subscription_id;
         }
 
-        $data['product_items'] = array_merge($data['product_items'], $this->build_product_items('subscription', $order_item));
+        $data['product_items'] = array_merge($data['product_items'], $this->build_product_items($order_item,'subscription'));
 
         $subscription = $this->routes->createSubscription($data);
 
@@ -1064,7 +1066,7 @@ class VindiPaymentProcessor
         $data = array(
             'customer_id' => $customer_id,
             'payment_method_code' => $this->payment_method_code(),
-            'bill_items' => $this->build_product_items('bill', $order_items),
+            'bill_items' => $this->build_product_items($order_items, 'bill'),
             'code' => $this->order->id,
             'installments' => $this->installments(),
         );
