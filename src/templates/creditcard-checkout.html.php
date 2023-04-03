@@ -40,8 +40,7 @@
           <div id="vindi_cc_ccsingle">
             <img 
                 src="<?php echo esc_url(
-                    get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/single/unknown.svg'
-                    ) ?>" 
+                get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/single/unknown.svg')?>" 
                 data-img="single/unknown">
             </img>
           </div>
@@ -154,8 +153,7 @@
         <img 
             id="vindi_cc_ccicon" class="vindi_cc_ccicon" 
             src="<?php echo esc_url(
-                    get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/unknown.svg')
-                ?>" 
+            get_site_url() . '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/unknown.svg')?>" 
             data-img="unknown">
         </img>
       </div>
