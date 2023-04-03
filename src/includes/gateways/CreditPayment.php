@@ -181,9 +181,9 @@ class VindiCreditGateway extends VindiPaymentGateway
       return;
     }
 
-      if ($this->is_trial && $this->is_trial == $this->vindi_settings->get_is_active_sandbox()) {
-          $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
-      }
+        if ($this->is_trial && $this->is_trial == $this->vindi_settings->get_is_active_sandbox()) {
+            $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
+        }
 
     $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
       'installments',

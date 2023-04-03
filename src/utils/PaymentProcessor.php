@@ -904,7 +904,7 @@ class VindiPaymentProcessor
 
         if ($cycle_count == 0) {
             return null;
-        } 
+        }
 
         return $this->get_plan_length($cycle_count, $plan_cycles);
     }
