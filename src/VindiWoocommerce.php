@@ -96,35 +96,35 @@ class WcVindiPayment extends AbstractInstance
    */
   public function init()
   {
-    // Helpers and Languages
-    require_once plugin_dir_path(__FILE__) . '/services/Api.php';
-    require_once plugin_dir_path(__FILE__) . '/services/Logger.php';
-    require_once plugin_dir_path(__FILE__) . '/i18n/Languages.php';
-    require_once plugin_dir_path(__FILE__) . '/services/VindiHelpers.php';
-    require_once plugin_dir_path(__FILE__) . '/services/Webhooks.php';
+        // Helpers and Languages
+        require_once plugin_dir_path(__FILE__) . '/services/Api.php';
+        require_once plugin_dir_path(__FILE__) . '/services/Logger.php';
+        require_once plugin_dir_path(__FILE__) . '/i18n/Languages.php';
+        require_once plugin_dir_path(__FILE__) . '/services/VindiHelpers.php';
+        require_once plugin_dir_path(__FILE__) . '/services/Webhooks.php';
 
-    // Loading Abstract Method and Utils
-    require_once plugin_dir_path(__FILE__) . '/utils/PaymentGateway.php';
-    require_once plugin_dir_path(__FILE__) . '/utils/Conversions.php';
-    require_once plugin_dir_path(__FILE__) . '/utils/RedirectCheckout.php';
+        // Loading Abstract Method and Utils
+        require_once plugin_dir_path(__FILE__) . '/utils/PaymentGateway.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/Conversions.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/RedirectCheckout.php';
 
-    require_once plugin_dir_path(__FILE__) . '/includes/admin/CouponsMetaBox.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductsMetabox.php';
-    require_once plugin_dir_path(__FILE__) . '/includes/admin/Settings.php';
-    require_once plugin_dir_path(__FILE__) . '/includes/gateways/CreditPayment.php';
-    require_once plugin_dir_path(__FILE__) . '/includes/gateways/BankSlipPayment.php';
-    require_once plugin_dir_path(__FILE__) . '/utils/SubscriptionStatusHandler.php';
-    require_once plugin_dir_path(__FILE__) . '/utils/InterestPriceHandler.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/admin/CouponsMetaBox.php';
+            require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductsMetabox.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/admin/Settings.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/gateways/CreditPayment.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/gateways/BankSlipPayment.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/SubscriptionStatusHandler.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/InterestPriceHandler.php';
 
-    require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductStatus.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductStatus.php';
 
-    // Routes import
-    require_once plugin_dir_path(__FILE__) . '/routes/RoutesApi.php';
+        // Routes import
+        require_once plugin_dir_path(__FILE__) . '/routes/RoutesApi.php';
 
-    // Controllers
-    require_once plugin_dir_path(__FILE__) . '/controllers/index.php';
+        // Controllers
+        require_once plugin_dir_path(__FILE__) . '/controllers/index.php';
 
-    require_once plugin_dir_path(__FILE__) . '/utils/PaymentProcessor.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/PaymentProcessor.php';
   }
 
   public static function getPath()
