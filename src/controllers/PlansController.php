@@ -491,10 +491,11 @@ class PlansController
 
     /**
      * Check if exists a duplicate $meta on database
-     * @SuppressWarnings(PHPMD)
      * @param int $post_id
      * @param string $meta
      * @return int $post_id
+     * 
+     * @SuppressWarnings(PHPMD)
      */
     public function check_plan_vindi_item_id($post_id, $meta)
     {
