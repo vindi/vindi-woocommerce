@@ -1009,23 +1009,25 @@ class VindiPaymentProcessor
             $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
             $data['code'] = strpos($wc_subscription_id, 'WC') > 0 ? $wc_subscription_id : 'WC-' . $wc_subscription_id;
         }
-
-        $data['product_items'] = array_merge(
-            $data['product_items'],
-            $this->build_product_items($order_item, 'subscription')
-        );
-
+        $data['product_items'] = $this->get_build_products($data, $order_item);
         $subscription = $this->routes->createSubscription($data);
         if (!isset($subscription['id']) || empty($subscription['id'])) {
             $message = sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error);
             throw new Exception($message);
         }
-
         $subscription['wc_id'] = $wc_subscription_id;
         if (isset($subscription['bill']['id'])) {
             update_post_meta($this->order->id, 'vindi_bill_id', $subscription['bill']['id']);
         }
         return $subscription;
+    }
+
+    private function get_build_products($data, $order_item)
+    {
+        return array_merge(
+            $data['product_items'],
+            $this->build_product_items($order_item, 'subscription')
+        );
     }
 
     /**
