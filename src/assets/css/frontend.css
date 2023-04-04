@@ -74,7 +74,7 @@
 
 #vindi_cc_ccsingle img {
   width: 75px;
-  max-height: 45px;
+  max-height: 45px !important;
 }
 
 .vindi_cc_creditcard svg#vindi_cc_cardfront,

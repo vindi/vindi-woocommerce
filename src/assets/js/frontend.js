@@ -19,8 +19,8 @@ class FrontEnd {
 
     this.setExpirationDate(date);
     this.setCardHolderName(name);
-    this.setCardNumber(card);
-    this.setCvvNumber(cvv);
+    this.setCardNumber(card, 'vindi_cc_svgnumber', '0123 4567 8910 1112');
+    this.setCardNumber(cvv, 'vindi_cc_svgsecurity', '985');
 
     name.addEventListener('keyup', () => {
       this.setCardHolderName(name);
