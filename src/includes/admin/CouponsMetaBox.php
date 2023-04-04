@@ -2,6 +2,8 @@
 
 namespace VindiPaymentGateways;
 
+use WC_Coupon;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }

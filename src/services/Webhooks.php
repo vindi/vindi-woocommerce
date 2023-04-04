@@ -2,6 +2,8 @@
 
 namespace VindiPaymentGateways;
 
+use WC_Subscriptions_Manager;
+
 class VindiWebhooks
 {
   /**

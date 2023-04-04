@@ -2,6 +2,11 @@
 
 namespace VindiPaymentGateways;
 
+use WC_Order;
+use WC_Product;
+use WC_Order_Item_Product;
+use WC_Subscriptions_Coupon;
+
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
