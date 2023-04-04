@@ -48,8 +48,8 @@
   right: 4px;
   top: calc(50% - 8px);
   width: 48px;
-  max-height: inherit !important;
-}/* csslint allow: known-properties, important */
+  max-height: inherit !important; /* csslint allow: known-properties, important */
+}
 
 /* CREDIT CARD IMAGE STYLING */
 .vindi_cc_preload * {
