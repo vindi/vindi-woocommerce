@@ -67,22 +67,27 @@ class VindiSettings extends WC_Settings_API
     $this->invalidApiKey = get_option( 'vindi_invalid_api_key', false );
     
     if (is_admin()) {
-      add_filter('woocommerce_settings_tabs_array', array($this, 'add_settings_tab'), 50);
-      add_action('woocommerce_settings_tabs_settings_vindi', array(&$this, 'settings_tab'));
-      add_action('woocommerce_update_options_settings_vindi', array(&$this, 'process_admin_options'), 10);
-      add_action('woocommerce_update_options_settings_vindi', array($this, 'api_key_field'), 11);
-      add_action('woocommerce_settings_tabs_settings_vindi', array($this, 'is_api_key_valid'));
-            add_action('woocommerce_coupon_options', 'VindiPaymentGateways\CouponsMetaBox::output', 40, 2);
-            add_action('woocommerce_coupon_options_save', 'VindiPaymentGateways\CouponsMetaBox::save', 10, 2);
-            add_action(
-                'woocommerce_coupon_discount_types',
-                'VindiPaymentGateways\CouponsMetaBox::remove_ws_recurring_discount',
-                10,
-                1
-            );
-      add_action('admin_notices', array(&$this, 'wcs_automatic_payment_settings'));
+      $this->call_actions();
     }
   }
+
+    public function call_actions()
+    {
+        add_filter('woocommerce_settings_tabs_array', array($this, 'add_settings_tab'), 50);
+        add_action('woocommerce_settings_tabs_settings_vindi', array(&$this, 'settings_tab'));
+        add_action('woocommerce_update_options_settings_vindi', array(&$this, 'process_admin_options'), 10);
+        add_action('woocommerce_update_options_settings_vindi', array($this, 'api_key_field'), 11);
+        add_action('woocommerce_settings_tabs_settings_vindi', array($this, 'is_api_key_valid'));
+        add_action('woocommerce_coupon_options', 'VindiPaymentGateways\CouponsMetaBox::output', 40, 2);
+        add_action('woocommerce_coupon_options_save', 'VindiPaymentGateways\CouponsMetaBox::save', 10, 2);
+        add_action(
+            'woocommerce_coupon_discount_types',
+            'VindiPaymentGateways\CouponsMetaBox::remove_ws_recurring_discount',
+            10,
+            1
+        );
+        add_action('admin_notices', array(&$this, 'wcs_automatic_payment_settings'));
+    }
 
   /**
    * Create settings tab
