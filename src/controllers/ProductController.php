@@ -44,7 +44,7 @@ class ProductController
    *
    * @since 1.2.2
    * @version 1.2.0
-   * 
+   *
    * @SuppressWarnings(PHPMD.MissingImport)
    */
   function create($post_id, $post, $update, $recreated = false)
