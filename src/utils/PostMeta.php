@@ -1,6 +1,8 @@
 <?php
 
-class PostMeta 
+namespace VindiPaymentGateway;
+
+class PostMeta
 {
     /**
      * Check if exists a duplicate $meta on database
@@ -35,4 +37,3 @@ class PostMeta
     }
 }
 
-?>
