@@ -36,4 +36,3 @@ class PostMeta
         return 0;
     }
 }
-
