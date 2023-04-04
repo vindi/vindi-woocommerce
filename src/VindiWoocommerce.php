@@ -64,12 +64,12 @@ class WcVindiPayment extends AbstractInstance
   /**
    * @var VindiPaymentGateway\VindiProductStatus
    */
-  private $vindi_status_notifier;
+    private $vindi_status_notifier;
 
   /**
    * @var VindiPaymentGateway\InterestPriceHandler
    */
-  private $interest_price_handler;
+    private $interest_price_handler;
 
   public function __construct()
   {

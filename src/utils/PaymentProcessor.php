@@ -2,6 +2,9 @@
 
 namespace VindiPaymentGateways;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class VindiPaymentProcessor
 {
     /**

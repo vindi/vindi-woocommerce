@@ -146,7 +146,7 @@ class ProductsMetabox
     private function check_credit_payment_active($woocommerce)
     {
         $gateways = array_keys($woocommerce->payment_gateways->get_available_payment_gateways());
-        foreach ($gateways as $key ) {
+        foreach ($gateways as $key) {
             if ($key === 'vindi-credit-card') {
                 return true;
             }
