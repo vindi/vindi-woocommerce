@@ -1,5 +1,5 @@
 <?php
-namespace VindiPaymentGateway;
+namespace VindiPaymentGateways;
 
 /**
  * Merging all the controllers needed to

@@ -1,5 +1,7 @@
 <?php
 
+namespace VindiPaymentGateways;
+
 if (!function_exists('get_plugins')) {
     require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 }

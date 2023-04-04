@@ -1,5 +1,8 @@
 <?php
-namespace VindiPaymentGateway;
+
+namespace VindiPaymentGateways;
+
+use WC_Settings_API;
 
 class VindiSettings extends WC_Settings_API
 {

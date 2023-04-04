@@ -1,15 +1,8 @@
 <?php
-namespace VindiPaymentGateway;
+namespace VindiPaymentGateways;
 
 require_once plugin_dir_path(__FILE__)  . '/utils/AbstractInstance.php';
 
-use VindiPaymentGateway\VindiLanguages;
-use VindiPaymentGateway\VindiSettings;
-use VindiPaymentGateway\VindiControllers;
-use VindiPaymentGateway\VindiWebhooks;
-use VindiPaymentGateway\FrontendFilesLoader;
-use VindiPaymentGateway\VindiSubscriptionStatusHandler;
-use VindiPaymentGateway\ProductsMetabox;
 
 /**
  * @SuppressWarnings(PHPMD)
@@ -67,6 +60,16 @@ class WcVindiPayment extends AbstractInstance
    * @var VindiPaymentGateway\ProductsMetabox
    */
     private $product_metabox;
+
+  /**
+   * @var VindiPaymentGateway\VindiProductStatus
+   */
+  private $vindi_status_notifier;
+
+  /**
+   * @var VindiPaymentGateway\InterestPriceHandler
+   */
+  private $interest_price_handler;
 
   public function __construct()
   {
@@ -184,4 +187,4 @@ class WcVindiPayment extends AbstractInstance
     }
 }
 
-add_action('plugins_loaded', array('WcVindiPayment', 'get_instance'));
+add_action('plugins_loaded', array(WcVindiPayment::class, 'get_instance'));

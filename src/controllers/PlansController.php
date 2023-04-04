@@ -1,4 +1,7 @@
 <?php
+
+namespace VindiPaymentGateways;
+
 /**
  * Creation and edition of products with reflection within Vindi
  *
@@ -53,7 +56,7 @@ class PlansController
       return;
     }
 
-        $post_meta = new VindiPaymentGateway\PostMeta();
+        $post_meta = new PostMeta();
         if ($post_meta->check_vindi_item_id($post_id, 'vindi_plan_id') > 1) {
             update_post_meta($post_id, 'vindi_plan_id', '');
         }

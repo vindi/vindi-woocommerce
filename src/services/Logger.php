@@ -1,5 +1,9 @@
 <?php
 
+namespace VindiPaymentGateways;
+
+use WC_Logger;
+
 class VindiLogger
 {
   /**

@@ -1,5 +1,9 @@
 <?php
 
+namespace VindiPaymentGateways;
+
+use WC_Customer;
+
 class CustomerController
 {
 

@@ -1,4 +1,7 @@
 <?php
+
+namespace VindiPaymentGateways;
+
 if (!defined('ABSPATH')) {
   exit;
 }

@@ -1,5 +1,6 @@
 <?php
-namespace VindiPaymentGateway;
+
+namespace VindiPaymentGateways;
 
 /**
  * Está classe, ao ser extendida, obriga que o metodo __construct seja privado,

@@ -1,5 +1,5 @@
 <?php
-namespace VindiPaymentGateway;
+namespace VindiPaymentGateways;
 
 /**
  * WC_Meta_Box_Coupon_Data Class updated with custom fields.

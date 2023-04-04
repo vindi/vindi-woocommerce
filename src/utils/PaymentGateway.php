@@ -1,4 +1,9 @@
 <?php
+
+namespace VindiPaymentGateways;
+
+use WC_Payment_Gateway_CC;
+
 if (!defined('ABSPATH')) {
   exit;
 }
