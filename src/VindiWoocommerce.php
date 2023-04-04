@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile
+
 require_once plugin_dir_path(__FILE__)  . '/utils/AbstractInstance.php';
 
 /**
