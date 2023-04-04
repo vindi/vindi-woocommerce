@@ -1,5 +1,4 @@
 <?php
-
 namespace VindiPaymentGateway;
 
 require_once plugin_dir_path(__FILE__)  . '/utils/AbstractInstance.php';

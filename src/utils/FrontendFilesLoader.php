@@ -1,5 +1,4 @@
 <?php
-
 namespace VindiPaymentGateway;
 
 if (! defined('ABSPATH')) {
