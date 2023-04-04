@@ -67,7 +67,7 @@ class VindiSettings extends WC_Settings_API
     $this->invalidApiKey = get_option( 'vindi_invalid_api_key', false );
     
     if (is_admin()) {
-      $this->call_actions();
+            $this->call_actions();
     }
   }
 
