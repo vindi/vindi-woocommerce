@@ -1,5 +1,7 @@
 <?php
 
+namespace VindiPaymentGateway;
+
 class VindiWebhooks
 {
   /**

@@ -1,8 +1,16 @@
 <?php
-// phpcs:ignoreFile
+
+namespace VindiPaymentGateway;
 
 require_once plugin_dir_path(__FILE__)  . '/utils/AbstractInstance.php';
 
+use VindiPaymentGateway\VindiLanguages;
+use VindiPaymentGateway\VindiSettings;
+use VindiPaymentGateway\VindiControllers;
+use VindiPaymentGateway\VindiWebhooks;
+use VindiPaymentGateway\FrontendFilesLoader;
+use VindiPaymentGateway\VindiSubscriptionStatusHandler;
+use VindiPaymentGateway\ProductsMetabox;
 /**
  * @SuppressWarnings(PHPMD)
  */
@@ -26,32 +34,32 @@ class WcVindiPayment extends AbstractInstance
   static $instance = null;
 
   /**
-   * @var VindiLanguages
+   * @var VindiPaymentGateway\VindiLanguages
    */
   private $languages;
 
   /**
-   * @var VindiSettings
+   * @var VindiPaymentGateway\VindiSettings
    */
   private $settings;
 
   /**
-   * @var VindiControllers
+   * @var VindiPaymentGateway\VindiControllers
    */
   private $controllers;
 
   /**
-   * @var VindiWebhooks
+   * @var VindiPaymentGateway\VindiWebhooks
    */
   private $webhooks;
 
   /**
-   * @var FrontendFilesLoader
+   * @var VindiPaymentGateway\FrontendFilesLoader
    */
   private $frontend_files_loader;
 
   /**
-   * @var VindiSubscriptionStatusHandler
+   * @var VindiPaymentGateway\VindiSubscriptionStatusHandler
    */
   private $subscription_status_handler;
 
@@ -76,7 +84,7 @@ class WcVindiPayment extends AbstractInstance
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
     $this->interest_price_handler = new InterestPriceHandler();
-        $this->product_metabox = new VindiPaymentGateway\ProductsMetabox();
+        $this->product_metabox = new ProductsMetabox();
 
     /**
       * Add Gateway to Woocommerce

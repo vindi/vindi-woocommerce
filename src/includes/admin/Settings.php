@@ -1,5 +1,7 @@
 <?php
 
+namespace VindiPaymentGateway;
+
 class VindiSettings extends WC_Settings_API
 {
 
