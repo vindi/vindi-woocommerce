@@ -1,5 +1,6 @@
 <?php
 namespace VindiPaymentGateway;
+
 /**
  * Merging all the controllers needed to
  * communication between the Vindi API.

@@ -10,6 +10,7 @@ use VindiPaymentGateway\VindiWebhooks;
 use VindiPaymentGateway\FrontendFilesLoader;
 use VindiPaymentGateway\VindiSubscriptionStatusHandler;
 use VindiPaymentGateway\ProductsMetabox;
+
 /**
  * @SuppressWarnings(PHPMD)
  */

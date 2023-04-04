@@ -1,5 +1,6 @@
 <?php
 namespace VindiPaymentGateway;
+
   class VindiLanguages {
     public function __construct()
     {
