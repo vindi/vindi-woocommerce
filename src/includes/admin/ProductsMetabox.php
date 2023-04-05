@@ -18,7 +18,7 @@ class ProductsMetabox
             'woocommerce_subscription_custom_fields'
         ]);
 
-        add_action('woocommerce_process_product_meta', [
+        add_action('save_post', [
             $this,
             'filter_woocommerce_product_custom_fields'
         ]);

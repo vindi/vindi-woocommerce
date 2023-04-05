@@ -9,6 +9,19 @@ class FrontEnd {
     this.setFocusEvent();
     this.setChangeEvents();
     this.handleCardImage();
+    this.handleChangeCard();
+  }
+
+  handleChangeCard() {
+    jQuery(".vindi-change-card").bind('click', function () {
+      jQuery('.vindi-old-cc-data').hide();
+      jQuery('.vindi-old-cc-data').find('input').prop('disabled', true);
+    
+      jQuery('.vindi-new-cc-data').find('input, select').prop('disabled', false);
+      jQuery('.vindi-new-cc-data').show();
+    
+      return false;
+    });
   }
 
   setChangeEvents() {
