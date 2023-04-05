@@ -3,6 +3,7 @@
 namespace VindiPaymentGateways;
 
 use WC_Payment_Gateway_CC;
+use Exception;
 use WC_Order;
 
 if (!defined('ABSPATH')) {
