@@ -483,8 +483,6 @@ class VindiPaymentProcessor
      */
     public function build_product_items($product, $order_type = 'bill')
     {
-        $order_type = 'bill';
-
         if (!$product) {
             $this->abort(__("Ocorreu um erro ao gerar o seu pedido!", VINDI), true);
         }
