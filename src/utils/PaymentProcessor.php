@@ -103,15 +103,14 @@ class VindiPaymentProcessor
     public function get_customer()
     {
         $current_user = $this->order->get_user();
-        
+        $vindi_customer = [];
+
         if ($current_user->ID) {
             $vindi_customer = $this->controllers->customers->update($current_user->ID, $this->order);
         }
 
-        if ($this->is_cc()) {
+        if (isset($vindi_customer['id']) && $this->is_cc()) {
             $this->create_payment_profile($vindi_customer['id']);
-        } else {
-            $this->create_payment_profile_bank_slip($vindi_customer['id']);
         }
 
         return $vindi_customer;
@@ -128,8 +127,7 @@ class VindiPaymentProcessor
     public function create_payment_profile_bank_slip($customer_id)
     {
 
-        if ($this->is_bank_slip) {
-
+        if ($this->is_bank_slip()) {
             $payment_info = $this->get_bank_slip_payment_type($customer_id);
             $payment_profile = $this->routes->createCustomerPaymentProfile($payment_info);
 
