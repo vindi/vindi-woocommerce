@@ -55,7 +55,7 @@ class Product {
         }
 
         if( period.value === 'month') {
-            return this.getMonthInterval();
+            return this.getMonthInterval(interval);
         }
 
         return false;
@@ -63,7 +63,7 @@ class Product {
 
     getMonthInterval(interval) {
         if (parseInt(interval.value) && parseInt(interval.value) != 1) {
-            return middle.value;
+            return interval.value;
         }
 
         return false;

@@ -101,13 +101,15 @@ class ProductsMetabox
 
     private function handle_saving_variable_subscription($product)
     {
-        $variations = array_reverse($product->get_children());
-        $periods = $this->get_post_vars('variable_subscription_period');
-        $intervals = $this->get_post_vars('variable_subscription_period_interval');
+        $variations = $product->get_children();
+        $periods = $this->get_post_vars('variable_subscription_period', false);
+        $intervals = $this->get_post_vars('variable_subscription_period_interval', false);
+        $count = 0;
 
         foreach ($variations as $key => $variation) {
             $installments = $this->get_post_vars("vindi_max_credit_installments_$variation");
-            if (isset($periods[$key]) && isset($intervals[$key])) {
+            if (isset($periods[$key]) && isset($intervals[$count])) {
+                
                 $this->save_woocommerce_product_custom_fields(
                     $variation,
                     $installments,
@@ -115,15 +117,21 @@ class ProductsMetabox
                     $intervals[$key]
                 );
             }
+
+            $count++;
         }
     }
 
     /**
      * @SuppressWarnings(PHPMD.Superglobals)
      */
-    private function get_post_vars($var)
+    private function get_post_vars($var, $filter = true)
     {
         if (!empty($_POST) && isset($_POST[$var])) {
+            if (!$filter) {
+                return $_POST[$var];
+            }
+
             return filter_var($_POST[$var]);
         }
 
