@@ -8,7 +8,7 @@ class ProductsMetabox
 {
     public function __construct()
     {
-        add_action('woocommerce_product_after_variable_attributes', [
+        add_action('woocommerce_variation_options', [
             $this,
             'woocommerce_variable_subscription_custom_fields'
         ], 10, 3);
@@ -22,6 +22,11 @@ class ProductsMetabox
             $this,
             'filter_woocommerce_product_custom_fields'
         ]);
+
+        add_action( 'woocommerce_save_product_variation', [
+            $this,
+            'handle_saving_variable_subscription'
+        ], 10, 1 );
     }
 
     public function woocommerce_subscription_custom_fields()
@@ -90,36 +95,25 @@ class ProductsMetabox
         if (!$product) {
             return;
         }
-        
-        if ($product->is_type('variable-subscription')) {
-            $this->handle_saving_variable_subscription($product);
-        }
+
         if ($product->is_type('subscription')) {
             $this->handle_saving_simple_subscription($product);
         }
     }
 
-    private function handle_saving_variable_subscription($product)
+    public function handle_saving_variable_subscription($variation)
     {
-        $variations = $product->get_children();
         $periods = $this->get_post_vars('variable_subscription_period', false);
         $intervals = $this->get_post_vars('variable_subscription_period_interval', false);
-        $count = 0;
+        $installments = $this->get_post_vars("vindi_max_credit_installments_$variation");
 
-        foreach ($variations as $key => $variation) {
-            $installments = $this->get_post_vars("vindi_max_credit_installments_$variation");
-            if (isset($periods[$key]) && isset($intervals[$count])) {
-                
-                $this->save_woocommerce_product_custom_fields(
-                    $variation,
-                    $installments,
-                    $periods[$key],
-                    $intervals[$key]
-                );
-            }
+        $this->save_woocommerce_product_custom_fields(
+            $variation,
+            $installments,
+            end($periods),
+            end($intervals)
+        );
 
-            $count++;
-        }
     }
 
     /**
