@@ -23,10 +23,10 @@ class ProductsMetabox
             'filter_woocommerce_product_custom_fields'
         ]);
 
-        add_action( 'woocommerce_save_product_variation', [
+        add_action('woocommerce_save_product_variation', [
             $this,
             'handle_saving_variable_subscription'
-        ], 10, 1 );
+        ], 10, 1);
     }
 
     public function woocommerce_subscription_custom_fields()
@@ -113,11 +113,11 @@ class ProductsMetabox
             end($periods),
             end($intervals)
         );
-
     }
 
     /**
      * @SuppressWarnings(PHPMD.Superglobals)
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
      */
     private function get_post_vars($var, $filter = true)
     {
