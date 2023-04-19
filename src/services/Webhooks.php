@@ -4,6 +4,8 @@ namespace VindiPaymentGateways;
 
 use WC_Subscriptions_Manager;
 use Exception;
+use WP_Query;
+use WC_Order;
 
 class VindiWebhooks
 {
