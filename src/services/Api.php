@@ -1,5 +1,7 @@
 <?php
 
+namespace VindiPaymentGateways;
+
 class VindiApi
 {
   /**

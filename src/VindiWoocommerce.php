@@ -1,7 +1,13 @@
 <?php
-require_once VINDI_SRC . '/utils/AbstractInstance.php';
+namespace VindiPaymentGateways;
 
-class WC_Vindi_Payment extends AbstractInstance
+require_once plugin_dir_path(__FILE__)  . '/utils/AbstractInstance.php';
+
+
+/**
+ * @SuppressWarnings(PHPMD)
+ */
+class WcVindiPayment extends AbstractInstance
 {
   /**
    * @var string
@@ -21,34 +27,49 @@ class WC_Vindi_Payment extends AbstractInstance
   static $instance = null;
 
   /**
-   * @var VindiLanguages
+   * @var VindiPaymentGateway\VindiLanguages
    */
   private $languages;
 
   /**
-   * @var VindiSettings
+   * @var VindiPaymentGateway\VindiSettings
    */
   private $settings;
 
   /**
-   * @var VindiControllers
+   * @var VindiPaymentGateway\VindiControllers
    */
   private $controllers;
 
   /**
-   * @var VindiWebhooks
+   * @var VindiPaymentGateway\VindiWebhooks
    */
   private $webhooks;
 
   /**
-   * @var FrontendFilesLoader
+   * @var VindiPaymentGateway\FrontendFilesLoader
    */
   private $frontend_files_loader;
 
   /**
-   * @var VindiSubscriptionStatusHandler
+   * @var VindiPaymentGateway\VindiSubscriptionStatusHandler
    */
   private $subscription_status_handler;
+
+  /**
+   * @var VindiPaymentGateway\ProductsMetabox
+   */
+    private $product_metabox;
+
+  /**
+   * @var VindiPaymentGateway\VindiProductStatus
+   */
+    private $vindi_status_notifier;
+
+  /**
+   * @var VindiPaymentGateway\InterestPriceHandler
+   */
+    private $interest_price_handler;
 
   public function __construct()
   {
@@ -66,6 +87,7 @@ class WC_Vindi_Payment extends AbstractInstance
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
     $this->interest_price_handler = new InterestPriceHandler();
+        $this->product_metabox = new ProductsMetabox();
 
     /**
       * Add Gateway to Woocommerce
@@ -78,6 +100,8 @@ class WC_Vindi_Payment extends AbstractInstance
     add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
       $this->webhooks, 'handle'
     ));
+
+        add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
   }
 
   /**
@@ -88,34 +112,36 @@ class WC_Vindi_Payment extends AbstractInstance
    */
   public function init()
   {
-    // Helpers and Languages
-    require_once $this->getPath() . '/services/Api.php';
-    require_once $this->getPath() . '/services/Logger.php';
-    require_once $this->getPath() . '/i18n/Languages.php';
-    require_once $this->getPath() . '/services/VindiHelpers.php';
-    require_once $this->getPath() . '/services/Webhooks.php';
+        // Helpers and Languages
+        require_once plugin_dir_path(__FILE__) . '/services/Api.php';
+        require_once plugin_dir_path(__FILE__) . '/services/Logger.php';
+        require_once plugin_dir_path(__FILE__) . '/i18n/Languages.php';
+        require_once plugin_dir_path(__FILE__) . '/services/VindiHelpers.php';
+        require_once plugin_dir_path(__FILE__) . '/services/Webhooks.php';
 
-    // Loading Abstract Method and Utils
-    require_once $this->getPath() . '/utils/PaymentGateway.php';
-    require_once $this->getPath() . '/utils/Conversions.php';
-    require_once $this->getPath() . '/utils/RedirectCheckout.php';
+        // Loading Abstract Method and Utils
+        require_once plugin_dir_path(__FILE__) . '/utils/PaymentGateway.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/Conversions.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/RedirectCheckout.php';
 
-    require_once $this->getPath() . '/includes/admin/CouponsMetaBox.php';
-    require_once $this->getPath() . '/includes/admin/Settings.php';
-    require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
-    require_once $this->getPath() . '/includes/gateways/BankSlipPayment.php';
-    require_once $this->getPath() . '/utils/SubscriptionStatusHandler.php';
-    require_once $this->getPath() . '/utils/InterestPriceHandler.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/admin/CouponsMetaBox.php';
+            require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductsMetabox.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/admin/Settings.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/gateways/CreditPayment.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/gateways/BankSlipPayment.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/SubscriptionStatusHandler.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/InterestPriceHandler.php';
 
-    require_once $this->getPath() . '/includes/admin/ProductStatus.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductStatus.php';
 
-    // Routes import
-    require_once $this->getPath() . '/routes/RoutesApi.php';
+        // Routes import
+        require_once plugin_dir_path(__FILE__) . '/routes/RoutesApi.php';
 
-    // Controllers
-    require_once $this->getPath() . '/controllers/index.php';
+        // Controllers
+        require_once plugin_dir_path(__FILE__) . '/controllers/index.php';
 
-    require_once $this->getPath() . '/utils/PaymentProcessor.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/PaymentProcessor.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/PostMeta.php';
   }
 
   public static function getPath()
@@ -125,7 +151,7 @@ class WC_Vindi_Payment extends AbstractInstance
 
   public static function get_instance()
   {
-    require_once self::getPath() . '/utils/FrontendFilesLoader.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/FrontendFilesLoader.php';
     new FrontendFilesLoader();
 
     if (VindiDependencies::check()) {
@@ -150,6 +176,15 @@ class WC_Vindi_Payment extends AbstractInstance
 
     return $methods;
   }
+
+  /**
+   * Sobrescreve o método que remove os métodos de pagamento para assinaturas com trial
+   * @return bool
+   */
+    public function filter_woocommerce_cart_needs_payment()
+    {
+        return true;
+    }
 }
 
-add_action('plugins_loaded', array('WC_Vindi_Payment', 'get_instance'));
+add_action('plugins_loaded', array(WcVindiPayment::class, 'get_instance'));

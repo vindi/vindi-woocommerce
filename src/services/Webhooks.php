@@ -1,5 +1,10 @@
 <?php
 
+namespace VindiPaymentGateways;
+
+use WC_Subscriptions_Manager;
+use Exception;
+
 class VindiWebhooks
 {
   /**

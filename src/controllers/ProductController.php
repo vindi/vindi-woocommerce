@@ -1,4 +1,7 @@
 <?php
+
+namespace VindiPaymentGateways;
+
 /**
  * Creation and edition of products with reflection within Vindi
  *
@@ -44,6 +47,8 @@ class ProductController
    *
    * @since 1.2.2
    * @version 1.2.0
+   *
+   * @SuppressWarnings(PHPMD.MissingImport)
    */
   function create($post_id, $post, $update, $recreated = false)
   {
@@ -55,8 +60,8 @@ class ProductController
     if (get_post_type($post_id) != 'product') {
       return;
     }
-
-        if ($this->check_product_vindi_item_id($post_id, 'vindi_product_id') > 1) {
+        $post_meta = new PostMeta();
+        if ($post_meta->check_vindi_item_id($post_id, 'vindi_product_id') > 1) {
             update_post_meta($post_id, 'vindi_product_id', '');
         }
 
@@ -87,14 +92,13 @@ class ProductController
       )
     ));
 
-    // Saving product id and plan in the WC goal
-    if($createdProduct) {
-      update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
-
-      set_transient('vindi_product_message', 'created', 60);
-    } else {
-      set_transient('vindi_product_message', 'error', 60);
-    }
+          // Saving product id and plan in the WC goal
+          if ($createdProduct && isset($createdProduct['id'])) {
+            update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
+            set_transient('vindi_product_message', 'created', 60);
+          } else {
+            set_transient('vindi_product_message', 'error', 60);
+          }
 
     return $createdProduct;
   }
@@ -142,34 +146,6 @@ class ProductController
 
     return $updatedProduct;
   }
-
-    /**
-     * Check if exists a duplicate $meta on database
-     * @param int $post_id
-     * @param string $meta
-     * @return int $post_id
-     */
-    public function check_product_vindi_item_id($post_id, $meta)
-    {
-        global $wpdb;
-        $vindi_id = get_post_meta($post_id, $meta, true);
-
-        $sql = "SELECT 
-                  post_id as id 
-                FROM {$wpdb->prefix}postmeta
-                WHERE 
-                  meta_key LIKE '$meta' AND
-                  meta_value LIKE $vindi_id
-                ";
-
-        $result = $wpdb->get_results($sql);
-
-        if (is_array($result) && !empty($result)) {
-            return count($result);
-        }
-
-        return 0;
-    }
 
   /**
    * When the user trashes a product in Woocomerce, it is deactivated in the Vindi.

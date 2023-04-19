@@ -1,4 +1,5 @@
 <?php
+namespace VindiPaymentGateways;
 
 /**
  * Merging all the controllers needed to
@@ -41,8 +42,8 @@ class VindiControllers
 
   function includes()
   {
-    require_once WC_Vindi_Payment::getPath() . '/controllers/PlansController.php';
-    require_once WC_Vindi_Payment::getPath() . '/controllers/CustomerController.php';
-    require_once WC_Vindi_Payment::getPath() . '/controllers/ProductController.php';
+        require_once plugin_dir_path(__FILE__) . '/PlansController.php';
+        require_once plugin_dir_path(__FILE__) . '/CustomerController.php';
+        require_once plugin_dir_path(__FILE__) . '/ProductController.php';
   }
 }
