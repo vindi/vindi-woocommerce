@@ -6,7 +6,7 @@
  * Description: Adiciona o gateway de pagamento da Vindi para o WooCommerce.
  * Author: Vindi
  * Author URI: https://www.vindi.com.br
- * Version: 1.2.1
+ * Version: 1.2.2
  * Requires at least: 4.4
  * Tested up to: 6.2
  * WC requires at least: 3.0.0
