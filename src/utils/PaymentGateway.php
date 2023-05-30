@@ -1,4 +1,12 @@
 <?php
+
+namespace VindiPaymentGateways;
+
+use WC_Payment_Gateway_CC;
+use Exception;
+use WC_Order;
+use WP_Error;
+
 if (!defined('ABSPATH')) {
   exit;
 }

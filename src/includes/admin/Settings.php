@@ -1,5 +1,9 @@
 <?php
 
+namespace VindiPaymentGateways;
+
+use WC_Settings_API;
+
 class VindiSettings extends WC_Settings_API
 {
 
@@ -19,7 +23,7 @@ class VindiSettings extends WC_Settings_API
   private $token;
 
   /**
-   * @var WC_Vindi_Payment
+   * @var WcVindiPayment
    **/
   private $plugin;
 
@@ -51,12 +55,9 @@ class VindiSettings extends WC_Settings_API
   function __construct()
   {
     global $woocommerce;
-    
     $this->token = sanitize_file_name(wp_hash(VINDI));
-    
     $this->init_settings();
     $this->init_form_fields();
-    
     $this->debug = $this->get_option('debug') == 'yes' ? true : false;
     $this->logger = new VindiLogger(VINDI, $this->debug);
     $this->api = new VindiApi($this->get_api_key(), $this->logger, $this->get_is_active_sandbox());
@@ -66,23 +67,27 @@ class VindiSettings extends WC_Settings_API
     $this->invalidApiKey = get_option( 'vindi_invalid_api_key', false );
     
     if (is_admin()) {
-      
-      
-      add_filter('woocommerce_settings_tabs_array', array($this, 'add_settings_tab'), 50);
-      add_action('woocommerce_settings_tabs_settings_vindi', array(&$this, 'settings_tab'));
-      add_action('woocommerce_update_options_settings_vindi', array(&$this, 'process_admin_options'), 10);
-      add_action('woocommerce_update_options_settings_vindi', array($this, 'api_key_field'), 11);
-      add_action('woocommerce_settings_tabs_settings_vindi', array($this, 'is_api_key_valid'));
-
-     /**
-      * Add custom input fields in coupon 'General' tab
-      */
-      add_action('woocommerce_coupon_options', 'CouponsMetaBox::output', 40, 2);
-      add_action('woocommerce_coupon_options_save', 'CouponsMetaBox::save', 10, 2);
-      add_action('woocommerce_coupon_discount_types', 'CouponsMetaBox::remove_ws_recurring_discount', 10, 1);
-      add_action('admin_notices', array(&$this, 'wcs_automatic_payment_settings'));
+            $this->call_actions();
     }
   }
+
+    public function call_actions()
+    {
+        add_filter('woocommerce_settings_tabs_array', array($this, 'add_settings_tab'), 50);
+        add_action('woocommerce_settings_tabs_settings_vindi', array(&$this, 'settings_tab'));
+        add_action('woocommerce_update_options_settings_vindi', array(&$this, 'process_admin_options'), 10);
+        add_action('woocommerce_update_options_settings_vindi', array($this, 'api_key_field'), 11);
+        add_action('woocommerce_settings_tabs_settings_vindi', array($this, 'is_api_key_valid'));
+        add_action('woocommerce_coupon_options', 'VindiPaymentGateways\CouponsMetaBox::output', 40, 2);
+        add_action('woocommerce_coupon_options_save', 'VindiPaymentGateways\CouponsMetaBox::save', 10, 2);
+        add_action(
+            'woocommerce_coupon_discount_types',
+            'VindiPaymentGateways\CouponsMetaBox::remove_ws_recurring_discount',
+            10,
+            1
+        );
+        add_action('admin_notices', array(&$this, 'wcs_automatic_payment_settings'));
+    }
 
   /**
    * Create settings tab
@@ -115,9 +120,9 @@ class VindiSettings extends WC_Settings_API
       $args,
       '',
       sprintf(
-        '%s/../../%s',
-        dirname(__FILE__),
-        WC_Vindi_Payment::TEMPLATE_DIR
+          '%s/../../%s',
+          dirname(__FILE__),
+          WcVindiPayment::TEMPLATE_DIR
       )
     );
   }
@@ -304,9 +309,9 @@ class VindiSettings extends WC_Settings_API
 
 	public function get_webhooks_url() {
 		return sprintf('%s/index.php/wc-api/%s?token=%s',
-      get_site_url(),
-      WC_Vindi_Payment::WC_API_CALLBACK,
-      $this->get_token()
+            get_site_url(),
+            WcVindiPayment::WC_API_CALLBACK,
+            $this->get_token()
     );
   }
   
@@ -333,9 +338,14 @@ class VindiSettings extends WC_Settings_API
     **/
     public function wcs_automatic_payment_settings()
     {
-        if('yes' != get_option('woocommerce_subscriptions_turn_off_automatic_payments'))
-            return;
+        $opt = get_option('woocommerce_subscriptions_turn_off_automatic_payments');
 
-        $this->get_template('wcs-automatic-payment-deactivated-message.html.php');
+        if ('yes' !== $opt) {
+            $this->get_template(
+                'wcs-automatic-payment-deactivated-message.html.php'
+            );
+        }
+        
+        return;
     }
 }

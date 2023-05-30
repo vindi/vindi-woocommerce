@@ -1,5 +1,9 @@
 <?php
 
+namespace VindiPaymentGateways;
+
+use WC_Customer;
+
 class CustomerController
 {
 
@@ -61,7 +65,7 @@ class CustomerController
     }
 
 
-    if($order && method_exists($order, 'needs_payment')) {
+    if ($order && method_exists($order, 'needs_payment')) {
       $metadata = array();
       if ('2' === $order->get_meta('_billing_persontype')) {
         // Pessoa jurídica
@@ -87,7 +91,7 @@ class CustomerController
       array(
         'name' => $name,
         'email' => ($user['email']) ? $user['email'] : '',
-        'code' => 'WC-USER-'.$user['id'],
+        'code' => 'WC-USER-' . $user['id'],
         'address' => array(
           'street' => ($customer->get_billing_address_1()) ? $customer->get_billing_address_1() : '',
           'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '',
@@ -105,8 +109,10 @@ class CustomerController
       )
     );
 
-    // Saving customer in the user meta WP
-    update_user_meta($user_id, 'vindi_customer_id', $createdUser['id']);
+          if (isset($createdUser['id']) && $createdUser['id']) {
+            update_user_meta($user_id, 'vindi_customer_id', $createdUser['id']);
+          }
+
     return $createdUser;
   }
 
@@ -166,7 +172,7 @@ class CustomerController
     $metadata = null;
 
 
-    if($order && method_exists($order, 'needs_payment')) {
+    if ($order && method_exists($order, 'needs_payment')) {
       $metadata = array();
       if ('2' === $order->get_meta('_billing_persontype')) {
         // Pessoa jurídica
@@ -197,7 +203,7 @@ class CustomerController
       array(
         'name' => $name,
         'email' => ($user['email']) ? $user['email'] : '',
-        'code' => 'WC-USER-'.$user['id'],
+        'code' => 'WC-USER-' . $user['id'],
         'address' => array(
           'street' => ($customer->get_billing_address_1()) ? $customer->get_billing_address_1() : '',
           'number' => ($customer->get_meta('billing_number')) ? $customer->get_meta('billing_number') : '',

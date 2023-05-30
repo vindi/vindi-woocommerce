@@ -1,4 +1,7 @@
 <?php
+
+namespace VindiPaymentGateways;
+
 /**
  * Creation and edition of products with reflection within Vindi
  *
@@ -44,6 +47,8 @@ class ProductController
    *
    * @since 1.2.2
    * @version 1.2.0
+   *
+   * @SuppressWarnings(PHPMD.MissingImport)
    */
   function create($post_id, $post, $update, $recreated = false)
   {
@@ -55,10 +60,14 @@ class ProductController
     if (get_post_type($post_id) != 'product') {
       return;
     }
+        $post_meta = new PostMeta();
+        if ($post_meta->check_vindi_item_id($post_id, 'vindi_product_id') > 1) {
+            update_post_meta($post_id, 'vindi_product_id', '');
+        }
+
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
     if(!$recreated && get_post_status($post_id) != 'publish' || !empty(get_post_meta($post_id, 'vindi_product_id', true))) {
-
       return $this->update($post_id);
     }
 
@@ -83,14 +92,13 @@ class ProductController
       )
     ));
 
-    // Saving product id and plan in the WC goal
-    if($createdProduct) {
-      update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
-
-      set_transient('vindi_product_message', 'created', 60);
-    } else {
-      set_transient('vindi_product_message', 'error', 60);
-    }
+          // Saving product id and plan in the WC goal
+          if ($createdProduct && isset($createdProduct['id'])) {
+            update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
+            set_transient('vindi_product_message', 'created', 60);
+          } else {
+            set_transient('vindi_product_message', 'error', 60);
+          }
 
     return $createdProduct;
   }

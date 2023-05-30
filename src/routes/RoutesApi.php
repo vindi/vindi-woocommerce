@@ -1,5 +1,7 @@
 <?php
 
+namespace VindiPaymentGateways;
+
 class VindiRoutes
 {
 
@@ -113,9 +115,12 @@ class VindiRoutes
    */
   public function createCustomer($data)
   {
-
     $response = $this->api->request('customers', 'POST', $data);
-    return $response['customer'];
+        if (isset($response['customer'])) {
+          return $response['customer'];
+        }
+
+        return [];
   }
 
   /**
@@ -277,12 +282,18 @@ class VindiRoutes
   {
     // Protect credit card number.
     $log = $data;
-    $log['card_number'] = sprintf('**** *%s', substr($log['card_number'], -3));
-    $log['card_cvv'] = '***';
+        if (isset($data['card_number']) && isset($data['card_cvv'])) {
+          $log['card_number'] = sprintf('**** *%s', substr($log['card_number'], -3));
+          $log['card_cvv'] = '***';
+        }
 
     $response = $this->api->request('payment_profiles', 'POST', $data, $log);
 
-    return $response['payment_profile'];
+        if (isset($response['payment_profile'])) {
+          return $response['payment_profile'];
+        }
+
+        return [];
   }
 
   public function findProductByCode($code)

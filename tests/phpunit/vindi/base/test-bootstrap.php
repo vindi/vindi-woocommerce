@@ -13,7 +13,7 @@ class Vindi_Test_Bootstrap extends Vindi_Test_Base
     remove_action('admin_init', '_maybe_update_plugins');
 
     // Make sure the main class is running
-    WC_Vindi_Payment::instance();
+    WcVindiPayment::instance();
 
     // Run fake actions
     do_action('plugins_loaded');
@@ -23,6 +23,6 @@ class Vindi_Test_Bootstrap extends Vindi_Test_Base
 
   public function test_getInstance()
   {
-    $this->assertInstanceOf('WC_Vindi_Payment', WC_Vindi_Payment::instance());
+    $this->assertInstanceOf('WcVindiPayment', WcVindiPayment::instance());
   }
 }

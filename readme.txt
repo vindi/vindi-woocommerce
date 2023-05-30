@@ -1,17 +1,17 @@
 === Vindi WooCommerce 2 ===
-Contributors: laertejr, rodasistemas, cleberbonifacio
-Plugin Name: Vindi WooCommerce 2 (BETA)
+Contributors: apiki, aguiart0, laertejr, rodasistemas, cleberbonifacio
+Plugin Name: Vindi WooCommerce
 Plugin URI: https://github.com/vindi/vindi-woocommerce
 Website Link: https://www.vindi.com.br
 Tags: vindi, subscriptions, pagamento-recorrente, cobranca-recorrente, cobrança-recorrente, recurring, site-de-assinatura, assinaturas, faturamento-recorrente, recorrencia, assinatura, woocommerce-subscriptions, vindi-woocommerce, vindi-payment-gateway
 Author URI: https://vindi.com.br/ | https://mentores.com.br
 Author: Vindi | Mentores Digital
 Requires at least: 4.4
-Tested up to: 6.0
+Tested up to: 6.2
 WC requires at least: 3.0.0
-WC tested up to: 6.5.1
+WC tested up to: 7.6.0
 Requires PHP: 5.6
-Stable Tag: 1.1.12
+Stable Tag: 1.2.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,35 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.2.2 - 25/04/2023 =
+-Lançamento da versão de patch.
+- **Correção:** Valor de parcelas de crédito para produtos variáveis.
+
+== Changelog ==
+= 1.2.1 - 19/04/2023 =
+-Lançamento da versão de patch.
+- **Correção:** Erro fatal ao receber notificação de Webhook
+
+= 1.2.0 - 29/03/2023 =
+-Lançamento da versão de patch.
+- **Correção:** Correção de scripts que faziam o update das informações do checkout durante a seleção de uma parcela. Algumas informações ocultas eram perdidas no processo.
+- **Correção:** Duplicação de produtos variáveis.
+- **Adição:** Adiciona a funcionalidade de controlar as configurações de parcelamento das assinaturas.
+- **Correção** Corrige a renderização dos métodos de pagamento para assinaturas com free trial ativado.
+- **Correção** Corrige o valor das parcelas, que se mantinham zerados caso o valor do primeiro ciclo fosse zerado.
+- **Correção** Corrige a utilização de cupons em assinaturas que possuem o free trial ativado.
+- **Correção** Vinculo com a VINDI eram sobrescritos durante edição de produtos.
+- **Correção** Compatibilidade com as versões mais recentes do PHP.
+
+= 1.1.13 - 10/08/2022 =
+-Lançamento da versão de patch.
+- **Correção**: Duplicação de produtos dentro do WooCommerce
+- **Adição**: Adicionado suporte à funcionalidade de "one time shipping" do WooCommerce
+  Subscriptions, que permite opção de cobrança única (somente no primeiro ciclo de uma assinatura)
+- **Correção**: Correção de um comportamento de alerta de notificação que induzia o usuário a
+  desmarcar a opção "Turn off Automatic Payments" de forma incorreta.
+
+
 = 1.1.12 - 08/06/2022 =
 -Lançamento da versão de patch.
 - **Correção**: Foi removido o envio da descrição do produto para a plataforma Vindi para evitar possíveis erros no cadastro de produtos.
