@@ -1,8 +1,6 @@
 <?php
-if (! defined('ABSPATH')) {
-    die();
-    exit; // Exit if accessed directly
-}
+
+namespace VindiPaymentGateways;
 
 class VindiWCSRenewalDisable
 {
