@@ -87,8 +87,8 @@ class WcVindiPayment extends AbstractInstance
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
     $this->interest_price_handler = new InterestPriceHandler();
-    $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
-    $this->product_metabox = new ProductsMetabox();
+        $this->product_metabox = new ProductsMetabox();
+        $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
 
     /**
       * Add Gateway to Woocommerce
@@ -113,35 +113,6 @@ class WcVindiPayment extends AbstractInstance
    */
   public function init()
   {
-    // Helpers and Languages
-    require_once $this->getPath() . '/services/Api.php';
-    require_once $this->getPath() . '/services/Logger.php';
-    require_once $this->getPath() . '/i18n/Languages.php';
-    require_once $this->getPath() . '/services/VindiHelpers.php';
-    require_once $this->getPath() . '/services/Webhooks.php';
-
-    // Loading Abstract Method and Utils
-    require_once $this->getPath() . '/utils/PaymentGateway.php';
-    require_once $this->getPath() . '/utils/Conversions.php';
-    require_once $this->getPath() . '/utils/RedirectCheckout.php';
-
-    require_once $this->getPath() . '/includes/admin/CouponsMetaBox.php';
-    require_once $this->getPath() . '/includes/admin/Settings.php';
-    require_once $this->getPath() . '/includes/gateways/CreditPayment.php';
-    require_once $this->getPath() . '/includes/gateways/BankSlipPayment.php';
-    require_once $this->getPath() . '/utils/SubscriptionStatusHandler.php';
-    require_once $this->getPath() . '/utils/InterestPriceHandler.php';
-    require_once $this->getPath() . '/utils/WCSRenewalDisable.php';
-
-    require_once $this->getPath() . '/includes/admin/ProductStatus.php';
-
-    // Routes import
-    require_once $this->getPath() . '/routes/RoutesApi.php';
-
-    // Controllers
-    require_once $this->getPath() . '/controllers/index.php';
-
-    require_once $this->getPath() . '/utils/PaymentProcessor.php';
         // Helpers and Languages
         require_once plugin_dir_path(__FILE__) . '/services/Api.php';
         require_once plugin_dir_path(__FILE__) . '/services/Logger.php';
@@ -161,7 +132,6 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/BankSlipPayment.php';
         require_once plugin_dir_path(__FILE__) . '/utils/SubscriptionStatusHandler.php';
         require_once plugin_dir_path(__FILE__) . '/utils/InterestPriceHandler.php';
-        require_once $this->getPath() . '/utils/WCSRenewalDisable.php';
 
         require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductStatus.php';
 
