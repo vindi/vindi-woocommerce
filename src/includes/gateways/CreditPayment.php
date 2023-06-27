@@ -2,6 +2,8 @@
 
 namespace VindiPaymentGateways;
 
+use WC_Subscriptions_Cart;
+
 if (!defined('ABSPATH')) {
   exit;
 }
@@ -155,7 +157,12 @@ class VindiCreditGateway extends VindiPaymentGateway
   public function payment_fields()
   {
     $cart = $this->vindi_settings->woocommerce->cart;
-        $total = $this->get_cart_total($cart);
+        $total = $cart->total;
+        $recurring = end( $cart->recurring_carts );
+
+        if (floatval($cart->total) == 0 && is_object($recurring)) {
+          $total = $recurring->total;
+        }
     
     foreach ($cart->get_fees() as $index => $fee) {
       if($fee->name == __('Juros', VINDI)) {
@@ -195,21 +202,6 @@ class VindiCreditGateway extends VindiPaymentGateway
       'payment_methods'
     ));
   }
-
-    public function get_cart_total($cart)
-    {
-        $items = $cart->get_cart();
-        $price = 0;
-
-        foreach ($items as $item) {
-            $product = wc_get_product($item['product_id']);
-            if ($product) {
-                $price += floatval($product->get_price());
-            }
-        }
-
-        return $price;
-    }
 
   public function verify_user_payment_profile()
   {
