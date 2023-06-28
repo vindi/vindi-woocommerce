@@ -165,13 +165,6 @@ class VindiSettings extends WC_Settings_API
           'completed'    => 'Concluído',
         ),
       ),
-      'vindi_synchronism'        => array(
-        'title'            => __('Sincronismo de Status das Assinaturas', VINDI),
-        'type'             => 'checkbox',
-        'label'      => __('Enviar alterações de status nas assinaturas do WooCommerce', VINDI),
-        'description'      => __('Envia as alterações de status nas assinaturas do WooCommerce para Vindi.', VINDI),
-        'default'          => 'no',
-      ),
       'shipping_and_tax_config'  => array(
         'title'            => __('Cobrança única', VINDI),
         'type'             => 'checkbox',
@@ -321,7 +314,7 @@ class VindiSettings extends WC_Settings_API
    */
   public function get_synchronism_status()
   {
-    return 'yes' === $this->settings['vindi_synchronism'];
+    return false;
   }
   
   /**
