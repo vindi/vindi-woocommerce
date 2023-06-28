@@ -184,6 +184,7 @@ class VindiCreditGateway extends VindiPaymentGateway
   public function build_cart_installments($total)
   {
       $max_times = $this->get_order_max_installments($total);
+      $installments = [];
 
       if ($max_times > 1) {
           for ($times = 1; $times <= $max_times; $times++) {
@@ -197,12 +198,10 @@ class VindiCreditGateway extends VindiPaymentGateway
   public function get_cart_installments($times, $total)
   {
       if ($this->is_interest_rate_enabled()) {
-          $installment = ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
-      } else {
-          $installment = ceil($total / $times * 100) / 100;
+          return ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
       }
 
-      return $installment;
+      return ceil($total / $times * 100) / 100;
   }
 
   public function get_cart_total($cart)
