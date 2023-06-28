@@ -159,7 +159,7 @@ class VindiCreditGateway extends VindiPaymentGateway
       $cart = $this->vindi_settings->woocommerce->cart;
       $total = $this->get_cart_total($cart);
 
-      $installments = $this->get_cart_installments($total);
+      $installments = $this->build_cart_installments($total);
 
       $user_payment_profile = $this->build_user_payment_profile();
       $payment_methods = $this->routes->getPaymentMethods();
@@ -181,22 +181,28 @@ class VindiCreditGateway extends VindiPaymentGateway
       ));
   }
 
-  public function get_cart_installments($total)
+  public function build_cart_installments($total)
   {
-      $max_times = 12;
       $max_times = $this->get_order_max_installments($total);
 
       if ($max_times > 1) {
           for ($times = 1; $times <= $max_times; $times++) {
-              if ($this->is_interest_rate_enabled()) {
-                  $installments[$times] = ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
-              } else {
-                  $installments[$times] = ceil($total / $times * 100) / 100;
-              }
+            $installments[$times] = $this->get_cart_installments($times, $total);
           }
       }
 
       return $installments;
+  }
+
+  public function get_cart_installments($times, $total)
+  {
+      if ($this->is_interest_rate_enabled()) {
+          $installment = ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
+      } else {
+          $installment = ceil($total / $times * 100) / 100;
+      }
+
+      return $installment;
   }
 
   public function get_cart_total($cart)
