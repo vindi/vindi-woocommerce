@@ -11,7 +11,7 @@ Tested up to: 6.2
 WC requires at least: 3.0.0
 WC tested up to: 7.6.0
 Requires PHP: 5.6
-Stable Tag: 1.2.2
+Stable Tag: 1.2.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,11 +39,17 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.2.3 - 30/06/2023 =
+-Lançamento da versão de patch.
+- **Correção:** Removendo a opção de sincronismo de assinaturas.
+- **Correção:** Aparição dos métodos de pagamentos em pedidos zerados somente para pedidos de teste gratis.
+- **Correção:** visualização das parcelas crédito de acordo com o valor total do pedido
+- **Correção:** Erro fatal ao cancelar inscrições em ambientes com PHP 8+
+
 = 1.2.2 - 25/04/2023 =
 -Lançamento da versão de patch.
 - **Correção:** Valor de parcelas de crédito para produtos variáveis.
 
-== Changelog ==
 = 1.2.1 - 19/04/2023 =
 -Lançamento da versão de patch.
 - **Correção:** Erro fatal ao receber notificação de Webhook
