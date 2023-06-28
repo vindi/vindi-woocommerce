@@ -149,7 +149,7 @@ class VindiSubscriptionStatusHandler
             $order = wc_get_order($order);
         }
 
-        $vindi_order = get_post_meta($order->id, 'vindi_order', TRUE);
+        $vindi_order = get_post_meta($order->id, 'vindi_order', true);
 
         if (!is_array($vindi_order)) {
             return;
@@ -158,11 +158,11 @@ class VindiSubscriptionStatusHandler
 
         foreach ($vindi_order as $key => $item) {
             if ($key == 'single_payment' &&
-				$vindi_order[$key]['bill']['status'] != 'canceled') {
+			    $vindi_order[$key]['bill']['status'] != 'canceled') {
                 $single_payment_bill_id = $vindi_order[$key]['bill']['id'];
             }
 
-			$vindi_order[$key]['bill']['status'] = 'canceled';
+		    $vindi_order[$key]['bill']['status'] = 'canceled';
         }
         
         update_post_meta($order->id, 'vindi_order', $vindi_order);

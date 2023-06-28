@@ -166,8 +166,8 @@ class VindiCreditGateway extends VindiPaymentGateway
 
       if ($payment_methods === false || empty($payment_methods) || ! count($payment_methods['credit_card'])) {
             _e(
-              'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
-              VINDI
+                'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
+                VINDI
             );
           return;
       }
