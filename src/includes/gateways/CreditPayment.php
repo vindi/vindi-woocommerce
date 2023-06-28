@@ -159,19 +159,22 @@ class VindiCreditGateway extends VindiPaymentGateway
       $cart = $this->vindi_settings->woocommerce->cart;
       $total = $this->get_cart_total($cart);
 
-      $installments = $this->build_cart_installments($total);
+        $installments = $this->build_cart_installments($total);
 
       $user_payment_profile = $this->build_user_payment_profile();
       $payment_methods = $this->routes->getPaymentMethods();
 
       if ($payment_methods === false || empty($payment_methods) || ! count($payment_methods['credit_card'])) {
-          _e('Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.', VINDI);
+          _e(
+              'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
+              VINDI
+            );
           return;
       }
 
-      if ($this->is_trial && $this->is_trial == $this->vindi_settings->get_is_active_sandbox()) {
-          $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
-      }
+        if ($this->is_trial && $this->is_trial == $this->vindi_settings->get_is_active_sandbox()) {
+            $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
+        }
 
       $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
           'installments',
@@ -181,19 +184,19 @@ class VindiCreditGateway extends VindiPaymentGateway
       ));
   }
 
-  public function build_cart_installments($total)
-  {
-      $max_times = $this->get_order_max_installments($total);
-      $installments = [];
+    public function build_cart_installments($total)
+    {
+        $max_times = $this->get_order_max_installments($total);
+        $installments = [];
 
-      if ($max_times > 1) {
-          for ($times = 1; $times <= $max_times; $times++) {
-            $installments[$times] = $this->get_cart_installments($times, $total);
-          }
-      }
+        if ($max_times > 1) {
+            for ($times = 1; $times <= $max_times; $times++) {
+                $installments[$times] = $this->get_cart_installments($times, $total);
+            }
+        }
 
-      return $installments;
-  }
+        return $installments;
+    }
 
   public function get_cart_installments($times, $total)
   {
