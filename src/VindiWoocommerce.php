@@ -1,6 +1,8 @@
 <?php
 namespace VindiPaymentGateways;
 
+use WC_Subscriptions_Product;
+
 require_once plugin_dir_path(__FILE__)  . '/utils/AbstractInstance.php';
 
 
@@ -181,9 +183,25 @@ class WcVindiPayment extends AbstractInstance
    * Sobrescreve o método que remove os métodos de pagamento para assinaturas com trial
    * @return bool
    */
-    public function filter_woocommerce_cart_needs_payment()
+    public function filter_woocommerce_cart_needs_payment($needs_payment, $cart)
     {
+      if (floatval($cart->total) == 0 && $this->cart_has_trial($cart)) {
         return true;
+      }
+
+      return false;
+    }
+
+    private function cart_has_trial($cart)
+    {
+      $items = $cart->get_cart();
+      foreach ($items as $item) {
+        if (class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::get_trial_length( $item['product_id'] ) > 0) {
+					return true;
+				}
+      }
+
+      return false;
     }
 }
 
