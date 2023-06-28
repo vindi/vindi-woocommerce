@@ -185,23 +185,23 @@ class WcVindiPayment extends AbstractInstance
    */
     public function filter_woocommerce_cart_needs_payment($needs_payment, $cart)
     {
-      if (floatval($cart->total) == 0 && $this->cart_has_trial($cart)) {
-        return true;
-      }
+        if (floatval($cart->total) == 0 && $this->cart_has_trial($cart)) {
+            return true;
+        }
 
-      return $needs_payment;
+        return $needs_payment;
     }
 
     private function cart_has_trial($cart)
     {
-      $items = $cart->get_cart();
-      foreach ($items as $item) {
-        if (class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::get_trial_length( $item['product_id'] ) > 0) {
-					return true;
-				}
-      }
+        $items = $cart->get_cart();
+          foreach ($items as $item) {
+              if (class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::get_trial_length( $item['product_id'] ) > 0) {
+                  return true;
+              }
+          }
 
-      return false;
+        return false;
     }
 }
 
