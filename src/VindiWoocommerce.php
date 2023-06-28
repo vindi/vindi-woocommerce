@@ -189,7 +189,7 @@ class WcVindiPayment extends AbstractInstance
         return true;
       }
 
-      return false;
+      return $needs_payment;
     }
 
     private function cart_has_trial($cart)
