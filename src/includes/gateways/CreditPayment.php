@@ -157,7 +157,7 @@ class VindiCreditGateway extends VindiPaymentGateway
   public function payment_fields()
   {
       $cart = $this->vindi_settings->woocommerce->cart;
-      $total = $this->get_cart_total($cart);
+        $total = $this->get_cart_total($cart);
 
         $installments = $this->build_cart_installments($total);
 
@@ -165,7 +165,7 @@ class VindiCreditGateway extends VindiPaymentGateway
       $payment_methods = $this->routes->getPaymentMethods();
 
       if ($payment_methods === false || empty($payment_methods) || ! count($payment_methods['credit_card'])) {
-          _e(
+            _e(
               'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
               VINDI
             );
@@ -198,32 +198,32 @@ class VindiCreditGateway extends VindiPaymentGateway
         return $installments;
     }
 
-  public function get_cart_installments($times, $total)
-  {
-      if ($this->is_interest_rate_enabled()) {
-          return ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
-      }
+    public function get_cart_installments($times, $total)
+    {
+        if ($this->is_interest_rate_enabled()) {
+            return ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
+        }
 
-      return ceil($total / $times * 100) / 100;
-  }
+        return ceil($total / $times * 100) / 100;
+    }
 
-  public function get_cart_total($cart)
-  {
-      $total = $cart->total;
-      $recurring = end($cart->recurring_carts);
+    public function get_cart_total($cart)
+    {
+        $total = $cart->total;
+        $recurring = end($cart->recurring_carts);
 
-      if (floatval($cart->total) == 0 && is_object($recurring)) {
-          $total = $recurring->total;
-      }
+        if (floatval($cart->total) == 0 && is_object($recurring)) {
+            $total = $recurring->total;
+        }
 
-      foreach ($cart->get_fees() as $index => $fee) {
-          if ($fee->name == __('Juros', VINDI)) {
-              $total -= $fee->amount;
-          }
-      }
+        foreach ($cart->get_fees() as $index => $fee) {
+            if ($fee->name == __('Juros', VINDI)) {
+                $total -= $fee->amount;
+            }
+        }
 
-      return $total;
-  }
+        return $total;
+    }
 
   public function verify_user_payment_profile()
   {

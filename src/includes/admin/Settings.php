@@ -314,7 +314,7 @@ class VindiSettings extends WC_Settings_API
    */
   public function get_synchronism_status()
   {
-    return false;
+        return false;
   }
   
   /**
