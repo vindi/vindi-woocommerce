@@ -195,11 +195,11 @@ class WcVindiPayment extends AbstractInstance
     private function cart_has_trial($cart)
     {
         $items = $cart->get_cart();
-          foreach ($items as $item) {
-              if (class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::get_trial_length( $item['product_id'] ) > 0) {
-                  return true;
-              }
-          }
+        foreach ($items as $item) {
+            if (class_exists('WC_Subscriptions_Product') && WC_Subscriptions_Product::get_trial_length($item['product_id']) > 0) {
+                return true;
+            }
+        }
 
         return false;
     }
