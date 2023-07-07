@@ -41,7 +41,6 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 == Changelog ==
 = 1.2.3 - 30/06/2023 =
 -Lançamento da versão de patch.
-- **Correção:** Removendo a opção de sincronismo de assinaturas.
 - **Correção:** Aparição dos métodos de pagamentos em pedidos zerados somente para pedidos de teste gratis.
 - **Correção:** visualização das parcelas crédito de acordo com o valor total do pedido
 - **Correção:** Erro fatal ao cancelar inscrições em ambientes com PHP 8+
