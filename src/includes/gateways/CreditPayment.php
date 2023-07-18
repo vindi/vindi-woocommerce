@@ -2,6 +2,8 @@
 
 namespace VindiPaymentGateways;
 
+use WC_Subscriptions_Cart;
+
 if (!defined('ABSPATH')) {
   exit;
 }
@@ -154,60 +156,73 @@ class VindiCreditGateway extends VindiPaymentGateway
 
   public function payment_fields()
   {
-    $cart = $this->vindi_settings->woocommerce->cart;
+      $cart = $this->vindi_settings->woocommerce->cart;
         $total = $this->get_cart_total($cart);
-    
-    foreach ($cart->get_fees() as $index => $fee) {
-      if($fee->name == __('Juros', VINDI)) {
-        $total -= $fee->amount;
+
+        $installments = $this->build_cart_installments($total);
+
+      $user_payment_profile = $this->build_user_payment_profile();
+      $payment_methods = $this->routes->getPaymentMethods();
+
+      if ($payment_methods === false || empty($payment_methods) || ! count($payment_methods['credit_card'])) {
+            _e(
+                'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
+                VINDI
+            );
+          return;
       }
-    }
-
-    $max_times = 12;
-    $max_times = $this->get_order_max_installments($total);
-
-    if ($max_times > 1) {
-      for ($times = 1; $times <= $max_times; $times++) {
-        if ($this->is_interest_rate_enabled()) {
-          $installments[$times] = ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
-        } else {
-          $installments[$times] = ceil($total / $times * 100) / 100;
-        }
-      }
-    }
-
-    $user_payment_profile = $this->build_user_payment_profile();
-    $payment_methods = $this->routes->getPaymentMethods();
-
-    if ($payment_methods === false || empty($payment_methods) || ! count($payment_methods['credit_card'])) {
-      _e('Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.', VINDI);
-      return;
-    }
 
         if ($this->is_trial && $this->is_trial == $this->vindi_settings->get_is_active_sandbox()) {
             $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
         }
 
-    $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
-      'installments',
-      'is_trial',
-      'user_payment_profile',
-      'payment_methods'
-    ));
+      $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
+          'installments',
+          'is_trial',
+          'user_payment_profile',
+          'payment_methods'
+      ));
   }
+
+    public function build_cart_installments($total)
+    {
+        $max_times = $this->get_order_max_installments($total);
+        $installments = [];
+
+        if ($max_times > 1) {
+            for ($times = 1; $times <= $max_times; $times++) {
+                $installments[$times] = $this->get_cart_installments($times, $total);
+            }
+        }
+
+        return $installments;
+    }
+
+    public function get_cart_installments($times, $total)
+    {
+        if ($this->is_interest_rate_enabled()) {
+            return ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
+        }
+
+        return ceil($total / $times * 100) / 100;
+    }
 
     public function get_cart_total($cart)
     {
-        $items = $cart->get_cart();
-        $price = 0;
+        $total = $cart->total;
+        $recurring = end($cart->recurring_carts);
 
-        foreach ($items as $item) {
-            if (isset($item['data']) && is_object($item['data'])) {
-                $product = $item['data'];
-                $price += floatval($product->get_price());
+        if (floatval($cart->total) == 0 && is_object($recurring)) {
+            $total = $recurring->total;
+        }
+
+        foreach ($cart->get_fees() as $index => $fee) {
+            if ($fee->name == __('Juros', VINDI)) {
+                $total -= $fee->amount;
             }
         }
-        return $price;
+
+        return $total;
     }
 
   public function verify_user_payment_profile()

@@ -151,24 +151,23 @@ class VindiSubscriptionStatusHandler
 
         $vindi_order = get_post_meta($order->id, 'vindi_order', true);
 
-        if (!$vindi_order || !is_array($vindi_order)) {
+        if (!is_array($vindi_order)) {
             return;
         }
-
         $single_payment_bill_id = 0;
 
         foreach ($vindi_order as $key => $item) {
-            if ($key == 'single_payment' && isset($vindi_order[$key]['bill']['status'])) {
-                $status = $vindi_order[$key]['bill']['status'];
-                $single_payment_bill_id = $status != 'canceled' ? $vindi_order[$key]['bill']['id'] : false;
+            if ($key == 'single_payment' &&
+                $vindi_order[$key]['bill']['status'] != 'canceled') {
+                $single_payment_bill_id = $vindi_order[$key]['bill']['id'];
             }
 
             $vindi_order[$key]['bill']['status'] = 'canceled';
-
         }
         
+        update_post_meta($order->id, 'vindi_order', $vindi_order);
+
         if ($single_payment_bill_id) {
-            update_post_meta($order->id, 'vindi_order', $vindi_order);
             $this->routes->deleteBill($single_payment_bill_id);
         }
     }
