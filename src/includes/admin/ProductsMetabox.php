@@ -153,9 +153,9 @@ class ProductsMetabox
             $installments = $interval;
         }
 
-		if (!$installments) {
-			$installments = 1;
-		}
+        if (!$installments) {
+            $installments = 1;
+        }
 
         update_post_meta($post_id, "vindi_max_credit_installments_$post_id", $installments);
     }

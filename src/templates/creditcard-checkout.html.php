@@ -184,7 +184,7 @@
       <input name="vindi_cc_yearexpiry" type="hidden">
     </div>
   </div>
-  <?php if (isset($installments) && !empty($installments)): ?>
+    <?php if (isset($installments) && !empty($installments)) : ?>
     <p class="form-row form-row-wide">
       <label for="vindi_cc_installments"><?php _e("Número de Parcelas", VINDI); ?>
         <span class="required">*</span>

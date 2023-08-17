@@ -510,7 +510,7 @@ class VindiPaymentProcessor
             $order_items[] = $this->build_discount_item_for_bill($order_items);
         }
 
-		$order_items[] = $this->build_interest_rate_item($order_items);
+        $order_items[] = $this->build_interest_rate_item($order_items);
 
         foreach ($order_items as $order_item) {
             if (!empty($order_item)) {
