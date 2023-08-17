@@ -38,7 +38,7 @@ class VindiCreditGateway extends VindiPaymentGateway
    * @var int
    */
   public $interest_rate;
- 
+
   public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
   {
 
@@ -171,7 +171,7 @@ class VindiCreditGateway extends VindiPaymentGateway
             );
           return;
       }
-
+	    $is_trial = false;
         if ($this->is_trial && $this->is_trial == $this->vindi_settings->get_is_active_sandbox()) {
             $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
         }
@@ -267,7 +267,7 @@ class VindiCreditGateway extends VindiPaymentGateway
   {
     $user_payment_profile = array();
     $user_vindi_id = get_user_meta(wp_get_current_user()->ID, 'vindi_customer_id', true);
-    $payment_profile = WC()->session->get('current_payment_profile'); 
+    $payment_profile = WC()->session->get('current_payment_profile');
     $current_customer = WC()->session->get('current_customer');
 
     if (!isset($payment_profile) || $current_customer['code'] != $user_vindi_id) {
@@ -283,7 +283,7 @@ class VindiCreditGateway extends VindiPaymentGateway
       $user_payment_profile['card_number']     = sprintf('**** **** **** %s', $payment_profile['card_number_last_four']);
     }
 
-    WC()->session->set('current_payment_profile', $payment_profile); 
+    WC()->session->set('current_payment_profile', $payment_profile);
     return $user_payment_profile;
   }
 
@@ -296,7 +296,7 @@ class VindiCreditGateway extends VindiPaymentGateway
 
     foreach($this->vindi_settings->woocommerce->cart->cart_contents as $item) {
       $plan_id = $item['data']->get_meta('vindi_plan_id');
-      
+
       if (!empty($plan_id)) {
         $plan = $this->routes->getPlan($plan_id);
 
@@ -307,7 +307,7 @@ class VindiCreditGateway extends VindiPaymentGateway
         }
       }
     }
-    
+
     if($installments != 0)
       return $installments;
     else
