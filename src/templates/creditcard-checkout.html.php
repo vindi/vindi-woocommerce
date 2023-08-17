@@ -195,7 +195,7 @@
         <?php endforeach; ?>
       </select>
     </p>
-  <?php endif; ?>
+    <?php endif; ?>
   <div class="clear"></div>
 
   <?php do_action('vindi_credit_card_form_end', $id); ?>
