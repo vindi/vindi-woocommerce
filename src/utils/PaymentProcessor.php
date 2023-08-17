@@ -448,7 +448,7 @@ class VindiPaymentProcessor
             }
             return $this->single_freight ? 1 : null;
 
-        } elseif (!$this->is_subscription_type($product)) {
+        } elseif (!$product || !$this->is_subscription_type($product)) {
             return 1;
         }
 
@@ -508,8 +508,9 @@ class VindiPaymentProcessor
 
         if ('bill' === $order_type) {
             $order_items[] = $this->build_discount_item_for_bill($order_items);
-            $order_items[] = $this->build_interest_rate_item($order_items);
         }
+
+		$order_items[] = $this->build_interest_rate_item($order_items);
 
         foreach ($order_items as $order_item) {
             if (!empty($order_item)) {
@@ -614,7 +615,6 @@ class VindiPaymentProcessor
      */
     protected function build_interest_rate_item($order_items)
     {
-
         $interest_rate_item = [];
 
         if (!($this->is_cc() && $this->installments() > 1 && $this->gateway->is_interest_rate_enabled())) {
