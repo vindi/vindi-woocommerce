@@ -435,7 +435,7 @@ class VindiPaymentProcessor
     private function get_cycle_from_product_type($item)
     {
         $cycles = null;
-        $product = method_exists($item, 'get_product') ? $item->get_product() : false;
+        $product = is_object($item) && method_exists($item, 'get_product') ? $item->get_product() : false;
 
         if ($item['type'] == 'sign_up_fee') {
             return 1;

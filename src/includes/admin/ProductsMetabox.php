@@ -73,10 +73,8 @@ class ProductsMetabox
                 'value' => get_post_meta($subscription_id, "vindi_max_credit_installments_$subscription_id", true),
                 'label' => __('Máximo de parcelas com cartão de crédito', 'woocommerce'),
                 'type'  => 'number',
-                'description' => sprintf(
-                    'Esse campo controla a quantidade máxima de parcelas
+                'description' => 'Esse campo controla a quantidade máxima de parcelas
                     para compras com cartão de crédito.',
-                ),
                 "desc_tip"    => true,
                 'custom_attributes' => array(
                     'max' => '12',
