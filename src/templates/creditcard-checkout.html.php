@@ -38,13 +38,13 @@
       <div class="vindi_cc_creditcard">
         <div class="front">
           <div id="vindi_cc_ccsingle">
-            <img 
+            <img
                 src="
                 <?php echo esc_url(
                     get_site_url() .
                         '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/single/unknown.svg'
                 )
-                ?>" 
+                ?>"
                 data-img="single/unknown">
             </img>
           </div>
@@ -154,14 +154,14 @@
           <span class="required">*</span>
         </label>
         <input id="vindi_cc_cardnumber" name="vindi_cc_number" type="text" pattern="[0-9]*" inputmode="numeric" autocomplete="off" placeholder="•••• •••• •••• ••••">
-        <img 
-            id="vindi_cc_ccicon" class="vindi_cc_ccicon" 
+        <img
+            id="vindi_cc_ccicon" class="vindi_cc_ccicon"
             src="
             <?php echo esc_url(
                 get_site_url() .
                     '/wp-content/plugins/vindi-payment-gateway/src/assets/images/card/unknown.svg'
             )
-            ?>" 
+            ?>"
             data-img="unknown">
         </img>
       </div>
@@ -184,8 +184,7 @@
       <input name="vindi_cc_yearexpiry" type="hidden">
     </div>
   </div>
-
-  <?php if (isset($installments)): ?>
+    <?php if (isset($installments) && !empty($installments)) : ?>
     <p class="form-row form-row-wide">
       <label for="vindi_cc_installments"><?php _e("Número de Parcelas", VINDI); ?>
         <span class="required">*</span>
@@ -196,7 +195,7 @@
         <?php endforeach; ?>
       </select>
     </p>
-  <?php endif; ?>
+    <?php endif; ?>
   <div class="clear"></div>
 
   <?php do_action('vindi_credit_card_form_end', $id); ?>

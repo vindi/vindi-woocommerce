@@ -268,7 +268,7 @@ class VindiPaymentProcessor
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
-        
+
         $bills = [];
         $order_post_meta = [];
         $bill_products = [];
@@ -279,7 +279,7 @@ class VindiPaymentProcessor
 
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
-            
+
             if ($this->is_subscription_type($product)) {
                 $product_id = $product->id;
 
@@ -297,7 +297,7 @@ class VindiPaymentProcessor
         }
 
         $this->check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period);
-        
+
         foreach ($subscription_products as $subscription_order_item) {
             if(empty($subscription_order_item))
                 continue;
@@ -316,7 +316,7 @@ class VindiPaymentProcessor
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
 
                 $bills[] = $subscription['bill'];
-                
+
                 if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
                     throw new Exception($message);
                 }
@@ -435,7 +435,7 @@ class VindiPaymentProcessor
     private function get_cycle_from_product_type($item)
     {
         $cycles = null;
-        $product = method_exists($item, 'get_product') ? $item->get_product() : false;
+        $product = is_object($item) && method_exists($item, 'get_product') ? $item->get_product() : false;
 
         if ($item['type'] == 'sign_up_fee') {
             return 1;
@@ -448,7 +448,7 @@ class VindiPaymentProcessor
             }
             return $this->single_freight ? 1 : null;
 
-        } elseif (!$this->is_subscription_type($product)) {
+        } elseif (!$product || !$this->is_subscription_type($product)) {
             return 1;
         }
 
@@ -486,7 +486,7 @@ class VindiPaymentProcessor
         if (!$product) {
             $this->abort(__("Ocorreu um erro ao gerar o seu pedido!", VINDI), true);
         }
-        
+
         $call_build_items = "build_product_items_for_{$order_type}";
 
         if (false === method_exists($this, $call_build_items)) {
@@ -508,8 +508,9 @@ class VindiPaymentProcessor
 
         if ('bill' === $order_type) {
             $order_items[] = $this->build_discount_item_for_bill($order_items);
-            $order_items[] = $this->build_interest_rate_item($order_items);
         }
+
+        $order_items[] = $this->build_interest_rate_item($order_items);
 
         foreach ($order_items as $order_item) {
             if (!empty($order_item)) {
@@ -587,18 +588,18 @@ class VindiPaymentProcessor
             $sign_up_fee = $product->get_meta('_subscription_sign_up_fee');
 
             if ($sign_up_fee != null && $sign_up_fee > 0) {
-                
+
                 $item = $this->routes->findOrCreateProduct("[WC] Taxa de adesão", "WC-SUF");
-                
+
                 $sign_up_fee_item = array(
                     'type' => 'sign_up_fee',
                     'vindi_id' => $item['id'],
                     'price' => (float) $sign_up_fee,
                     'qty' => 1,
                 );
-                
+
                 $order_item['price'] -= $sign_up_fee;
-                
+
                 return $sign_up_fee_item;
             }
         }
@@ -614,7 +615,6 @@ class VindiPaymentProcessor
      */
     protected function build_interest_rate_item($order_items)
     {
-
         $interest_rate_item = [];
 
         if (!($this->is_cc() && $this->installments() > 1 && $this->gateway->is_interest_rate_enabled())) {
@@ -684,7 +684,7 @@ class VindiPaymentProcessor
         }
         return $shipping_item;
     }
-    
+
     private function create_shipping_product($shipping_method)
     {
         return $this->routes->findOrCreateProduct(
@@ -808,7 +808,6 @@ class VindiPaymentProcessor
      */
     protected function build_product_items_for_subscription($order_item)
     {
-
         $plan_cycles = $this->get_cycle_from_product_type($order_item);
         $product_item = array(
             'product_id' => $order_item['vindi_id'],
@@ -821,7 +820,6 @@ class VindiPaymentProcessor
         );
 
         $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
-        
         if (!empty($coupons) && $order_item['type'] == 'line_item') {
             $product_item['discounts'] = [];
 
@@ -889,8 +887,8 @@ class VindiPaymentProcessor
             $discount_item['amount'] = $amount;
         } elseif (strpos($discount_type, 'percent') !== false ||
                   strpos($discount_type, 'recurring_percent') !== false) {
-            $discount_item['discount_type'] = 'percentage';
-            $discount_item['percentage'] = $amount;
+            $discount_item['discount_type'] = 'amount';
+            $discount_item['amount'] = $this->order->get_discount_total() / $this->order->get_item_count();
         }
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
 
@@ -1043,14 +1041,14 @@ class VindiPaymentProcessor
     private function cancel_subscriptions_and_order($wc_subscriptions_ids, $subscriptions_ids, $message)
     {
         $this->suspend_subscriptions($subscriptions_ids);
-        
+
         foreach($wc_subscriptions_ids as $wc_subscription_id) {
             $wc_subscription = wcs_get_subscription($wc_subscription_id);
             $wc_subscription->update_status('cancelled', __($message, VINDI));
         }
-        
+
         $this->order->update_status('cancelled', __($message, VINDI));
-        
+
         if ($message) {
             $this->abort(__(sprintf('Erro ao criar o pedido: %s', $message), VINDI), true);
         }
@@ -1126,7 +1124,7 @@ class VindiPaymentProcessor
 
         $last_charge = end($bill['charges']);
         $transaction_status = $last_charge['last_transaction']['status'];
-        
+
         $denied_status = [
             'rejected' => 'Não foi possível processar seu pagamento. Por favor verifique os dados informados. ',
             'failure' => 'Ocorreu um erro ao tentar aprovar a transação, tente novamente.'
@@ -1233,10 +1231,10 @@ class VindiPaymentProcessor
             $vindi_product_id = $this->routes->findProductByCode('WC-' . $product->id)['id'];
 
         }
-        
+
         $product->vindi_id = (int) $vindi_product_id > 0 ? $vindi_product_id : 63;
         if($product->id === null) $product->id = 63;
-      
+
         return $product;
     }
 
@@ -1320,7 +1318,7 @@ class VindiPaymentProcessor
                 $has_trial = true;
             }
         }
-        
+
         return $has_trial;
     }
 

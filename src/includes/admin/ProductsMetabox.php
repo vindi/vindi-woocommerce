@@ -55,7 +55,7 @@ class ProductsMetabox
         if (!$product) {
             return;
         }
-        
+
         if ($product->is_type('subscription_variation') || $variation->post_status === 'auto-draft') {
             if ($this->check_credit_payment_active($woocommerce)) {
                 $this->show_meta_custom_data($variation->ID);
@@ -73,15 +73,12 @@ class ProductsMetabox
                 'value' => get_post_meta($subscription_id, "vindi_max_credit_installments_$subscription_id", true),
                 'label' => __('Máximo de parcelas com cartão de crédito', 'woocommerce'),
                 'type'  => 'number',
-                'description' => sprintf(
-                    'Esse campo controla a quantidade máxima de parcelas 
-                    para compras com cartão de crédito. <strong> %s </strong>',
-                    '(Somente para assinaturas anuais!)'
-                ),
+                'description' => 'Esse campo controla a quantidade máxima de parcelas
+                    para compras com cartão de crédito.',
                 "desc_tip"    => true,
                 'custom_attributes' => array(
                     'max' => '12',
-                    'min' => '0'
+                    'min' => '1'
                 )
             )
         );
@@ -140,7 +137,7 @@ class ProductsMetabox
         $interval = $this->get_post_vars('_subscription_period_interval');
         $installments = $this->get_post_vars("vindi_max_credit_installments_$post_id");
 
-        if ($period && $interval && $installments) {
+        if ($period && $interval) {
             $this->save_woocommerce_product_custom_fields($post_id, $installments, $period, $interval);
         }
     }
@@ -152,6 +149,10 @@ class ProductsMetabox
         }
         if ($period === 'month' && $installments > $interval) {
             $installments = $interval;
+        }
+
+        if (!$installments) {
+            $installments = 1;
         }
 
         update_post_meta($post_id, "vindi_max_credit_installments_$post_id", $installments);
