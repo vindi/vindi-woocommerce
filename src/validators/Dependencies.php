@@ -136,38 +136,34 @@ class VindiDependencies
 
         $required_plugins = [
             [
-                'path' => 'woocommerce/woocommerce.php',
-                'plugin' => [
-                    'name' => 'WooCommerce',
-                    'url' =>  $woocommerce_url,
-                    'version' => [
-                        'validation' => '>=',
-                        'number' => '3.0'
-                    ]
-                ]
+				'path'    => 'woocommerce/woocommerce.php',
+				'class'   => 'WooCommerce',
+				'name'    => 'WooCommerce',
+				'url'     =>  $woocommerce_url,
+				'version' => [
+					'validation' => '>=',
+					'number' => '3.0'
+				]
             ],
             [
-                'path' => 'woocommerce-extra-checkout-fields-for-brazil/
-                    woocommerce-extra-checkout-fields-for-brazil.php',
-                'plugin' => [
-                    'name' => 'Brazilian Market on WooCommerce',
-                    'url' => $ecfb_url,
-                    'version' => [
-                        'validation' => '>=',
-                        'number' => '3.5'
-                    ]
-                ]
+				'path'    => 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php',
+				'class'   => 'Extra_Checkout_Fields_For_Brazil',
+				'name'    => 'Brazilian Market on WooCommerce',
+				'url'     => $ecfb_url,
+				'version' => [
+					'validation' => '>=',
+					'number' => '3.5'
+				]
             ],
             [
-                'path' => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
-                'plugin' => [
-                    'name' => 'WooCommerce Subscriptions',
-                    'url' => 'http://www.woothemes.com/products/woocommerce-subscriptions/',
-                    'version' => [
-                        'validation' => '>=',
-                        'number' => '2.6.1'
-                    ]
-                ]
+				'path'    => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
+				'class'   => 'WC_Subscriptions',
+				'name'    => 'WooCommerce Subscription',
+				'url'     => 'http://www.woothemes.com/products/woocommerce-subscriptions/',
+				'version' => [
+					'validation' => '>=',
+					'number' => '2.6.1'
+				]
             ]
         ];
 
@@ -183,10 +179,15 @@ class VindiDependencies
     *
     * @return  string
     */
-    public static function missing_notice($name, $version, $link)
-    {
-        include plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
-    }
+	public static function missing_notice($name, $version, $link)
+	{
+		if (isset($_GET['action']) && $_GET['action'] === 'activate') {
+			return;
+		}
+
+		include plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
+	}
+
 
     /**
     * Generate critical dependency notice content
@@ -205,9 +206,8 @@ class VindiDependencies
     {
         $checked = true;
 
-        foreach ($required_plugins as $required_plugin) {
-            $plugin = $required_plugin['plugin'];
-            $search = self::search_plugin_name($plugin['name'], self::$active_plugins);
+        foreach ($required_plugins as $plugin) {
+            $search = self::search_plugin($plugin, self::$active_plugins);
 
             if ($search &&
                 version_compare(
@@ -218,23 +218,22 @@ class VindiDependencies
                 continue;
             }
 
-            $notice = self::missing_notice(
-                $plugin['name'],
-                $plugin['version']['number'],
-                $plugin['url']
-            );
+			self::missing_notice(
+				$plugin['name'],
+				$plugin['version']['number'],
+				$plugin['url']
+			);
 
-            add_action('admin_notices', $notice);
             $checked = false;
         }
 
         return $checked;
     }
 
-    private static function search_plugin_name($name, $array)
+    private static function search_plugin($required, $array)
     {
         foreach ($array as $val) {
-            if ($val['name'] === $name) {
+            if ($val['plugin'] === $required['path'] && class_exists($required['class'])) {
                 return $val;
             }
         }
