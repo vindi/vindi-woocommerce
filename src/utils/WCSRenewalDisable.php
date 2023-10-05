@@ -10,17 +10,17 @@ class VindiWCSRenewalDisable
 		add_action('wp_loaded', [$this, 'hook_before_prepare_renewal'], 1);
 	}
 
-	public static function hook_before_prepare_renewal()
+	public function hook_before_prepare_renewal()
 	{
 		if (class_exists('WC_Subscriptions_Manager', false)) {
 			add_action('woocommerce_scheduled_subscription_payment', [
-				__CLASS__,
+				$this,
 				'deactivate_renewal_prepare'
 			], 0, 1);
 		}
 	}
 
-	public static function deactivate_renewal_prepare($subscription_id)
+	public function deactivate_renewal_prepare($subscription_id)
 	{
 		$subscription = wcs_get_subscription($subscription_id);
 
