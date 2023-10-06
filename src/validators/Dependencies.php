@@ -181,7 +181,7 @@ class VindiDependencies
     */
 	public static function missing_notice($name, $version, $link)
 	{
-		if (isset($_GET['action']) && $_GET['action'] === 'activate') {
+		if (!is_admin() || !is_user_logged_in()) {
 			return;
 		}
 
