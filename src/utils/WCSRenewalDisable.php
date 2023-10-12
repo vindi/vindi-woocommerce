@@ -12,7 +12,7 @@ class VindiWCSRenewalDisable
 
     public function hook_before_prepare_renewal()
     {
-	    if (class_exists('WC_Subscriptions_Manager', false)) {
+        if (class_exists('WC_Subscriptions_Manager', false)) {
             add_action('woocommerce_scheduled_subscription_payment', [
               $this,
               'deactivate_renewal_prepare'
@@ -25,7 +25,8 @@ class VindiWCSRenewalDisable
         $subscription = wcs_get_subscription($subscription_id);
 
         // Check if this subscriptions is a Vindi Subscription
-        if (empty($subscription->get_meta('vindi_wc_subscription_id')) && empty($subscription->get_meta('vindi_subscription_id'))) {
+        if (empty($subscription->get_meta('vindi_wc_subscription_id'))
+			&& empty($subscription->get_meta('vindi_subscription_id'))) {
             return;
         }
 
@@ -34,6 +35,6 @@ class VindiWCSRenewalDisable
             'woocommerce_scheduled_subscription_payment',
             'WC_Subscriptions_Manager::prepare_renewal',
             1
-	    );
-   }
+        );
+    }
 }
