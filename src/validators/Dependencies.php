@@ -146,7 +146,8 @@ class VindiDependencies
                 ]
             ],
             [
-                'path'    => 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php',
+                'path'    => 'woocommerce-extra-checkout-fields-for-brazil
+                /woocommerce-extra-checkout-fields-for-brazil.php',
                 'class'   => 'Extra_Checkout_Fields_For_Brazil',
                 'name'    => 'Brazilian Market on WooCommerce',
                 'url'     => $ecfb_url,
@@ -218,11 +219,11 @@ class VindiDependencies
                 continue;
             }
 
-			self::missing_notice(
-				$plugin['name'],
-				$plugin['version']['number'],
-				$plugin['url']
-			);
+            self::missing_notice(
+                $plugin['name'],
+                $plugin['version']['number'],
+                $plugin['url']
+            );
 
             $checked = false;
         }

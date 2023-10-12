@@ -1,7 +1,7 @@
 <div class="vindi-alert notice vindi-error d-flex">
   <p>
     <?php echo sprintf(
-      __('O Plugin Vindi WooCommerce depende da versão %s ou maior do plugin %s para funcionar!', VINDI),
+        __('O Plugin Vindi WooCommerce depende da versão %s ou maior do plugin %s para funcionar!', VINDI),
       $version,
       $name,
     )?>
