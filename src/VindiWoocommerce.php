@@ -71,12 +71,12 @@ class WcVindiPayment extends AbstractInstance
   /**
    * @var VindiPaymentGateway\InterestPriceHandler
    */
-	private $interest_price_handler;
+   private $interest_price_handler;
 
   /**
   * @var VindiWCSRenewalDisable
   */
-  private $wcs_renewal_disable;
+    private $wcs_renewal_disable;
 
   public function __construct()
   {
@@ -95,7 +95,7 @@ class WcVindiPayment extends AbstractInstance
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
         $this->interest_price_handler = new InterestPriceHandler();
         $this->product_metabox = new ProductsMetabox();
-	    $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
+        $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
 
 
     /**
@@ -151,7 +151,6 @@ class WcVindiPayment extends AbstractInstance
 
         require_once plugin_dir_path(__FILE__) . '/utils/PaymentProcessor.php';
         require_once plugin_dir_path(__FILE__) . '/utils/WCSRenewalDisable.php';
-
   }
 
   public static function getPath()
