@@ -136,34 +136,34 @@ class VindiDependencies
 
         $required_plugins = [
             [
-				'path'    => 'woocommerce/woocommerce.php',
-				'class'   => 'WooCommerce',
-				'name'    => 'WooCommerce',
-				'url'     =>  $woocommerce_url,
-				'version' => [
-					'validation' => '>=',
-					'number' => '3.0'
-				]
+                'path'    => 'woocommerce/woocommerce.php',
+                'class'   => 'WooCommerce',
+                'name'    => 'WooCommerce',
+                'url'     =>  $woocommerce_url,
+                'version' => [
+                     'validation' => '>=',
+                     'number' => '3.0'
+                ]
             ],
             [
-				'path'    => 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php',
-				'class'   => 'Extra_Checkout_Fields_For_Brazil',
-				'name'    => 'Brazilian Market on WooCommerce',
-				'url'     => $ecfb_url,
-				'version' => [
-					'validation' => '>=',
-					'number' => '3.5'
-				]
+                'path'    => 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php',
+                'class'   => 'Extra_Checkout_Fields_For_Brazil',
+                'name'    => 'Brazilian Market on WooCommerce',
+                'url'     => $ecfb_url,
+                'version' => [
+                    'validation' => '>=',
+                    'number' => '3.5'
+                ]
             ],
             [
-				'path'    => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
-				'class'   => 'WC_Subscriptions',
-				'name'    => 'WooCommerce Subscription',
-				'url'     => 'http://www.woothemes.com/products/woocommerce-subscriptions/',
-				'version' => [
-					'validation' => '>=',
-					'number' => '2.6.1'
-				]
+                'path'    => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
+                'class'   => 'WC_Subscriptions',
+                'name'    => 'WooCommerce Subscription',
+                'url'     => 'http://www.woothemes.com/products/woocommerce-subscriptions/',
+                'version' => [
+                    'validation' => '>=',
+                    'number' => '2.6.1'
+                ]
             ]
         ];
 
@@ -179,14 +179,14 @@ class VindiDependencies
     *
     * @return  string
     */
-	public static function missing_notice($name, $version, $link)
-	{
-		if (!is_admin() || !is_user_logged_in()) {
-			return;
-		}
+    public static function missing_notice($name, $version, $link)
+    {
+        if (!is_admin() || !is_user_logged_in()) {
+            return;
+        }
 
-		include plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
-	}
+        include plugin_dir_path(VINDI_SRC) . 'src/views/missing-dependency.php';
+    }
 
 
     /**

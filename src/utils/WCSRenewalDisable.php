@@ -26,7 +26,7 @@ class VindiWCSRenewalDisable
 
         // Check if this subscriptions is a Vindi Subscription
         if (empty($subscription->get_meta('vindi_wc_subscription_id'))
-			&& empty($subscription->get_meta('vindi_subscription_id'))) {
+            && empty($subscription->get_meta('vindi_subscription_id'))) {
             return;
         }
 
