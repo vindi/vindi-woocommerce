@@ -71,7 +71,7 @@ class WcVindiPayment extends AbstractInstance
   /**
    * @var VindiPaymentGateway\InterestPriceHandler
    */
-   private $interest_price_handler;
+    private $interest_price_handler;
 
   /**
   * @var VindiWCSRenewalDisable
