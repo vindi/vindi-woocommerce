@@ -131,8 +131,8 @@ class WcVindiPayment extends AbstractInstance
         // Loading Abstract Method and Utils
         require_once plugin_dir_path(__FILE__) . '/utils/PaymentGateway.php';
         require_once plugin_dir_path(__FILE__) . '/utils/Conversions.php';
-	  require_once plugin_dir_path(__FILE__) . '/utils/RedirectCheckout.php';
-	  require_once plugin_dir_path(__FILE__) . '/utils/PostMeta.php';
+		require_once plugin_dir_path(__FILE__) . '/utils/RedirectCheckout.php';
+		require_once plugin_dir_path(__FILE__) . '/utils/PostMeta.php';
 
         require_once plugin_dir_path(__FILE__) . '/includes/admin/CouponsMetaBox.php';
             require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductsMetabox.php';
