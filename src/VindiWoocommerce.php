@@ -73,6 +73,11 @@ class WcVindiPayment extends AbstractInstance
    */
     private $interest_price_handler;
 
+  /**
+  * @var VindiWCSRenewalDisable
+  */
+    private $wcs_renewal_disable;
+
   public function __construct()
   {
 
@@ -88,8 +93,10 @@ class WcVindiPayment extends AbstractInstance
     $this->frontend_files_loader = new FrontendFilesLoader();
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
-    $this->interest_price_handler = new InterestPriceHandler();
+        $this->interest_price_handler = new InterestPriceHandler();
         $this->product_metabox = new ProductsMetabox();
+        $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
+
 
     /**
       * Add Gateway to Woocommerce
@@ -125,6 +132,7 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/utils/PaymentGateway.php';
         require_once plugin_dir_path(__FILE__) . '/utils/Conversions.php';
         require_once plugin_dir_path(__FILE__) . '/utils/RedirectCheckout.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/PostMeta.php';
 
         require_once plugin_dir_path(__FILE__) . '/includes/admin/CouponsMetaBox.php';
             require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductsMetabox.php';
@@ -143,7 +151,7 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/controllers/index.php';
 
         require_once plugin_dir_path(__FILE__) . '/utils/PaymentProcessor.php';
-        require_once plugin_dir_path(__FILE__) . '/utils/PostMeta.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/WCSRenewalDisable.php';
   }
 
   public static function getPath()
