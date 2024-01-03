@@ -136,7 +136,7 @@ class VindiDependencies
 
         $required_plugins = [
             [
-                'path'    => 'woocommerce/woocommerce.php',
+                'path'    => 'woocommerce.php',
                 'class'   => 'WooCommerce',
                 'name'    => 'WooCommerce',
                 'url'     =>  $woocommerce_url,
@@ -147,7 +147,7 @@ class VindiDependencies
             ],
             [
                 'path'    =>
-                    'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php',
+                    'woocommerce-extra-checkout-fields-for-brazil.php',
                 'class'   => 'Extra_Checkout_Fields_For_Brazil',
                 'name'    => 'Brazilian Market on WooCommerce',
                 'url'     => $ecfb_url,
@@ -157,7 +157,7 @@ class VindiDependencies
                 ]
             ],
             [
-                'path'    => 'woocommerce-subscriptions/woocommerce-subscriptions.php',
+                'path'    => 'woocommerce-subscriptions.php',
                 'class'   => 'WC_Subscriptions',
                 'name'    => 'WooCommerce Subscription',
                 'url'     => 'http://www.woothemes.com/products/woocommerce-subscriptions/',
@@ -210,7 +210,7 @@ class VindiDependencies
         foreach ($required_plugins as $plugin) {
             $search = self::search_plugin($plugin, self::$active_plugins);
 
-            if ($search &&
+            if (class_exists($plugin['class']) &&
                 version_compare(
                     $search['version'],
                     $plugin['version']['number'],
@@ -234,7 +234,7 @@ class VindiDependencies
     private static function search_plugin($required, $array)
     {
         foreach ($array as $val) {
-            if ($val['plugin'] === $required['path'] && class_exists($required['class'])) {
+            if (strpos($val['plugin'],$required['path']) && class_exists($required['class'])) {
                 return $val;
             }
         }
