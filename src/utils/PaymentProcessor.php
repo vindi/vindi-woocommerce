@@ -281,12 +281,6 @@ class VindiPaymentProcessor
             $product = $order_item->get_product();
 
             if ($this->is_subscription_type($product)) {
-                $product_id = $product->id;
-
-                if ($this->is_variable($product)) {
-                    $product_id = $order_item['variation_id'];
-                }
-
                 $period = $product->get_meta('_subscription_period', true);
                 $interval = $product->get_meta('_subscription_period_interval', true);
                 $subscriptions_grouped_by_period[$period . $interval][] = $order_item;
@@ -318,7 +312,7 @@ class VindiPaymentProcessor
                 $bills[] = $subscription['bill'];
 
                 $message = $this->cancel_if_denied_bill_status($subscription['bill']);
-                
+
                 if ($message) {
                     throw new Exception($message);
                 }
@@ -338,7 +332,8 @@ class VindiPaymentProcessor
                 $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
                 $bills[] = $single_payment_bill;
 
-                if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
+                $message = $this->cancel_if_denied_bill_status($single_payment_bill);
+                if ($message) {
                     $this->order->update_status('cancelled', __($message, VINDI));
 
                     if ($subscriptions_ids) {
