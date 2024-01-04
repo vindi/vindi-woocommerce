@@ -287,8 +287,8 @@ class VindiPaymentProcessor
                     $product_id = $order_item['variation_id'];
                 }
 
-                $period = get_post_meta($product_id, '_subscription_period', true);
-                $interval = get_post_meta($product_id, '_subscription_period_interval', true);
+                $period = $product->get_meta('_subscription_period', true);
+                $interval = $product->get_meta('_subscription_period_interval', true);
                 $subscriptions_grouped_by_period[$period . $interval][] = $order_item;
                 array_push($subscription_products, $order_item);
                 continue;
@@ -352,7 +352,7 @@ class VindiPaymentProcessor
             }
         }
 
-        update_post_meta($this->order->id, 'vindi_order', $order_post_meta);
+        $this->order->update_meta_data('vindi_order', $order_post_meta);
         WC()->session->__unset('current_payment_profile');
         WC()->session->__unset('current_customer');
         remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
@@ -453,7 +453,7 @@ class VindiPaymentProcessor
         }
 
         if ($product) {
-            $cycles = (int) get_post_meta($product->get_id(), '_subscription_length', true);
+            $cycles = (int) $product->get_meta('_subscription_length', true);
         }
         return $cycles > 0 ? $cycles : null;
     }
@@ -1018,7 +1018,7 @@ class VindiPaymentProcessor
         }
         $subscription['wc_id'] = $wc_subscription_id;
         if (isset($subscription['bill']['id'])) {
-            update_post_meta($this->order->id, 'vindi_bill_id', $subscription['bill']['id']);
+            $this->order->update_meta_data('vindi_bill_id', $subscription['bill']['id']);
         }
         return $subscription;
     }
@@ -1086,7 +1086,7 @@ class VindiPaymentProcessor
 
         if ($bill['id']) {
             $this->logger->log(sprintf('Update Bill: %s', json_encode($bill)));
-            update_post_meta($this->order->id, 'vindi_bill_id', $bill['id']);
+            $this->order->update_meta_data($this->order->id, 'vindi_bill_id', $bill['id']);
         }
         return $bill;
     }
