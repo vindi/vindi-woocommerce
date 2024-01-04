@@ -234,7 +234,7 @@ class VindiDependencies
     private static function search_plugin($required, $array)
     {
         foreach ($array as $val) {
-            if (strpos($val['plugin'],$required['path']) && class_exists($required['class'])) {
+            if (strpos($val['plugin'], $required['path']) && class_exists($required['class'])) {
                 return $val;
             }
         }
