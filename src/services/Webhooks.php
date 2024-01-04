@@ -205,11 +205,14 @@ class VindiWebhooks
   {
     if(empty($data->bill->subscription)) {
       $order = $this->find_order_by_id($data->bill->code);
-    } else {
-      $vindi_subscription_id = $data->bill->subscription->id;
-      $cycle = $data->bill->period->cycle;
-      $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
+      $order->update_status('cancelled', __('Pagamento cancelado dentro da Vindi!', VINDI));
+      
+      return;
     }
+
+    $vindi_subscription_id = $data->bill->subscription->id;
+    $cycle = $data->bill->period->cycle;
+    $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
 
     $order->update_status('cancelled', __('Pagamento cancelado dentro da Vindi!', VINDI));
   }
