@@ -168,22 +168,24 @@ class VindiWebhooks
       $order = $this->find_order_by_id($data->bill->code);
 
             $vindi_order = $order->get_meta('vindi_order', true);
-      if(is_array($vindi_order)) {
-        $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
-      } else {
+      if(!is_array($vindi_order)) {
         return;
       }
-    } else {
+
+      $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
+    }
+
+    if (!$vindi_order) {
       $vindi_subscription_id = $data->bill->subscription->id;
       $cycle = $data->bill->period->cycle;
       $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
 
             $vindi_order = $order->get_meta('vindi_order', true);
-      if(is_array($vindi_order)) {
-        $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
-      } else {
+      if(!is_array($vindi_order)) {
         return;
       }
+      
+      $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
     }
         $order->update_meta_data($order->id, 'vindi_order', $vindi_order);
 
