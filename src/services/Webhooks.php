@@ -186,7 +186,7 @@ class VindiWebhooks
             }
       
       $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
-    }
+        }
         $order->update_meta_data($order->id, 'vindi_order', $vindi_order);
 
     // Order informations always be updated in last array element
