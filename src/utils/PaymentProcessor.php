@@ -317,7 +317,9 @@ class VindiPaymentProcessor
 
                 $bills[] = $subscription['bill'];
 
-                if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
+                $message = $this->cancel_if_denied_bill_status($subscription['bill']);
+                
+                if ($message) {
                     throw new Exception($message);
                 }
 
