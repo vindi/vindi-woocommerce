@@ -40,7 +40,7 @@ class ProductsMetabox
 
         if ($product->is_type('subscription') || $post->post_status === 'auto-draft') {
             if ($this->check_credit_payment_active($woocommerce)) {
-                $this->show_meta_custom_data($post->ID);
+                $this->show_meta_custom_data($product);
             }
         }
     }
@@ -58,19 +58,20 @@ class ProductsMetabox
 
         if ($product->is_type('subscription_variation') || $variation->post_status === 'auto-draft') {
             if ($this->check_credit_payment_active($woocommerce)) {
-                $this->show_meta_custom_data($variation->ID);
+                $this->show_meta_custom_data($product);
             }
         }
     }
 
-    private function show_meta_custom_data($subscription_id)
+    private function show_meta_custom_data($subscription)
     {
         echo '<div class="product_custom_field">';
+        $subscription_id = $subscription->get_id();
 
         woocommerce_wp_text_input(
             array(
                 'id'    => "vindi_max_credit_installments_$subscription_id",
-                'value' => get_post_meta($subscription_id, "vindi_max_credit_installments_$subscription_id", true),
+                'value' => $subscription->get_meta("vindi_max_credit_installments_$subscription_id"),
                 'label' => __('Máximo de parcelas com cartão de crédito', 'woocommerce'),
                 'type'  => 'number',
                 'description' => 'Esse campo controla a quantidade máxima de parcelas
@@ -136,13 +137,13 @@ class ProductsMetabox
         $period = $this->get_post_vars('_subscription_period');
         $interval = $this->get_post_vars('_subscription_period_interval');
         $installments = $this->get_post_vars("vindi_max_credit_installments_$post_id");
-
+        
         if ($period && $interval) {
             $this->save_woocommerce_product_custom_fields($post_id, $installments, $period, $interval);
         }
     }
 
-    private function save_woocommerce_product_custom_fields($post_id, $installments, $period, $interval)
+    private function save_woocommerce_product_custom_fields($product_id, $installments, $period, $interval)
     {
         if ($period === 'year' && $installments > 12) {
             $installments = 12;
@@ -155,7 +156,7 @@ class ProductsMetabox
             $installments = 1;
         }
 
-        update_post_meta($post_id, "vindi_max_credit_installments_$post_id", $installments);
+        update_post_meta($product_id, "vindi_max_credit_installments_$product_id", $installments);
     }
 
     private function check_credit_payment_active($woocommerce)
