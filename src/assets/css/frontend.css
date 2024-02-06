@@ -360,6 +360,7 @@
 
 .vindi_payment_listing .charges .charge .download_button:hover {
   opacity: 0.5;
+  cursor: pointer;
 }
 .vindi_payment_listing .charges .charge .download_button:focus {
   outline-color: #006DFF;

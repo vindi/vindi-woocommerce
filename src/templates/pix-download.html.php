@@ -24,8 +24,7 @@
 									<object type="image/svg+xml" alt="QR Code image" data="<?php echo esc_url($subscription['bill']['pix_qr']); ?>"></object>
 								</div>
 								<div style="display: flex;align-items: center;justify-content: end;position: relative;right: 75px;">
-									<a href="#"
-									   id="copy_vindi_pix_code"
+									<a id="copy_vindi_pix_code"
 									   class="download_button"
 									   data-code="<?php echo esc_attr($subscription['bill']['pix_code']); ?>">
 												<?php _e('Copiar código', VINDI); ?>
