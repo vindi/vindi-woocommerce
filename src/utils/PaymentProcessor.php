@@ -177,7 +177,6 @@ class VindiPaymentProcessor
         return array(
             'customer_id' => $customer_id,
             'payment_method_code' => $this->payment_method_code(),
-
         );
     }
 
@@ -209,7 +208,22 @@ class VindiPaymentProcessor
      */
     public function payment_method_code()
     {
-        return $this->is_cc() ? 'credit_card' : 'bank_slip';
+		switch ($this->gateway->type()) {
+			case 'bank_slip':
+				$code = 'bank_slip';
+			break;
+			case 'cc':
+				$code = 'credit_card';
+			break;
+			case 'pix':
+				$code = 'pix';
+			break;
+			default:
+				$code = '';
+			break;
+
+		}
+        return $code;
     }
 
     /**
@@ -1100,11 +1114,19 @@ class VindiPaymentProcessor
      */
     protected function create_bill_meta_for_order($bill)
     {
-
         $bill_meta['id'] = $bill['id'];
         $bill_meta['status'] = $bill['status'];
+
         if (isset($bill['charges']) && count($bill['charges'])) {
-            $bill_meta['bank_slip_url'] = $bill['charges'][0]['print_url'];
+			$charges = end($bill['charges']);
+			 if ($this->payment_method_code() === 'pix' && isset($charges['last_transaction']['gateway_response_fields'])) {
+				 $transaction = $charges['last_transaction']['gateway_response_fields'];
+
+				 $bill_meta['pix_code'] = $transaction['qrcode_original_path'];
+				 $bill_meta['pix_qr'] = $transaction['qrcode_path'];
+			 } else {
+				 $bill_meta['bank_slip_url'] = $charges['print_url'];
+			 }
         }
         return $bill_meta;
     }

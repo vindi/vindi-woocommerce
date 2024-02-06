@@ -102,7 +102,7 @@ class VindiPixGateway extends VindiPaymentGateway
     # Issue: https://github.com/vindi/vindi-woocommerce/issues/75
     public function pix_quantity_to_render($order)
     {
-        if (is_null($order[0])) {
+        if (!isset($order[0])) {
             return $order;
         }
 

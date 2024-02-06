@@ -1,6 +1,6 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 <?php if (isset($vindi_order)): ?>
-	<div class="vindi_bankslip_listing">
+	<div class="vindi_payment_listing">
 		<div class="info_message">
 			<div class="icon"></div>
 			<div class="message">
@@ -12,10 +12,10 @@
 				</p>
 			</div>
 		</div>
-		<div class="bankslips">
+		<div class="charges">
     <?php foreach ($order_to_iterate as $subscription) : ?>
 				<?php if (is_array($subscription) && array_key_exists('product', $subscription) && !in_array($subscription['bill']['status'], array('paid', 'canceled'))): ?>
-						<div class="bankslip">
+						<div class="charge">
 							<span class="product_title">
 								<?php echo $subscription['product']; ?>
 							</span>
@@ -26,7 +26,7 @@
 				<?php else: ?>
 					<?php foreach ($subscription as $item): ?>
 						<?php if (is_array($item) && array_key_exists('product', $item) && !in_array($item['bill']['status'], array('paid', 'canceled'))): ?>
-							<div class="bankslip">
+							<div class="charge">
 								<span class="product_title">
 									<?php echo $item['product']; ?>
 								</span>
