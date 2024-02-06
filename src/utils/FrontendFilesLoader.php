@@ -48,6 +48,15 @@ class FrontendFilesLoader {
         );
         wp_enqueue_script('vindi_woocommerce_brands_js');
 
+	  wp_register_script(
+		  'vindi_woocommerce_thankyou_js',
+		  plugins_url('/assets/js/thankyou.js', plugin_dir_path(__FILE__)),
+		  array(),
+		  VINDI_VERSION,
+		  true
+	  );
+	  wp_enqueue_script('vindi_woocommerce_thankyou_js');
+
     wp_register_style('vindi_woocommerce_style', plugins_url('/assets/css/frontend.css', plugin_dir_path(__FILE__)), array(), VINDI_VERSION);
     wp_enqueue_style('vindi_woocommerce_style');
   }
