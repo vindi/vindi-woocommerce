@@ -8,6 +8,11 @@ class VindiSubscriptionStatusHandler
      * @var VindiSettings
      */
     private $vindi_settings;
+    
+    /**
+     * @var VindiRoutes
+     */
+    private $routes;
 
     public function __construct(VindiSettings $vindi_settings)
     {
@@ -157,12 +162,10 @@ class VindiSubscriptionStatusHandler
         $single_payment_bill_id = 0;
 
         foreach ($vindi_order as $key => $item) {
-            if ($key == 'single_payment' &&
-                $vindi_order[$key]['bill']['status'] != 'canceled') {
+            if (isset($vindi_order[$key]['bill']['status']) && $vindi_order[$key]['bill']['status'] !== 'canceled') {
                 $single_payment_bill_id = $vindi_order[$key]['bill']['id'];
+                $vindi_order[$key]['bill']['status'] = 'canceled';
             }
-
-            $vindi_order[$key]['bill']['status'] = 'canceled';
         }
         
         update_post_meta($order->id, 'vindi_order', $vindi_order);

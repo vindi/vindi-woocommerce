@@ -11,7 +11,11 @@
 
 <fieldset class="vindi-fieldset">
 
-  <?php do_action('vindi_credit_card_form_start', $id); ?>
+<?php
+  if (isset($id)) {
+      do_action('vindi_credit_card_form_start', $id);
+  }
+?>
 
   <?php if(!empty($user_payment_profile)): ?>
     <div class="vindi-old-cc-data">
@@ -197,8 +201,11 @@
     </p>
     <?php endif; ?>
   <div class="clear"></div>
-
-  <?php do_action('vindi_credit_card_form_end', $id); ?>
+  <?php
+  if (isset($id)) {
+      do_action('vindi_credit_card_form_end', $id);
+  }
+  ?>
 
   <div class="clear"></div>
 </fieldset>

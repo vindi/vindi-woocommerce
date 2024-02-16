@@ -154,7 +154,7 @@ class CustomerController
         'phone_type' => 'mobile',
         'number' => preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone'))
       );
-      if ($vindi_phones['mobile']) $mobile['id'] = $vindi_phones['mobile'];
+      if (isset($vindi_phones['mobile'])) $mobile['id'] = $vindi_phones['mobile'];
       $phones[] = $mobile;
     }
     if ($customer->get_billing_phone()) {
@@ -162,7 +162,7 @@ class CustomerController
         'phone_type' => 'landline',
         'number' => preg_replace('/\D+/', '', '55' . $customer->get_billing_phone())
       );
-      if ($vindi_phones['landline']) $landline['id'] = $vindi_phones['landline'];
+      if (isset($vindi_phones['landline'])) $landline['id'] = $vindi_phones['landline'];
       $phones[] = $landline;
     }
 

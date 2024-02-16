@@ -59,6 +59,8 @@ class VindiPaymentProcessor
      */
     private $controllers;
 
+    private $single_freight;
+
     /**
      * Payment Processor contructor.
      *
@@ -281,7 +283,7 @@ class VindiPaymentProcessor
             $product = $order_item->get_product();
 
             if ($this->is_subscription_type($product)) {
-                $product_id = $product->id;
+                $product_id = $product->get_id();
 
                 if ($this->is_variable($product)) {
                     $product_id = $order_item['variation_id'];
@@ -312,7 +314,7 @@ class VindiPaymentProcessor
 
                 $subscription_bill = $subscription['bill'];
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
-                $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->name;
+                $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->get_name();
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
 
                 $bills[] = $subscription['bill'];
@@ -352,7 +354,7 @@ class VindiPaymentProcessor
             }
         }
 
-        update_post_meta($this->order->id, 'vindi_order', $order_post_meta);
+        update_post_meta($this->order->get_id(), 'vindi_order', $order_post_meta);
         WC()->session->__unset('current_payment_profile');
         WC()->session->__unset('current_customer');
         remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
@@ -551,7 +553,7 @@ class VindiPaymentProcessor
 
         $product = $order_items->get_product();
         $order_items['type'] = 'product';
-        $product_id = $product->id;
+        $product_id = $product->get_id();
 
         if ($this->is_variable($product)) {
             $product_id = $order_items['variation_id'];
@@ -1007,7 +1009,7 @@ class VindiPaymentProcessor
         $product = $order_item->get_product();
         if ($this->is_subscription_type($product) || $this->is_variable($product)) {
             $data['plan_id'] = $this->get_plan_from_order_item($order_item);
-            $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
+            $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->get_id();
             $data['code'] = strpos($wc_subscription_id, 'WC') > 0 ? $wc_subscription_id : 'WC-' . $wc_subscription_id;
         }
         $data['product_items'] = $this->get_build_products($data, $order_item);
@@ -1018,7 +1020,7 @@ class VindiPaymentProcessor
         }
         $subscription['wc_id'] = $wc_subscription_id;
         if (isset($subscription['bill']['id'])) {
-            update_post_meta($this->order->id, 'vindi_bill_id', $subscription['bill']['id']);
+            update_post_meta($this->order->get_id(), 'vindi_bill_id', $subscription['bill']['id']);
         }
         return $subscription;
     }
@@ -1179,10 +1181,10 @@ class VindiPaymentProcessor
         $bills_status = [];
         foreach ($bills as $bill) {
             if ($bill['status'] == 'paid') {
-                $data_to_log = sprintf('O Pagamento da fatura %s do pedido %s foi realizado com sucesso pela Vindi.', $bill['id'], $this->order->id);
+                $data_to_log = sprintf('O Pagamento da fatura %s do pedido %s foi realizado com sucesso pela Vindi.', $bill['id'], $this->order->get_id());
                 $status_message = __('O Pagamento foi realizado com sucesso pela Vindi.', VINDI);
             } else {
-                $data_to_log = sprintf('Aguardando pagamento da fatura %s do pedido %s pela Vindi.', $bill['id'], $this->order->id);
+                $data_to_log = sprintf('Aguardando pagamento da fatura %s do pedido %s pela Vindi.', $bill['id'], $this->order->get_id());
                 $status_message = __('Aguardando pagamento do pedido.', VINDI);
             }
             array_push($bills_status, $bill['status']);

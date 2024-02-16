@@ -24,6 +24,16 @@ class ProductController
    */
   private $routes;
 
+  /**
+   * @var VindiLogger
+   */
+  private $logger;
+
+  /**
+   * @var array
+   */
+  private $ignored_types;
+
   function __construct(VindiSettings $vindi_settings)
   {
 

@@ -23,9 +23,18 @@ class PlansController
    */
   private $routes;
 
+  /**
+   * @var VindiLogger
+   */
+  private $logger;
+
+  /**
+   * @var array
+   */
+  private $allowed_types;
+
   function __construct(VindiSettings $vindi_settings)
   {
-
     $this->routes = $vindi_settings->routes;
     $this->logger = $vindi_settings->logger;
 

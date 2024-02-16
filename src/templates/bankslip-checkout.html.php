@@ -10,7 +10,11 @@
 <?php endif; ?>
 <fieldset>
 
-	<?php do_action('vindi_bank_slip_form_start', $id); ?>
+	<?php
+	if (isset($id)) {
+		do_action('vindi_bank_slip_form_start', $id);
+	}
+	?>
 
 	<div class="vindi-invoice-description" style="padding: 20px 0; font-weight: bold;">
 		<?php
@@ -23,7 +27,10 @@
 	</div>
 	<div class="clear"></div>
 
-	<?php do_action('vindi_bank_slip_form_end', $id); ?>
-
+	<?php
+	if (isset($id)) {
+		do_action('vindi_bank_slip_form_end', $id);
+	}
+	?>
 	<div class="clear"></div>
 </fieldset>
