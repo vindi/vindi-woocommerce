@@ -16,23 +16,23 @@ class ProductController
 
   /**
    * @var array
-   */
-  private $types;
+  */
+    private $types;
 
   /**
    * @var VindiRoutes
-   */
-  private $routes;
+  */
+    private $routes;
 
   /**
    * @var VindiLogger
-   */
-  private $logger;
+  */
+    private $logger;
 
   /**
    * @var array
-   */
-  private $ignored_types;
+  */
+    private $ignoredTypes;
 
   function __construct(VindiSettings $vindi_settings)
   {
@@ -45,7 +45,7 @@ class ProductController
      * Basically they are the same as the PlansController, but
      * the check is reversed to ignore this types
      */
-    $this->ignored_types = array('variable-subscription', 'subscription');
+    $this->ignoredTypes = array('variable-subscription', 'subscription');
 
     add_action('wp_insert_post', array($this, 'create'), 10, 3);
     add_action('wp_trash_post', array($this, 'trash'), 10, 1);
@@ -84,7 +84,7 @@ class ProductController
     $product = wc_get_product($post_id);
 
     // Check if the post is NOT of the subscription type
-    if (in_array($product->get_type(), $this->ignored_types)) {
+    if (in_array($product->get_type(), $this->ignoredTypes)) {
       return;
     }
 
@@ -119,7 +119,7 @@ class ProductController
     $product = wc_get_product($post_id);
 
     // Check if the post is NOT of the subscription type
-    if (in_array($product->get_type(), $this->ignored_types)) {
+    if (in_array($product->get_type(), $this->ignoredTypes)) {
       return;
     }
 
@@ -173,7 +173,7 @@ class ProductController
     $product = wc_get_product($post_id);
 
     // Check if the post is NOT of the subscription type
-    if (in_array($product->get_type(), $this->ignored_types)) {
+    if (in_array($product->get_type(), $this->ignoredTypes)) {
       return;
     }
 
@@ -207,7 +207,7 @@ class ProductController
     $product = wc_get_product($post_id);
 
     // Check if the post is NOT of the subscription type
-    if (in_array($product->get_type(), $this->ignored_types)) {
+    if (in_array($product->get_type(), $this->ignoredTypes)) {
       return;
     }
 

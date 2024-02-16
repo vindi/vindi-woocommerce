@@ -15,30 +15,30 @@ class PlansController
 {
   /**
    * @var array
-   */
-  private $types;
+  */
+    private $types;
 
   /**
    * @var VindiRoutes
-   */
-  private $routes;
+  */
+    private $routes;
 
   /**
    * @var VindiLogger
-   */
-  private $logger;
+  */
+    private $logger;
 
   /**
    * @var array
-   */
-  private $allowed_types;
+  */
+    private $allowedTypes;
 
   function __construct(VindiSettings $vindi_settings)
   {
     $this->routes = $vindi_settings->routes;
     $this->logger = $vindi_settings->logger;
 
-    $this->allowed_types = array('variable-subscription', 'subscription');
+    $this->allowedTypes = array('variable-subscription', 'subscription');
 
     add_action('wp_insert_post', array($this, 'create'), 10, 3);
     add_action('wp_trash_post', array($this, 'trash'), 10, 1);
@@ -86,7 +86,7 @@ class PlansController
     $product = wc_get_product($post_id);
 
     // Check if the post is of the subscription type
-    if (!in_array($product->get_type(), $this->allowed_types)) {
+    if (!in_array($product->get_type(), $this->allowedTypes)) {
       return;
     }
 
@@ -262,7 +262,7 @@ class PlansController
     $product = wc_get_product($post_id);
 
     // Check if the post is of the signature type
-    if (!in_array($product->get_type(), $this->allowed_types)) {
+    if (!in_array($product->get_type(), $this->allowedTypes)) {
       return;
     }
 
@@ -434,7 +434,7 @@ class PlansController
 
     $product = wc_get_product($post_id);
     // Check if the post is of the signature type
-    if (!in_array($product->get_type(), $this->allowed_types)) {
+    if (!in_array($product->get_type(), $this->allowedTypes)) {
       return;
     }
 
@@ -476,7 +476,7 @@ class PlansController
 
     $product = wc_get_product($post_id);
     // Check if the post is of the signature type
-    if (!in_array($product->get_type(), $this->allowed_types)) {
+    if (!in_array($product->get_type(), $this->allowedTypes)) {
       return;
     }
 

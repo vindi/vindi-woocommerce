@@ -270,7 +270,7 @@ class VindiPaymentProcessor
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
-
+        
         $bills = [];
         $order_post_meta = [];
         $bill_products = [];
@@ -318,8 +318,8 @@ class VindiPaymentProcessor
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
 
                 $bills[] = $subscription['bill'];
-
-                if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
+                $message = $this->cancel_if_denied_bill_status($subscription['bill']);
+                if ($message) {
                     throw new Exception($message);
                 }
 
@@ -337,8 +337,8 @@ class VindiPaymentProcessor
                 $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
                 $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
                 $bills[] = $single_payment_bill;
-
-                if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
+                $message = $this->cancel_if_denied_bill_status($single_payment_bill);
+                if ($message) {
                     $this->order->update_status('cancelled', __($message, VINDI));
 
                     if ($subscriptions_ids) {
@@ -1191,11 +1191,11 @@ class VindiPaymentProcessor
             $this->logger->log($data_to_log);
         }
         $status = 'pending';
-        if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
+        if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid')) || $this->order_has_trial()) {
             $status = $this->vindi_settings->get_return_status();
-        } elseif ($this->order_has_trial()) {
-            $status = $this->vindi_settings->get_return_status();
-            $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
+            if ($this->order_has_trial()) {
+                $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
+            }
         }
         $this->order->update_status($status, $status_message);
         return array(
