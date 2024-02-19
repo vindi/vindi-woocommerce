@@ -401,13 +401,13 @@ class VindiRoutes
 
   public function isMerchantStatusTrialOrSandbox($is_config = false)
   {
-        if ('yes' === isset($this->sandbox)){
+        if ('yes' === isset($this->sandbox)) {
             return true;
         }
 
       $merchant = $is_config ? $this->getMerchant($is_config) : $this->getMerchant();
 
-        if ('trial' === $merchant['status']){
+        if ('trial' === $merchant['status']) {
           return true;
         }
 
@@ -443,7 +443,7 @@ class VindiRoutes
   /**
    * @var array|bool|mixed
    */
-    public $current_plan;
+  public $current_plan;
 
   public function getPlan($plan_id)
   {

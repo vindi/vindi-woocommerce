@@ -171,8 +171,8 @@ class VindiCreditGateway extends VindiPaymentGateway
 
         if ($payment_methods === false || empty($payment_methods) || !count($payment_methods['credit_card'])) {
             _e(
-              'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
-              VINDI
+                'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
+                VINDI
             );
           return;
         }
@@ -182,10 +182,10 @@ class VindiCreditGateway extends VindiPaymentGateway
         }
 
       $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
-        'installments',
-        'is_trial',
-        'user_payment_profile',
-        'payment_methods'
+          'installments',
+          'is_trial',
+          'user_payment_profile',
+          'payment_methods'
       ));
     }
 
@@ -279,8 +279,9 @@ class VindiCreditGateway extends VindiPaymentGateway
           $payment_profile = $this->routes->getPaymentProfile($user_vindi_id);
         }
 
-        if (($payment_profile['type'] ?? null) !== 'PaymentProfile::CreditCard')
+        if (($payment_profile['type'] ?? null) !== 'PaymentProfile::CreditCard'){
           return $user_payment_profile;
+        }
 
         if (false === empty($payment_profile)) {
           $user_payment_profile['holder_name']     = $payment_profile['holder_name'];

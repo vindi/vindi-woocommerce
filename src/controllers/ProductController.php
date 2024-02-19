@@ -60,7 +60,7 @@ class ProductController
    * @SuppressWarnings(PHPMD.MissingImport)
    */
   function create($post_id, $post, $update, $recreated = false)
-      {
+  {
         // Check if the post is a draft
         if (strpos(get_post_status($post_id), 'draft') !== false) {
           return;
@@ -70,9 +70,9 @@ class ProductController
           return;
         }
             $post_meta = new PostMeta();
-            if ($post_meta->check_vindi_item_id($post_id, 'vindi_product_id') > 1) {
-                update_post_meta($post_id, 'vindi_product_id', '');
-            }
+        if ($post_meta->check_vindi_item_id($post_id, 'vindi_product_id') > 1) {
+            update_post_meta($post_id, 'vindi_product_id', '');
+        }
 
         // Check if it's a new post
         // The $update value is unreliable because of the auto_draft functionality
@@ -102,12 +102,12 @@ class ProductController
         ));
 
               // Saving product id and plan in the WC goal
-              if ($createdProduct && isset($createdProduct['id'])) {
-                update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
-                set_transient('vindi_product_message', 'created', 60);
-              } else {
-                set_transient('vindi_product_message', 'error', 60);
-              }
+          if ($createdProduct && isset($createdProduct['id'])) {
+            update_post_meta( $post_id, 'vindi_product_id', $createdProduct['id'] );
+            set_transient('vindi_product_message', 'created', 60);
+          } else {
+            set_transient('vindi_product_message', 'error', 60);
+          }
 
         return $createdProduct;
   }
