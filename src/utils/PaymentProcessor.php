@@ -1181,7 +1181,7 @@ class VindiPaymentProcessor
         $bills_status = [];
         foreach ($bills as $bill) {
             array_push($bills_status, $bill['status']);
-            $this->logger->log($this->generate_log_message($bill));
+            $this->generate_log_message($bill);
         }
         $this->update_order_status($bills_status);
         return array(
@@ -1198,7 +1198,7 @@ class VindiPaymentProcessor
         if ($bill['status'] == 'paid') {
             $message = 'O Pagamento da fatura %s do pedido %s foi realizado com sucesso pela Vindi.';
         }
-        return sprintf($message, $fatura, $pedido);
+        $this->logger->log(sprintf($message, $fatura, $pedido));
     }
 
     private function update_order_status($bills_status)
