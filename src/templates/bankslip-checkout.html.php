@@ -11,7 +11,7 @@
 <fieldset>
 <?php
 if (isset($id)) {
-	do_action('vindi_bank_slip_form_start', $id);
+    do_action('vindi_bank_slip_form_start', $id);
 }
 ?>
 

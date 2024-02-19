@@ -126,24 +126,19 @@ class CustomerController
 
   function update($user_id, $order = null)
   {
-
     $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id', true);
-
     // Check meta Vindi ID
     if (empty($vindi_customer_id)) {
 
       return $this->create($user_id, $order);
     }
-
     // Check user exists in Vindi
     $vindiUser = $this->routes->findCustomerById($vindi_customer_id);
     if (!$vindiUser) {
 
       return $this->create($user_id);
     }
-
     $customer = new WC_Customer($user_id);
-
     $user = $customer->get_data();
     $phones = $vindi_phones = [];
     foreach ($vindiUser['phones'] as $phone) {
@@ -174,7 +169,6 @@ class CustomerController
     $notes = null;
     $cpf_or_cnpj = null;
     $metadata = null;
-
 
     if ($order && method_exists($order, 'needs_payment')) {
       $metadata = array();
@@ -226,7 +220,6 @@ class CustomerController
     );
     return $updatedUser;
   }
-
 
   /**
    * When a user is deleted within the WP, it is reflected in the Vindi.
