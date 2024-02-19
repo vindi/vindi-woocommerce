@@ -279,7 +279,7 @@ class VindiCreditGateway extends VindiPaymentGateway
           $payment_profile = $this->routes->getPaymentProfile($user_vindi_id);
         }
 
-        if (($payment_profile['type'] ?? null) !== 'PaymentProfile::CreditCard'){
+        if (($payment_profile['type'] ?? null) !== 'PaymentProfile::CreditCard') {
           return $user_payment_profile;
         }
 

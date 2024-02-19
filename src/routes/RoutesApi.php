@@ -443,7 +443,7 @@ class VindiRoutes
   /**
    * @var array|bool|mixed
    */
-  public $current_plan;
+    public $current_plan;
 
   public function getPlan($plan_id)
   {
