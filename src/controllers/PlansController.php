@@ -75,8 +75,8 @@ class PlansController
 
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
-    $post_status = get_post_status($post_id);
-    $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id', true);
+        $post_status = get_post_status($post_id);
+        $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id', true);
 
         if (!$recreated && $post_status != 'publish') {
             if (!empty($vindi_plan_id)) {
@@ -124,11 +124,11 @@ class PlansController
           $this->routes->findProductById($vindi_product_id) :
                       $this->routes->createProduct(
                       array(
-                        'name' => VINDI_PREFIX_PRODUCT . $data['name'],
-                        'code' => 'WC-' . $data['id'],
-                        'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
-                        'invoice' => 'always',
-                        'pricing_schema' => array(
+                          'name' => VINDI_PREFIX_PRODUCT . $data['name'],
+                          'code' => 'WC-' . $data['id'],
+                          'status' => ($data['status'] == 'publish') ? 'active' : 'inactive',
+                          'invoice' => 'always',
+                          'pricing_schema' => array(
                           'price' => ($data['price']) ? $data['price'] : 0,
                           'schema_type' => 'flat',
                         )
