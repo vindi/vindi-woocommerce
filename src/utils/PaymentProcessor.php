@@ -1180,29 +1180,39 @@ class VindiPaymentProcessor
         $this->vindi_settings->woocommerce->cart->empty_cart();
         $bills_status = [];
         foreach ($bills as $bill) {
-$data_to_log = sprintf('Aguardando pagamento da fatura %s do pedido %s pela Vindi.',$bill['id'],$this->order->get_id());
-            $status_message = __('Aguardando pagamento do pedido.', VINDI);
-            if ($bill['status'] == 'paid') {
-$data_to_log = sprintf('O Pagamento da fatura %s do pedido %s foi realizado com sucesso pela Vindi.',$bill['id'], $this->order->get_id());
-                $status_message = __('O Pagamento foi realizado com sucesso pela Vindi.', VINDI);
-            }
             array_push($bills_status, $bill['status']);
-            $this->logger->log($data_to_log);
+            $this->logger->log($this->generate_log_message($bill));
         }
-        $status = 'pending';
-        if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
-            $status = $this->vindi_settings->get_return_status();
-        } if ($this->order_has_trial()) {
-            $status = $this->vindi_settings->get_return_status();
-            $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
-        }
-        $this->order->update_status($status, $status_message);
+        $this->update_order_status($bills_status);
         return array(
             'result' => 'success',
             'redirect' => $this->order->get_checkout_order_received_url(),
         );
     }
 
+    private function generate_log_message($bill)
+    {
+        $fatura = $bill['id'];
+        $pedido = $this->order->get_id();
+        $message = 'Aguardando pagamento da fatura %s do pedido %s pela Vindi.';
+        if ($bill['status'] == 'paid') {
+            $message = 'O Pagamento da fatura %s do pedido %s foi realizado com sucesso pela Vindi.';
+        }
+        return sprintf($message, $fatura, $pedido);
+    }
+
+    private function update_order_status($bills_status)
+    {
+        $status = 'pending';
+        if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
+            $status = $this->vindi_settings->get_return_status();
+        }
+        if ($this->order_has_trial()) {
+            $status = $this->vindi_settings->get_return_status();
+            $status_message = __('Aguardando pagamento do pedido.', VINDI);
+        }
+        $this->order->update_status($status, $status_message);
+    }
     /**
      * Find or create the product within Vindi
      * and add the vindi id to the product array
