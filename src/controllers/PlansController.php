@@ -75,8 +75,13 @@ class PlansController
 
     // Check if it's a new post
     // The $update value is unreliable because of the auto_draft functionality
-        if (!$recreated && get_post_status($post_id) != 'publish' ||(!empty(get_post_meta($post_id, 'vindi_plan_id', true)))) {
-            return $this->update($post_id);
+    $post_status = get_post_status($post_id);
+    $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id', true);
+
+        if (!$recreated && $post_status != 'publish') {
+            if (!empty($vindi_plan_id)) {
+                return $this->update($post_id);
+            }
         }
 
     $product = wc_get_product($post_id);
@@ -102,7 +107,7 @@ class PlansController
         $plan_interval     = VindiConversions::convert_interval($interval_count, $interval_type);
                 $variation_id      = $variation['variation_id'];
 
-        $plan_installments = $variation_product->get_meta("vindi_max_credit_installments_$variation_id");
+                $plan_installments = $variation_product->get_meta("vindi_max_credit_installments_$variation_id");
 
                 if (!$plan_installments || $plan_installments === 0) {
                     $plan_installments = 1;
@@ -117,7 +122,7 @@ class PlansController
         $vindi_product_id = get_post_meta($post_id, 'vindi_product_id', true);
         $createdProduct = !empty($vindi_product_id) ?
           $this->routes->findProductById($vindi_product_id) :
-                    $this->routes->createProduct(
+                      $this->routes->createProduct(
                       array(
                         'name' => VINDI_PREFIX_PRODUCT . $data['name'],
                         'code' => 'WC-' . $data['id'],
@@ -154,13 +159,13 @@ class PlansController
         $variations_plans[$variation['variation_id']] = $createdPlan;
 
         // Saving product id and plan in the WC goal
-                    if (isset($variation['variation_id']) && $createdProduct['id']) {
-                          update_post_meta($variation['variation_id'], 'vindi_product_id', $createdProduct['id']);
-                    }
+                      if (isset($variation['variation_id']) && $createdProduct['id']) {
+                            update_post_meta($variation['variation_id'], 'vindi_product_id', $createdProduct['id']);
+                      }
 
-                    if (isset($variation['variation_id']) && $createdPlan['id']) {
-                          update_post_meta($variation['variation_id'], 'vindi_plan_id', $createdPlan['id']);
-                    }
+                        if (isset($variation['variation_id']) && $createdPlan['id']) {
+                            update_post_meta($variation['variation_id'], 'vindi_plan_id', $createdPlan['id']);
+                        }
       }
 
             $product_id = end($variations_products)['id'];
