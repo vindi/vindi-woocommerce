@@ -1180,22 +1180,21 @@ class VindiPaymentProcessor
         $this->vindi_settings->woocommerce->cart->empty_cart();
         $bills_status = [];
         foreach ($bills as $bill) {
+            $data_to_log = sprintf('Aguardando pagamento da fatura %s do pedido %s pela Vindi.', $bill['id'], $this->order->get_id());
+            $status_message = __('Aguardando pagamento do pedido.', VINDI);
             if ($bill['status'] == 'paid') {
                 $data_to_log = sprintf('O Pagamento da fatura %s do pedido %s foi realizado com sucesso pela Vindi.', $bill['id'], $this->order->get_id());
                 $status_message = __('O Pagamento foi realizado com sucesso pela Vindi.', VINDI);
-            } else {
-                $data_to_log = sprintf('Aguardando pagamento da fatura %s do pedido %s pela Vindi.', $bill['id'], $this->order->get_id());
-                $status_message = __('Aguardando pagamento do pedido.', VINDI);
             }
             array_push($bills_status, $bill['status']);
             $this->logger->log($data_to_log);
         }
         $status = 'pending';
-        if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid')) || $this->order_has_trial()) {
+        if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
             $status = $this->vindi_settings->get_return_status();
-            if ($this->order_has_trial()) {
-                $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
-            }
+        } if ($this->order_has_trial()) {
+            $status = $this->vindi_settings->get_return_status();
+            $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
         }
         $this->order->update_status($status, $status_message);
         return array(
