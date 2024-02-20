@@ -1204,6 +1204,7 @@ class VindiPaymentProcessor
     private function update_order_status($bills_status)
     {
         $status = 'pending';
+        $status_message = '';
         if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
             $status = $this->vindi_settings->get_return_status();
         }
