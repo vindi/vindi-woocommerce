@@ -1116,12 +1116,14 @@ class VindiPaymentProcessor
     {
         $bill_meta['id'] = $bill['id'];
         $bill_meta['status'] = $bill['status'];
-
+        
         if (isset($bill['charges']) && count($bill['charges'])) {
 			$charges = end($bill['charges']);
 			 if ($this->payment_method_code() === 'pix' && isset($charges['last_transaction']['gateway_response_fields'])) {
 				 $transaction = $charges['last_transaction']['gateway_response_fields'];
 
+				 $bill_meta['charge_id'] = $charges['id'];
+				 $bill_meta['pix_expiration'] = $transaction['max_days_to_keep_waiting_payment'];
 				 $bill_meta['pix_code'] = $transaction['qrcode_original_path'];
 				 $bill_meta['pix_qr'] = $transaction['qrcode_path'];
 			 } else {
