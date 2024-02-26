@@ -197,7 +197,7 @@ class WcVindiPayment extends AbstractInstance
    */
     public function filter_woocommerce_cart_needs_payment($needs_payment, $cart)
     {
-        if (floatval($cart->total) == 0 && $this->cart_has_trial($cart)) {
+        if (floatval($cart->total) == 0 || $this->cart_has_trial($cart)) {
             return true;
         }
 
@@ -222,7 +222,7 @@ class WcVindiPayment extends AbstractInstance
       $order_id = filter_input(INPUT_POST, 'order_id', FILTER_SANITIZE_NUMBER_INT);
       $charge_id = filter_input(INPUT_POST, 'charge_id', FILTER_SANITIZE_NUMBER_INT);
       $subscription_id = filter_input(INPUT_POST, 'subscription_id', FILTER_SANITIZE_NUMBER_INT);
-
+      
       $order = wc_get_order($order_id);
       $vindi_order = $order->get_meta('vindi_order', true);
 
@@ -245,6 +245,7 @@ class WcVindiPayment extends AbstractInstance
 
           $vindi_order[$subscription_id]['bill'] = $bill;
           $order->update_meta_data('vindi_order', $vindi_order);
+          $order->save();
         }
       }
     }

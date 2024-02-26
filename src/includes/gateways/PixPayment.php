@@ -148,7 +148,7 @@ class VindiPixGateway extends VindiPaymentGateway
             if (!$order->is_paid() && !$order->has_status('cancelled')) {
                 $this->vindi_settings->get_template(
                     'pix-download.html.php',
-                    compact('vindi_order', 'order_to_iterate')
+                    compact('vindi_order', 'order_to_iterate', 'order_id')
                 );
             }
         }
