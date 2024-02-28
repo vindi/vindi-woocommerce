@@ -7,11 +7,11 @@ Tags: vindi, subscriptions, pagamento-recorrente, cobranca-recorrente, cobrança
 Author URI: https://vindi.com.br/ | https://mentores.com.br
 Author: Vindi | Mentores Digital
 Requires at least: 4.4
-Tested up to: 6.3
+Tested up to: 6.4
 WC requires at least: 3.0.0
-WC tested up to: 7.6.0
+WC tested up to: 8.6.0
 Requires PHP: 5.6
-Stable Tag: 1.2.5
+Stable Tag: 1.2.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,12 +39,18 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+
+= 1.2.6 - 28/02/2024 =
+-Lançamento da versão de patch.
+- **Correção:** Utilização de cupons para desconto dos produtos que possuem taxa
+- **Correção:** Visualização dos metodos de pagamento para pedidos zerados
+- **Melhoria:** Validação do plugins para as novas versões WooCommerce, WordPress e PHP
+
 = 1.2.5 - 12/10/2023 =
 -Lançamento da versão de patch.
 - **Correção:** Validação das depenências do plugin
 - **Correção:** Funcionamento da opção de sincronismo de assinaturas
 
-== Changelog ==
 = 1.2.4 - 30/08/2023 =
 -Lançamento da versão de patch.
 - **Correção:** Removido campo de seleção de parcelas para produtos sem parcelamento
