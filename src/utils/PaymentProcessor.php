@@ -584,6 +584,11 @@ class VindiPaymentProcessor
     protected function apply_remainder($remainder, $full_price, &$new_order_item)
     {
         if ($remainder > 0) {
+            $new_order_item['discounts'][] = array(
+                'discount_type' => 'amount',
+                'amount' => $remainder - $full_price,
+                'cycles' => 1
+            );
             if ($remainder <= $full_price) {
                 $new_order_item['discounts'][] = array(
                     'discount_type' => 'amount',
@@ -591,12 +596,6 @@ class VindiPaymentProcessor
                     'cycles' => 1
                 );
                 $remainder = 0;
-            } else {
-                $new_order_item['discounts'][] = array(
-                    'discount_type' => 'amount',
-                    'amount' => $remainder - $full_price,
-                    'cycles' => 1
-                );
             }
         }
 
@@ -962,7 +961,7 @@ class VindiPaymentProcessor
             $discount_item['amount'] = $amount / $this->order->get_item_count();
             $discount_item['cycles'] = 1;
             return $discount_item;
-        } elseif (strpos($discount_type, 'fixed') !== false){
+        } elseif (strpos($discount_type, 'fixed') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = $amount;
         } elseif (strpos($discount_type, 'percent') !== false ||
