@@ -79,7 +79,6 @@ class VindiPaymentProcessor
         $this->routes = $vindi_settings->routes;
         $this->controllers = $controllers;
         $this->single_freight = $this->vindi_settings->get_option('shipping_and_tax_config') == "yes" ? true : false;
-
     }
 
     /**
@@ -270,7 +269,7 @@ class VindiPaymentProcessor
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
-        
+
         $bills = [];
         $order_post_meta = [];
         $bill_products = [];
@@ -301,7 +300,7 @@ class VindiPaymentProcessor
         $this->check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period);
 
         foreach ($subscription_products as $subscription_order_item) {
-            if(empty($subscription_order_item))
+            if (empty($subscription_order_item))
                 continue;
 
             try {
@@ -408,7 +407,6 @@ class VindiPaymentProcessor
         if ($this->gateway->verify_method()) {
             $this->verify_payment_profile($payment_profile['id']);
         }
-
     }
 
     /**
@@ -424,7 +422,6 @@ class VindiPaymentProcessor
         if (!$this->routes->verifyCustomerPaymentProfile($payment_profile_id)) {
             $this->abort(__('Não foi possível realizar a verificação do seu cartão de crédito!', VINDI), true);
         }
-
     }
 
     /**
@@ -446,10 +443,8 @@ class VindiPaymentProcessor
         if ($item['type'] == 'shipping' || $item['type'] == 'tax') {
             if ($this->vindi_settings->get_shipping_and_tax_config()) {
                 return 1;
-
             }
             return $this->single_freight ? 1 : null;
-
         } elseif (!$product || !$this->is_subscription_type($product)) {
             return 1;
         }
@@ -485,6 +480,7 @@ class VindiPaymentProcessor
      */
     public function build_product_items($product, $order_type = 'bill')
     {
+
         if (!$product) {
             $this->abort(__("Ocorreu um erro ao gerar o seu pedido!", VINDI), true);
         }
@@ -526,8 +522,66 @@ class VindiPaymentProcessor
             return $this->abort(__('Falha ao recuperar informações sobre o produto na Vindi. Verifique os dados e tente novamente.', VINDI), true);
         }
 
-        return $product_items;
+        $newItem = $this->calculate_discount($product_items);
+
+        return $newItem;
     }
+
+    protected function calculate_discount($order_items)
+    {
+        $new_order_items = [];
+
+        $remaining_discount = 0;
+
+        $item = $this->routes->findOrCreateProduct("[WC] Taxa de adesão", "WC-SUF");
+        $taxa_id = array(
+            'vindi_id' => $item['id']
+        );
+
+        foreach ($order_items as $order_item) {
+            $new_order_item = $order_item;
+
+            if ($order_item['quantity'] > 1) {
+                $full_price =  $order_item['pricing_schema']['price'] * $order_item['quantity'];
+            } else {
+                $full_price = $order_item['pricing_schema']['price'];
+            }
+
+            if (isset($order_item['discounts'])) {
+                $discountTotal = 0;
+                foreach ($order_item['discounts'] as $discount) {
+                    $discountTotal += $discount['amount'];
+                }
+                if ($discountTotal > $full_price) {
+                    $remaining_discount = $discountTotal - $full_price;
+                }
+            }
+            //se for uma taxa, entra nessa condição
+            if ($order_item['product_id'] == $taxa_id['vindi_id']) {
+                if ($remaining_discount > 0) {
+                    if ($remaining_discount <= $full_price) {
+                        $new_order_item['discounts'][] = array(
+                            'discount_type' => 'amount',
+                            'amount' => $remaining_discount,
+                            'cycles' => 1
+                        );
+                        $remaining_discount = 0;
+                    } else {
+                        $new_order_item['discounts'][] = array(
+                            'discount_type' => 'amount',
+                            'amount' => $remaining_discount - $full_price,
+                            'cycles' => 1
+                        );
+                    }
+                }
+            }
+
+            $new_order_items[] = $new_order_item;
+        }
+
+        return $new_order_items;
+    }
+
 
     /**
      * Retrives the product(s) information. Adds the vindi_id, the type and the price to it.
@@ -546,7 +600,6 @@ class VindiPaymentProcessor
                 $order_items[$key]['type'] = 'product';
                 $order_items[$key]['vindi_id'] = $this->routes->findProductByCode('WC-' . $product->id)['id'];
                 $order_items[$key]['price'] = (float) $order_items[$key]['subtotal'] / $order_items[$key]['qty'];
-
             }
             return $order_items;
         }
@@ -765,6 +818,8 @@ class VindiPaymentProcessor
             'qty' => 1,
         );
 
+
+
         return $discount_item;
     }
 
@@ -820,8 +875,8 @@ class VindiPaymentProcessor
                 'schema_type' => 'per_unit',
             ),
         );
-
         $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
+
         if (!empty($coupons) && $order_item['type'] == 'line_item') {
             $product_item['discounts'] = [];
 
@@ -845,7 +900,7 @@ class VindiPaymentProcessor
      */
     protected function coupon_supports_product($order_item, $coupon)
     {
-        $product_id = $order_item->get_product()->id;
+        $product_id = $order_item->get_product()->get_id();
         $included_products = $coupon->get_product_ids();
         $excluded_products = $coupon->get_excluded_product_ids();
 
@@ -879,6 +934,7 @@ class VindiPaymentProcessor
 
         $amount = $coupon->get_amount();
         $discount_type = $coupon->get_discount_type();
+
         if ($discount_type == 'fixed_cart') {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = $amount / $this->order->get_item_count();
@@ -887,8 +943,10 @@ class VindiPaymentProcessor
         } elseif (strpos($discount_type, 'fixed') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = $amount;
-        } elseif (strpos($discount_type, 'percent') !== false ||
-                  strpos($discount_type, 'recurring_percent') !== false) {
+        } elseif (
+            strpos($discount_type, 'percent') !== false ||
+            strpos($discount_type, 'recurring_percent') !== false
+        ) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = $this->order->get_discount_total() / $this->order->get_item_count();
         }
@@ -998,7 +1056,7 @@ class VindiPaymentProcessor
      */
     protected function create_subscription($customer_id, $order_item)
     {
-        if($order_item == null || empty($order_item)) {
+        if ($order_item == null || empty($order_item)) {
             return;
         }
         $data = [];
@@ -1044,7 +1102,7 @@ class VindiPaymentProcessor
     {
         $this->suspend_subscriptions($subscriptions_ids);
 
-        foreach($wc_subscriptions_ids as $wc_subscription_id) {
+        foreach ($wc_subscriptions_ids as $wc_subscription_id) {
             $wc_subscription = wcs_get_subscription($wc_subscription_id);
             $wc_subscription->update_status('cancelled', __($message, VINDI));
         }
@@ -1204,6 +1262,7 @@ class VindiPaymentProcessor
     private function update_order_status($bills_status)
     {
         $status = 'pending';
+        $status_message = '';
         if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
             $status = $this->vindi_settings->get_return_status();
         }
@@ -1222,7 +1281,7 @@ class VindiPaymentProcessor
      * @return WC_Product Woocommerce product array with a vindi id
      */
     protected function get_product($order_item)
-     {
+    {
 
         $product = $order_item->get_product();
         $product_id = $order_item->get_id();
@@ -1240,11 +1299,10 @@ class VindiPaymentProcessor
 
         if (empty($vindi_product_id) || !$vindi_product_id) {
             $vindi_product_id = $this->routes->findProductByCode('WC-' . $product->id)['id'];
-
         }
 
         $product->vindi_id = (int) $vindi_product_id > 0 ? $vindi_product_id : 63;
-        if($product->id === null) $product->id = 63;
+        if ($product->id === null) $product->id = 63;
 
         return $product;
     }
@@ -1267,13 +1325,11 @@ class VindiPaymentProcessor
                 if ($has_simple_product) {
                     return true;
                 }
-
             } else {
                 $has_simple_product = true;
                 if ($has_trial) {
                     return true;
                 }
-
             }
         }
         return $has_trial && $has_simple_product;
@@ -1287,7 +1343,7 @@ class VindiPaymentProcessor
      */
     protected function is_variable(WC_Product $product)
     {
-        return (boolean) preg_match('/variation/', $product->get_type());
+        return (bool) preg_match('/variation/', $product->get_type());
     }
 
     /**
@@ -1298,7 +1354,7 @@ class VindiPaymentProcessor
      */
     protected function is_subscription_type(WC_Product $product)
     {
-        return (boolean) preg_match('/subscription/', $product->get_type());
+        return (bool) preg_match('/subscription/', $product->get_type());
     }
 
     /**
@@ -1354,6 +1410,5 @@ class VindiPaymentProcessor
         } catch (Exception $err) {
             return $product;
         }
-
     }
 }
