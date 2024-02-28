@@ -545,10 +545,8 @@ class VindiPaymentProcessor
             if ($order_item['product_id'] == $taxa_id['vindi_id']) {
                 $remainder = $this->apply_remainder($remainder, $full_price, $new_order_item);
             }
-
             $new_order_items[] = $new_order_item;
         }
-
         return $new_order_items;
     }
 
@@ -584,11 +582,6 @@ class VindiPaymentProcessor
     protected function apply_remainder($remainder, $full_price, &$new_order_item)
     {
         if ($remainder > 0) {
-            $new_order_item['discounts'][] = array(
-                'discount_type' => 'amount',
-                'amount' => $remainder - $full_price,
-                'cycles' => 1
-            );
             if ($remainder <= $full_price) {
                 $new_order_item['discounts'][] = array(
                     'discount_type' => 'amount',
@@ -596,13 +589,16 @@ class VindiPaymentProcessor
                     'cycles' => 1
                 );
                 $remainder = 0;
+            } else {
+                $new_order_item['discounts'][] = array(
+                    'discount_type' => 'amount',
+                    'amount' => $full_price,
+                    'cycles' => 1
+                );
             }
         }
-
         return $remainder;
     }
-
-
 
     /**
      * Retrives the product(s) information. Adds the vindi_id, the type and the price to it.
@@ -956,6 +952,7 @@ class VindiPaymentProcessor
         $amount = $coupon->get_amount();
         $discount_type = $coupon->get_discount_type();
 
+
         if ($discount_type == 'fixed_cart') {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = $amount / $this->order->get_item_count();
@@ -971,7 +968,7 @@ class VindiPaymentProcessor
             $discount_item['amount'] = $this->order->get_discount_total() / $this->order->get_item_count();
         }
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
-
+        
         return $discount_item;
     }
 

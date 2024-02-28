@@ -239,18 +239,6 @@ class WcVindiPayment extends AbstractInstance
         return $passed;
     }
 
-    public function count_subscriptions_in_cart($product_id)
-    {
-        $cart = WC()->cart->get_cart();
-        $subscription_count = 0;
-        foreach ($cart as $cart_item) {
-            if ($cart_item['data']->get_id() === $product_id) {
-                $subscription_count++;
-            }
-        }
-        return $subscription_count;
-    }
-
     public function limit_subscriptions_in_cart_update($passed, $cart_item_key, $values, $quantity)
     {
         if (WC_Subscriptions_Product::is_subscription($values['product_id'])) {
