@@ -530,9 +530,7 @@ class VindiPaymentProcessor
     protected function calculate_discount($order_items)
     {
         $new_order_items = [];
-
         $remaining_discount = 0;
-
         $item = $this->routes->findOrCreateProduct("[WC] Taxa de adesão", "WC-SUF");
         $taxa_id = array(
             'vindi_id' => $item['id']
@@ -540,40 +538,12 @@ class VindiPaymentProcessor
 
         foreach ($order_items as $order_item) {
             $new_order_item = $order_item;
+            $full_price = $this->calculate_full_price($order_item);
 
-            if ($order_item['quantity'] > 1) {
-                $full_price =  $order_item['pricing_schema']['price'] * $order_item['quantity'];
-            } else {
-                $full_price = $order_item['pricing_schema']['price'];
-            }
+            $remaining_discount = $this->apply_discount($order_item, $full_price, $remaining_discount);
 
-            if (isset($order_item['discounts'])) {
-                $discountTotal = 0;
-                foreach ($order_item['discounts'] as $discount) {
-                    $discountTotal += $discount['amount'];
-                }
-                if ($discountTotal > $full_price) {
-                    $remaining_discount = $discountTotal - $full_price;
-                }
-            }
-            //se for uma taxa, entra nessa condição
             if ($order_item['product_id'] == $taxa_id['vindi_id']) {
-                if ($remaining_discount > 0) {
-                    if ($remaining_discount <= $full_price) {
-                        $new_order_item['discounts'][] = array(
-                            'discount_type' => 'amount',
-                            'amount' => $remaining_discount,
-                            'cycles' => 1
-                        );
-                        $remaining_discount = 0;
-                    } else {
-                        $new_order_item['discounts'][] = array(
-                            'discount_type' => 'amount',
-                            'amount' => $remaining_discount - $full_price,
-                            'cycles' => 1
-                        );
-                    }
-                }
+                $remaining_discount = $this->apply_remaining_discount($remaining_discount, $full_price, $new_order_item);
             }
 
             $new_order_items[] = $new_order_item;
@@ -581,6 +551,49 @@ class VindiPaymentProcessor
 
         return $new_order_items;
     }
+
+    protected function calculate_full_price($order_item)
+    {
+        return $order_item['quantity'] > 1 ? $order_item['pricing_schema']['price'] * $order_item['quantity'] : $order_item['pricing_schema']['price'];
+    }
+
+    protected function apply_discount($order_item, $full_price, $remaining_discount)
+    {
+        if (isset($order_item['discounts'])) {
+            $discountTotal = array_reduce($order_item['discounts'], function ($total, $discount) {
+                return $total + $discount['amount'];
+            }, 0);
+
+            if ($discountTotal > $full_price) {
+                $remaining_discount = $discountTotal - $full_price;
+            }
+        }
+
+        return $remaining_discount;
+    }
+
+    protected function apply_remaining_discount($remaining_discount, $full_price, &$new_order_item)
+    {
+        if ($remaining_discount > 0) {
+            if ($remaining_discount <= $full_price) {
+                $new_order_item['discounts'][] = array(
+                    'discount_type' => 'amount',
+                    'amount' => $remaining_discount,
+                    'cycles' => 1
+                );
+                $remaining_discount = 0;
+            } else {
+                $new_order_item['discounts'][] = array(
+                    'discount_type' => 'amount',
+                    'amount' => $remaining_discount - $full_price,
+                    'cycles' => 1
+                );
+            }
+        }
+
+        return $remaining_discount;
+    }
+
 
 
     /**
@@ -940,10 +953,10 @@ class VindiPaymentProcessor
             $discount_item['amount'] = $amount / $this->order->get_item_count();
             $discount_item['cycles'] = 1;
             return $discount_item;
-        } elseif (strpos($discount_type, 'fixed') !== false) {
+        } elseif(strpos($discount_type, 'fixed') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = $amount;
-        } elseif (
+        } elseif(
             strpos($discount_type, 'percent') !== false ||
             strpos($discount_type, 'recurring_percent') !== false
         ) {
