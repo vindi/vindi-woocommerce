@@ -232,7 +232,7 @@ class WcVindiPayment extends AbstractInstance
         if (WC_Subscriptions_Product::is_subscription($product_id)) {
             $subscription_count = $this->count_subscriptions_in_cart($product_id);
             if ($subscription_count + $quantity > 1) {
-                wc_add_notice(__('Você só pode adicionar até 1 assinatura do mesmo produto ao seu carrinho.', 'your-text-domain'), 'error');
+                wc_add_notice(__('Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.'), 'error');
                 return false;
             }
         }
@@ -256,7 +256,7 @@ class WcVindiPayment extends AbstractInstance
         if (WC_Subscriptions_Product::is_subscription($values['product_id'])) {
             $subscription_count = $this->count_subscriptions_in_cart($values['product_id']);
             if ($subscription_count >= 1 && $quantity > 1) {
-                wc_add_notice(__('Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.', 'your-text-domain'), 'error');
+                wc_add_notice(__('Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.'), 'error');
                 return false;
             }
         }
