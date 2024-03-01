@@ -724,14 +724,9 @@ class VindiPaymentProcessor
      */
     protected function build_shipping_item($order_items)
     {
-        error_log(var_export($order_items,true));
         $shipping_item = [];
         $shipping_method = $this->order->get_shipping_method();
-        // $get_total_shipping = $this->order->get_total_shipping();
-        $get_total_shipping = $this->order->get_shipping_tax();
-        error_log(var_export("get_total_shipping",true));
-        error_log(var_export($get_total_shipping,true));
-
+        $get_total_shipping = $this->order->get_shipping_total();
 
         if (empty($shipping_method)) {
             return $shipping_item;
@@ -747,18 +742,17 @@ class VindiPaymentProcessor
                 $shipping_method = $wc_subscription->get_shipping_method();
                 $get_total_shipping = $wc_subscription->get_total_shipping();
             }
-
+            //ciclo do frete, validar o ciclo para que apareca nos boletos
             if ($product->needs_shipping()) {
                 $item = $this->create_shipping_product($shipping_method);
                 $shipping_item = array(
                     'type' => 'shipping',
                     'vindi_id' => $item['id'],
-                    'price' => $get_total_shipping,
+                    'price' => ($get_total_shipping / $this->order->get_item_count()) * count($order_items),
                     'qty' => 1,
                 );
             }
         }
-        error_log(var_export($shipping_item,true));
         return $shipping_item;
     }
 
@@ -828,6 +822,7 @@ class VindiPaymentProcessor
                 $bill_total_discount += (float) ($discount_total / $this->order->get_item_count());
             }
         }
+        error_log(var_export($this->order->get_item_count()));
 
         if (empty($bill_total_discount)) {
             return $discount_item;
