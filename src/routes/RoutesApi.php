@@ -15,6 +15,7 @@ class VindiRoutes
    */
   public $api;
 
+
   function __construct(VindiSettings $vindi_settings)
   {
 
@@ -400,15 +401,17 @@ class VindiRoutes
 
   public function isMerchantStatusTrialOrSandbox($is_config = false)
   {
-    if ('yes' === $this->sandbox)
-      return true;
+        if ('yes' === isset($this->sandbox)) {
+            return true;
+        }
 
-    $merchant = $is_config ? $this->getMerchant($is_config) : $this->getMerchant();
+      $merchant = $is_config ? $this->getMerchant($is_config) : $this->getMerchant();
 
-    if ('trial' === $merchant['status'])
-      return true;
+        if ('trial' === $merchant['status']) {
+          return true;
+        }
 
-    return false;
+      return false;
   }
 
   public function getMerchant($is_config = false)
@@ -436,6 +439,11 @@ class VindiRoutes
 
     return $response['charge'];
   }
+
+  /**
+   * @var array|bool|mixed
+   */
+    public $current_plan;
 
   public function getPlan($plan_id)
   {

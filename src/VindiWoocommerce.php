@@ -193,7 +193,7 @@ class WcVindiPayment extends AbstractInstance
    */
     public function filter_woocommerce_cart_needs_payment($needs_payment, $cart)
     {
-        if (floatval($cart->total) == 0 && $this->cart_has_trial($cart)) {
+        if (floatval($cart->total) == 0 || $this->cart_has_trial($cart)) {
             return true;
         }
 

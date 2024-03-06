@@ -126,24 +126,19 @@ class CustomerController
 
   function update($user_id, $order = null)
   {
-
     $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id', true);
-
     // Check meta Vindi ID
     if (empty($vindi_customer_id)) {
 
       return $this->create($user_id, $order);
     }
-
     // Check user exists in Vindi
     $vindiUser = $this->routes->findCustomerById($vindi_customer_id);
     if (!$vindiUser) {
 
       return $this->create($user_id);
     }
-
     $customer = new WC_Customer($user_id);
-
     $user = $customer->get_data();
     $phones = $vindi_phones = [];
     foreach ($vindiUser['phones'] as $phone) {
@@ -154,7 +149,9 @@ class CustomerController
         'phone_type' => 'mobile',
         'number' => preg_replace('/\D+/', '', '55' . $customer->get_meta('billing_cellphone'))
       );
-      if ($vindi_phones['mobile']) $mobile['id'] = $vindi_phones['mobile'];
+                if (isset($vindi_phones['mobile'])) {
+                    $mobile['id'] = $vindi_phones['mobile'];
+                }
       $phones[] = $mobile;
     }
     if ($customer->get_billing_phone()) {
@@ -162,7 +159,9 @@ class CustomerController
         'phone_type' => 'landline',
         'number' => preg_replace('/\D+/', '', '55' . $customer->get_billing_phone())
       );
-      if ($vindi_phones['landline']) $landline['id'] = $vindi_phones['landline'];
+                if (isset($vindi_phones['landline'])) {
+                    $landline['id'] = $vindi_phones['landline'];
+                }
       $phones[] = $landline;
     }
 
@@ -170,7 +169,6 @@ class CustomerController
     $notes = null;
     $cpf_or_cnpj = null;
     $metadata = null;
-
 
     if ($order && method_exists($order, 'needs_payment')) {
       $metadata = array();
@@ -222,7 +220,6 @@ class CustomerController
     );
     return $updatedUser;
   }
-
 
   /**
    * When a user is deleted within the WP, it is reflected in the Vindi.
