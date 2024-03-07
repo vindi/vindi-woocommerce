@@ -219,7 +219,7 @@ class VindiPaymentProcessor
                 break;
             case 'pix':
                 $code = 'pix';
-               break;
+                break;
             default:
                 $code = '';
                 break;
