@@ -49,13 +49,14 @@ class FrontendFilesLoader {
     public static function enqueueThankyouPageScript()
     {
         wp_register_script(
-          'vindi_woocommerce_thankyou_js',
-          plugins_url('/assets/js/thankyou.js', plugin_dir_path(__FILE__)),
-          array(),
-          VINDI_VERSION,
-          true
+            'vindi_woocommerce_thankyou_js',
+            plugins_url('/assets/js/thankyou.js', plugin_dir_path(__FILE__)),
+            array(),
+            VINDI_VERSION,
+            true
         );
         wp_enqueue_script('vindi_woocommerce_thankyou_js');
+        
         wp_localize_script(
             'vindi_woocommerce_thankyou_js',
             'ajax_object',
@@ -68,20 +69,20 @@ class FrontendFilesLoader {
         wp_register_script('imask', plugins_url('/assets/js/imask.min.js', plugin_dir_path(__FILE__)), array(), VINDI_VERSION, true);
 
         wp_register_script(
-          'vindi_woocommerce_masks_js',
-          plugins_url('/assets/js/masks.js', plugin_dir_path(__FILE__)),
-          array('imask'),
-          VINDI_VERSION,
-          true
+            'vindi_woocommerce_masks_js',
+            plugins_url('/assets/js/masks.js', plugin_dir_path(__FILE__)),
+            array('imask'),
+            VINDI_VERSION,
+            true
         );
         wp_enqueue_script('vindi_woocommerce_masks_js');
 
         wp_register_script(
-          'vindi_woocommerce_brands_js',
-          plugins_url('/assets/js/brands.js', plugin_dir_path(__FILE__)),
-          array(),
-          VINDI_VERSION,
-          true
+            'vindi_woocommerce_brands_js',
+            plugins_url('/assets/js/brands.js', plugin_dir_path(__FILE__)),
+            array(),
+            VINDI_VERSION,
+            true
         );
         wp_enqueue_script('vindi_woocommerce_brands_js');
     }
