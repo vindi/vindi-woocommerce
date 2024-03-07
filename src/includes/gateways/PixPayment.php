@@ -55,8 +55,6 @@ class VindiPixGateway extends VindiPaymentGateway
         );
 
         $this->init_form_fields();
-
-        // Load the settings.
         $this->init_settings();
 
         add_action('woocommerce_view_order', array(&$this, 'show_pix_download'), -10, 1);
