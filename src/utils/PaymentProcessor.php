@@ -59,6 +59,8 @@ class VindiPaymentProcessor
      */
     private $controllers;
 
+    private $single_freight;
+
     /**
      * Payment Processor contructor.
      *
@@ -282,7 +284,7 @@ class VindiPaymentProcessor
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
-
+        
         $bills = [];
         $order_post_meta = [];
         $bill_products = [];
@@ -295,7 +297,7 @@ class VindiPaymentProcessor
             $product = $order_item->get_product();
 
             if ($this->is_subscription_type($product)) {
-                $product_id = $product->id;
+                $product_id = $product->get_id();
 
                 if ($this->is_variable($product)) {
                     $product_id = $order_item['variation_id'];
@@ -326,12 +328,12 @@ class VindiPaymentProcessor
 
                 $subscription_bill = $subscription['bill'];
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
-                $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->name;
+                $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->get_name();
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
 
                 $bills[] = $subscription['bill'];
-
-                if ($message = $this->cancel_if_denied_bill_status($subscription['bill'])) {
+                $message = $this->cancel_if_denied_bill_status($subscription['bill']);
+                if ($message) {
                     throw new Exception($message);
                 }
 
@@ -349,8 +351,8 @@ class VindiPaymentProcessor
                 $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
                 $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
                 $bills[] = $single_payment_bill;
-
-                if ($message = $this->cancel_if_denied_bill_status($single_payment_bill)) {
+                $message = $this->cancel_if_denied_bill_status($single_payment_bill);
+                if ($message) {
                     $this->order->update_status('cancelled', __($message, VINDI));
 
                     if ($subscriptions_ids) {
@@ -366,7 +368,7 @@ class VindiPaymentProcessor
             }
         }
 
-        update_post_meta($this->order->id, 'vindi_order', $order_post_meta);
+        update_post_meta($this->order->get_id(), 'vindi_order', $order_post_meta);
         WC()->session->__unset('current_payment_profile');
         WC()->session->__unset('current_customer');
         remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
@@ -565,7 +567,7 @@ class VindiPaymentProcessor
 
         $product = $order_items->get_product();
         $order_items['type'] = 'product';
-        $product_id = $product->id;
+        $product_id = $product->get_id();
 
         if ($this->is_variable($product)) {
             $product_id = $order_items['variation_id'];
@@ -1021,7 +1023,7 @@ class VindiPaymentProcessor
         $product = $order_item->get_product();
         if ($this->is_subscription_type($product) || $this->is_variable($product)) {
             $data['plan_id'] = $this->get_plan_from_order_item($order_item);
-            $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
+            $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->get_id();
             $data['code'] = strpos($wc_subscription_id, 'WC') > 0 ? $wc_subscription_id : 'WC-' . $wc_subscription_id;
         }
         $data['product_items'] = $this->get_build_products($data, $order_item);
@@ -1032,7 +1034,7 @@ class VindiPaymentProcessor
         }
         $subscription['wc_id'] = $wc_subscription_id;
         if (isset($subscription['bill']['id'])) {
-            update_post_meta($this->order->id, 'vindi_bill_id', $subscription['bill']['id']);
+            update_post_meta($this->order->get_id(), 'vindi_bill_id', $subscription['bill']['id']);
         }
         return $subscription;
     }
@@ -1202,30 +1204,40 @@ class VindiPaymentProcessor
         $this->vindi_settings->woocommerce->cart->empty_cart();
         $bills_status = [];
         foreach ($bills as $bill) {
-            if ($bill['status'] == 'paid') {
-                $data_to_log = sprintf('O Pagamento da fatura %s do pedido %s foi realizado com sucesso pela Vindi.', $bill['id'], $this->order->id);
-                $status_message = __('O Pagamento foi realizado com sucesso pela Vindi.', VINDI);
-            } else {
-                $data_to_log = sprintf('Aguardando pagamento da fatura %s do pedido %s pela Vindi.', $bill['id'], $this->order->id);
-                $status_message = __('Aguardando pagamento do pedido.', VINDI);
-            }
             array_push($bills_status, $bill['status']);
-            $this->logger->log($data_to_log);
+            $this->generate_log_message($bill);
         }
-        $status = 'pending';
-        if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
-            $status = $this->vindi_settings->get_return_status();
-        } elseif ($this->order_has_trial()) {
-            $status = $this->vindi_settings->get_return_status();
-            $status_message = __('Aguardando cobrança após a finalização do período grátis.', VINDI);
-        }
-        $this->order->update_status($status, $status_message);
+        $this->update_order_status($bills_status);
         return array(
             'result' => 'success',
             'redirect' => $this->order->get_checkout_order_received_url(),
         );
     }
 
+    private function generate_log_message($bill)
+    {
+        $fatura = $bill['id'];
+        $pedido = $this->order->get_id();
+        $message = 'Aguardando pagamento da fatura %s do pedido %s pela Vindi.';
+        if ($bill['status'] == 'paid') {
+            $message = 'O Pagamento da fatura %s do pedido %s foi realizado com sucesso pela Vindi.';
+        }
+        $this->logger->log(sprintf($message, $fatura, $pedido));
+    }
+
+    private function update_order_status($bills_status)
+    {
+        $status = 'pending';
+        $status_message = '';
+        if (sizeof($bills_status) == sizeof(array_keys($bills_status, 'paid'))) {
+            $status = $this->vindi_settings->get_return_status();
+        }
+        if ($this->order_has_trial()) {
+            $status = $this->vindi_settings->get_return_status();
+            $status_message = __('Aguardando pagamento do pedido.', VINDI);
+        }
+        $this->order->update_status($status, $status_message);
+    }
     /**
      * Find or create the product within Vindi
      * and add the vindi id to the product array
