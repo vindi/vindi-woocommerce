@@ -68,9 +68,9 @@ class VindiRoutes
     public function renewCharge($charge_id)
     {
       $response = $this->api->request(sprintf(
-        'charges/%s/charge',
-        filter_var($charge_id, FILTER_SANITIZE_NUMBER_INT)
-      ), 'POST', []);
+          'charges/%s/charge',
+          filter_var($charge_id, FILTER_SANITIZE_NUMBER_INT)
+        ), 'POST', []);
     
       return $response['charge'];
     }
