@@ -368,7 +368,7 @@ class VindiPaymentProcessor
             }
         }
 
-        update_post_meta($this->order->get_id(), 'vindi_order', $order_post_meta);
+        $this->order->update_meta_data('vindi_order', $order_post_meta);
         WC()->session->__unset('current_payment_profile');
         WC()->session->__unset('current_customer');
         remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
@@ -1034,7 +1034,7 @@ class VindiPaymentProcessor
         }
         $subscription['wc_id'] = $wc_subscription_id;
         if (isset($subscription['bill']['id'])) {
-            update_post_meta($this->order->get_id(), 'vindi_bill_id', $subscription['bill']['id']);
+            $this->order->update_meta_data('vindi_bill_id', $subscription['bill']['id']);
         }
         return $subscription;
     }
@@ -1102,7 +1102,7 @@ class VindiPaymentProcessor
 
         if ($bill['id']) {
             $this->logger->log(sprintf('Update Bill: %s', json_encode($bill)));
-            update_post_meta($this->order->id, 'vindi_bill_id', $bill['id']);
+            $this->order->update_meta_data('vindi_bill_id', $bill['id']);
         }
         return $bill;
     }

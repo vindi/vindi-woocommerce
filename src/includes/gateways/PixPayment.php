@@ -130,7 +130,7 @@ class VindiPixGateway extends VindiPaymentGateway
     {
         $order = wc_get_order($order_id);
         if ($order->get_payment_method() == 'vindi-pix') {
-            $vindi_order = get_post_meta($order_id, 'vindi_order', true);
+            $vindi_order = $order->get_meta('vindi_order', true);
             $order_to_iterate = $this->pix_quantity_to_render($vindi_order);
             $this->vindi_settings->get_template(
                 'pix-download.html.php',
@@ -143,7 +143,7 @@ class VindiPixGateway extends VindiPaymentGateway
     {
         $order = wc_get_order($order_id);
         if ($order->get_payment_method() == 'vindi-pix') {
-            $vindi_order = get_post_meta($order_id, 'vindi_order', true);
+            $vindi_order = $order->get_meta('vindi_order', true);
             $order_to_iterate = $this->pix_quantity_to_render($vindi_order);
             if (!$order->is_paid() && !$order->has_status('cancelled')) {
                 $this->vindi_settings->get_template(
