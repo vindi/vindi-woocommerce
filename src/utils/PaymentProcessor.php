@@ -213,16 +213,16 @@ class VindiPaymentProcessor
         switch ($this->gateway->type()) {
             case 'bank_slip':
                 $code = 'bank_slip';
-            break;
+                break;
             case 'cc':
                 $code = 'credit_card';
-            break;
+                break;
             case 'pix':
                 $code = 'pix';
-            break;
+               break;
             default:
-               $code = '';
-            break;
+                $code = '';
+                break;
         }
         return $code;
     }
