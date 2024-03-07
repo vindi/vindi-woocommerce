@@ -60,7 +60,7 @@ class FrontendFilesLoader {
         wp_localize_script(
             'vindi_woocommerce_thankyou_js',
             'ajax_object',
-            array('ajax_url' => admin_url( 'admin-ajax.php' ))
+            array('ajax_url' => admin_url('admin-ajax.php'))
         );
     }
 
