@@ -1116,6 +1116,7 @@ class VindiPaymentProcessor
      */
     protected function create_bill_meta_for_order($bill)
     {
+        $bill_meta = [];
         $bill_meta['id'] = $bill['id'];
         $bill_meta['status'] = $bill['status'];
         
