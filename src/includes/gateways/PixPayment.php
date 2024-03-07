@@ -117,9 +117,10 @@ class VindiPixGateway extends VindiPaymentGateway
         }
 
         $is_single_order = $this->is_single_order();
-
-        if ($is_trial = $this->vindi_settings->get_is_active_sandbox())
+        $is_trial = $this->vindi_settings->get_is_active_sandbox();
+        if ($is_trial) {
             $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
+        }
 
         $this->vindi_settings->get_template('pix-checkout.html.php', compact('is_trial', 'is_single_order'));
     }
