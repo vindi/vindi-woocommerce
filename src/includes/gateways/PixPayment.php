@@ -20,7 +20,7 @@ class VindiPixGateway extends VindiPaymentGateway
     /**
      * @var VindiSettings
      */
-    public $vindi_settings;
+    public $vindiSettings;
 
     /**
      * @var VindiControllers
@@ -31,7 +31,7 @@ class VindiPixGateway extends VindiPaymentGateway
      * Constructor for the gateway.
      */
 
-    public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
+    public function __construct(VindiSettings $vindiSettings, VindiControllers $controllers)
     {
         $this->id                   = 'vindi-pix';
         $this->icon                 = apply_filters('vindi_woocommerce_pix_icon', '');
@@ -60,7 +60,7 @@ class VindiPixGateway extends VindiPaymentGateway
         add_action('woocommerce_view_order', array(&$this, 'show_pix_download'), -10, 1);
         add_action('woocommerce_thankyou_' . $this->id, array(&$this, 'thank_you_page'));
 
-        parent::__construct($vindi_settings, $controllers);
+        parent::__construct($vindiSettings, $controllers);
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->enabled = $this->get_option('enabled');
