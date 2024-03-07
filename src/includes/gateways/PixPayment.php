@@ -118,6 +118,9 @@ class VindiPixGateway extends VindiPaymentGateway
     public function thank_you_page($order_id)
     {
         $order = wc_get_order($order_id);
+        $vindi_order = [];
+        $order_to_iterate = 0;
+
         if ($order->get_payment_method() == 'vindi-pix') {
             $vindi_order = $order->get_meta('vindi_order', true);
             $order_to_iterate = $this->pix_quantity_to_render($vindi_order);
@@ -131,6 +134,9 @@ class VindiPixGateway extends VindiPaymentGateway
     public function show_pix_download($order_id)
     {
         $order = wc_get_order($order_id);
+        $vindi_order = [];
+        $order_to_iterate = 0;
+
         if ($order->get_payment_method() == 'vindi-pix') {
             $vindi_order = $order->get_meta('vindi_order', true);
             $order_to_iterate = $this->pix_quantity_to_render($vindi_order);
