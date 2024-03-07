@@ -27,8 +27,7 @@ class FrontendFilesLoader {
     {
         wp_register_script(
             'vindi_woocommerce_frontend_js',
-            plugins_url('/assets/js/frontend.js',
-            plugin_dir_path(__FILE__)),
+            plugins_url('/assets/js/frontend.js', plugin_dir_path(__FILE__)),
             array('jquery'),
             VINDI_VERSION,
             true
@@ -40,8 +39,7 @@ class FrontendFilesLoader {
 
         wp_register_style(
             'vindi_woocommerce_style',
-            plugins_url('/assets/css/frontend.css',
-            plugin_dir_path(__FILE__)),
+            plugins_url('/assets/css/frontend.css', plugin_dir_path(__FILE__)),
             array(),
             VINDI_VERSION
         );
