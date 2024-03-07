@@ -1123,7 +1123,8 @@ class VindiPaymentProcessor
             $charges = end($bill['charges']);
             
             $bill_meta['bank_slip_url'] = $charges['print_url'] ?? '';
-            if ($this->payment_method_code() === 'pix' && isset($charges['last_transaction']['gateway_response_fields'])) {
+            if ($this->payment_method_code() === 'pix'
+                    && isset($charges['last_transaction']['gateway_response_fields'])) {
                 $transaction = $charges['last_transaction']['gateway_response_fields'];
 
                 $bill_meta['charge_id'] = $charges['id'];
