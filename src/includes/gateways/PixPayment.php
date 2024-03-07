@@ -14,7 +14,6 @@ if (!defined('ABSPATH')) {
  * @class   VindiPixGateway
  * @extends VindiPaymentGateway
  */
-
 class VindiPixGateway extends VindiPaymentGateway
 {
     /**
@@ -64,7 +63,6 @@ class VindiPixGateway extends VindiPaymentGateway
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->enabled = $this->get_option('enabled');
-
     }
 
     /**
