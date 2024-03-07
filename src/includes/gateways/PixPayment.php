@@ -29,7 +29,6 @@ class VindiPixGateway extends VindiPaymentGateway
     /**
      * Constructor for the gateway.
      */
-
     public function __construct(VindiSettings $vindiSettings, VindiControllers $controllers)
     {
         $this->id                   = 'vindi-pix';
@@ -37,7 +36,6 @@ class VindiPixGateway extends VindiPaymentGateway
         $this->method_title         = __('Vindi - PIX', VINDI);
         $this->method_description   = __('Aceitar pagamentos via boleto bancário utilizando a Vindi.', VINDI);
         $this->has_fields           = true;
-
         $this->supports             = array(
             'subscriptions',
             'products',
@@ -52,17 +50,11 @@ class VindiPixGateway extends VindiPaymentGateway
             'multiple_subscriptions',
             'pre-orders'
         );
-
         $this->init_form_fields();
         $this->init_settings();
-
         add_action('woocommerce_view_order', array(&$this, 'show_pix_download'), -10, 1);
         add_action('woocommerce_thankyou_' . $this->id, array(&$this, 'thank_you_page'));
-
         parent::__construct($vindiSettings, $controllers);
-        $this->title = $this->get_option('title');
-        $this->description = $this->get_option('description');
-        $this->enabled = $this->get_option('enabled');
     }
 
     /**
