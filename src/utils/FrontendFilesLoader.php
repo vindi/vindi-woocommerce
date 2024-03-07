@@ -56,11 +56,11 @@ class FrontendFilesLoader {
             true
         );
         wp_enqueue_script('vindi_woocommerce_thankyou_js');
-        
+
         wp_localize_script(
             'vindi_woocommerce_thankyou_js',
             'ajax_object',
-            array( 'ajax_url' => admin_url( 'admin-ajax.php' ))
+            array('ajax_url' => admin_url( 'admin-ajax.php' ))
         );
     }
 
@@ -86,5 +86,4 @@ class FrontendFilesLoader {
         );
         wp_enqueue_script('vindi_woocommerce_brands_js');
     }
-
 }
