@@ -210,21 +210,20 @@ class VindiPaymentProcessor
      */
     public function payment_method_code()
     {
-		switch ($this->gateway->type()) {
-			case 'bank_slip':
-				$code = 'bank_slip';
-			break;
-			case 'cc':
-				$code = 'credit_card';
-			break;
-			case 'pix':
-				$code = 'pix';
-			break;
-			default:
-				$code = '';
-			break;
-
-		}
+        switch ($this->gateway->type()) {
+            case 'bank_slip':
+                $code = 'bank_slip';
+            break;
+            case 'cc':
+                $code = 'credit_card';
+            break;
+            case 'pix':
+                $code = 'pix';
+            break;
+            default:
+               $code = '';
+            break;
+        }
         return $code;
     }
 
