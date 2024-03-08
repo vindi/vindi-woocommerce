@@ -2,10 +2,6 @@
 
 namespace VindiPaymentGateways;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 /**
  * Vindi Payment PIX Card Gateway class.
  *
