@@ -1,7 +1,7 @@
 <?php
-    if (!defined('ABSPATH')) {
-        exit;
-	}
+if (!defined('ABSPATH')) {
+    exit;
+}
 ?>
 
 <?php if ($is_trial) : ?>
@@ -9,7 +9,8 @@
         <h3 style="color: #f00"><?php _e('MODO DE TESTES', VINDI); ?></h3>
         <p>
             <?php _e(
-                'Sua conta na Vindi está em <strong>Modo Trial</strong>. Este modo é proposto para a realização de testes e, portanto, nenhum pedido será efetivamente cobrado.',
+                'Sua conta na Vindi está em <strong>Modo Trial</strong>. 
+                Este modo é proposto para a realização de testes e, portanto, nenhum pedido será efetivamente cobrado.',
                 VINDI
             ); ?>
         </p>
