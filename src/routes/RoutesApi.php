@@ -69,8 +69,8 @@ class VindiRoutes
     {
       $response = $this->api->request(
           sprintf(
-            'charges/%s/charge',
-            filter_var($charge_id, FILTER_SANITIZE_NUMBER_INT)
+              'charges/%s/charge',
+              filter_var($charge_id, FILTER_SANITIZE_NUMBER_INT)
           ),
           'POST',
           []
