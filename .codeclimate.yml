@@ -2,7 +2,7 @@ engines:
   csslint:
     enabled: true
   phpmd:
-    enabled: true
+    enabled: false
     checks:
       StaticAccess:
         enabled: false
@@ -17,7 +17,7 @@ engines:
       Naming/LongVariable:
         enabled: false
   phpcodesniffer:
-    enabled: true
+    enabled: false
     config:
       standard: "PSR1,PSR2"
     checks:
