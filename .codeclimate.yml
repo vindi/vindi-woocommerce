@@ -23,6 +23,3 @@ engines:
     checks:
       PSR1 Methods CamelCapsMethodName NotCamelCaps:
         enabled: false
-plugins:
-  duplication:
-    enabled: false
