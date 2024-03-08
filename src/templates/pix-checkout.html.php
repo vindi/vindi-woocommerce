@@ -10,7 +10,8 @@ if (!defined('ABSPATH')) {
         <p>
             <?php _e(
                 'Sua conta na Vindi está em <strong>Modo Trial</strong>. 
-                Este modo é proposto para a realização de testes e, portanto, nenhum pedido será efetivamente cobrado.',
+                Este modo é proposto para a realização de testes e, portanto, 
+                nenhum pedido será efetivamente cobrado.',
                 VINDI
             ); ?>
         </p>
