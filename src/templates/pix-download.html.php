@@ -26,8 +26,8 @@ if (!defined('ABSPATH')) {
     <?php foreach ($order_to_iterate as $key => $subscription) : ?>
                 <?php if (is_array($subscription) && array_key_exists('product', $subscription)
                         && !in_array($subscription['bill']['status'], array('paid', 'canceled'))) : ?>
-                        <div class="charge">
-                            <span class="product_title">
+                        <div class="pix_charge charge">
+                            <span class="pix_product_title product_title">
                                 <?php echo $subscription['product']; ?>
                             </span>
                             <div>
@@ -83,7 +83,8 @@ if (!defined('ABSPATH')) {
                                             class="download_button"
                                             data-code="<?php echo esc_attr($subscription['bill']['pix_code']); ?>">
                                                 <?php _e('Copiar código', VINDI); ?>
-                                                <svg color="#006DFF" 
+                                                <svg color="#006DFF"
+                                                     style="padding: 0 5px;"
                                                      xmlns="http://www.w3.org/2000/svg"
                                                      viewBox="0 0 448 512">
                                                     <path d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 
