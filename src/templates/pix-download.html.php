@@ -74,7 +74,11 @@ if (!defined('ABSPATH')) {
                                                 data="<?php echo esc_url($subscription['bill']['pix_qr']); ?>">
                                         </object>
                                     </div>
-                                    <div style="display: flex;align-items: center;justify-content: end;position: relative;right: 75px;">
+                                    <div style="display: flex;
+                                                align-items: center;
+                                                justify-content: end;
+                                                position: relative;
+                                                right: 75px;">
                                         <a id="copy_vindi_pix_code"
                                             class="download_button"
                                             data-code="<?php echo esc_attr($subscription['bill']['pix_code']); ?>">
@@ -102,15 +106,19 @@ if (!defined('ABSPATH')) {
                                 <?php endif; ?>
                             </div>
                         </div>
-                <?php else: ?>
+                <?php else : ?>
                     <?php foreach ($subscription as $item) : ?>
-                        <?php if (is_array($item) && array_key_exists('product', $item) && !in_array($item['bill']['status'], array('paid', 'canceled'))): ?>
+                        <?php if (is_array($item)
+                                    && array_key_exists('product', $item)
+                                    && !in_array($item['bill']['status'], array('paid', 'canceled'))) : ?>
                             <div class="charge">
                                 <span class="product_title">
                                     <?php echo $item['product']; ?>
                                 </span>
-                                <a class="download_button" href="<?php echo esc_url($item['bill']['bank_slip_url']); ?>" target="_blank">
-                                   <?php _e('Baixar boleto', VINDI); ?>
+                                <a class="download_button"
+                                   href="<?php echo esc_url($item['bill']['bank_slip_url']); ?>"
+                                   target="_blank">
+                                    <?php _e('Baixar boleto', VINDI); ?>
                                 </a>
                             </div>
                         <?php endif; ?>
