@@ -164,6 +164,7 @@ class VindiWebhooks
    */
   private function bill_paid($data)
   {
+        $order = false;
         if (empty($data->bill->subscription)) {
             $order = $this->find_order_by_id($data->bill->code);
 
@@ -174,7 +175,7 @@ class VindiWebhooks
             $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
         }
     
-        if (empty($data->bill->subscription)) {
+        if (!empty($data->bill->subscription)) {
             $vindi_subscription_id = $data->bill->subscription->id;
             $cycle = $data->bill->period->cycle;
             $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
@@ -185,6 +186,10 @@ class VindiWebhooks
             }
 
             $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
+        }
+
+        if (!$order) {
+            return;
         }
         
         $order->update_meta_data('vindi_order', $vindi_order);
