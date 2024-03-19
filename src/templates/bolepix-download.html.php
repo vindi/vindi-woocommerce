@@ -9,12 +9,12 @@ if (!defined('ABSPATH')) {
             <div class="icon"></div>
             <div class="message">
                 <p class="message_title">
-                    <?php _e('Aqui estão as sua cobranças PIX.', VINDI); ?>
+                    <?php _e('Aqui estão as sua cobranças com Bolepix.', VINDI); ?>
                 </p>
                 <p class="message_description">
                     <?php
                         _e(
-                            'Você pode pagar lendo o QR Code abaixo ou copiando a linha digitável. 
+                            'Você pode pagar utilizando PIX ou Boleto Bancário. 
                             Após recebermos a confirmação do pagamento, seu pedido será processado.',
                             VINDI
                         );
@@ -26,8 +26,8 @@ if (!defined('ABSPATH')) {
     <?php foreach ($order_to_iterate as $key => $subscription) : ?>
                 <?php if (is_array($subscription) && array_key_exists('product', $subscription)
                         && !in_array($subscription['bill']['status'], array('paid', 'canceled'))) : ?>
-                        <div class="pix_charge charge">
-                            <span class="pix_product_title product_title">
+                        <div class="bolepix_charge charge">
+                            <span class="bolepix_product_title product_title">
                                 <?php echo $subscription['product']; ?>
                             </span>
                             <div>
@@ -79,7 +79,7 @@ if (!defined('ABSPATH')) {
                                                 justify-content: end;
                                                 position: relative;
                                                 right: 75px;">
-                                        <a id="copy_vindi_pix_code"
+                                        <a id="copy_vindi_bolepix_code"
                                             class="download_button"
                                             data-code="<?php echo esc_attr($subscription['bill']['pix_code']); ?>">
                                                 <?php _e('Copiar código', VINDI); ?>
