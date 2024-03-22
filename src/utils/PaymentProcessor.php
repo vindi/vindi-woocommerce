@@ -220,6 +220,9 @@ class VindiPaymentProcessor
             case 'pix':
                 $code = 'pix';
                 break;
+            case 'bolepix':
+                $code = 'pix_bank_slip';
+                break;
             default:
                 $code = '';
                 break;
@@ -1118,20 +1121,19 @@ class VindiPaymentProcessor
         $bill_meta = [];
         $bill_meta['id'] = $bill['id'];
         $bill_meta['status'] = $bill['status'];
-        
         if (isset($bill['charges']) && count($bill['charges'])) {
             $charges = end($bill['charges']);
-            
             $bill_meta['bank_slip_url'] = $charges['print_url'] ?? '';
-            if ($this->payment_method_code() === 'pix'
-                    && isset($charges['last_transaction']['gateway_response_fields'])) {
-                $transaction = $charges['last_transaction']['gateway_response_fields'];
+            
+            if ($this->payment_method_code() === 'pix' || $this->payment_method_code() ==='pix_bank_slip') {
+                if (isset($charges['last_transaction']['gateway_response_fields'])) {
+                    $transaction = $charges['last_transaction']['gateway_response_fields'];
 
-                $bill_meta['charge_id'] = $charges['id'];
-                $bill_meta['pix_expiration'] = $transaction['max_days_to_keep_waiting_payment'];
-                $bill_meta['pix_code'] = $transaction['qrcode_original_path'];
-                $bill_meta['pix_qr'] = $transaction['qrcode_path'];
-                unset($bill_meta['bank_slip_url']);
+                    $bill_meta['charge_id'] = $charges['id'];
+                    $bill_meta['pix_expiration'] = $transaction['max_days_to_keep_waiting_payment'] ?? '';
+                    $bill_meta['pix_code'] = $transaction['qrcode_original_path'];
+                    $bill_meta['pix_qr'] = $transaction['qrcode_path'];
+                }
             }
         }
         return $bill_meta;
