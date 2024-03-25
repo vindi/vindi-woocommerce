@@ -337,7 +337,9 @@
   line-height: 17px;
 }
 .vindi_payment_listing .charges .charge .download_button {
-  padding: 12px 20px;
+  width: 150px;
+  height: 40px;
+  margin: 5px 0;
   background: #FFFFFF;
   border: 1px solid #006DFF;
   border-radius: 3px;
