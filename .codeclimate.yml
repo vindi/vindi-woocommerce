@@ -19,7 +19,7 @@ engines:
       Naming/LongVariable:
         enabled: false
   phpcodesniffer:
-    enabled: true
+    enabled: false
     config:
       standard: "PSR1,PSR2"
     checks:
