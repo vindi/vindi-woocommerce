@@ -51,7 +51,7 @@ if (!defined('ABSPATH')) {
                                     <a class="download_button" 
                                        href="<?php echo esc_url($subscription['bill']['bank_slip_url']); ?>"
                                        target="_blank">
-                                        <?php _e('Baixar boleto', VINDI ); ?>
+                                        <?php _e('Baixar boleto', VINDI); ?>
                                         <svg color="#006DFF"
                                              style="padding: 0 5px;"
                                              xmlns="http://www.w3.org/2000/svg"
