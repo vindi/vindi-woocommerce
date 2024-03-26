@@ -211,22 +211,18 @@ class VindiPaymentProcessor
     public function payment_method_code()
     {
         switch ($this->gateway->type()) {
-            case 'bank_slip':
-                return 'bank_slip';
-                break;
             case 'cc':
-                return 'credit_card';
-                break;
-            case 'pix':
-                return 'pix';
+                $code = 'credit_card';
                 break;
             case 'bolepix':
-                return 'pix_bank_slip';
+                $code = 'pix_bank_slip';
                 break;
             default:
-                return '';
+                $code = $this->gateway->type();
                 break;
         }
+
+        return $code;
     }
 
     /**
