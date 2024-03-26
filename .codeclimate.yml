@@ -1,4 +1,6 @@
 engines:
+  duplication:
+    enabled: false
   csslint:
     enabled: true
   phpmd:

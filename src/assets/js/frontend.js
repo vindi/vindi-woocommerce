@@ -16,10 +16,10 @@ class FrontEnd {
     jQuery(".vindi-change-card").bind('click', function () {
       jQuery('.vindi-old-cc-data').hide();
       jQuery('.vindi-old-cc-data').find('input').prop('disabled', true);
-    
+
       jQuery('.vindi-new-cc-data').find('input, select').prop('disabled', false);
       jQuery('.vindi-new-cc-data').show();
-    
+
       return false;
     });
   }
@@ -54,9 +54,9 @@ class FrontEnd {
 
   setCardNumber(element, id, number) {
     const svg = document.getElementById(id);
-    
+
     if (svg) {
-      svg.innerHTML = element.value === '' ? number : element.value 
+      svg.innerHTML = element.value === '' ? number : element.value
     }
   }
 
@@ -141,6 +141,6 @@ class FrontEnd {
 
 new FrontEnd;
 
-jQuery('body').on('updated_checkout', () => { 
-  new FrontEnd 
+jQuery('body').on('updated_checkout', () => {
+  new FrontEnd
 });

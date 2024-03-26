@@ -248,7 +248,7 @@ abstract class VindiPaymentGateway extends WC_Payment_Gateway_CC
     }
 
     $results = [];
-    $order_meta = get_post_meta($order->id, 'vindi_order', true);
+        $order_meta = $order->get_meta('vindi_order', true);
     foreach ($order_meta as $key => $order_item) {
       $bill_id = $order_item['bill']['id'];
 
