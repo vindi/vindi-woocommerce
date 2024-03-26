@@ -31,8 +31,8 @@ if (!defined('ABSPATH')) {
                                 <?php echo $subscription['product']; ?>
                             </span>
                             <div>
-                            <?php 
-                                    $now = new DateTime('now', new DateTimeZone('America/Sao_Paulo')); 
+                                <?php
+                                    $now = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
                                     $pix_epiration = new DateTime($subscription['bill']['pix_expiration']);
 
                                     if ($pix_epiration < $now && $key !== 'single_payment') :?>
