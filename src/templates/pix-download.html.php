@@ -70,7 +70,7 @@ if (!defined('ABSPATH')) {
                                                 </svg>
                                         </a>
                                     </div>
-                                    <?php else : ?>
+                                <?php else : ?>
                                     <div class="qr_code_viwer">
                                         <object type="image/svg+xml"
                                                 alt="QR Code image"
@@ -107,7 +107,7 @@ if (!defined('ABSPATH')) {
                                                 </svg>
                                         </a>
                                     </div>
-                                <?php endif; ?>
+                                    <?php endif; ?>
                             </div>
                         </div>
                 <?php else : ?>
