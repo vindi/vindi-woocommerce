@@ -107,7 +107,7 @@ if (!defined('ABSPATH')) {
                                                 </svg>
                                         </a>
                                     </div>
-                                    <?php endif; ?>
+                                <?php endif; ?>
                             </div>
                         </div>
                 <?php else : ?>
