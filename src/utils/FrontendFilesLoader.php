@@ -68,7 +68,7 @@ class FrontendFilesLoader {
     {
         wp_register_script(
             'imask',
-            plugins_url('/assets/js/imask.min.js',plugin_dir_path(__FILE__)),
+            plugins_url('/assets/js/imask.min.js', plugin_dir_path(__FILE__)),
             array(),
             VINDI_VERSION,
             true
