@@ -35,7 +35,7 @@ if (!defined('ABSPATH')) {
                                     $now = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
                                     $pix_epiration = new DateTime($subscription['bill']['pix_expiration']);
 
-                                    if ($pix_epiration < $now && $key !== 'single_payment') :?>
+                                if ($pix_epiration < $now && $key !== 'single_payment') :?>
                                     <div style="display: flex;
                                                 flex-direction: column;
                                                 align-items: center;
@@ -70,7 +70,7 @@ if (!defined('ABSPATH')) {
                                                 </svg>
                                         </a>
                                     </div>
-                                <?php else : ?>
+                                    <?php else : ?>
                                     <div class="qr_code_viwer">
                                         <object type="image/svg+xml"
                                                 alt="QR Code image"
