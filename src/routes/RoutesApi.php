@@ -58,6 +58,27 @@ class VindiRoutes
     return $response['plan'];
   }
 
+    /**
+     * Update method for updating plan in the Vindi
+     *
+     * @since 1.0.0
+     * @version 1.0.0
+     * @return array
+     */
+    public function renewCharge($charge_id)
+    {
+      $response = $this->api->request(
+          sprintf(
+              'charges/%s/charge',
+              filter_var($charge_id, FILTER_SANITIZE_NUMBER_INT)
+          ),
+          'POST',
+          []
+      );
+    
+      return $response['charge'];
+    }
+
   /**
    * Update method for updating plan in the Vindi
    *

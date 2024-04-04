@@ -111,6 +111,8 @@ class WcVindiPayment extends AbstractInstance
     ));
 
         add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
+        add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
+        add_action('wp_ajax_nopriv_renew_pix_charge', [$this, 'renew_pix_charge']);
   }
 
   /**
@@ -139,6 +141,7 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/includes/admin/Settings.php';
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/CreditPayment.php';
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/BankSlipPayment.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/gateways/PixPayment.php';
         require_once plugin_dir_path(__FILE__) . '/utils/SubscriptionStatusHandler.php';
         require_once plugin_dir_path(__FILE__) . '/utils/InterestPriceHandler.php';
 
@@ -183,6 +186,7 @@ class WcVindiPayment extends AbstractInstance
   {
     $methods[] = new VindiCreditGateway($this->settings, $this->controllers);
     $methods[] = new VindiBankSlipGateway($this->settings, $this->controllers);
+        $methods[] = new VindiPixGateway($this->settings, $this->controllers);
 
     return $methods;
   }
@@ -211,6 +215,39 @@ class WcVindiPayment extends AbstractInstance
         }
 
         return false;
+    }
+    
+    public function renew_pix_charge()
+    {
+        $order_id = filter_input(INPUT_POST, 'order_id', FILTER_SANITIZE_NUMBER_INT);
+        $charge_id = filter_input(INPUT_POST, 'charge_id', FILTER_SANITIZE_NUMBER_INT);
+        $subscription_id = filter_input(INPUT_POST, 'subscription_id', FILTER_SANITIZE_NUMBER_INT);
+      
+        $order = wc_get_order($order_id);
+        $vindi_order = $order->get_meta('vindi_order', true);
+
+        if ($charge_id && $subscription_id) {
+            $routes = new VindiRoutes($this->settings);
+            $charge = $routes->renewCharge($charge_id);
+
+            if (isset($charge['status']) && isset($charge['last_transaction']['gateway_response_fields'])) {
+                $last_transaction = $charge['last_transaction']['gateway_response_fields'];
+
+                $subscription = $vindi_order[$subscription_id];
+                $bill = [
+                    'id' => $subscription['bill']['id'],
+                    'status' => $subscription['bill']['status'],
+                    'charge_id' => $charge['id'],
+                    'pix_expiration' => $last_transaction['max_days_to_keep_waiting_payment'],
+                    'pix_code' => $last_transaction['qrcode_original_path'],
+                    'pix_qr' => $last_transaction['qrcode_path'],
+                ];
+
+                $vindi_order[$subscription_id]['bill'] = $bill;
+                $order->update_meta_data('vindi_order', $vindi_order);
+                $order->save();
+            }
+        }
     }
 }
 
