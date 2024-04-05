@@ -25,7 +25,7 @@ class Thankyou {
               subscription_id: subscription
           },
           success: function(response) {
-            window.location.reload();
+              window.location.reload();
           }
       });
       });

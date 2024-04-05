@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
 
     <div class="vindi-invoice-description" style="padding: 20px 0; font-weight: bold;">
         <?php
-            _e('Após confirmar o pedido, scaneie o QR Code ou copie o código PIX para efetuar o pagamento.', VINDI);
+            _e('Após confirmar o pedido, escaneie o QR Code ou copie o código PIX para efetuar o pagamento.', VINDI);
         ?>
     </div>
     <div class="clear"></div>

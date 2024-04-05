@@ -31,8 +31,11 @@ if (!defined('ABSPATH')) {
                                 <?php echo $subscription['product']; ?>
                             </span>
                             <div>
-                                <?php if (new DateTime($subscription['bill']['pix_expiration']) < new DateTime()
-                                        && $key !== 'single_payment') :?>
+                                <?php
+                                    $now = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
+                                    $pix_epiration = new DateTime($subscription['bill']['pix_expiration']);
+
+                                if ($pix_epiration < $now && $key !== 'single_payment') :?>
                                     <div style="display: flex;
                                                 flex-direction: column;
                                                 align-items: center;

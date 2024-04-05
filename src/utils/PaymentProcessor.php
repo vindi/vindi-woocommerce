@@ -1116,6 +1116,7 @@ class VindiPaymentProcessor
         $bill_meta = [];
         $bill_meta['id'] = $bill['id'];
         $bill_meta['status'] = $bill['status'];
+        
         if (isset($bill['charges']) && count($bill['charges'])) {
             $charges = end($bill['charges']);
             $bill_meta['bank_slip_url'] = $charges['print_url'] ?? '';

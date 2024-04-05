@@ -66,7 +66,13 @@ class FrontendFilesLoader {
 
     public static function enqueueCreditCardScripts()
     {
-        wp_register_script('imask', plugins_url('/assets/js/imask.min.js', plugin_dir_path(__FILE__)), array(), VINDI_VERSION, true);
+        wp_register_script(
+            'imask',
+            plugins_url('/assets/js/imask.min.js', plugin_dir_path(__FILE__)),
+            array(),
+            VINDI_VERSION,
+            true
+        );
 
         wp_register_script(
             'vindi_woocommerce_masks_js',
