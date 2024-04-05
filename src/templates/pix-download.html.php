@@ -33,8 +33,7 @@ if (!defined('ABSPATH')) {
                             <div>
                                 <?php
                                     $now = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
-                                    $pix_epiration = new DateTime($subscription['bill']['pix_expiration']);
-
+                                    $pix_epiration = new DateTime($subscription['bill']['pix_expiration'], new DateTimeZone('America/Sao_Paulo'));
                                 if ($pix_epiration < $now && $key !== 'single_payment') :?>
                                     <div style="display: flex;
                                                 flex-direction: column;
