@@ -3,7 +3,7 @@
 namespace VindiPaymentGateways;
 
 /**
- * Vindi Payment PIX Card Gateway class.
+ * Vindi Payment PIX Gateway class.
  *
  * Extended by individual payment gateways to handle payments.
  *

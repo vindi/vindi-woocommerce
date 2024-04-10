@@ -3,7 +3,7 @@
 namespace VindiPaymentGateways;
 
 /**
- * Vindi Payment Bolepix Card Gateway class.
+ * Vindi Payment Bolepix Gateway class.
  *
  * Extended by individual payment gateways to handle payments.
  *
@@ -30,7 +30,7 @@ class VindiBolepixGateway extends VindiPaymentGateway
         $this->id                   = 'vindi-bolepix';
         $this->icon                 = apply_filters('vindi_woocommerce_bolepix_icon', '');
         $this->method_title         = __('Vindi - Bolepix', VINDI);
-        $this->method_description   = __('Aceitar pagamentos via Bolepix bancário utilizando a Vindi.', VINDI);
+        $this->method_description   = __('Aceitar pagamentos via Bolepix utilizando a Vindi.', VINDI);
         $this->has_fields           = true;
         $this->supports             = array(
             'subscriptions',
