@@ -187,8 +187,8 @@ class WcVindiPayment extends AbstractInstance
   {
     $methods[] = new VindiCreditGateway($this->settings, $this->controllers);
     $methods[] = new VindiBankSlipGateway($this->settings, $this->controllers);
-        $methods[] = new VindiPixGateway($this->settings, $this->controllers);
-        $methods[] = new VindiBolepixGateway($this->settings, $this->controllers);
+    $methods[] = new VindiPixGateway($this->settings, $this->controllers);
+    $methods[] = new VindiBolepixGateway($this->settings, $this->controllers);
 
     return $methods;
   }
