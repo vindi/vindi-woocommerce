@@ -78,10 +78,8 @@ class PlansController
         $post_status = get_post_status($post_id);
         $vindi_plan_id = get_post_meta($post_id, 'vindi_plan_id', true);
 
-        if (!$recreated && $post_status != 'publish') {
-            if (!empty($vindi_plan_id)) {
-                return $this->update($post_id);
-            }
+        if (!$recreated && $post_status != 'publish' || !empty($vindi_plan_id)) {
+            return $this->update($post_id);
         }
 
     $product = wc_get_product($post_id);

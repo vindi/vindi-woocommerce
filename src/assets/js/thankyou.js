@@ -33,16 +33,16 @@ class Thankyou {
   }
 
   copyPixLine() {
-    const btn = document.querySelector('#copy_vindi_pix_code');
+    const buttons = document.querySelectorAll('.copy_vindi_line');
 
-    if(btn) {
+    buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
         const text = btn.getAttribute('data-code');
         if (navigator?.clipboard?.writeText) {
           navigator.clipboard.writeText(text);
         }
       });
-    }
+    })
   }
 }
 

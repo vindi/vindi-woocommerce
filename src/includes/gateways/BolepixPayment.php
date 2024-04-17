@@ -3,14 +3,14 @@
 namespace VindiPaymentGateways;
 
 /**
- * Vindi Payment PIX Gateway class.
+ * Vindi Payment Bolepix Gateway class.
  *
  * Extended by individual payment gateways to handle payments.
  *
- * @class   VindiPixGateway
+ * @class   VindiBolepixGateway
  * @extends VindiPaymentGateway
  */
-class VindiPixGateway extends VindiPaymentGateway
+class VindiBolepixGateway extends VindiPaymentGateway
 {
     /**
      * @var VindiSettings
@@ -27,10 +27,10 @@ class VindiPixGateway extends VindiPaymentGateway
      */
     public function __construct(VindiSettings $vindiSettings, VindiControllers $controllers)
     {
-        $this->id                   = 'vindi-pix';
-        $this->icon                 = apply_filters('vindi_woocommerce_pix_icon', '');
-        $this->method_title         = __('Vindi - PIX', VINDI);
-        $this->method_description   = __('Aceitar pagamentos via PIX utilizando a Vindi.', VINDI);
+        $this->id                   = 'vindi-bolepix';
+        $this->icon                 = apply_filters('vindi_woocommerce_bolepix_icon', '');
+        $this->method_title         = __('Vindi - Bolepix', VINDI);
+        $this->method_description   = __('Aceitar pagamentos via Bolepix utilizando a Vindi.', VINDI);
         $this->has_fields           = true;
         $this->supports             = array(
             'subscriptions',
@@ -48,7 +48,7 @@ class VindiPixGateway extends VindiPaymentGateway
         );
         $this->init_form_fields();
         $this->init_settings();
-        add_action('woocommerce_view_order', array(&$this, 'show_pix_download'), -10, 1);
+        add_action('woocommerce_view_order', array(&$this, 'show_bolepix_download'), -10, 1);
         add_action('woocommerce_thankyou_' . $this->id, array(&$this, 'thank_you_page'));
         parent::__construct($vindiSettings, $controllers);
     }
@@ -59,7 +59,7 @@ class VindiPixGateway extends VindiPaymentGateway
      */
     public function type()
     {
-        return 'pix';
+        return 'bolepix';
     }
 
     public function init_form_fields()
@@ -68,7 +68,7 @@ class VindiPixGateway extends VindiPaymentGateway
         $this->form_fields = array(
             'enabled'         => array(
                 'title'       => __('Habilitar/Desabilitar', VINDI),
-                'label'       => __('Habilitar pagamento por PIX com Vindi', VINDI),
+                'label'       => __('Habilitar pagamento por Bolepix com Vindi', VINDI),
                 'type'        => 'checkbox',
                 'default'     => 'no',
             ),
@@ -76,7 +76,7 @@ class VindiPixGateway extends VindiPaymentGateway
                 'title'       => __('Título', VINDI),
                 'type'        => 'text',
                 'description' => __('Título que o cliente verá durante o processo de pagamento.', VINDI),
-                'default'     => __('PIX', VINDI),
+                'default'     => __('Bolepix', VINDI),
             )
         );
     }
@@ -84,7 +84,7 @@ class VindiPixGateway extends VindiPaymentGateway
     # Essa função é responsável por verificar a compra que está sendo feita
     # No caso de uma assinatura única, o $order[0] não existirá e retornará ela mesmo
     # Issue: https://github.com/vindi/vindi-woocommerce/issues/75
-    public function pix_quantity_to_render($order)
+    public function bolepix_quantity_to_render($order)
     {
         if (!isset($order[0])) {
             return $order;
@@ -108,7 +108,7 @@ class VindiPixGateway extends VindiPaymentGateway
             $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
         }
 
-        $this->vindi_settings->get_template('pix-checkout.html.php', compact('is_trial', 'is_single_order'));
+        $this->vindi_settings->get_template('bolepix-checkout.html.php', compact('is_trial', 'is_single_order'));
     }
 
     public function thank_you_page($order_id)
@@ -117,28 +117,28 @@ class VindiPixGateway extends VindiPaymentGateway
         $vindi_order = [];
         $order_to_iterate = 0;
 
-        if ($order->get_payment_method() == 'vindi-pix') {
+        if ($order->get_payment_method() == 'vindi-bolepix') {
             $vindi_order = $order->get_meta('vindi_order', true);
-            $order_to_iterate = $this->pix_quantity_to_render($vindi_order);
+            $order_to_iterate = $this->bolepix_quantity_to_render($vindi_order);
             $this->vindi_settings->get_template(
-                'pix-download.html.php',
+                'bolepix-download.html.php',
                 compact('vindi_order', 'order_to_iterate', 'order_id')
             );
         }
     }
 
-    public function show_pix_download($order_id)
+    public function show_bolepix_download($order_id)
     {
         $order = wc_get_order($order_id);
         $vindi_order = [];
         $order_to_iterate = 0;
 
-        if ($order->get_payment_method() == 'vindi-pix') {
+        if ($order->get_payment_method() == 'vindi-bolepix') {
             $vindi_order = $order->get_meta('vindi_order', true);
-            $order_to_iterate = $this->pix_quantity_to_render($vindi_order);
+            $order_to_iterate = $this->bolepix_quantity_to_render($vindi_order);
             if (!$order->is_paid() && !$order->has_status('cancelled')) {
                 $this->vindi_settings->get_template(
-                    'pix-download.html.php',
+                    'bolepix-download.html.php',
                     compact('vindi_order', 'order_to_iterate', 'order_id')
                 );
             }
