@@ -2,7 +2,7 @@ engines:
   duplication:
     enabled: false
   csslint:
-    enabled: true
+    enabled: false
   phpmd:
     enabled: true
     checks:

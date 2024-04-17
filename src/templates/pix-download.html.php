@@ -33,9 +33,11 @@ if (!defined('ABSPATH')) {
                             <div>
                                 <?php
                                     $now = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
-                                    $pix_epiration = new DateTime($subscription['bill']['pix_expiration']);
-
-                                if ($pix_epiration < $now && $key !== 'single_payment') :?>
+                                    $pix_expiration = new DateTime(
+                                        $subscription['bill']['pix_expiration'],
+                                        new DateTimeZone('America/Sao_Paulo')
+                                    );
+                                if ($pix_expiration < $now && $key !== 'single_payment') :?>
                                     <div style="display: flex;
                                                 flex-direction: column;
                                                 align-items: center;
@@ -83,7 +85,7 @@ if (!defined('ABSPATH')) {
                                                 position: relative;
                                                 right: 75px;">
                                         <a id="copy_vindi_pix_code"
-                                            class="download_button"
+                                            class="download_button copy_vindi_line"
                                             data-code="<?php echo esc_attr($subscription['bill']['pix_code']); ?>">
                                                 <?php _e('Copiar código', VINDI); ?>
                                                 <svg color="#006DFF"
@@ -110,23 +112,6 @@ if (!defined('ABSPATH')) {
                                 <?php endif; ?>
                             </div>
                         </div>
-                <?php else : ?>
-                    <?php foreach ($subscription as $item) : ?>
-                        <?php if (is_array($item)
-                                    && array_key_exists('product', $item)
-                                    && !in_array($item['bill']['status'], array('paid', 'canceled'))) : ?>
-                            <div class="charge">
-                                <span class="product_title">
-                                    <?php echo $item['product']; ?>
-                                </span>
-                                <a class="download_button"
-                                   href="<?php echo esc_url($item['bill']['bank_slip_url']); ?>"
-                                   target="_blank">
-                                    <?php _e('Baixar boleto', VINDI); ?>
-                                </a>
-                            </div>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
                 <?php endif; ?>
     <?php endforeach; ?>
         </div>

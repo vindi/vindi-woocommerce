@@ -40,9 +40,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 
 == Changelog ==
 
- = 1.2.8 - 10/04/2024 =
- -Lançamento da versão de patch
- - **Melhoria:** Os webhook tiveram melhorias em seus retornos
+= 1.2.8 - 05/04/2024 =
+-Lançamento da versão de patch.
+- **Melhoria:** Adiciona o método de pagamento BolePix
+- **Correção:** Bug ao atualizar produtos do tipo assinatura
+- **Melhoria:** Os webhook tiveram melhorias em seus retornos
 
 = 1.2.7 - 04/04/2024 =
 -Lançamento da versão de patch.
