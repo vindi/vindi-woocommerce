@@ -304,7 +304,6 @@ class VindiWebhooks
       $bill = $this->routes->findBillById($data->charge->bill->id);
       $vindi_subscription_id = isset($bill['subscription']) ? $bill['subscription']['id'] : null;
       $cycle = isset($bill['period']) ? $bill['period']['cycle'] : null;
-      //Analisar o uso dessa variavel
       $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
     }
     $message = $this->create_error_message('charge_rejected', $e->getMessage(), $data->charge->bill->id);
@@ -330,9 +329,7 @@ class VindiWebhooks
         return wp_send_json(['message' => 'Não foi possível cancelar a assinatura devido ao seu status atual.'], 422);
       }
       if ($this->vindi_settings->dependencies->is_wc_memberships_active()) {
-        $subscription->update_status('pending-cancel');
-        $this->vindi_settings->logger->log(sprintf(__('Assinatura atualizada para cancelamento pendente.', VINDI)));
-        return wp_send_json(['message' => 'Assinatura atualizada para cancelamento pendente.'], 200);
+        return $this->handle_pending_cancel($subscription);
       }
       $synchronized_subscription = $this->routes->getSubscription($data->subscription->id);
       if ($synchronized_subscription['status'] === 'canceled') {
@@ -343,14 +340,17 @@ class VindiWebhooks
       $this->vindi_settings->logger->log(sprintf(__('Ocorreu um erro no cancelamento da assinatura', VINDI)));
       return wp_send_json(['message' => 'Ocorreu erro na assinatura'], 422);
     } catch (\Exception $e) {
-      $mensagem = print_r(array(
-        'event' => 'subscription_canceled',
-        'mensagem' => $e->getMessage(),
-        "subscriptionId" => $data->subscription->id
-      ), true);
-      $this->vindi_settings->logger->log(sprintf(__('WEBHOOK ERROR: %s', VINDI), $mensagem));
+      $message = $this->create_error_message('subscription_canceled', $e->getMessage(), $data->subscription->id);
+      $this->vindi_settings->logger->log(sprintf(__('WEBHOOK ERROR: %s', VINDI), $message));
       return wp_send_json(['message' => 'Ocorreu erro no cancelamento da assinatura'], 500);
     }
+  }
+
+  private function handle_pending_cancel($subscription)
+  {
+    $subscription->update_status('pending-cancel');
+    $this->vindi_settings->logger->log(sprintf(__('Assinatura atualizada para cancelamento pendente.', VINDI)));
+    return wp_send_json(['message' => 'Assinatura atualizada para cancelamento pendente.'], 200);
   }
 
   /**
