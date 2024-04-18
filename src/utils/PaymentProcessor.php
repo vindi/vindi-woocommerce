@@ -1010,7 +1010,9 @@ class VindiPaymentProcessor
      */
     protected function create_subscription($customer_id, $order_item)
     {
-        if ($order_item == null || empty($order_item)) { return; }
+        if ($order_item == null || empty($order_item)) {
+            return;
+        }
         $data = [];
         $data['customer_id'] = $customer_id;
         $data['payment_method_code'] = $this->payment_method_code();
@@ -1025,8 +1027,7 @@ class VindiPaymentProcessor
         $data['product_items'] = $this->get_build_products($data, $order_item);
         $subscription = $this->routes->createSubscription($data);
         if (!isset($subscription['id']) || empty($subscription['id'])) {
-            $message = sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error);
-            throw new Exception($message);
+            throw new Exception(sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error));
         }
         $subscription['wc_id'] = $wc_subscription_id;
         if (isset($subscription['bill']['id'])) {
