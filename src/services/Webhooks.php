@@ -123,6 +123,7 @@ class VindiWebhooks
       'bank_slip_url' => $renew_infos['bill_print_url'],
     );
         $order->update_meta_data('vindi_order', $order_post_meta);
+        $order->save();
     $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
 
     // We've already processed the renewal
@@ -202,6 +203,7 @@ class VindiWebhooks
         $order->update_status($new_status, __('O Pagamento foi realizado com sucesso pela Vindi.', VINDI));
         $this->update_next_payment($data);
     }
+        $order->save();
   }
 
   /**

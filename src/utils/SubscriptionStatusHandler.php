@@ -169,6 +169,7 @@ class VindiSubscriptionStatusHandler
         }
         
         $order->update_meta_data('vindi_order', $vindi_order);
+        $order->save();
 
         if ($single_payment_bill_id) {
             $this->routes->deleteBill($single_payment_bill_id);
