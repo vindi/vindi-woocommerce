@@ -292,13 +292,16 @@ class VindiWebhooks
         pois a fatura #%s não está mais pendente!', $data->charge->bill->id], 404);
       }
     } catch (Exception $e) {
-      $this->handle_exception($e, $data);
+      $this->handle_exception_rejected($e, $data);
       return wp_send_json(['mensagem' => 'Ocorreu erro na alteração da assinatura'], 500);
     }
   }
 
-
-  private function handle_exception($e, $data)
+  /**
+   * Process handle_exception_rejected
+   * @param $e array, $data array
+   */
+  private function handle_exception_rejected($e, $data)
   {
     if ($e->getCode() == 2) {
       $bill = $this->routes->findBillById($data->charge->bill->id);
@@ -306,8 +309,7 @@ class VindiWebhooks
       $cycle = isset($bill['period']) ? $bill['period']['cycle'] : null;
       $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
     }
-    $message = $this->create_error_message('charge_rejected', $e->getMessage(), $data->charge->bill->id);
-    $this->vindi_settings->logger->log(sprintf(__('WEBHOOK ERROR: %s', VINDI), $message));
+    $this->handle_exception('charge_rejected', $e->getMessage(), $data->charge->bill->id);
   }
 
   /**
@@ -318,14 +320,7 @@ class VindiWebhooks
   {
     try {
       $subscription = $this->find_subscription_by_id($data->subscription->code);
-      if (
-        $this->vindi_settings->get_synchronism_status() && ($subscription->has_status('cancelled')
-          || $subscription->has_status('pending-cancel') || $subscription->has_status('on-hold'))
-        || $this->routes->hasPendingSubscriptionBills($data->subscription->id)
-      ) {
-        $this->vindi_settings->logger->log(
-          sprintf(__('Não foi possível cancelar a assinatura devido ao seu status atual.', VINDI))
-        );
+      if ($this->subscription_cancellation_not_possible($subscription, $data)) {
         return wp_send_json(['message' => 'Não foi possível cancelar a assinatura devido ao seu status atual.'], 422);
       }
       if ($this->vindi_settings->dependencies->is_wc_memberships_active()) {
@@ -340,10 +335,20 @@ class VindiWebhooks
       $this->vindi_settings->logger->log(sprintf(__('Ocorreu um erro no cancelamento da assinatura', VINDI)));
       return wp_send_json(['message' => 'Ocorreu erro na assinatura'], 422);
     } catch (\Exception $e) {
-      $message = $this->create_error_message('subscription_canceled', $e->getMessage(), $data->subscription->id);
-      $this->vindi_settings->logger->log(sprintf(__('WEBHOOK ERROR: %s', VINDI), $message));
+      $this->handle_exception('subscription_canceled', $e->getMessage(), $data->subscription->id);
       return wp_send_json(['message' => 'Ocorreu erro no cancelamento da assinatura'], 500);
     }
+  }
+
+  private function subscription_cancellation_not_possible($subscription, $data)
+  {
+    return $this->vindi_settings->get_synchronism_status()
+      && (
+        $subscription->has_status('cancelled')
+        || $subscription->has_status('pending-cancel')
+        || $subscription->has_status('on-hold')
+      )
+      || $this->routes->hasPendingSubscriptionBills($data->subscription->id);
   }
 
   private function handle_pending_cancel($subscription)
@@ -379,19 +384,20 @@ class VindiWebhooks
       }
       return wp_send_json(['message' => 'A assinatura não pôde ser reativada.'], 422);
     } catch (\Exception $e) {
-      $mensagem = $this->create_error_message('subscription_reactivated', $e->getMessage(), $data->subscription->id);
-      $this->vindi_settings->logger->log(sprintf(__('WEBHOOK ERROR: %s', VINDI), $mensagem));
+      $this->handle_exception('subscription_reactivated', $e->getMessage(), $data->subscription->id);
       return wp_send_json(['message' => 'Erro durante o processamento da reativação da assinatura.'], 500);
     }
   }
 
-  private function create_error_message($event, $message, $id)
+  private function handle_exception($event, $error, $data)
   {
-    return print_r([
+    $message = print_r([
       'event' => $event,
-      'ensagem' => $message,
-      "id" => $id,
+      'mensagem' => $error,
+      "id" => $data,
     ], true);
+
+    $this->vindi_settings->logger->log(sprintf(__('WEBHOOK ERROR: %s', VINDI), $message));
   }
 
   /**
