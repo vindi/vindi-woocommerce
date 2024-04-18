@@ -148,8 +148,7 @@ class VindiWebhooks
         'bill_id' => $data->bill->id,
         'bill_print_url' => $data->bill->charges[0]->print_url
       ];
-      if (!$this->subscription_has_order_in_cycle(
-        $renew_infos['vindi_subscription_id'],
+      if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'],
         $renew_infos['cycle']
       )) {
         $this->subscription_renew($renew_infos);
@@ -158,12 +157,7 @@ class VindiWebhooks
       }
       return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
     } catch (\Exception $e) {
-      $mensagem = print_r(array(
-        'event' => 'bill_created',
-        'mensagem' => $e->getMessage(),
-        "billId" => $data->bill->id
-      ), true);
-      $this->vindi_settings->logger->log(sprintf(__('WEBHOOK ERROR: %s', VINDI), $mensagem));
+      $this->handle_exception('bill_created', $e->getMessage(),$data->bill->id);
       return wp_send_json(['message' => 'Erro durante o processamento da fatura.'], 500);
     }
   }
