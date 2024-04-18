@@ -1010,9 +1010,7 @@ class VindiPaymentProcessor
      */
     protected function create_subscription($customer_id, $order_item)
     {
-        if($order_item == null || empty($order_item)) {
-            return;
-        }
+        if($order_item == null || empty($order_item)) return;
         $data = [];
         $data['customer_id'] = $customer_id;
         $data['payment_method_code'] = $this->payment_method_code();
