@@ -23,38 +23,38 @@ class VindiWebhooks
    * @param VindiSettings $vindi_settings
    */
     public function __construct(VindiSettings $vindi_settings)
-  {
-    $this->vindi_settings = $vindi_settings;
-    $this->routes = $vindi_settings->routes;
-  }
+    {
+      $this->vindi_settings = $vindi_settings;
+      $this->routes = $vindi_settings->routes;
+    }
 
   /**
    * Handle incoming webhook.
    */
     public function handle()
-  {
-    $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
-    $raw_body = file_get_contents('php://input');
-    $body = json_decode($raw_body);
+    {
+        $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
+        $raw_body = file_get_contents('php://input');
+        $body = json_decode($raw_body);
 
-    if (!$this->validate_access_token($token)) {
-      http_response_code(403);
-      die('invalid access token');
+        if (!$this->validate_access_token($token)) {
+            http_response_code(403);
+            die('invalid access token');
+        }
+
+        $this->vindi_settings->logger->log(sprintf(__('Novo Webhook chamado: %s', VINDI), $raw_body));
+
+        try {
+            $this->process_event($body);
+        } catch (Exception $e) {
+            $this->vindi_settings->logger->log($e->getMessage());
+
+            if (2 === $e->getCode()) {
+                header("HTTP/1.0 422 Unprocessable Entity");
+                die($e->getMessage());
+            }
+        }
     }
-
-    $this->vindi_settings->logger->log(sprintf(__('Novo Webhook chamado: %s', VINDI), $raw_body));
-
-    try {
-      $this->process_event($body);
-    } catch (Exception $e) {
-      $this->vindi_settings->logger->log($e->getMessage());
-
-      if (2 === $e->getCode()) {
-        header("HTTP/1.0 422 Unprocessable Entity");
-        die($e->getMessage());
-      }
-    }
-  }
 
   /**
    * @param string $token
@@ -150,16 +150,16 @@ class VindiWebhooks
           ];
             if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'],
             $renew_infos['cycle']
-          )) {
+            )) {
                     $this->subscription_renew($renew_infos);
                     $this->update_next_payment($data);
                     return wp_send_json(['message' => 'Fatura emitida corretamente'], 200);
-          }
+            }
             return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
-        } catch (\Exception $e) {
+      } catch (\Exception $e) {
             $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
             return wp_send_json(['message' => 'Erro durante o processamento da fatura.'], 500);
-      }
+    }
   }
 
   /**
@@ -177,31 +177,29 @@ class VindiWebhooks
               $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
             }
 
-            $vindi_order = get_post_meta($order->id, 'vindi_order', true);
-            if (!is_array($vindi_order)) {
-                return wp_send_json(['message' => 'Pedido Vindi não encontrado.'], 422);
+                $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+                if (!is_array($vindi_order)) {
+                    return wp_send_json(['message' => 'Pedido Vindi não encontrado.'], 422);
             }
 
             if (empty($data->bill->subscription)) {
-                $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
+                    $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
             }
-              $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
-
-              update_post_meta($order->id, 'vindi_order', $vindi_order);
-
-            $vindi_order_info = end($vindi_order);
+                $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
+                update_post_meta($order->id, 'vindi_order', $vindi_order);
+                $vindi_order_info = end($vindi_order);
 
             if ($vindi_order_info['bill']['status'] == 'paid') {
                 $new_status = $this->vindi_settings->get_return_status();
-                $order->update_status($new_status, __('O pagamento foi processado com sucesso pela Vindi.', VINDI));
-                $this->update_next_payment($data);
-                return wp_send_json(['message' => 'Processamento de pagamento de fatura concluído.'], 200);
+                    $order->update_status($new_status, __('O pagamento foi processado com sucesso pela Vindi.', VINDI));
+                    $this->update_next_payment($data);
+                    return wp_send_json(['message' => 'Processamento de pagamento de fatura concluído.'], 200);
             }
-            return wp_send_json(['message' => 'Não foi possível processar o pagamento da fatura'], 422);
-        } catch (\Exception $e) {
+                return wp_send_json(['message' => 'Não foi possível processar o pagamento da fatura'], 422);
+      } catch (\Exception $e) {
             $this->handle_exception('bill_paid', $e->getMessage(), $data->bill->code);
             return wp_send_json(['message' => 'Erro durante o processamento do pagamento da fatura.'], 500);
-        }
+      }
   }
 
   /**
@@ -220,15 +218,10 @@ class VindiWebhooks
       }
 
       $order->update_status('cancelled', __('Pagamento cancelado dentro da Vindi!', VINDI));
-      return wp_send_json(['message' => 'Pagamento cancelado dentro da Vindi!'], 200);
+            return wp_send_json(['message' => 'Pagamento cancelado dentro da Vindi!'], 200);
     } catch (Exception $e) {
-      $mensagem = print_r(array(
-        'event' => 'bill_canceled',
-        'mensagem' => $e->getMessage(),
-        "billId" => $data->bill->code
-      ), true);
-      $this->vindi_settings->logger->log(sprintf(__('WEBHOOK ERROR: %s', VINDI), $mensagem));
-      return wp_send_json(['message' => 'Erro durante o processamento de cancelamento da fatura.'], 500);
+            $this->handle_exception('bill_canceled', $e->getMessage(), $data->bill->code);
+            return wp_send_json(['message' => 'Erro durante o processamento de cancelamento da fatura.'], 500);
     }
   }
 
@@ -268,36 +261,36 @@ class VindiWebhooks
    * Process charge_rejected event from webhook
    * @param $data array
    */
-  private function charge_rejected($data)
-  {
-    try {
-      $order = $this->find_order_by_bill_id($data->charge->bill->id);
-      if (!empty($order) && $order->get_status() == 'pending') {
-        $order->update_status('failed', __('Pagamento rejeitado!', VINDI));
-        return wp_send_json(['mensagem' => 'O pagamento foi rejeitado com sucesso.'], 200);
+    private function charge_rejected($data)
+    {
+      try {
+            $order = $this->find_order_by_bill_id($data->charge->bill->id);
+            if (!empty($order) && $order->get_status() == 'pending') {
+                $order->update_status('failed', __('Pagamento rejeitado!', VINDI));
+                return wp_send_json(['mensagem' => 'O pagamento foi rejeitado com sucesso.'], 200);
+            }
+            return wp_send_json(['mensagem' => 'Erro ao trocar status da fatura para "failed"
+              pois a fatura #%s não está mais pendente!', $data->charge->bill->id], 404);
+      } catch (Exception $e) {
+            $this->handle_exception_rejected($e, $data);
+            return wp_send_json(['mensagem' => 'Ocorreu erro na alteração da assinatura'], 500);
       }
-      return wp_send_json(['mensagem' => 'Erro ao trocar status da fatura para "failed"
-        pois a fatura #%s não está mais pendente!', $data->charge->bill->id], 404);
-    } catch (Exception $e) {
-      $this->handle_exception_rejected($e, $data);
-      return wp_send_json(['mensagem' => 'Ocorreu erro na alteração da assinatura'], 500);
     }
-  }
 
   /**
    * Process handle_exception_rejected
    * @param $e array, $data array
    */
-  private function handle_exception_rejected($event, $data)
-  {
-    if ($event->getCode() == 2) {
-      $bill = $this->routes->findBillById($data->charge->bill->id);
-      $vindi_subscription_id = isset($bill['subscription']) ? $bill['subscription']['id'] : null;
-      $cycle = isset($bill['period']) ? $bill['period']['cycle'] : null;
-      $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
+    private function handle_exception_rejected($event, $data)
+    {
+        if ($event->getCode() == 2) {
+            $bill = $this->routes->findBillById($data->charge->bill->id);
+            $vindi_subscription_id = isset($bill['subscription']) ? $bill['subscription']['id'] : null;
+            $cycle = isset($bill['period']) ? $bill['period']['cycle'] : null;
+            $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
+        }
+        $this->handle_exception('charge_rejected', $event->getMessage(), $data->charge->bill->id);
     }
-    $this->handle_exception('charge_rejected', $event->getMessage(), $data->charge->bill->id);
-  }
 
   /**
    * Process subscription_canceled event from webhook
@@ -314,7 +307,7 @@ class VindiWebhooks
         return $this->handle_pending_cancel($subscription);
       }
       $synchronized_subscription = $this->routes->getSubscription($data->subscription->id);
-      if ($synchronized_subscription['status'] === 'canceled') {
+        if ($synchronized_subscription['status'] === 'canceled') {
         $subscription->update_status('cancelled');
         $this->vindi_settings->logger->log(sprintf(__('Assinatura cancelado.', VINDI)));
         return wp_send_json(['mensagem' => 'Assinatura cancelado.'], 200);
