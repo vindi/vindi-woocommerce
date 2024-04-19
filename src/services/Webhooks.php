@@ -197,7 +197,7 @@ class VindiWebhooks
       } catch (\Exception $e) {
             $this->handle_exception('bill_paid', $e->getMessage(), $data->bill->code);
             return wp_send_json(['message' => 'Erro durante o processamento do pagamento da fatura.'], 500);
-        }
+      }
   }
 
   /**
