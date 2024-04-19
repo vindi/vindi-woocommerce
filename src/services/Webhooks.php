@@ -97,32 +97,32 @@ class VindiWebhooks
    * Process bill_created event from webhook
    * @param $data array
    */
-  private function bill_created($data)
-  {
-    try {
-      if (empty($data->bill->subscription)) {
-        return;
-      }
-      $renew_infos = [
-        'wc_subscription_id' => $data->bill->subscription->code,
-        'vindi_subscription_id' => $data->bill->subscription->id,
-        'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
-        'cycle' => $data->bill->period->cycle,
-        'bill_status' => $data->bill->status,
-        'bill_id' => $data->bill->id,
-        'bill_print_url' => $data->bill->charges[0]->print_url
-      ];
+    private function bill_created($data)
+    {
+        try {
+            if (empty($data->bill->subscription)) {
+                return;
+            }
+            $renew_infos = [
+                'wc_subscription_id' => $data->bill->subscription->code,
+                'vindi_subscription_id' => $data->bill->subscription->id,
+                'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
+                'cycle' => $data->bill->period->cycle,
+                'bill_status' => $data->bill->status,
+                'bill_id' => $data->bill->id,
+                'bill_print_url' => $data->bill->charges[0]->print_url
+            ];
             if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'], $renew_infos['cycle'])) {
-        $this->subscription_renew($renew_infos);
-        $this->update_next_payment($data);
+                $this->subscription_renew($renew_infos);
+                $this->update_next_payment($data);
                 return wp_send_json(['message' => 'Fatura emitida corretamente'], 200);
             }
             return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
         } catch (\Exception $e) {
             $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
             return wp_send_json(['message' => 'Erro durante o processamento da fatura.'], 500);
+        }
     }
-  }
 
   /**
    * Process subscription_renew event from webhook
