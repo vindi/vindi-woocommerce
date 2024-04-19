@@ -366,6 +366,7 @@ class VindiPaymentProcessor
         }
 
         $this->order->update_meta_data('vindi_order', $order_post_meta);
+        $this->order->save();
         WC()->session->__unset('current_payment_profile');
         WC()->session->__unset('current_customer');
         remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
@@ -1009,7 +1010,7 @@ class VindiPaymentProcessor
      */
     protected function create_subscription($customer_id, $order_item)
     {
-        if($order_item == null || empty($order_item)) {
+        if ($order_item == null || empty($order_item)) {
             return;
         }
         $data = [];
@@ -1026,12 +1027,12 @@ class VindiPaymentProcessor
         $data['product_items'] = $this->get_build_products($data, $order_item);
         $subscription = $this->routes->createSubscription($data);
         if (!isset($subscription['id']) || empty($subscription['id'])) {
-            $message = sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error);
-            throw new Exception($message);
+            throw new Exception(sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error));
         }
         $subscription['wc_id'] = $wc_subscription_id;
         if (isset($subscription['bill']['id'])) {
             $this->order->update_meta_data('vindi_bill_id', $subscription['bill']['id']);
+            $this->order->save();
         }
         return $subscription;
     }
@@ -1099,7 +1100,7 @@ class VindiPaymentProcessor
 
         if ($bill['id']) {
             $this->logger->log(sprintf('Update Bill: %s', json_encode($bill)));
-            $this->order->update_meta_data('vindi_bill_id', $bill['id']);
+            $this->order->save();
         }
         return $bill;
     }
