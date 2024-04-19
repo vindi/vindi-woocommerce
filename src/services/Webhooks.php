@@ -165,42 +165,42 @@ class VindiWebhooks
    * Process bill_paid event from webhook
    * @param $data array
    */
-  private function bill_paid($data)
-  {
-      try {
+    private function bill_paid($data)
+    {
+        try {
             if (empty($data->bill->subscription)) {
               $order = $this->find_order_by_id($data->bill->code);
             } else {
-              $vindi_subscription_id = $data->bill->subscription->id;
-              $cycle = $data->bill->period->cycle;
-              $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
+                $vindi_subscription_id = $data->bill->subscription->id;
+                $cycle = $data->bill->period->cycle;
+                $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
             }
 
-                $vindi_order = get_post_meta($order->id, 'vindi_order', true);
-                if (!is_array($vindi_order)) {
-                    return wp_send_json(['message' => 'Pedido Vindi não encontrado.'], 422);
-                }
+            $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+            if (!is_array($vindi_order)) {
+                return wp_send_json(['message' => 'Pedido Vindi não encontrado.'], 422);
+            }
 
             if (empty($data->bill->subscription)) {
-                    $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
+                $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
             }
-                $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
-                $order->update_meta_data('vindi_order', $vindi_order);
-                $order->save();
-                $vindi_order_info = end($vindi_order);
+            $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
+            $order->update_meta_data('vindi_order', $vindi_order);
+            $order->save();
+            $vindi_order_info = end($vindi_order);
 
             if ($vindi_order_info['bill']['status'] == 'paid') {
                 $new_status = $this->vindi_settings->get_return_status();
-                    $order->update_status($new_status, __('O pagamento foi processado com sucesso pela Vindi.', VINDI));
-                    $this->update_next_payment($data);
-                    return wp_send_json(['message' => 'Processamento de pagamento de fatura concluído.'], 200);
+                $order->update_status($new_status, __('O pagamento foi processado com sucesso pela Vindi.', VINDI));
+                $this->update_next_payment($data);
+                return wp_send_json(['message' => 'Processamento de pagamento de fatura concluído.'], 200);
             }
-                return wp_send_json(['message' => 'Não foi possível processar o pagamento da fatura'], 422);
-      } catch (\Exception $e) {
+            return wp_send_json(['message' => 'Não foi possível processar o pagamento da fatura'], 422);
+        } catch (\Exception $e) {
             $this->handle_exception('bill_paid', $e->getMessage(), $data->bill->code);
             return wp_send_json(['message' => 'Erro durante o processamento do pagamento da fatura.'], 500);
-      }
-  }
+        }
+    }
 
   /**
    * Process bill_canceled event from webhook
