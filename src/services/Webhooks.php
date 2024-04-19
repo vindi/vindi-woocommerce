@@ -312,7 +312,7 @@ class VindiWebhooks
                 return wp_send_json(['mensagem' => 'Assinatura cancelado.'], 200);
             }
             $this->vindi_settings->logger->log(sprintf(__('Ocorreu um erro no cancelamento da assinatura', VINDI)));
-            return wp_send_json(['mensagem' => 'Ocorreu erro na assinatura'], 422);
+            wp_send_json(['mensagem' => 'Ocorreu erro na assinatura'], 422);
         } catch (\Exception $e) {
             $this->handle_exception('subscription_canceled', $e->getMessage(), $data->subscription->id);
             $response = ['mensagem' => 'Ocorreu erro no cancelamento da assinatura'];
