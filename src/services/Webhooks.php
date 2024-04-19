@@ -358,12 +358,12 @@ class VindiWebhooks
                 $status_available = array('processing', 'completed', 'on-hold');
                 if (in_array($order->get_status(), $status_available)) {
                     $subscription->update_status(
-                      'active',
-                      sprintf(__('Subscription %s reactivated by Vindi.', VINDI), $subscription_id)
-                  );
+                        'active',
+                        sprintf(__('Subscription %s reactivated by Vindi.', VINDI), $subscription_id)
+                    );
                     return wp_send_json(['message' => 'A assinatura foi reativada com sucesso.'], 200);
-              }
-              }
+                }
+            }
             return wp_send_json(['message' => 'A assinatura não pôde ser reativada.'], 422);
         } catch (\Exception $e) {
             $this->handle_exception('subscription_reactivated', $e->getMessage(), $data->subscription->id);
