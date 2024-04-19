@@ -93,6 +93,37 @@ class VindiWebhooks
     $this->vindi_settings->logger->log(__('Evento de teste do webhook.', VINDI));
   }
 
+    /**
+   * Process bill_created event from webhook
+   * @param $data array
+   */
+  private function bill_created($data)
+  {
+    try {
+      if (empty($data->bill->subscription)) {
+        return;
+      }
+      $renew_infos = [
+        'wc_subscription_id' => $data->bill->subscription->code,
+        'vindi_subscription_id' => $data->bill->subscription->id,
+        'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
+        'cycle' => $data->bill->period->cycle,
+        'bill_status' => $data->bill->status,
+        'bill_id' => $data->bill->id,
+        'bill_print_url' => $data->bill->charges[0]->print_url
+      ];
+            if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'], $renew_infos['cycle'])) {
+        $this->subscription_renew($renew_infos);
+        $this->update_next_payment($data);
+                return wp_send_json(['message' => 'Fatura emitida corretamente'], 200);
+            }
+            return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
+        } catch (\Exception $e) {
+            $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
+            return wp_send_json(['message' => 'Erro durante o processamento da fatura.'], 500);
+        }
+  }
+
   /**
    * Process subscription_renew event from webhook
    * @param $renew_infos array
@@ -130,37 +161,6 @@ class VindiWebhooks
   }
 
   /**
-   * Process bill_created event from webhook
-   * @param $data array
-   */
-  private function bill_created($data)
-  {
-    try {
-      if (empty($data->bill->subscription)) {
-        return;
-      }
-      $renew_infos = [
-        'wc_subscription_id' => $data->bill->subscription->code,
-        'vindi_subscription_id' => $data->bill->subscription->id,
-        'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
-        'cycle' => $data->bill->period->cycle,
-        'bill_status' => $data->bill->status,
-        'bill_id' => $data->bill->id,
-        'bill_print_url' => $data->bill->charges[0]->print_url
-      ];
-            if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'], $renew_infos['cycle'])) {
-        $this->subscription_renew($renew_infos);
-        $this->update_next_payment($data);
-                return wp_send_json(['message' => 'Fatura emitida corretamente'], 200);
-            }
-            return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
-        } catch (\Exception $e) {
-            $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
-            return wp_send_json(['message' => 'Erro durante o processamento da fatura.'], 500);
-          }
-  }
-
-  /**
    * Process bill_paid event from webhook
    * @param $data array
    */
@@ -194,10 +194,10 @@ class VindiWebhooks
                     return wp_send_json(['message' => 'Processamento de pagamento de fatura concluído.'], 200);
             }
                 return wp_send_json(['message' => 'Não foi possível processar o pagamento da fatura'], 422);
-      } catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->handle_exception('bill_paid', $e->getMessage(), $data->bill->code);
             return wp_send_json(['message' => 'Erro durante o processamento do pagamento da fatura.'], 500);
-      }
+        }
   }
 
   /**
@@ -313,12 +313,12 @@ class VindiWebhooks
             }
             $this->vindi_settings->logger->log(sprintf(__('Ocorreu um erro no cancelamento da assinatura', VINDI)));
             wp_send_json(['mensagem' => 'Ocorreu erro na assinatura'], 422);
-    } catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->handle_exception('subscription_canceled', $e->getMessage(), $data->subscription->id);
             $response = ['mensagem' => 'Ocorreu erro no cancelamento da assinatura'];
             wp_send_json($response, 500);
             return;
-    }
+        }
   }
 
     private function subscription_cancellation_not_possible($subscription, $data)
@@ -363,10 +363,10 @@ class VindiWebhooks
                   }
             }
             return wp_send_json(['message' => 'A assinatura não pôde ser reativada.'], 422);
-      } catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->handle_exception('subscription_reactivated', $e->getMessage(), $data->subscription->id);
             return wp_send_json(['message' => 'Erro durante o processamento da reativação da assinatura.'], 500);
-      }
+        }
     }
 
     private function handle_exception($event, $error, $data)
