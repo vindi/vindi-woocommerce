@@ -296,18 +296,18 @@ class VindiWebhooks
    * Process subscription_canceled event from webhook
    * @param $data array
    */
-  private function subscription_canceled($data)
-  {
-    try {
-      $subscription = $this->find_subscription_by_id($data->subscription->code);
+    private function subscription_canceled($data)
+    {
+        try {
+            $subscription = $this->find_subscription_by_id($data->subscription->code);
             if ($this->subscription_cancellation_not_possible($subscription, $data)) {
                 return wp_send_json(['mensagem' => 'Não foi possível cancelar a assinatura
-                 devido ao seu status atual.'], 422);
+                      devido ao seu status atual.'], 422);
             }
-      if ($this->vindi_settings->dependencies->is_wc_memberships_active()) {
+            if ($this->vindi_settings->dependencies->is_wc_memberships_active()) {
                 return $this->handle_pending_cancel($subscription);
-      }
-      $synchronized_subscription = $this->routes->getSubscription($data->subscription->id);
+            }
+            $synchronized_subscription = $this->routes->getSubscription($data->subscription->id);
             if ($synchronized_subscription['status'] === 'canceled') {
                 $subscription->update_status('cancelled');
                 $this->vindi_settings->logger->log(sprintf(__('Assinatura cancelado.', VINDI)));
@@ -321,7 +321,7 @@ class VindiWebhooks
             wp_send_json($response, 500);
             return;
         }
-  }
+    }
 
     private function subscription_cancellation_not_possible($subscription, $data)
     {
