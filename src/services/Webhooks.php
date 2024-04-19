@@ -118,7 +118,7 @@ class VindiWebhooks
                 return wp_send_json(['message' => 'Fatura emitida corretamente'], 200);
             }
             return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
-        } catch (\Exception $e) {
+    } catch (\Exception $e) {
             $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
             return wp_send_json(['message' => 'Erro durante o processamento da fatura.'], 500);
     }
@@ -185,7 +185,8 @@ class VindiWebhooks
                     $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
             }
                 $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
-                update_post_meta($order->id, 'vindi_order', $vindi_order);
+                $order->update_meta_data('vindi_order', $vindi_order);
+                $order->save();
                 $vindi_order_info = end($vindi_order);
 
             if ($vindi_order_info['bill']['status'] == 'paid') {
@@ -195,26 +196,10 @@ class VindiWebhooks
                     return wp_send_json(['message' => 'Processamento de pagamento de fatura concluído.'], 200);
             }
                 return wp_send_json(['message' => 'Não foi possível processar o pagamento da fatura'], 422);
-        } catch (\Exception $e) {
+      } catch (\Exception $e) {
             $this->handle_exception('bill_paid', $e->getMessage(), $data->bill->code);
             return wp_send_json(['message' => 'Erro durante o processamento do pagamento da fatura.'], 500);
-        }
-
-        if (!$order) {
-            return;
-        }
-        
-        $order->update_meta_data('vindi_order', $vindi_order);
-
-    // Order informations always be updated in last array element
-    $vindi_order_info = end($vindi_order);
-
-    if ($vindi_order_info['bill']['status'] == 'paid') {
-        $new_status = $this->vindi_settings->get_return_status();
-        $order->update_status($new_status, __('O Pagamento foi realizado com sucesso pela Vindi.', VINDI));
-        $this->update_next_payment($data);
-    }
-        $order->save();
+      }
   }
 
   /**
