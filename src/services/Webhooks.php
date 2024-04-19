@@ -154,7 +154,7 @@ class VindiWebhooks
                     return wp_send_json(['message' => 'Fatura emitida corretamente'], 200);
             }
             return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
-      } catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
             return wp_send_json(['message' => 'Erro durante o processamento da fatura.'], 500);
         }
@@ -194,7 +194,7 @@ class VindiWebhooks
                     return wp_send_json(['message' => 'Processamento de pagamento de fatura concluído.'], 200);
             }
                 return wp_send_json(['message' => 'Não foi possível processar o pagamento da fatura'], 422);
-      } catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->handle_exception('bill_paid', $e->getMessage(), $data->bill->code);
             return wp_send_json(['message' => 'Erro durante o processamento do pagamento da fatura.'], 500);
         }
@@ -301,7 +301,7 @@ class VindiWebhooks
             if ($this->subscription_cancellation_not_possible($subscription, $data)) {
                 return wp_send_json(['mensagem' => 'Não foi possível cancelar a assinatura
                  devido ao seu status atual.'], 422);
-      }
+            }
       if ($this->vindi_settings->dependencies->is_wc_memberships_active()) {
                 return $this->handle_pending_cancel($subscription);
       }
@@ -310,15 +310,15 @@ class VindiWebhooks
                 $subscription->update_status('cancelled');
                 $this->vindi_settings->logger->log(sprintf(__('Assinatura cancelado.', VINDI)));
                 return wp_send_json(['mensagem' => 'Assinatura cancelado.'], 200);
-        }
+            }
             $this->vindi_settings->logger->log(sprintf(__('Ocorreu um erro no cancelamento da assinatura', VINDI)));
             return wp_send_json(['mensagem' => 'Ocorreu erro na assinatura'], 422);
-        } catch (\Exception $e) {
+    } catch (\Exception $e) {
             $this->handle_exception('subscription_canceled', $e->getMessage(), $data->subscription->id);
             $response = ['mensagem' => 'Ocorreu erro no cancelamento da assinatura'];
             wp_send_json($response, 500);
             return;
-        }
+    }
   }
 
     private function subscription_cancellation_not_possible($subscription, $data)
@@ -346,8 +346,7 @@ class VindiWebhooks
     private function subscription_reactivated($data)
     {
       try {
-            if(
-             $this->vindi_settings->get_synchronism_status()
+            if ($this->vindi_settings->get_synchronism_status()
              && !$this->routes->hasPendingSubscriptionBills($data->subscription->id)
                 ) {
                     $subscription_id = $data->subscription->code;
@@ -355,16 +354,16 @@ class VindiWebhooks
                     $order_id = $subscription->get_last_order();
                     $order = $this->find_order_by_id($order_id);
                     $status_available = array('processing', 'completed', 'on-hold');
-              if (in_array($order->get_status(), $status_available)) {
+                  if (in_array($order->get_status(), $status_available)) {
                         $subscription->update_status(
-                        'active',
-                        sprintf(__('Subscription %s reactivated by Vindi.', VINDI), $subscription_id)
+                            'active',
+                            sprintf(__('Subscription %s reactivated by Vindi.', VINDI), $subscription_id)
                         );
                                     return wp_send_json(['message' => 'A assinatura foi reativada com sucesso.'], 200);
               }
             }
             return wp_send_json(['message' => 'A assinatura não pôde ser reativada.'], 422);
-        } catch (\Exception $e) {
+      } catch (\Exception $e) {
             $this->handle_exception('subscription_reactivated', $e->getMessage(), $data->subscription->id);
             return wp_send_json(['message' => 'Erro durante o processamento da reativação da assinatura.'], 500);
       }
@@ -450,7 +449,7 @@ class VindiWebhooks
       throw new Exception(sprintf(__('Pedido com bill_id #%s não encontrado!', VINDI), $bill_id), 2);
 
     return wc_get_order($query->post->ID);
-  }
+    }
 
   /**
    * Query orders containing cycle meta
@@ -461,7 +460,7 @@ class VindiWebhooks
    * @return WC_Order
    */
     private function find_order_by_subscription_and_cycle($subscription_id, $cycle)
-  {
+    {
     $query = $this->query_order_by_metas(array(
       array(
         'key' => 'vindi_order',
@@ -474,7 +473,7 @@ class VindiWebhooks
       throw new Exception(sprintf(__('Pedido da assinatura #%s para o ciclo #%s não encontrado!', VINDI), $subscriptionn_id, $cycle), 2);
 
     return wc_get_order($query->post->ID);
-  }
+    }
 
   /**
    * @param int $subscription_id
@@ -483,7 +482,7 @@ class VindiWebhooks
    * @return boolean
    */
     private function subscription_has_order_in_cycle($subscription_id, $cycle)
-  {
+    {
     $query = $this->query_order_by_metas(array(
       array(
         'key' => 'vindi_order',
@@ -493,7 +492,7 @@ class VindiWebhooks
     ));
 
     return $query->have_posts();
-  }
+    }
 
   /**
    * @param array $metas
@@ -501,7 +500,7 @@ class VindiWebhooks
    * @return WP_Query
    */
     private function query_order_by_metas(array $metas)
-  {
+    {
     $args = array(
       'post_type' => 'shop_order',
       'meta_query' => $metas,
@@ -509,7 +508,7 @@ class VindiWebhooks
     );
 
     return new WP_Query($args);
-  }
+    }
 
   /**
    * Update next payment schedule of subscription
