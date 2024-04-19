@@ -154,10 +154,10 @@ class VindiWebhooks
                     return wp_send_json(['message' => 'Fatura emitida corretamente'], 200);
             }
             return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
-      } catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
             return wp_send_json(['message' => 'Erro durante o processamento da fatura.'], 500);
-      }
+        }
   }
 
   /**
@@ -194,10 +194,10 @@ class VindiWebhooks
                     return wp_send_json(['message' => 'Processamento de pagamento de fatura concluído.'], 200);
             }
                 return wp_send_json(['message' => 'Não foi possível processar o pagamento da fatura'], 422);
-      } catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->handle_exception('bill_paid', $e->getMessage(), $data->bill->code);
             return wp_send_json(['message' => 'Erro durante o processamento do pagamento da fatura.'], 500);
-      }
+        }
   }
 
   /**
@@ -313,12 +313,12 @@ class VindiWebhooks
             }
             $this->vindi_settings->logger->log(sprintf(__('Ocorreu um erro no cancelamento da assinatura', VINDI)));
             return wp_send_json(['mensagem' => 'Ocorreu erro na assinatura'], 422);
-    } catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->handle_exception('subscription_canceled', $e->getMessage(), $data->subscription->id);
             $response = ['mensagem' => 'Ocorreu erro no cancelamento da assinatura'];
             wp_send_json($response, 500);
             return;
-    }
+        }
   }
 
     private function subscription_cancellation_not_possible($subscription, $data)
@@ -363,10 +363,10 @@ class VindiWebhooks
                   }
             }
             return wp_send_json(['message' => 'A assinatura não pôde ser reativada.'], 422);
-      } catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->handle_exception('subscription_reactivated', $e->getMessage(), $data->subscription->id);
             return wp_send_json(['message' => 'Erro durante o processamento da reativação da assinatura.'], 500);
-      }
+        }
     }
 
     private function handle_exception($event, $error, $data)
