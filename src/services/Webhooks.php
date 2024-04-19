@@ -313,7 +313,7 @@ class VindiWebhooks
             }
             $this->vindi_settings->logger->log(sprintf(__('Ocorreu um erro no cancelamento da assinatura', VINDI)));
             return wp_send_json(['mensagem' => 'Ocorreu erro na assinatura'], 422);
-        } catch (\Exception $e) {
+    } catch (\Exception $e) {
             $this->handle_exception('subscription_canceled', $e->getMessage(), $data->subscription->id);
             $response = ['mensagem' => 'Ocorreu erro no cancelamento da assinatura'];
             wp_send_json($response, 500);
@@ -363,7 +363,7 @@ class VindiWebhooks
                   }
             }
             return wp_send_json(['message' => 'A assinatura não pôde ser reativada.'], 422);
-        } catch (\Exception $e) {
+      } catch (\Exception $e) {
             $this->handle_exception('subscription_reactivated', $e->getMessage(), $data->subscription->id);
             return wp_send_json(['message' => 'Erro durante o processamento da reativação da assinatura.'], 500);
       }
