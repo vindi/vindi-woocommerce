@@ -1,6 +1,6 @@
 <?php
 
-define('VINDI_VERSION', '1.2.6');
+define('VINDI_VERSION', '1.2.9');
 
 define('VINDI_MININUM_WP_VERSION', '5.0');
 define('VINDI_MININUM_PHP_VERSION', '5.6');

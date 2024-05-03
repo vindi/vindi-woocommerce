@@ -114,7 +114,7 @@ class VindiWebhooks
     $order_id = $subscription->get_last_order();
     $order = $this->find_order_by_id($order_id);
     $subscription_id = $renew_infos['vindi_subscription_id'];
-    $order_post_meta = array(get_post_meta($order->id, 'vindi_order', true));
+        $order_post_meta = array($order->get_meta('vindi_order', true));
     $order_post_meta[$subscription_id]['cycle'] = $renew_infos['cycle'];
     $order_post_meta[$subscription_id]['product'] = $renew_infos['plan_name'];
     $order_post_meta[$subscription_id]['bill'] = array(
@@ -122,7 +122,8 @@ class VindiWebhooks
       'status' => $renew_infos['bill_status'],
       'bank_slip_url' => $renew_infos['bill_print_url'],
     );
-    update_post_meta($order->id, 'vindi_order', $order_post_meta);
+        $order->update_meta_data('vindi_order', $order_post_meta);
+        $order->save();
     $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
 
     // We've already processed the renewal
@@ -164,28 +165,35 @@ class VindiWebhooks
    */
   private function bill_paid($data)
   {
-    if(empty($data->bill->subscription)) {
-      $order = $this->find_order_by_id($data->bill->code);
+        $order = false;
+        if (empty($data->bill->subscription)) {
+            $order = $this->find_order_by_id($data->bill->code);
 
-      $vindi_order = get_post_meta($order->id, 'vindi_order', true);
-      if(is_array($vindi_order)) {
-        $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
-      } else {
-        return;
-      }
-    } else {
-      $vindi_subscription_id = $data->bill->subscription->id;
-      $cycle = $data->bill->period->cycle;
-      $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
+            $vindi_order = $order->get_meta('vindi_order', true);
+            if (!is_array($vindi_order)) {
+              return;
+            }
+            $vindi_order['single_payment']['bill']['status'] = $data->bill->status;
+        }
+    
+        if (!empty($data->bill->subscription)) {
+            $vindi_subscription_id = $data->bill->subscription->id;
+            $cycle = $data->bill->period->cycle;
+            $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
 
-      $vindi_order = get_post_meta($order->id, 'vindi_order', true);
-      if(is_array($vindi_order)) {
-        $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
-      } else {
-        return;
-      }
-    }
-    update_post_meta($order->id, 'vindi_order', $vindi_order);
+            $vindi_order = $order->get_meta('vindi_order', true);
+            if (!is_array($vindi_order)) {
+              return;
+            }
+
+            $vindi_order[$vindi_subscription_id]['bill']['status'] = $data->bill->status;
+        }
+
+        if (!$order) {
+            return;
+        }
+        
+        $order->update_meta_data('vindi_order', $vindi_order);
 
     // Order informations always be updated in last array element
     $vindi_order_info = end($vindi_order);
@@ -195,6 +203,7 @@ class VindiWebhooks
         $order->update_status($new_status, __('O Pagamento foi realizado com sucesso pela Vindi.', VINDI));
         $this->update_next_payment($data);
     }
+        $order->save();
   }
 
   /**

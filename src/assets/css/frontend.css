@@ -280,7 +280,7 @@
   transform: rotateY(180deg);
 }
 
-.vindi_bankslip_listing {
+.vindi_payment_listing {
   background: #FFFFFF;
   border-radius: 2px;
   box-shadow: inset 5px 0px 0px #37D559;
@@ -290,39 +290,39 @@
   font-style: normal;
   margin-bottom: 1.41575em;
 }
-.vindi_bankslip_listing .info_message {
+.vindi_payment_listing .info_message {
   padding: 20px 30px;
   display: flex;
 }
-.vindi_bankslip_listing .info_message .icon {
+.vindi_payment_listing .info_message .icon {
   width: 30px;
   height: 30px;
   margin-right: 22px;
   background-image: url("../images/icon-bankslip.svg");
 }
-.vindi_bankslip_listing .info_message .message {
+.vindi_payment_listing .info_message .message {
   display: flex;
   flex-direction: column;
   max-width: 90%;
 }
-.vindi_bankslip_listing .info_message .message .message_title {
+.vindi_payment_listing .info_message .message .message_title {
   margin: 0;
   line-height: 17px;
   font-weight: bold;
   font-size: 14px;
 }
-.vindi_bankslip_listing .info_message .message .message_description {
+.vindi_payment_listing .info_message .message .message_description {
   margin: 3px 0 0;
   line-height: 18px;
   font-weight: 300;
   font-size: 13px;
 }
-.vindi_bankslip_listing .bankslips {
+.vindi_payment_listing .charges {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
-.vindi_bankslip_listing .bankslips .bankslip {
+.vindi_payment_listing .charges .charge {
   width: calc(100% - 5px);
   display: flex;
   justify-content: space-between;
@@ -330,13 +330,17 @@
   border-top: 1px solid #E6E6E6;
   padding: 15px 17px 15px 25px;
 }
-.vindi_bankslip_listing .bankslips .bankslip .product_title {
+.vindi_payment_listing .charges .charge .product_title {
+  text-transform: capitalize;
   font-weight: bold;
   font-size: 14px;
   line-height: 17px;
 }
-.vindi_bankslip_listing .bankslips .bankslip .download_button {
-  padding: 12px 30px;
+.vindi_payment_listing .charges .charge .download_button {
+  width: 150px;
+  height: 40px;
+  margin: 5px 0;
+  padding: 12px 20px;
   background: #FFFFFF;
   border: 1px solid #006DFF;
   border-radius: 3px;
@@ -347,11 +351,20 @@
   text-align: center;
   text-decoration: none !important;
   transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.vindi_bankslip_listing .bankslips .bankslip .download_button:hover {
+
+.vindi_payment_listing .charges .charge .download_button svg {
+  width: 24px;
+}
+
+.vindi_payment_listing .charges .charge .download_button:hover {
   opacity: 0.5;
+  cursor: pointer;
 }
-.vindi_bankslip_listing .bankslips .bankslip .download_button:focus {
+.vindi_payment_listing .charges .charge .download_button:focus {
   outline-color: #006DFF;
 }
 

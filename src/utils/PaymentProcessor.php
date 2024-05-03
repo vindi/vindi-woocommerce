@@ -179,7 +179,6 @@ class VindiPaymentProcessor
         return array(
             'customer_id' => $customer_id,
             'payment_method_code' => $this->payment_method_code(),
-
         );
     }
 
@@ -211,7 +210,19 @@ class VindiPaymentProcessor
      */
     public function payment_method_code()
     {
-        return $this->is_cc() ? 'credit_card' : 'bank_slip';
+        switch ($this->gateway->type()) {
+            case 'cc':
+                $code = 'credit_card';
+                break;
+            case 'bolepix':
+                $code = 'pix_bank_slip';
+                break;
+            default:
+                $code = $this->gateway->type();
+                break;
+        }
+
+        return $code;
     }
 
     /**
@@ -354,7 +365,8 @@ class VindiPaymentProcessor
             }
         }
 
-        update_post_meta($this->order->get_id(), 'vindi_order', $order_post_meta);
+        $this->order->update_meta_data('vindi_order', $order_post_meta);
+        $this->order->save();
         WC()->session->__unset('current_payment_profile');
         WC()->session->__unset('current_customer');
         remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
@@ -998,7 +1010,7 @@ class VindiPaymentProcessor
      */
     protected function create_subscription($customer_id, $order_item)
     {
-        if($order_item == null || empty($order_item)) {
+        if ($order_item == null || empty($order_item)) {
             return;
         }
         $data = [];
@@ -1015,12 +1027,12 @@ class VindiPaymentProcessor
         $data['product_items'] = $this->get_build_products($data, $order_item);
         $subscription = $this->routes->createSubscription($data);
         if (!isset($subscription['id']) || empty($subscription['id'])) {
-            $message = sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error);
-            throw new Exception($message);
+            throw new Exception(sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error));
         }
         $subscription['wc_id'] = $wc_subscription_id;
         if (isset($subscription['bill']['id'])) {
-            update_post_meta($this->order->get_id(), 'vindi_bill_id', $subscription['bill']['id']);
+            $this->order->update_meta_data('vindi_bill_id', $subscription['bill']['id']);
+            $this->order->save();
         }
         return $subscription;
     }
@@ -1088,7 +1100,7 @@ class VindiPaymentProcessor
 
         if ($bill['id']) {
             $this->logger->log(sprintf('Update Bill: %s', json_encode($bill)));
-            update_post_meta($this->order->id, 'vindi_bill_id', $bill['id']);
+            $this->order->save();
         }
         return $bill;
     }
@@ -1102,11 +1114,22 @@ class VindiPaymentProcessor
      */
     protected function create_bill_meta_for_order($bill)
     {
-
+        $bill_meta = [];
         $bill_meta['id'] = $bill['id'];
         $bill_meta['status'] = $bill['status'];
+        
         if (isset($bill['charges']) && count($bill['charges'])) {
-            $bill_meta['bank_slip_url'] = $bill['charges'][0]['print_url'];
+            $charges = end($bill['charges']);
+            $bill_meta['bank_slip_url'] = $charges['print_url'] ?? '';
+            
+            if (array_intersect([$this->payment_method_code()], ['pix', 'pix_bank_slip'])
+            && isset($charges['last_transaction']['gateway_response_fields'])) {
+                $transaction = $charges['last_transaction']['gateway_response_fields'];
+                $bill_meta['charge_id'] = $charges['id'];
+                $bill_meta['pix_expiration'] = $transaction['max_days_to_keep_waiting_payment'] ?? '';
+                $bill_meta['pix_code'] = $transaction['qrcode_original_path'];
+                $bill_meta['pix_qr'] = $transaction['qrcode_path'];
+            }
         }
         return $bill_meta;
     }
