@@ -154,7 +154,7 @@ class VindiSubscriptionStatusHandler
             $order = wc_get_order($order);
         }
 
-        $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+        $vindi_order = $order->get_meta('vindi_order', true);
 
         if (!is_array($vindi_order)) {
             return;
@@ -168,7 +168,8 @@ class VindiSubscriptionStatusHandler
             }
         }
         
-        update_post_meta($order->id, 'vindi_order', $vindi_order);
+        $order->update_meta_data('vindi_order', $vindi_order);
+        $order->save();
 
         if ($single_payment_bill_id) {
             $this->routes->deleteBill($single_payment_bill_id);

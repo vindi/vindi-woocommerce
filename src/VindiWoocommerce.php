@@ -113,6 +113,8 @@ class WcVindiPayment extends AbstractInstance
         add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
         add_filter('woocommerce_update_cart_validation', [$this, 'limit_subscriptions_in_cart_update'], 10, 4);
         add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
+        add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
+        add_action('wp_ajax_nopriv_renew_pix_charge', [$this, 'renew_pix_charge']);
   }
 
   /**
@@ -141,6 +143,8 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/includes/admin/Settings.php';
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/CreditPayment.php';
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/BankSlipPayment.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/gateways/PixPayment.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/gateways/BolepixPayment.php';
         require_once plugin_dir_path(__FILE__) . '/utils/SubscriptionStatusHandler.php';
         require_once plugin_dir_path(__FILE__) . '/utils/InterestPriceHandler.php';
 
@@ -185,6 +189,8 @@ class WcVindiPayment extends AbstractInstance
   {
     $methods[] = new VindiCreditGateway($this->settings, $this->controllers);
     $methods[] = new VindiBankSlipGateway($this->settings, $this->controllers);
+        $methods[] = new VindiPixGateway($this->settings, $this->controllers);
+        $methods[] = new VindiBolepixGateway($this->settings, $this->controllers);
 
     return $methods;
   }
@@ -214,41 +220,38 @@ class WcVindiPayment extends AbstractInstance
 
         return false;
     }
+    
+    public function renew_pix_charge()
+    {
+        $order_id = filter_input(INPUT_POST, 'order_id', FILTER_SANITIZE_NUMBER_INT);
+        $charge_id = filter_input(INPUT_POST, 'charge_id', FILTER_SANITIZE_NUMBER_INT);
+        $subscription_id = filter_input(INPUT_POST, 'subscription_id', FILTER_SANITIZE_NUMBER_INT);
+      
+        $order = wc_get_order($order_id);
+        $vindi_order = $order->get_meta('vindi_order', true);
 
-    public function count_subscriptions_in_cart($product_id)
-    {
-        $cart = WC()->cart->get_cart();
-        $subscription_count = 0;
-        foreach ($cart as $cart_item) {
-            if ($cart_item['data']->get_id() === $product_id) {
-                $subscription_count += $cart_item['quantity'];
-            }
-        }
-        return $subscription_count;
-    }
-  
-    public function limit_same_subscriptions($passed, $product_id, $quantity)
-    {
-        if (WC_Subscriptions_Product::is_subscription($product_id)) {
-            $subscription_count = $this->count_subscriptions_in_cart($product_id);
-            if ($subscription_count + $quantity > 1) {
-                wc_add_notice(__('Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.'), 'error');
-                return false;
-            }
-        }
-        return $passed;
-    }
+        if ($charge_id && $subscription_id) {
+            $routes = new VindiRoutes($this->settings);
+            $charge = $routes->renewCharge($charge_id);
 
-    public function limit_subscriptions_in_cart_update($passed, $cart_item_key, $values, $quantity)
-    {
-        if (WC_Subscriptions_Product::is_subscription($values['product_id'])) {
-            $subscription_count = $this->count_subscriptions_in_cart($values['product_id']);
-            if ($subscription_count >= 1 && $quantity > 1) {
-                wc_add_notice(__('Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.'), 'error');
-                return false;
+            if (isset($charge['status']) && isset($charge['last_transaction']['gateway_response_fields'])) {
+                $last_transaction = $charge['last_transaction']['gateway_response_fields'];
+
+                $subscription = $vindi_order[$subscription_id];
+                $bill = [
+                    'id' => $subscription['bill']['id'],
+                    'status' => $subscription['bill']['status'],
+                    'charge_id' => $charge['id'],
+                    'pix_expiration' => $last_transaction['max_days_to_keep_waiting_payment'],
+                    'pix_code' => $last_transaction['qrcode_original_path'],
+                    'pix_qr' => $last_transaction['qrcode_path'],
+                ];
+
+                $vindi_order[$subscription_id]['bill'] = $bill;
+                $order->update_meta_data('vindi_order', $vindi_order);
+                $order->save();
             }
         }
-        return $passed;
     }
 }
 

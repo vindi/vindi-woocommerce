@@ -9,9 +9,9 @@ Author: Vindi | Mentores Digital
 Requires at least: 4.4
 Tested up to: 6.4
 WC requires at least: 3.0.0
-WC tested up to: 8.6.0
+WC tested up to: 8.6.1
 Requires PHP: 5.6
-Stable Tag: 1.2.6
+Stable Tag: 1.2.9
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -40,10 +40,30 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 
 == Changelog ==
 
+<<<<<<< HEAD
 = 1.2.6 - 28/02/2024 =
 -Lançamento da versão de patch.
 - **Correção:** Utilização de cupons para desconto dos produtos que possuem taxa
 - **Correção:** Visualização dos metodos de pagamento para pedidos zerados
+=======
+= 1.2.9 - 18/04/2024 =
+-Lançamento da versão de patch.
+- **Correção:** Utilização da função save durante atualização de metadados com HPOS
+- **Correção:** Bug durante renovação de assinaturas
+
+= 1.2.8 - 05/04/2024 =
+-Lançamento da versão de patch.
+- **Melhoria:** Adiciona o método de pagamento BolePix
+- **Correção:** Bug ao atualizar produtos do tipo assinatura
+- **Melhoria:** Os webhook tiveram melhorias em seus retornos
+
+= 1.2.7 - 04/04/2024 =
+-Lançamento da versão de patch.
+- **Melhoria:** Adiciona o método de pagamento Pix
+
+= 1.2.6 - 28/02/2024 =
+-Lançamento da versão de patch.
+>>>>>>> apiki_webhooks
 - **Melhoria:** Validação do plugins para as novas versões WooCommerce, WordPress e PHP
 
 = 1.2.5 - 12/10/2023 =

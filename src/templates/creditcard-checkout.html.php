@@ -157,7 +157,13 @@ if (isset($id)) {
           <?php _e("Número do Cartão", VINDI); ?>
           <span class="required">*</span>
         </label>
-        <input id="vindi_cc_cardnumber" name="vindi_cc_number" type="text" pattern="[0-9]*" inputmode="numeric" autocomplete="off" placeholder="•••• •••• •••• ••••">
+        <input id="vindi_cc_cardnumber"
+               name="vindi_cc_number"
+               type="text"
+               inputmode="numeric"
+               autocomplete="off"
+               placeholder="•••• •••• •••• ••••"
+        />
         <img
             id="vindi_cc_ccicon" class="vindi_cc_ccicon"
             src="
@@ -174,14 +180,20 @@ if (isset($id)) {
           <?php _e("Validade (mm/aa)", VINDI) ?>
           <span class="required">*</span>
         </label>
-        <input id="vindi_cc_expirationdate" type="text" pattern="[0-9]*" inputmode="numeric" placeholder="mm/aa" autocomplete="off">
+        <input id="vindi_cc_expirationdate" type="text" inputmode="numeric" placeholder="mm/aa" autocomplete="off">
       </div>
       <div class="field-container">
         <label for="vindi_cc_securitycode">
           <?php _e("Código de Segurança", VINDI); ?>
           <span class="required">*</span>
         </label>
-        <input id="vindi_cc_securitycode" name="vindi_cc_cvc" type="text" pattern="[0-9]*" inputmode="numeric" placeholder="CVC" autocomplete="off">
+        <input id="vindi_cc_securitycode"
+               name="vindi_cc_cvc"
+               type="text"
+               inputmode="numeric"
+               placeholder="CVC"
+               autocomplete="off"
+        />
       </div>
       <input name="vindi_cc_paymentcompany" type="hidden">
       <input name="vindi_cc_monthexpiry" type="hidden">
