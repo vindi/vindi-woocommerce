@@ -280,7 +280,7 @@ class VindiPaymentProcessor
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
-        
+
         $bills = [];
         $order_post_meta = [];
         $bill_products = [];
@@ -532,21 +532,20 @@ class VindiPaymentProcessor
         if (empty($product_items)) {
             return $this->abort(__('Falha ao recuperar informações sobre o produto na Vindi. Verifique os dados e tente novamente.', VINDI), true);
         }
-
         $newItem = $this->calculate_discount($product_items);
-
+        die;
         return $newItem;
     }
 
     protected function calculate_discount($order_items)
     {
+        // error_log(var_export($order_items, true));
         $new_order_items = [];
         $remainder = 0;
         $item = $this->routes->findOrCreateProduct("[WC] Taxa de adesão", "WC-SUF");
         $taxa_id = array(
             'vindi_id' => $item['id']
         );
-
         foreach ($order_items as $order_item) {
             $new_order_item = $order_item;
             $full_price = $this->calculate_full_price($order_item);
@@ -563,15 +562,16 @@ class VindiPaymentProcessor
 
     protected function calculate_full_price($order_item)
     {
-        $price = $order_item['pricing_schema']['price'];
-        $quantity = $order_item['quantity'];
+        $price = isset($order_item['pricing_schema']['price']) ? $order_item['pricing_schema']['price'] : 0;
+        $quantity = isset($order_item['quantity']) ? $order_item['quantity'] : 1;
+
         $total_price = $price * $quantity;
-        
+
         if ($quantity > 1) {
             $additional_items_price = ($quantity - 1) * $price;
             $total_price += $additional_items_price;
         }
-        
+
         return $total_price;
     }
 
@@ -834,7 +834,6 @@ class VindiPaymentProcessor
                 $bill_total_discount += (float) ($discount_total / $this->order->get_item_count());
             }
         }
-        error_log(var_export($this->order->get_item_count()));
 
         if (empty($bill_total_discount)) {
             return $discount_item;
@@ -972,14 +971,15 @@ class VindiPaymentProcessor
         } elseif (strpos($discount_type, 'fixed') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = $amount;
-        } elseif (strpos($discount_type, 'percent') !== false ||
+        } elseif (
+            strpos($discount_type, 'percent') !== false ||
             strpos($discount_type, 'recurring_percent') !== false
         ) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = ($percent * $this->order->get_subtotal()) / $this->order->get_item_count();
         }
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
-        
+
         return $discount_item;
     }
 
@@ -1153,7 +1153,6 @@ class VindiPaymentProcessor
      */
     protected function create_bill($customer_id, $order_items)
     {
-
         $data = array(
             'customer_id' => $customer_id,
             'payment_method_code' => $this->payment_method_code(),
@@ -1191,13 +1190,15 @@ class VindiPaymentProcessor
         $bill_meta = [];
         $bill_meta['id'] = $bill['id'];
         $bill_meta['status'] = $bill['status'];
-        
+
         if (isset($bill['charges']) && count($bill['charges'])) {
             $charges = end($bill['charges']);
             $bill_meta['bank_slip_url'] = $charges['print_url'] ?? '';
-            
-            if (array_intersect([$this->payment_method_code()], ['pix', 'pix_bank_slip'])
-            && isset($charges['last_transaction']['gateway_response_fields'])) {
+
+            if (
+                array_intersect([$this->payment_method_code()], ['pix', 'pix_bank_slip'])
+                && isset($charges['last_transaction']['gateway_response_fields'])
+            ) {
                 $transaction = $charges['last_transaction']['gateway_response_fields'];
                 $bill_meta['charge_id'] = $charges['id'];
                 $bill_meta['pix_expiration'] = $transaction['max_days_to_keep_waiting_payment'] ?? '';
