@@ -49,6 +49,7 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 -Lançamento da versão de patch.
 - **Melhoria:** Adiciona o método de pagamento BolePix
 - **Correção:** Bug ao atualizar produtos do tipo assinatura
+- **Melhoria:** Os webhook tiveram melhorias em seus retornos
 
 = 1.2.7 - 04/04/2024 =
 -Lançamento da versão de patch.
