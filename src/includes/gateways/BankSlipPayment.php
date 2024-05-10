@@ -102,11 +102,10 @@ class VindiBankSlipGateway extends VindiPaymentGateway
     # Issue: https://github.com/vindi/vindi-woocommerce/issues/75
     public function bank_slip_quantity_to_render($order)
     {
-        if (is_null($order[0])) {
-            return $order;
+        if (isset($order[0])) {
+            return $order[0];
         }
-
-        return $order[0];
+        return $order;
     }
 
   public function payment_fields()

@@ -1,4 +1,5 @@
 <?php
+
 namespace VindiPaymentGateways;
 
 use WC_Subscriptions_Product;
@@ -61,22 +62,22 @@ class WcVindiPayment extends AbstractInstance
   /**
    * @var VindiPaymentGateway\ProductsMetabox
    */
-    private $product_metabox;
+  private $product_metabox;
 
   /**
    * @var VindiPaymentGateway\VindiProductStatus
    */
-    private $vindi_status_notifier;
+  private $vindi_status_notifier;
 
   /**
    * @var VindiPaymentGateway\InterestPriceHandler
    */
-    private $interest_price_handler;
+  private $interest_price_handler;
 
   /**
-  * @var VindiWCSRenewalDisable
-  */
-    private $wcs_renewal_disable;
+   * @var VindiWCSRenewalDisable
+   */
+  private $wcs_renewal_disable;
 
   public function __construct()
   {
@@ -93,28 +94,30 @@ class WcVindiPayment extends AbstractInstance
     $this->frontend_files_loader = new FrontendFilesLoader();
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
-        $this->interest_price_handler = new InterestPriceHandler();
-        $this->product_metabox = new ProductsMetabox();
-        $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
+    $this->interest_price_handler = new InterestPriceHandler();
+    $this->product_metabox = new ProductsMetabox();
+    $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
 
 
     /**
-      * Add Gateway to Woocommerce
-      */
+     * Add Gateway to Woocommerce
+     */
     add_filter('woocommerce_payment_gateways', array(&$this, 'add_gateway'));
 
     /**
-      * Register webhook handler
-      */
+     * Register webhook handler
+     */
     add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
       $this->webhooks, 'handle'
     ));
-   
-        add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
-        add_filter('woocommerce_update_cart_validation', [$this, 'limit_subscriptions_in_cart_update'], 10, 4);
-        add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
-        add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
-        add_action('wp_ajax_nopriv_renew_pix_charge', [$this, 'renew_pix_charge']);
+
+    add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
+    add_filter('woocommerce_update_cart_validation', [$this, 'limit_subscriptions_in_cart_update'], 10, 4);
+    add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
+    add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
+    add_action('wp_ajax_nopriv_renew_pix_charge', [$this, 'renew_pix_charge']);
+    do_action( 'woocommerce_set_cart_cookies',  true );
+
   }
 
   /**
@@ -125,39 +128,39 @@ class WcVindiPayment extends AbstractInstance
    */
   public function init()
   {
-        // Helpers and Languages
-        require_once plugin_dir_path(__FILE__) . '/services/Api.php';
-        require_once plugin_dir_path(__FILE__) . '/services/Logger.php';
-        require_once plugin_dir_path(__FILE__) . '/i18n/Languages.php';
-        require_once plugin_dir_path(__FILE__) . '/services/VindiHelpers.php';
-        require_once plugin_dir_path(__FILE__) . '/services/Webhooks.php';
+    // Helpers and Languages
+    require_once plugin_dir_path(__FILE__) . '/services/Api.php';
+    require_once plugin_dir_path(__FILE__) . '/services/Logger.php';
+    require_once plugin_dir_path(__FILE__) . '/i18n/Languages.php';
+    require_once plugin_dir_path(__FILE__) . '/services/VindiHelpers.php';
+    require_once plugin_dir_path(__FILE__) . '/services/Webhooks.php';
 
-        // Loading Abstract Method and Utils
-        require_once plugin_dir_path(__FILE__) . '/utils/PaymentGateway.php';
-        require_once plugin_dir_path(__FILE__) . '/utils/Conversions.php';
-        require_once plugin_dir_path(__FILE__) . '/utils/RedirectCheckout.php';
-        require_once plugin_dir_path(__FILE__) . '/utils/PostMeta.php';
+    // Loading Abstract Method and Utils
+    require_once plugin_dir_path(__FILE__) . '/utils/PaymentGateway.php';
+    require_once plugin_dir_path(__FILE__) . '/utils/Conversions.php';
+    require_once plugin_dir_path(__FILE__) . '/utils/RedirectCheckout.php';
+    require_once plugin_dir_path(__FILE__) . '/utils/PostMeta.php';
 
-        require_once plugin_dir_path(__FILE__) . '/includes/admin/CouponsMetaBox.php';
-            require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductsMetabox.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/admin/Settings.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/gateways/CreditPayment.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/gateways/BankSlipPayment.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/gateways/PixPayment.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/gateways/BolepixPayment.php';
-        require_once plugin_dir_path(__FILE__) . '/utils/SubscriptionStatusHandler.php';
-        require_once plugin_dir_path(__FILE__) . '/utils/InterestPriceHandler.php';
+    require_once plugin_dir_path(__FILE__) . '/includes/admin/CouponsMetaBox.php';
+    require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductsMetabox.php';
+    require_once plugin_dir_path(__FILE__) . '/includes/admin/Settings.php';
+    require_once plugin_dir_path(__FILE__) . '/includes/gateways/CreditPayment.php';
+    require_once plugin_dir_path(__FILE__) . '/includes/gateways/BankSlipPayment.php';
+    require_once plugin_dir_path(__FILE__) . '/includes/gateways/PixPayment.php';
+    require_once plugin_dir_path(__FILE__) . '/includes/gateways/BolepixPayment.php';
+    require_once plugin_dir_path(__FILE__) . '/utils/SubscriptionStatusHandler.php';
+    require_once plugin_dir_path(__FILE__) . '/utils/InterestPriceHandler.php';
 
-        require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductStatus.php';
+    require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductStatus.php';
 
-        // Routes import
-        require_once plugin_dir_path(__FILE__) . '/routes/RoutesApi.php';
+    // Routes import
+    require_once plugin_dir_path(__FILE__) . '/routes/RoutesApi.php';
 
-        // Controllers
-        require_once plugin_dir_path(__FILE__) . '/controllers/index.php';
+    // Controllers
+    require_once plugin_dir_path(__FILE__) . '/controllers/index.php';
 
-        require_once plugin_dir_path(__FILE__) . '/utils/PaymentProcessor.php';
-        require_once plugin_dir_path(__FILE__) . '/utils/WCSRenewalDisable.php';
+    require_once plugin_dir_path(__FILE__) . '/utils/PaymentProcessor.php';
+    require_once plugin_dir_path(__FILE__) . '/utils/WCSRenewalDisable.php';
   }
 
   public static function getPath()
@@ -167,7 +170,7 @@ class WcVindiPayment extends AbstractInstance
 
   public static function get_instance()
   {
-        require_once plugin_dir_path(__FILE__) . '/utils/FrontendFilesLoader.php';
+    require_once plugin_dir_path(__FILE__) . '/utils/FrontendFilesLoader.php';
     new FrontendFilesLoader();
 
     if (VindiDependencies::check()) {
@@ -189,8 +192,8 @@ class WcVindiPayment extends AbstractInstance
   {
     $methods[] = new VindiCreditGateway($this->settings, $this->controllers);
     $methods[] = new VindiBankSlipGateway($this->settings, $this->controllers);
-        $methods[] = new VindiPixGateway($this->settings, $this->controllers);
-        $methods[] = new VindiBolepixGateway($this->settings, $this->controllers);
+    $methods[] = new VindiPixGateway($this->settings, $this->controllers);
+    $methods[] = new VindiBolepixGateway($this->settings, $this->controllers);
 
     return $methods;
   }
@@ -199,60 +202,62 @@ class WcVindiPayment extends AbstractInstance
    * Sobrescreve o método que remove os métodos de pagamento para assinaturas com trial
    * @return bool
    */
-    public function filter_woocommerce_cart_needs_payment($needs_payment, $cart)
-    {
-        if (floatval($cart->total) == 0 || $this->cart_has_trial($cart)) {
-            return true;
-        }
-
-        return $needs_payment;
+  public function filter_woocommerce_cart_needs_payment($needs_payment, $cart)
+  {
+    if (floatval($cart->total) == 0 || $this->cart_has_trial($cart)) {
+      return true;
     }
 
-    private function cart_has_trial($cart)
-    {
-        $items = $cart->get_cart();
-        foreach ($items as $item) {
-            if (class_exists('WC_Subscriptions_Product')
-                && WC_Subscriptions_Product::get_trial_length($item['product_id']) > 0) {
-                return true;
-            }
-        }
+    return $needs_payment;
+  }
 
-        return false;
+  private function cart_has_trial($cart)
+  {
+    $items = $cart->get_cart();
+    foreach ($items as $item) {
+      if (
+        class_exists('WC_Subscriptions_Product')
+        && WC_Subscriptions_Product::get_trial_length($item['product_id']) > 0
+      ) {
+        return true;
+      }
     }
-    
-    public function renew_pix_charge()
-    {
-        $order_id = filter_input(INPUT_POST, 'order_id', FILTER_SANITIZE_NUMBER_INT);
-        $charge_id = filter_input(INPUT_POST, 'charge_id', FILTER_SANITIZE_NUMBER_INT);
-        $subscription_id = filter_input(INPUT_POST, 'subscription_id', FILTER_SANITIZE_NUMBER_INT);
-      
-        $order = wc_get_order($order_id);
-        $vindi_order = $order->get_meta('vindi_order', true);
 
-        if ($charge_id && $subscription_id) {
-            $routes = new VindiRoutes($this->settings);
-            $charge = $routes->renewCharge($charge_id);
+    return false;
+  }
 
-            if (isset($charge['status']) && isset($charge['last_transaction']['gateway_response_fields'])) {
-                $last_transaction = $charge['last_transaction']['gateway_response_fields'];
+  public function renew_pix_charge()
+  {
+    $order_id = filter_input(INPUT_POST, 'order_id', FILTER_SANITIZE_NUMBER_INT);
+    $charge_id = filter_input(INPUT_POST, 'charge_id', FILTER_SANITIZE_NUMBER_INT);
+    $subscription_id = filter_input(INPUT_POST, 'subscription_id', FILTER_SANITIZE_NUMBER_INT);
 
-                $subscription = $vindi_order[$subscription_id];
-                $bill = [
-                    'id' => $subscription['bill']['id'],
-                    'status' => $subscription['bill']['status'],
-                    'charge_id' => $charge['id'],
-                    'pix_expiration' => $last_transaction['max_days_to_keep_waiting_payment'],
-                    'pix_code' => $last_transaction['qrcode_original_path'],
-                    'pix_qr' => $last_transaction['qrcode_path'],
-                ];
+    $order = wc_get_order($order_id);
+    $vindi_order = $order->get_meta('vindi_order', true);
 
-                $vindi_order[$subscription_id]['bill'] = $bill;
-                $order->update_meta_data('vindi_order', $vindi_order);
-                $order->save();
-            }
-        }
+    if ($charge_id && $subscription_id) {
+      $routes = new VindiRoutes($this->settings);
+      $charge = $routes->renewCharge($charge_id);
+
+      if (isset($charge['status']) && isset($charge['last_transaction']['gateway_response_fields'])) {
+        $last_transaction = $charge['last_transaction']['gateway_response_fields'];
+
+        $subscription = $vindi_order[$subscription_id];
+        $bill = [
+          'id' => $subscription['bill']['id'],
+          'status' => $subscription['bill']['status'],
+          'charge_id' => $charge['id'],
+          'pix_expiration' => $last_transaction['max_days_to_keep_waiting_payment'],
+          'pix_code' => $last_transaction['qrcode_original_path'],
+          'pix_qr' => $last_transaction['qrcode_path'],
+        ];
+
+        $vindi_order[$subscription_id]['bill'] = $bill;
+        $order->update_meta_data('vindi_order', $vindi_order);
+        $order->save();
+      }
     }
+  }
 
   function limit_same_subscriptions($passed, $product_id, $quantity)
   {
@@ -265,7 +270,8 @@ class WcVindiPayment extends AbstractInstance
         }
       }
       if ($subscription_count + $quantity > 1) {
-        wc_add_notice(__('Você só pode adicionar até 1 assinatura do mesmo produto ao seu carrinho.', 'your-text-domain'), 'error');
+        $message = 'Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.';
+        wc_add_notice($message, 'error');
         return false;
       }
     }
@@ -281,10 +287,9 @@ class WcVindiPayment extends AbstractInstance
           $subscription_count++;
         }
       }
-      error_log(var_export($quantity, true));
-      error_log(var_export($subscription_count, true));
       if ($subscription_count >= 1 && $quantity > 1) {
-        wc_add_notice(__('Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.', 'your-text-domain'), 'error');
+        $message = 'Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.';
+        wc_add_notice($message, 'error');
         return false;
       }
     }
@@ -294,4 +299,3 @@ class WcVindiPayment extends AbstractInstance
 
 
 add_action('plugins_loaded', array(WcVindiPayment::class, 'get_instance'));
-

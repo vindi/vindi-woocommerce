@@ -492,6 +492,7 @@ class VindiPaymentProcessor
      */
     public function build_product_items($product, $order_type = 'bill')
     {
+        
         if (!$product) {
             $this->abort(__("Ocorreu um erro ao gerar o seu pedido!", VINDI), true);
         }
@@ -512,7 +513,6 @@ class VindiPaymentProcessor
         }
         $order_items[] = $this->build_shipping_item($order_items);
         $order_items[] = $this->build_tax_item($order_items);
-
         $order_items[] = $this->build_sign_up_fee_item($order_items);
 
         if ('bill' === $order_type) {
@@ -533,13 +533,11 @@ class VindiPaymentProcessor
             return $this->abort(__('Falha ao recuperar informações sobre o produto na Vindi. Verifique os dados e tente novamente.', VINDI), true);
         }
         $newItem = $this->calculate_discount($product_items);
-        die;
         return $newItem;
     }
 
     protected function calculate_discount($order_items)
     {
-        // error_log(var_export($order_items, true));
         $new_order_items = [];
         $remainder = 0;
         $item = $this->routes->findOrCreateProduct("[WC] Taxa de adesão", "WC-SUF");
@@ -577,9 +575,13 @@ class VindiPaymentProcessor
 
     protected function apply_discount($order_item, $full_price, $remainder)
     {
+
         if (isset($order_item['discounts'])) {
             $discountTotal = array_reduce($order_item['discounts'], function ($total, $discount) {
-                return $total + $discount['amount'];
+                if (isset($discount['amount'])) {
+                    return $total + $discount['amount'];
+                }
+                return $total;
             }, 0);
 
             if ($discountTotal > $full_price) {
@@ -626,7 +628,7 @@ class VindiPaymentProcessor
             foreach ($order_items as $key => $order_item) {
                 $product = $order_item->get_product();
                 $order_items[$key]['type'] = 'product';
-                $order_items[$key]['vindi_id'] = $this->routes->findProductByCode('WC-' . $product->id)['id'];
+                $order_items[$key]['vindi_id'] = $this->routes->findProductByCode('WC-' . $product->get_id())['id'];
                 $order_items[$key]['price'] = (float) $order_items[$key]['subtotal'] / $order_items[$key]['qty'];
             }
             return $order_items;
@@ -825,13 +827,32 @@ class VindiPaymentProcessor
      */
     protected function build_discount_item_for_bill($order_items)
     {
-        $discount_item = [];
         $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
+        $discount_item = [];
         $bill_total_discount = 0;
+
+        $total_cart = WC()->cart->subtotal;
+
         foreach ($order_items as $order_item) {
             if (isset($order_item['subtotal']) && isset($order_item['total'])) {
-                $discount_total = WC()->cart->get_cart_discount_total();
-                $bill_total_discount += (float) ($discount_total / $this->order->get_item_count());
+                foreach ($coupons as $coupon) {
+                    $amount = $coupon->get_amount();
+                    $discount_type = $coupon->get_discount_type();
+                    error_log(var_export($coupon, true));
+                    if ($this->coupon_supports_product($order_item, $coupon)) {
+                        if ($discount_type == 'fixed_cart') {
+                            $percentage_item = $order_item['subtotal'] / $total_cart;
+                            $discount_value = $percentage_item * $amount;
+                            if ($discount_value > $order_item['subtotal']) {
+                                $bill_total_discount += (float)$order_item['subtotal'];
+                            } else {
+                                $bill_total_discount += (float)$discount_value;
+                            }
+                        } else {
+                            $bill_total_discount += (float)($order_item['subtotal'] - $order_item['total']);
+                        }
+                    }
+                }
             }
         }
 
@@ -843,7 +864,7 @@ class VindiPaymentProcessor
         $discount_item = array(
             'type' => 'discount',
             'vindi_id' => $item['id'],
-            'price' => (float) $bill_total_discount * -1,
+            'price' => (float)$bill_total_discount * -1,
             'qty' => 1,
         );
 
@@ -909,7 +930,7 @@ class VindiPaymentProcessor
 
             foreach ($coupons as $coupon) {
                 if ($this->coupon_supports_product($order_item, $coupon)) {
-                    $product_item['discounts'][] = $this->build_discount_item_for_subscription($coupon, $plan_cycles);
+                    $product_item['discounts'][] = $this->build_discount_item_for_subscription($coupon, $order_item, $plan_cycles);
                 }
             }
         }
@@ -955,17 +976,19 @@ class VindiPaymentProcessor
      *
      * @return array
      */
-    protected function build_discount_item_for_subscription($coupon, $plan_cycles = 0)
+    protected function build_discount_item_for_subscription($coupon, $order_item, $plan_cycles = 0)
     {
         $discount_item = [];
 
         $amount = $coupon->get_amount();
-        $percent = $amount / 100;
         $discount_type = $coupon->get_discount_type();
 
         if ($discount_type == 'fixed_cart') {
+            $total_cart = WC()->cart->subtotal;
+            $percentage_item = $order_item['subtotal'] / $total_cart;
+            $discount_value = $percentage_item * $amount;
             $discount_item['discount_type'] = 'amount';
-            $discount_item['amount'] = $amount / $this->order->get_item_count();
+            $discount_item['amount'] = (float) $discount_value;
             $discount_item['cycles'] = 1;
             return $discount_item;
         } elseif (strpos($discount_type, 'fixed') !== false) {
@@ -976,7 +999,7 @@ class VindiPaymentProcessor
             strpos($discount_type, 'recurring_percent') !== false
         ) {
             $discount_item['discount_type'] = 'amount';
-            $discount_item['amount'] = ($percent * $this->order->get_subtotal()) / $this->order->get_item_count();
+            $discount_item['amount'] = (float) (($order_item['subtotal'] - $order_item['total']));
         }
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
 
@@ -1000,7 +1023,7 @@ class VindiPaymentProcessor
         }
 
         if ($cycle_count == 0) {
-            return null;
+            return 1;
         }
 
         return $this->get_plan_length($cycle_count, $plan_cycles);
@@ -1017,7 +1040,7 @@ class VindiPaymentProcessor
     private function get_plan_length($cycle_count, $plan_cycles)
     {
         if (!$cycle_count) {
-            return null;
+            return 1;
         }
 
         if ($plan_cycles) {
@@ -1157,14 +1180,14 @@ class VindiPaymentProcessor
             'customer_id' => $customer_id,
             'payment_method_code' => $this->payment_method_code(),
             'bill_items' => $this->build_product_items($order_items, 'bill'),
-            'code' => $this->order->id,
+            'code' => $this->order->get_id(),
             'installments' => $this->installments(),
         );
 
         $bill = $this->routes->createBill($data);
 
         if (!$bill) {
-            $this->logger->log(sprintf('Erro no pagamento do pedido %s.', $this->order->id));
+            $this->logger->log(sprintf('Erro no pagamento do pedido %s.', $this->order->get_id()));
             $message = sprintf(__('Pagamento Falhou. (%s)', VINDI), $this->vindi_settings->api->last_error);
             $this->order->update_status('failed', $message);
 
@@ -1175,6 +1198,7 @@ class VindiPaymentProcessor
             $this->logger->log(sprintf('Update Bill: %s', json_encode($bill)));
             $this->order->save();
         }
+
         return $bill;
     }
 
