@@ -982,7 +982,6 @@ class VindiPaymentProcessor
         
         $amount = $coupon->get_amount();
         $discount_type = $coupon->get_discount_type();
-        error_log(var_export($order_item->get_tax_class(),true));
 
         if ($discount_type == 'fixed_cart') {
             $total_cart = WC()->cart->subtotal;
