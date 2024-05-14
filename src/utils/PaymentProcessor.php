@@ -838,7 +838,7 @@ class VindiPaymentProcessor
                 foreach ($coupons as $coupon) {
                     $amount = $coupon->get_amount();
                     $discount_type = $coupon->get_discount_type();
-                    error_log(var_export($coupon, true));
+
                     if ($this->coupon_supports_product($order_item, $coupon)) {
                         if ($discount_type == 'fixed_cart') {
                             $percentage_item = $order_item['subtotal'] / $total_cart;
@@ -979,9 +979,10 @@ class VindiPaymentProcessor
     protected function build_discount_item_for_subscription($coupon, $order_item, $plan_cycles = 0)
     {
         $discount_item = [];
-
+        
         $amount = $coupon->get_amount();
         $discount_type = $coupon->get_discount_type();
+        error_log(var_export($order_item->get_tax_class(),true));
 
         if ($discount_type == 'fixed_cart') {
             $total_cart = WC()->cart->subtotal;
@@ -1000,6 +1001,12 @@ class VindiPaymentProcessor
         ) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = (float) (($order_item['subtotal'] - $order_item['total']));
+        } elseif($discount_type == 'sign_up_fee'){
+            $discount_item['discount_type'] = 'amount';
+            $discount_item['amount'] = $amount;
+        }elseif($discount_type == 'sign_up_fee_percent'){
+            $discount_item['discount_type'] = 'amount';
+            $discount_item['amount'] = $amount;
         }
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
 
