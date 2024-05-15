@@ -1000,13 +1000,8 @@ class VindiPaymentProcessor
         ) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = (float) (($order_item['subtotal'] - $order_item['total']));
-        } elseif($discount_type == 'sign_up_fee'){
-            $discount_item['discount_type'] = 'amount';
-            $discount_item['amount'] = $amount;
-        }elseif($discount_type == 'sign_up_fee_percent'){
-            $discount_item['discount_type'] = 'amount';
-            $discount_item['amount'] = $amount;
         }
+        
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
 
         return $discount_item;
