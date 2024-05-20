@@ -11,7 +11,7 @@ Tested up to: 6.4
 WC requires at least: 3.0.0
 WC tested up to: 8.6.1
 Requires PHP: 5.6
-Stable Tag: 1.3.0
+Stable Tag: 1.3.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -43,6 +43,8 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 = 1.3.1 - 15/05/2024 =
 -Lançamento da versão de patch.
 - **Correção:** Utilização de cupons para desconto dos produtos que possuem taxa
+- **Correção:** Não é mais possível a comprar de uma assinatura com produto avulso no mesmo carrinho
+- **Correção:** Não pode mais comprar duas assinaturas iguais
 
 = 1.3.0 - 06/05/2024 =
 -Lançamento da versão de patch.

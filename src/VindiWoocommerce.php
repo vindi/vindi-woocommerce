@@ -112,7 +112,8 @@ class WcVindiPayment extends AbstractInstance
     ));
 
     add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
-    add_filter('woocommerce_update_cart_validation', [$this, 'limit_subscriptions_in_cart_update'], 10, 4);
+    add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_in_cart_update'], 10, 4);
+    add_filter('woocommerce_add_to_cart_validation', [$this, 'disallow_subscription_with_single_product_in_cart'], 10, 4);
     add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
     add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
     add_action('wp_ajax_nopriv_renew_pix_charge', [$this, 'renew_pix_charge']);
@@ -290,6 +291,31 @@ class WcVindiPayment extends AbstractInstance
       if ($subscription_count >= 1 && $quantity > 1) {
         $message = 'Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.';
         wc_add_notice($message, 'error');
+        return false;
+      }
+    }
+    return $passed;
+  }
+
+  function disallow_subscription_with_single_product_in_cart($passed, $product_id, $quantity)
+  {
+    $cart = WC()->cart->get_cart();
+    if (!empty($cart)) {
+      $is_subscription = false;
+      $new_product_subscription = false;
+
+      if (WC_Subscriptions_Product::is_subscription($product_id)) {
+        $new_product_subscription = true;
+      }
+
+      foreach ($cart as $cart_item) {
+        if (WC_Subscriptions_Product::is_subscription($cart_item['data']->get_id())) {
+          $is_subscription = true;
+        }
+      }
+      
+      if ($is_subscription !== $new_product_subscription) {
+        wc_add_notice(__('Não é permitido adicionar produtos de assinatura com produtos avulsos no carrinho.', 'vindi-payment-gateway'), 'error');
         return false;
       }
     }

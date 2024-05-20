@@ -533,6 +533,7 @@ class VindiPaymentProcessor
             return $this->abort(__('Falha ao recuperar informações sobre o produto na Vindi. Verifique os dados e tente novamente.', VINDI), true);
         }
         $newItem = $this->calculate_discount($product_items);
+
         return $newItem;
     }
 
@@ -756,13 +757,13 @@ class VindiPaymentProcessor
                 $shipping_method = $wc_subscription->get_shipping_method();
                 $get_total_shipping = $wc_subscription->get_total_shipping();
             }
-            //ciclo do frete, validar o ciclo para que apareca nos boletos
+
             if ($product->needs_shipping()) {
                 $item = $this->create_shipping_product($shipping_method);
                 $shipping_item = array(
                     'type' => 'shipping',
                     'vindi_id' => $item['id'],
-                    'price' => ($get_total_shipping / $this->order->get_item_count()) * count($order_items),
+                    'price' => $get_total_shipping,
                     'qty' => 1,
                 );
             }
@@ -831,25 +832,38 @@ class VindiPaymentProcessor
         $discount_item = [];
         $bill_total_discount = 0;
 
-        $total_cart = WC()->cart->subtotal;
-
         foreach ($order_items as $order_item) {
             if (isset($order_item['subtotal']) && isset($order_item['total'])) {
+                $total_cart = WC()->cart->subtotal;
                 foreach ($coupons as $coupon) {
                     $amount = $coupon->get_amount();
                     $discount_type = $coupon->get_discount_type();
-
-                    if ($this->coupon_supports_product($order_item, $coupon)) {
-                        if ($discount_type == 'fixed_cart') {
-                            $percentage_item = $order_item['subtotal'] / $total_cart;
-                            $discount_value = $percentage_item * $amount;
-                            if ($discount_value > $order_item['subtotal']) {
-                                $bill_total_discount += (float)$order_item['subtotal'];
-                            } else {
-                                $bill_total_discount += (float)$discount_value;
+                    $bill_total_discount = 0.0;
+                    foreach ($coupons as $coupon) {
+                        $amount = $coupon->get_amount();
+                        $discount_type = $coupon->get_discount_type();
+                    
+                        if ($this->coupon_supports_product($order_item, $coupon)) {
+                            $discount_value = 0.0;
+                    
+                            if ($discount_type == 'fixed_cart') {
+                                // Calcular a porcentagem do item em relação ao total do carrinho
+                                $percentage_item = $order_item['subtotal'] / $total_cart;
+                                // Calcular o valor do desconto para este item
+                                $discount_value = $percentage_item * $amount;
+                            } elseif (strpos($discount_type, 'fixed') !== false) {
+                                // Para descontos fixos, o valor do desconto é o valor do cupom
+                                $discount_value = $amount;
+                            } elseif (strpos($discount_type, 'percent') !== false || strpos($discount_type, 'recurring_percent') !== false) {
+                                // Para descontos percentuais, calcular o valor do desconto com base no subtotal do item
+                                $discount_value = $amount / 100 * $order_item['subtotal'];
                             }
-                        } else {
-                            $bill_total_discount += (float)($order_item['subtotal'] - $order_item['total']);
+                            // Assegurar que o valor do desconto não exceda o subtotal do item
+                            if ($bill_total_discount + $discount_value > $order_item['subtotal']) {
+                                $discount_value = $order_item['subtotal'] - $bill_total_discount;
+                            }
+                            // Adicionar o valor do desconto ao total dos descontos da fatura
+                            $bill_total_discount += (float)$discount_value;
                         }
                     }
                 }
@@ -999,7 +1013,7 @@ class VindiPaymentProcessor
             strpos($discount_type, 'recurring_percent') !== false
         ) {
             $discount_item['discount_type'] = 'amount';
-            $discount_item['amount'] = (float) (($order_item['subtotal'] - $order_item['total']));
+            $discount_item['amount'] = $amount / 100 * $order_item['subtotal'];
         }
         
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
