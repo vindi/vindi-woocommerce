@@ -315,7 +315,7 @@ class WcVindiPayment extends AbstractInstance
       }
       
       if ($is_subscription !== $new_product_subscription) {
-        wc_add_notice(__('Não é permitido adicionar produtos de assinatura com produtos avulsos no carrinho.', 'vindi-payment-gateway'), 'error');
+        wc_add_notice(__('Olá! Finalize a compra da assinatura adicionada ao carrinho antes de adicionar outra assinatura ou produto.', 'vindi-payment-gateway'), 'error');
         return false;
       }
     }

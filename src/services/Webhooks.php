@@ -99,10 +99,6 @@ class VindiWebhooks
    */
     private function bill_created($data)
     {
-      error_log(var_export($data->bill->period->cycle, true));
-      error_log(var_export($data->bill->subscription->id, true));
-
-      error_log(var_export('$subscription_id', true));
         try {
             if (empty($data->bill->subscription)) {
                 return;
@@ -116,18 +112,23 @@ class VindiWebhooks
                 'bill_id' => $data->bill->id,
                 'bill_print_url' => $data->bill->charges[0]->print_url
             ];
-            
+
             if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'], $renew_infos['cycle'])) {
-        
               $this->subscription_renew($renew_infos);
                 $this->update_next_payment($data);
-                $subscription_id = $renew_infos['wc_subscription_id'];
-                $clean_subscription_id = preg_replace('/^WC-(\d+)$/', '$1', $subscription_id);
-                $subscription = wcs_get_subscription($clean_subscription_id);
-                if ($subscription) {
-                    $subscription->update_status('pending');
-                }
                 return wp_send_json(['message' => 'Fatura emitida corretamente'], 200);
+            }
+            $subscription_id = $renew_infos['wc_subscription_id'];
+            $clean_subscription_id = $this->find_subscription_by_id($subscription_id);
+            $subscription = wcs_get_subscription($clean_subscription_id);
+            if ($subscription->get_trial_period() > 0) {
+                if ($subscription && $subscription->get_status() == "active") {
+                  $parent_id = $subscription->get_parent_id();
+                  $order = new WC_Order($parent_id);
+                  $order->update_status('pending', 'Período de teste vencido');
+                  $subscription->update_status('on-hold');
+                  return wp_send_json(['message' => 'O estado da assinatura passou para "Em espera"'], 200);
+              }
             }
             return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
         } catch (\Exception $e) {
