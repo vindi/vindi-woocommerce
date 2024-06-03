@@ -532,9 +532,9 @@ class VindiPaymentProcessor
         if (empty($product_items)) {
             return $this->abort(__('Falha ao recuperar informações sobre o produto na Vindi. Verifique os dados e tente novamente.', VINDI), true);
         }
-        $newItem = $this->calculate_discount($product_items);
+        $new_item = $this->calculate_discount($product_items);
 
-        return $newItem;
+        return $new_item;
     }
 
     protected function calculate_discount($order_items)
@@ -545,17 +545,41 @@ class VindiPaymentProcessor
         $taxa_id = array(
             'vindi_id' => $item['id']
         );
+
+        $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
+
         foreach ($order_items as $order_item) {
             $new_order_item = $order_item;
+            $total_discount = 0;
+
+            if ($order_item['product_id'] === $taxa_id['vindi_id']) {
+                foreach ($coupons as $coupon) {
+                    $discount_type = $coupon->get_discount_type();
+                    if ($discount_type === 'percent') {
+                        $discount_amount = $coupon->get_amount();
+                        $discount = $order_item['pricing_schema']['price'] * $discount_amount / 100;
+                        $total_discount += $discount;
+                    }
+                }
+            }
+
             $full_price = $this->calculate_full_price($order_item);
-
             $remainder = $this->apply_discount($order_item, $full_price, $remainder);
-
             if ($order_item['product_id'] == $taxa_id['vindi_id']) {
                 $remainder = $this->apply_remainder($remainder, $full_price, $new_order_item);
             }
+
+            if ($total_discount > 0) {
+                $new_order_item['discounts'][] = array(
+                    'discount_type' => 'amount',
+                    'amount' => $total_discount,
+                    'cycles' => 1
+                );
+            }
+
             $new_order_items[] = $new_order_item;
         }
+
         return $new_order_items;
     }
 
@@ -563,20 +587,12 @@ class VindiPaymentProcessor
     {
         $price = isset($order_item['pricing_schema']['price']) ? $order_item['pricing_schema']['price'] : 0;
         $quantity = isset($order_item['quantity']) ? $order_item['quantity'] : 1;
-
         $total_price = $price * $quantity;
-
-        if ($quantity > 1) {
-            $additional_items_price = ($quantity - 1) * $price;
-            $total_price += $additional_items_price;
-        }
-
         return $total_price;
     }
 
     protected function apply_discount($order_item, $full_price, $remainder)
     {
-
         if (isset($order_item['discounts'])) {
             $discountTotal = array_reduce($order_item['discounts'], function ($total, $discount) {
                 if (isset($discount['amount'])) {
@@ -584,12 +600,10 @@ class VindiPaymentProcessor
                 }
                 return $total;
             }, 0);
-
             if ($discountTotal > $full_price) {
                 $remainder = $discountTotal - $full_price;
             }
         }
-
         return $remainder;
     }
 
@@ -993,7 +1007,6 @@ class VindiPaymentProcessor
     protected function build_discount_item_for_subscription($coupon, $order_item, $plan_cycles = 0)
     {
         $discount_item = [];
-        
         $amount = $coupon->get_amount();
         $discount_type = $coupon->get_discount_type();
 
@@ -1013,9 +1026,8 @@ class VindiPaymentProcessor
             strpos($discount_type, 'recurring_percent') !== false
         ) {
             $discount_item['discount_type'] = 'amount';
-            $discount_item['amount'] = $amount / 100 * $order_item['subtotal'];
+            $discount_item['amount'] = $amount / 100 * $order_item['price'];
         }
-        
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
 
         return $discount_item;
@@ -1038,7 +1050,7 @@ class VindiPaymentProcessor
         }
 
         if ($cycle_count == 0) {
-            return 1;
+            return null;
         }
 
         return $this->get_plan_length($cycle_count, $plan_cycles);
@@ -1055,7 +1067,7 @@ class VindiPaymentProcessor
     private function get_plan_length($cycle_count, $plan_cycles)
     {
         if (!$cycle_count) {
-            return 1;
+            return null;
         }
 
         if ($plan_cycles) {
