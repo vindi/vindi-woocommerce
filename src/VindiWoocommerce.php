@@ -111,14 +111,13 @@ class WcVindiPayment extends AbstractInstance
       $this->webhooks, 'handle'
     ));
 
-    // add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
-    // add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_in_cart_update'], 10, 4);
+    add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
+    add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_in_cart_update'], 10, 4);
     add_filter('woocommerce_add_to_cart_validation', [$this, 'disallow_subscription_with_single_product_in_cart'], 10, 4);
     add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
     add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
     add_action('wp_ajax_nopriv_renew_pix_charge', [$this, 'renew_pix_charge']);
-    do_action( 'woocommerce_set_cart_cookies',  true );
-
+    do_action('woocommerce_set_cart_cookies',  true);
   }
 
   /**
@@ -262,6 +261,12 @@ class WcVindiPayment extends AbstractInstance
 
   function limit_same_subscriptions($passed, $product_id, $quantity)
   {
+    $product = wc_get_product($product_id);
+
+    if ($product->is_virtual()) {
+      return $passed;
+    }
+
     if (WC_Subscriptions_Product::is_subscription($product_id)) {
       $cart = WC()->cart->get_cart();
       $subscription_count = 0;
@@ -281,6 +286,12 @@ class WcVindiPayment extends AbstractInstance
 
   function limit_duplicate_subscriptions_in_cart_update($passed, $cart_item_key, $values, $quantity)
   {
+    $product = wc_get_product($values['product_id']);
+
+    if ($product->is_virtual()) {
+      return $passed;
+    }
+
     if (WC_Subscriptions_Product::is_subscription($values['product_id'])) {
       $subscription_count = 0;
       foreach (WC()->cart->get_cart() as $cart_item) {
@@ -289,7 +300,7 @@ class WcVindiPayment extends AbstractInstance
         }
       }
       if ($subscription_count >= 1 && $quantity > 1) {
-        $message = 'Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.';
+        $message = __('Você só pode ter até 1 assinaturas do mesmo produto no seu carrinho.', 'vindi-payment-gateway');
         wc_add_notice($message, 'error');
         return false;
       }
@@ -299,6 +310,12 @@ class WcVindiPayment extends AbstractInstance
 
   function disallow_subscription_with_single_product_in_cart($passed, $product_id, $quantity)
   {
+    $product = wc_get_product($product_id);
+
+    if ($product->is_virtual()) {
+      return $passed;
+    }
+
     $cart = WC()->cart->get_cart();
     if (!empty($cart)) {
       $is_subscription = false;
@@ -313,7 +330,7 @@ class WcVindiPayment extends AbstractInstance
           $is_subscription = true;
         }
       }
-      
+
       if ($is_subscription !== $new_product_subscription) {
         wc_add_notice(__('Olá! Finalize a compra da assinatura adicionada ao carrinho antes de adicionar outra assinatura ou produto.', 'vindi-payment-gateway'), 'error');
         return false;

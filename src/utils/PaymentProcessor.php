@@ -492,7 +492,7 @@ class VindiPaymentProcessor
      */
     public function build_product_items($product, $order_type = 'bill')
     {
-        
+
         if (!$product) {
             $this->abort(__("Ocorreu um erro ao gerar o seu pedido!", VINDI), true);
         }
@@ -532,8 +532,8 @@ class VindiPaymentProcessor
         if (empty($product_items)) {
             return $this->abort(__('Falha ao recuperar informações sobre o produto na Vindi. Verifique os dados e tente novamente.', VINDI), true);
         }
-        $new_item = $this->calculate_discount($product_items);
 
+        $new_item = $this->calculate_discount($product_items);
         return $new_item;
     }
 
@@ -557,7 +557,7 @@ class VindiPaymentProcessor
                     $discount_type = $coupon->get_discount_type();
                     if ($discount_type === 'percent') {
                         $discount_amount = $coupon->get_amount();
-                        $discount = $order_item['pricing_schema']['price'] * $discount_amount / 100;
+                        $discount = abs($order_item['pricing_schema']['price']) * $discount_amount / 100;
                         $total_discount += $discount;
                     }
                 }
@@ -585,7 +585,7 @@ class VindiPaymentProcessor
 
     protected function calculate_full_price($order_item)
     {
-        $price = isset($order_item['pricing_schema']['price']) ? $order_item['pricing_schema']['price'] : 0;
+        $price = isset($order_item['pricing_schema']['price']) ? abs($order_item['pricing_schema']['price']) : 0;
         $quantity = isset($order_item['quantity']) ? $order_item['quantity'] : 1;
         $total_price = $price * $quantity;
         return $total_price;
@@ -856,10 +856,10 @@ class VindiPaymentProcessor
                     foreach ($coupons as $coupon) {
                         $amount = $coupon->get_amount();
                         $discount_type = $coupon->get_discount_type();
-                    
+
                         if ($this->coupon_supports_product($order_item, $coupon)) {
                             $discount_value = 0.0;
-                    
+
                             if ($discount_type == 'fixed_cart') {
                                 // Calcular a porcentagem do item em relação ao total do carrinho
                                 $percentage_item = $order_item['subtotal'] / $total_cart;
@@ -947,7 +947,7 @@ class VindiPaymentProcessor
             'quantity' => $order_item['qty'],
             'cycles' => $plan_cycles,
             'pricing_schema' => array(
-                'price' => $order_item['price'],
+                'price' => abs($order_item['price']),
                 'schema_type' => 'per_unit',
             ),
         );
@@ -1026,7 +1026,8 @@ class VindiPaymentProcessor
             strpos($discount_type, 'recurring_percent') !== false
         ) {
             $discount_item['discount_type'] = 'amount';
-            $discount_item['amount'] = $amount / 100 * $order_item['price'];
+            $discount_amout = $amount / 100 * $order_item['price'];
+            $discount_item['amount'] = abs($discount_amout);
         }
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
 
