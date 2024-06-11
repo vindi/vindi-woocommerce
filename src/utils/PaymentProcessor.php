@@ -521,6 +521,7 @@ class VindiPaymentProcessor
 
         $order_items[] = $this->build_interest_rate_item($order_items);
 
+
         foreach ($order_items as $order_item) {
             if (!empty($order_item)) {
                 $newProduct = $this->$call_build_items($order_item);
@@ -557,7 +558,7 @@ class VindiPaymentProcessor
                     $discount_type = $coupon->get_discount_type();
                     if ($discount_type === 'percent') {
                         $discount_amount = $coupon->get_amount();
-                        $discount = abs($order_item['pricing_schema']['price']) * $discount_amount / 100;
+                        $discount = abs(($order_item['pricing_schema']['price'] * $order_item['quantity'])) * $discount_amount / 100;
                         $total_discount += $discount;
                     }
                 }
@@ -695,7 +696,7 @@ class VindiPaymentProcessor
                     'type' => 'sign_up_fee',
                     'vindi_id' => $item['id'],
                     'price' => (float) $sign_up_fee,
-                    'qty' => 1,
+                    'qty' => $order_item['quantity'],
                 );
 
                 $order_item['price'] -= $sign_up_fee;
@@ -913,7 +914,7 @@ class VindiPaymentProcessor
             'product_id' => $order_item['vindi_id'],
             'quantity' => $order_item['qty'],
             'pricing_schema' => array(
-                'price' => $order_item['price'],
+                'price' => $order_item['price'] * $order_item['qty'],
                 'schema_type' => 'per_unit',
             ),
         );
@@ -1018,15 +1019,19 @@ class VindiPaymentProcessor
             $discount_item['amount'] = (float) $discount_value;
             $discount_item['cycles'] = 1;
             return $discount_item;
+        } elseif ($discount_type == 'fixed_product') {
+            $discount_value = $order_item['quantity'] * $amount;
+            $discount_item['discount_type'] = 'amount';
+            $discount_item['amount'] = (float) $discount_value;
         } elseif (strpos($discount_type, 'fixed') !== false) {
             $discount_item['discount_type'] = 'amount';
-            $discount_item['amount'] = $amount;
+            $discount_item['amount'] = (float) $amount;
         } elseif (
             strpos($discount_type, 'percent') !== false ||
             strpos($discount_type, 'recurring_percent') !== false
         ) {
             $discount_item['discount_type'] = 'amount';
-            $discount_amout = $amount / 100 * $order_item['price'];
+            $discount_amout = $amount / 100 * ($order_item['price'] * $order_item['quantity']);
             $discount_item['amount'] = abs($discount_amout);
         }
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
