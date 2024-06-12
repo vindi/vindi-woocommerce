@@ -1030,10 +1030,8 @@ class VindiPaymentProcessor
             strpos($discount_type, 'percent') !== false ||
             strpos($discount_type, 'recurring_percent') !== false
         ) {
-            $amount_discount = $amount / 100 * ($order_item['price'] * $order_item['quantity']);
-            $rounded_discount = floor($amount_discount * 100) / 100;
             $discount_item['discount_type'] = 'amount';
-            $discount_item['amount'] = abs($rounded_discount);
+            $discount_item['amount'] = abs($amount / 100 * ($order_item['price'] * $order_item['quantity']));
         }
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
 
