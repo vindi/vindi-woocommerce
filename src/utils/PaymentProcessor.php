@@ -1030,9 +1030,10 @@ class VindiPaymentProcessor
             strpos($discount_type, 'percent') !== false ||
             strpos($discount_type, 'recurring_percent') !== false
         ) {
+            $amount_discount = $amount / 100 * ($order_item['price'] * $order_item['quantity']);
+            $rounded_discount = floor($amount_discount * 100) / 100;
             $discount_item['discount_type'] = 'amount';
-            $discount_amout = $amount / 100 * ($order_item['price'] * $order_item['quantity']);
-            $discount_item['amount'] = abs($discount_amout);
+            $discount_item['amount'] = abs($rounded_discount);
         }
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
 
@@ -1049,10 +1050,10 @@ class VindiPaymentProcessor
      */
     protected function config_discount_cycles($coupon, $plan_cycles = 0)
     {
-        $cycle_count = get_post_meta($coupon->id, 'cycle_count', true);
+        $cycle_count = get_post_meta($coupon->get_id(), 'cycle_count', true);
 
         if ($coupon->get_discount_type() == 'recurring_percent') {
-            $cycle_count = WC_Subscriptions_Coupon::get_coupon_limit($coupon->id);
+            $cycle_count = WC_Subscriptions_Coupon::get_coupon_limit($coupon->get_id());
         }
 
         if ($cycle_count == 0) {
