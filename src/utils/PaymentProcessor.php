@@ -497,13 +497,35 @@ class VindiPaymentProcessor
             $this->abort(__("Ocorreu um erro ao gerar o seu pedido!", VINDI), true);
         }
 
+        $call_build_items = $this->get_call_build_items_method($order_type);
+
+        $product_items = [];
+        $order_items = [];
+        $order_items = $this->add_additional_items($order_items, $order_type, $product);
+
+        $product_items = $this->build_items($order_items, $call_build_items);
+
+        if (empty($product_items)) {
+            return $this->abort(__('Falha ao recuperar informações sobre o produto na Vindi. Verifique os dados e tente novamente.', VINDI), true);
+        }
+
+        $new_item = $this->calculate_discount($product_items);
+        return $new_item;
+    }
+
+    protected function get_call_build_items_method($order_type)
+    {
         $call_build_items = "build_product_items_for_{$order_type}";
 
         if (false === method_exists($this, $call_build_items)) {
             $this->abort(__("Ocorreu um erro ao gerar o seu pedido!", VINDI), true);
         }
 
-        $product_items = [];
+        return $call_build_items;
+    }
+
+    protected function add_additional_items($order_items, $order_type, $product)
+    {
         $order_items = [];
 
         if ('bill' === $order_type) {
@@ -511,6 +533,7 @@ class VindiPaymentProcessor
         } else {
             $order_items[] = $this->build_product_from_order_item($order_type, $product);
         }
+
         $order_items[] = $this->build_shipping_item($order_items);
         $order_items[] = $this->build_tax_item($order_items);
         $order_items[] = $this->build_sign_up_fee_item($order_items);
@@ -521,21 +544,21 @@ class VindiPaymentProcessor
 
         $order_items[] = $this->build_interest_rate_item($order_items);
 
+        return $order_items;
+    }
+
+    protected function build_items($order_items, $call_build_items)
+    {
+        $product_items = [];
 
         foreach ($order_items as $order_item) {
             if (!empty($order_item)) {
                 $newProduct = $this->$call_build_items($order_item);
                 $product_items[] = $newProduct;
             }
-            continue;
         }
 
-        if (empty($product_items)) {
-            return $this->abort(__('Falha ao recuperar informações sobre o produto na Vindi. Verifique os dados e tente novamente.', VINDI), true);
-        }
-
-        $new_item = $this->calculate_discount($product_items);
-        return $new_item;
+        return $product_items;
     }
 
     protected function calculate_discount($order_items)
