@@ -535,6 +535,8 @@ class VindiPaymentProcessor
         }
 
         $new_item = $this->calculate_discount($product_items);
+        error_log(var_export($new_item,true));
+        die();
         return $new_item;
     }
 
@@ -862,22 +864,16 @@ class VindiPaymentProcessor
                             $discount_value = 0.0;
 
                             if ($discount_type == 'fixed_cart') {
-                                // Calcular a porcentagem do item em relação ao total do carrinho
                                 $percentage_item = $order_item['subtotal'] / $total_cart;
-                                // Calcular o valor do desconto para este item
                                 $discount_value = $percentage_item * $amount;
                             } elseif (strpos($discount_type, 'fixed') !== false) {
-                                // Para descontos fixos, o valor do desconto é o valor do cupom
                                 $discount_value = $amount;
                             } elseif (strpos($discount_type, 'percent') !== false || strpos($discount_type, 'recurring_percent') !== false) {
-                                // Para descontos percentuais, calcular o valor do desconto com base no subtotal do item
                                 $discount_value = $amount / 100 * $order_item['subtotal'];
                             }
-                            // Assegurar que o valor do desconto não exceda o subtotal do item
                             if ($bill_total_discount + $discount_value > $order_item['subtotal']) {
                                 $discount_value = $order_item['subtotal'] - $bill_total_discount;
                             }
-                            // Adicionar o valor do desconto ao total dos descontos da fatura
                             $bill_total_discount += (float)$discount_value;
                         }
                     }
