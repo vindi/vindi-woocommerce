@@ -297,27 +297,27 @@ class WcVindiPayment extends AbstractInstance
   {
       $product_id = $values['product_id'];
       $product = wc_get_product($product_id);
+
+      if($this->is_virtual_product($product)){
+        return $passed;
+      }
   
-      if ($this->is_virtual_or_subscription_exceeds_limit($product, $product_id, $quantity)) {
+      if ($this->subscription_exceeds_limit($product_id, $quantity)) {
           return false;
       }
   
       return $passed;
   }
   
-  function is_virtual_or_subscription_exceeds_limit($product, $product_id, $quantity)
+  function is_virtual_product($product)
   {
-      if ($product->is_virtual()) {
-          return false;
-      }
+      return $product->is_virtual();
+  }
   
+  function subscription_exceeds_limit($product_id, $quantity)
+  {
       if (WC_Subscriptions_Product::is_subscription($product_id)) {
-          $subscription_count = 0;
-          foreach (WC()->cart->get_cart() as $cart_item) {
-              if ($cart_item['data']->get_id() === $product_id) {
-                  $subscription_count++;
-              }
-          }
+          $subscription_count = $this->count_subscriptions_in_cart($product_id);
   
           if ($subscription_count >= 1 && $quantity > 1) {
               wc_add_notice(__('Você só pode ter até 1 assinatura do mesmo produto no seu carrinho.', 'vindi-payment-gateway'), 'error');
@@ -326,6 +326,17 @@ class WcVindiPayment extends AbstractInstance
       }
   
       return false;
+  }
+  
+  function count_subscriptions_in_cart($product_id)
+  {
+      $subscription_count = 0;
+      foreach (WC()->cart->get_cart() as $cart_item) {
+          if ($cart_item['data']->get_id() === $product_id) {
+              $subscription_count++;
+          }
+      }
+      return $subscription_count;
   }
 
   function disallow_subscription_with_single_product_in_cart($passed, $product_id, $quantity)

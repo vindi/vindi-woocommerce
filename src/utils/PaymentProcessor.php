@@ -535,8 +535,6 @@ class VindiPaymentProcessor
         }
 
         $new_item = $this->calculate_discount($product_items);
-        error_log(var_export($new_item,true));
-        die();
         return $new_item;
     }
 
@@ -549,26 +547,15 @@ class VindiPaymentProcessor
             'vindi_id' => $item['id']
         );
 
-        $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
-
         foreach ($order_items as $order_item) {
             $new_order_item = $order_item;
             $total_discount = 0;
 
-            if ($order_item['product_id'] === $taxa_id['vindi_id']) {
-                foreach ($coupons as $coupon) {
-                    $discount_type = $coupon->get_discount_type();
-                    if ($discount_type === 'percent') {
-                        $discount_amount = $coupon->get_amount();
-                        $discount = abs(($order_item['pricing_schema']['price'] * $order_item['quantity'])) * $discount_amount / 100;
-                        $total_discount += $discount;
-                    }
-                }
-            }
-
             $full_price = $this->calculate_full_price($order_item);
             $remainder = $this->apply_discount($order_item, $full_price, $remainder);
-            if ($order_item['product_id'] == $taxa_id['vindi_id']) {
+
+            if ($order_item['product_id'] === $taxa_id['vindi_id']) {
+                $total_discount = $this->validate_discount_percentage_sign_up_fee($order_item);
                 $remainder = $this->apply_remainder($remainder, $full_price, $new_order_item);
             }
 
@@ -584,6 +571,22 @@ class VindiPaymentProcessor
         }
 
         return $new_order_items;
+    }
+
+    protected function validate_discount_percentage_sign_up_fee($order_item)
+    {
+        $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
+        $total_discount = 0;
+
+        foreach ($coupons as $coupon) {
+            $discount_type = $coupon->get_discount_type();
+            if ($discount_type === 'percent') {
+                $discount_amount = $coupon->get_amount();
+                $discount = abs(($order_item['pricing_schema']['price'] * $order_item['quantity'])) * $discount_amount / 100;
+                $total_discount += $discount;
+            }
+        }
+        return $total_discount;
     }
 
     protected function calculate_full_price($order_item)
