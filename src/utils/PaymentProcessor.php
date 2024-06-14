@@ -510,8 +510,6 @@ class VindiPaymentProcessor
         }
 
         $new_item = $this->calculate_discount($product_items);
-        error_log(var_export($product_items,true));
-        error_log(var_export($new_item,true));
         return $new_item;
     }
 
@@ -1006,7 +1004,6 @@ class VindiPaymentProcessor
         $discount_item = [];
         $amount = $coupon->get_amount();
         $discount_type = $coupon->get_discount_type();
-
         if ($discount_type == 'fixed_cart') {
             $total_cart = WC()->cart->subtotal;
             $percentage_item = $order_item['subtotal'] / $total_cart;
@@ -1022,15 +1019,11 @@ class VindiPaymentProcessor
         } elseif (strpos($discount_type, 'fixed') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = (float) $amount;
-        } elseif (
-            strpos($discount_type, 'percent') !== false ||
-            strpos($discount_type, 'recurring_percent') !== false
-        ) {
+        } elseif (strpos($discount_type, 'percent') !== false ||strpos($discount_type, 'recurring_percent') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = abs($amount / 100 * ($order_item['price'] * $order_item['quantity']));
         }
         $discount_item['cycles'] = $this->config_discount_cycles($coupon, $plan_cycles);
-
         return $discount_item;
     }
 
