@@ -510,6 +510,8 @@ class VindiPaymentProcessor
         }
 
         $new_item = $this->calculate_discount($product_items);
+        error_log(var_export($product_items,true));
+        error_log(var_export($new_item,true));
         return $new_item;
     }
 
@@ -873,35 +875,9 @@ class VindiPaymentProcessor
     {
         $discount_item = [];
         $bill_total_discount = 0;
-
         foreach ($order_items as $order_item) {
             if (isset($order_item['subtotal']) && isset($order_item['total'])) {
-                $coupons = array_values($this->vindi_settings->woocommerce->cart->get_coupons());
-                $total_cart = WC()->cart->subtotal;
-                foreach ($coupons as $coupon) {
-                    $amount = $coupon->get_amount();
-                    $discount_type = $coupon->get_discount_type();
-                    $bill_total_discount = 0.0;
-                    $amount = $coupon->get_amount();
-                    $discount_type = $coupon->get_discount_type();
-
-                    if ($this->coupon_supports_product($order_item, $coupon)) {
-                        $discount_value = 0.0;
-
-                        if ($discount_type == 'fixed_cart') {
-                            $percentage_item = $order_item['subtotal'] / $total_cart;
-                            $discount_value = $percentage_item * $amount;
-                        } elseif (strpos($discount_type, 'fixed') !== false) {
-                            $discount_value = $amount;
-                        } elseif (strpos($discount_type, 'percent') !== false || strpos($discount_type, 'recurring_percent') !== false) {
-                            $discount_value = $amount / 100 * $order_item['subtotal'];
-                        }
-                        if ($bill_total_discount + $discount_value > $order_item['subtotal']) {
-                            $discount_value = $order_item['subtotal'] - $bill_total_discount;
-                        }
-                        $bill_total_discount += (float)$discount_value;
-                    }
-                }
+                $bill_total_discount += (float) ($order_item['subtotal'] - $order_item['total']);
             }
         }
 
@@ -913,7 +889,7 @@ class VindiPaymentProcessor
         $discount_item = array(
             'type' => 'discount',
             'vindi_id' => $item['id'],
-            'price' => (float)$bill_total_discount * -1,
+            'price' => (float) $bill_total_discount * -1,
             'qty' => 1,
         );
 
@@ -934,7 +910,7 @@ class VindiPaymentProcessor
             'product_id' => $order_item['vindi_id'],
             'quantity' => $order_item['qty'],
             'pricing_schema' => array(
-                'price' => $order_item['price'] * $order_item['qty'],
+                'price' => $order_item['price'],
                 'schema_type' => 'per_unit',
             ),
         );
