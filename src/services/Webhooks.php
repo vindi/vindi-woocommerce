@@ -103,7 +103,7 @@ class VindiWebhooks
         try {
             if (empty($data->bill->subscription)) {
                 return;
-          }
+            }
     
             $renew_infos = [
                 'wc_subscription_id' => $data->bill->subscription->code,
@@ -117,16 +117,16 @@ class VindiWebhooks
     
             if ($this->handle_subscription_renewal($renew_infos, $data)) {
                 $response = ['message' => 'Fatura emitida corretamente', 'status' => 200];
-          } elseif ($this->handle_trial_period($renew_infos['wc_subscription_id'])) {
+            } elseif ($this->handle_trial_period($renew_infos['wc_subscription_id'])) {
                 $response = ['message' => 'O estado da assinatura passou para "Em espera"', 'status' => 200];
           }
-      } catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
             $response = ['message' => 'Erro durante o processamento da fatura.', 'status' => 500];
       }
     
         return wp_send_json(['message' => $response['message']], $response['status']);
-  }
+    }
   
     private function handle_subscription_renewal($renew_infos, $data)
   {
@@ -134,9 +134,9 @@ class VindiWebhooks
             $this->subscription_renew($renew_infos);
             $this->update_next_payment($data);
             return true;
-      }
+        }
         return false;
-  }
+    }
   
     private function handle_trial_period($subscription_id)
   {
@@ -148,9 +148,9 @@ class VindiWebhooks
             $order->update_status('pending', 'Período de teste vencido');
             $subscription->update_status('on-hold');
             return true;
-      }
+        }
         return false;
-  }
+    }
   
 
   /**

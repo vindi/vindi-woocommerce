@@ -605,7 +605,9 @@ class VindiPaymentProcessor
             $discount_type = $coupon->get_discount_type();
             if ($discount_type === 'percent') {
                 $discount_amount = $coupon->get_amount();
-                $discount = abs(($order_item['pricing_schema']['price'] * $order_item['quantity'])) * $discount_amount / 100;
+                $price = $order_item['pricing_schema']['price'];
+                $quantity = $order_item['quantity'];
+                $discount = abs(($price * $quantity)) * $discount_amount / 100;
                 $total_discount += $discount;
             }
         }
@@ -946,7 +948,7 @@ class VindiPaymentProcessor
 
             foreach ($coupons as $coupon) {
                 if ($this->coupon_supports_product($order_item, $coupon)) {
-                    $product_item['discounts'][] = $this->build_discount_item_for_subscription($coupon, $order_item, $plan_cycles);
+            $product_item['discounts'][] = $this->build_discount_item_for_subscription($coupon, $order_item, $plan_cycles);
                 }
             }
         }
