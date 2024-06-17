@@ -94,9 +94,9 @@ class WcVindiPayment extends AbstractInstance
     $this->frontend_files_loader = new FrontendFilesLoader();
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
-    $this->interest_price_handler = new InterestPriceHandler();
-    $this->product_metabox = new ProductsMetabox();
-    $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
+      $this->interest_price_handler = new InterestPriceHandler();
+      $this->product_metabox = new ProductsMetabox();
+      $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
 
 
     /**
@@ -111,13 +111,13 @@ class WcVindiPayment extends AbstractInstance
       $this->webhooks, 'handle'
     ));
 
-    add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
-    add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_in_cart_update'], 10, 4);
-    add_filter('woocommerce_add_to_cart_validation', [$this, 'disallow_subscription_with_single_product_in_cart'], 10, 4);
-    add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
-    add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
-    add_action('wp_ajax_nopriv_renew_pix_charge', [$this, 'renew_pix_charge']);
-    do_action('woocommerce_set_cart_cookies', true);
+        add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
+        add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_in_cart_update'], 10, 4);
+        add_filter('woocommerce_add_to_cart_validation', [$this, 'disallow_subscription_single_product_cart'], 10, 4);
+        add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
+        add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
+        add_action('wp_ajax_nopriv_renew_pix_charge', [$this, 'renew_pix_charge']);
+        do_action('woocommerce_set_cart_cookies', true);
   }
 
   /**
@@ -170,7 +170,7 @@ class WcVindiPayment extends AbstractInstance
 
   public static function get_instance()
   {
-    require_once plugin_dir_path(__FILE__) . '/utils/FrontendFilesLoader.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/FrontendFilesLoader.php';
     new FrontendFilesLoader();
 
     if (VindiDependencies::check()) {
@@ -192,8 +192,8 @@ class WcVindiPayment extends AbstractInstance
   {
     $methods[] = new VindiCreditGateway($this->settings, $this->controllers);
     $methods[] = new VindiBankSlipGateway($this->settings, $this->controllers);
-    $methods[] = new VindiPixGateway($this->settings, $this->controllers);
-    $methods[] = new VindiBolepixGateway($this->settings, $this->controllers);
+        $methods[] = new VindiPixGateway($this->settings, $this->controllers);
+        $methods[] = new VindiBolepixGateway($this->settings, $this->controllers);
 
     return $methods;
   }
@@ -215,12 +215,11 @@ class WcVindiPayment extends AbstractInstance
     {
         $items = $cart->get_cart();
         foreach ($items as $item) {
-            if(
-            class_exists('WC_Subscriptions_Product')
+            if (class_exists('WC_Subscriptions_Product')
             && WC_Subscriptions_Product::get_trial_length($item['product_id']) > 0
                 ) {
                     return true;
-                  }
+            }
         }
 
         return false;
@@ -255,11 +254,11 @@ class WcVindiPayment extends AbstractInstance
                 $vindi_order[$subscription_id]['bill'] = $bill;
                 $order->update_meta_data('vindi_order', $vindi_order);
                 $order->save();
-          }
+        }
         }
     }
 
-  public function limit_same_subscriptions($passed, $product_id, $quantity)
+    public function limit_same_subscriptions($passed, $product_id, $quantity)
     {
         $product = wc_get_product($product_id);
     
@@ -298,8 +297,8 @@ class WcVindiPayment extends AbstractInstance
         $product_id = $values['product_id'];
         $product = wc_get_product($product_id);
 
-        if($this->is_virtual_product($product)){
-          return $passed;
+        if ($this->is_virtual_product($product)) {
+            return $passed;
         }
     
         if ($this->subscription_exceeds_limit($product_id, $quantity)) {
@@ -320,7 +319,8 @@ class WcVindiPayment extends AbstractInstance
             $subscription_count = $this->count_subscriptions_in_cart($product_id);
     
             if ($subscription_count >= 1 && $quantity > 1) {
-                wc_add_notice(__('Você só pode ter até 1 assinatura do mesmo produto no seu carrinho.', 'vindi-payment-gateway'), 'error');
+                wc_add_notice(__('Você só pode ter até 1 assinatura do mesmo produto no seu carrinho.',
+                 'vindi-payment-gateway'), 'error');
                 return true;
             }
         }
@@ -339,7 +339,7 @@ class WcVindiPayment extends AbstractInstance
         return $subscription_count;
     }
 
-    public function disallow_subscription_with_single_product_in_cart($passed, $product_id, $quantity)
+    public function disallow_subscription_single_product_cart($passed, $product_id, $quantity)
     {
         $product = wc_get_product($product_id);
     
@@ -348,7 +348,8 @@ class WcVindiPayment extends AbstractInstance
         }
     
         if ($this->is_cart_mixed_with_subscription($product_id)) {
-            wc_add_notice(__('Olá! Finalize a compra da assinatura adicionada ao carrinho antes de adicionar outra assinatura ou produto.', 'vindi-payment-gateway'), 'error');
+            wc_add_notice(__('Olá! Finalize a compra da assinatura adicionada
+             ao carrinho antes de adicionar outra assinatura ou produto.', 'vindi-payment-gateway'), 'error');
             return false;
         }
     
