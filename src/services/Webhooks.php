@@ -97,59 +97,59 @@ class VindiWebhooks
    * Process bill_created event from webhook
    * @param $data array
    */
-  private function bill_created($data)
+    private function bill_created($data)
   {
-      $response = ['message' => 'Não foi possível emitir a fatura', 'status' => 422];
-      try {
-          if (empty($data->bill->subscription)) {
-              return;
+        $response = ['message' => 'Não foi possível emitir a fatura', 'status' => 422];
+        try {
+            if (empty($data->bill->subscription)) {
+                return;
           }
-  
-          $renew_infos = [
-              'wc_subscription_id' => $data->bill->subscription->code,
-              'vindi_subscription_id' => $data->bill->subscription->id,
-              'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
-              'cycle' => $data->bill->period->cycle,
-              'bill_status' => $data->bill->status,
-              'bill_id' => $data->bill->id,
-              'bill_print_url' => $data->bill->charges[0]->print_url
-          ];
-  
-          if ($this->handle_subscription_renewal($renew_infos, $data)) {
-              $response = ['message' => 'Fatura emitida corretamente', 'status' => 200];
+    
+            $renew_infos = [
+                'wc_subscription_id' => $data->bill->subscription->code,
+                'vindi_subscription_id' => $data->bill->subscription->id,
+                'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
+                'cycle' => $data->bill->period->cycle,
+                'bill_status' => $data->bill->status,
+                'bill_id' => $data->bill->id,
+                'bill_print_url' => $data->bill->charges[0]->print_url
+            ];
+    
+            if ($this->handle_subscription_renewal($renew_infos, $data)) {
+                $response = ['message' => 'Fatura emitida corretamente', 'status' => 200];
           } elseif ($this->handle_trial_period($renew_infos['wc_subscription_id'])) {
-              $response = ['message' => 'O estado da assinatura passou para "Em espera"', 'status' => 200];
+                $response = ['message' => 'O estado da assinatura passou para "Em espera"', 'status' => 200];
           }
       } catch (\Exception $e) {
-          $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
-          $response = ['message' => 'Erro durante o processamento da fatura.', 'status' => 500];
+            $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
+            $response = ['message' => 'Erro durante o processamento da fatura.', 'status' => 500];
       }
-  
-      return wp_send_json(['message' => $response['message']], $response['status']);
+    
+        return wp_send_json(['message' => $response['message']], $response['status']);
   }
   
-  private function handle_subscription_renewal($renew_infos, $data)
+    private function handle_subscription_renewal($renew_infos, $data)
   {
-      if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'], $renew_infos['cycle'])) {
-          $this->subscription_renew($renew_infos);
-          $this->update_next_payment($data);
-          return true;
+        if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'], $renew_infos['cycle'])) {
+            $this->subscription_renew($renew_infos);
+            $this->update_next_payment($data);
+            return true;
       }
-      return false;
+        return false;
   }
   
-  private function handle_trial_period($subscription_id)
+    private function handle_trial_period($subscription_id)
   {
-      $clean_subscription_id = $this->find_subscription_by_id($subscription_id);
-      $subscription = wcs_get_subscription($clean_subscription_id);
-      if ($subscription->get_trial_period() > 0 && $subscription->get_status() == "active") {
-          $parent_id = $subscription->get_parent_id();
-          $order = new WC_Order($parent_id);
-          $order->update_status('pending', 'Período de teste vencido');
-          $subscription->update_status('on-hold');
-          return true;
+        $clean_subscription_id = $this->find_subscription_by_id($subscription_id);
+        $subscription = wcs_get_subscription($clean_subscription_id);
+        if ($subscription->get_trial_period() > 0 && $subscription->get_status() == "active") {
+            $parent_id = $subscription->get_parent_id();
+            $order = new WC_Order($parent_id);
+            $order->update_status('pending', 'Período de teste vencido');
+            $subscription->update_status('on-hold');
+            return true;
       }
-      return false;
+        return false;
   }
   
 

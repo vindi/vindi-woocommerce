@@ -94,9 +94,9 @@ class WcVindiPayment extends AbstractInstance
     $this->frontend_files_loader = new FrontendFilesLoader();
     $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
     $this->vindi_status_notifier = new VindiProductStatus($this->settings);
-      $this->interest_price_handler = new InterestPriceHandler();
-      $this->product_metabox = new ProductsMetabox();
-      $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
+        $this->interest_price_handler = new InterestPriceHandler();
+        $this->product_metabox = new ProductsMetabox();
+        $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
 
 
     /**
@@ -112,7 +112,7 @@ class WcVindiPayment extends AbstractInstance
     ));
 
         add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
-        add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_in_cart_update'], 10, 4);
+        add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_cart_update'], 10, 4);
         add_filter('woocommerce_add_to_cart_validation', [$this, 'disallow_subscription_single_product_cart'], 10, 4);
         add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
         add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
@@ -254,7 +254,7 @@ class WcVindiPayment extends AbstractInstance
                 $vindi_order[$subscription_id]['bill'] = $bill;
                 $order->update_meta_data('vindi_order', $vindi_order);
                 $order->save();
-        }
+            }
         }
     }
 
@@ -292,7 +292,7 @@ class WcVindiPayment extends AbstractInstance
         return $subscription_count;
     }
 
-    public function limit_duplicate_subscriptions_in_cart_update($passed, $cart_item_key, $values, $quantity)
+    public function limit_duplicate_subscriptions_cart_update($passed, $cart_item_key, $values, $quantity)
     {
         $product_id = $values['product_id'];
         $product = wc_get_product($product_id);
@@ -319,8 +319,8 @@ class WcVindiPayment extends AbstractInstance
             $subscription_count = $this->count_subscriptions_in_cart($product_id);
     
             if ($subscription_count >= 1 && $quantity > 1) {
-                wc_add_notice(__('Você só pode ter até 1 assinatura do mesmo produto no seu carrinho.',
-                 'vindi-payment-gateway'), 'error');
+                $message ='Você só pode ter até 1 assinatura do mesmo produto no seu carrinho.';
+                wc_add_notice(__($message, 'vindi-payment-gateway'), 'error');
                 return true;
             }
         }
