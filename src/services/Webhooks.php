@@ -123,8 +123,8 @@ class VindiWebhooks
             return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
         } catch (\Exception $e) {
             $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
-            $message = 'Erro durante o processamento da fatura.';
-            return wp_send_json(['message' => $message], 500);
+            $message = wp_send_json(['message' => 'Erro durante o processamento da fatura.'], 500);
+            return $message;
         }
     }
 

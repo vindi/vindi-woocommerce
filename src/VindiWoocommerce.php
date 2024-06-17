@@ -82,42 +82,42 @@ class WcVindiPayment extends AbstractInstance
   public function __construct()
   {
 
-      // Checks if Woocommerce is installed and activated
-      $this->init();
+    // Checks if Woocommerce is installed and activated
+    $this->init();
 
 
-      $this->languages = new VindiLanguages();
+    $this->languages = new VindiLanguages();
 
-      $this->settings = new VindiSettings();
-      $this->controllers = new VindiControllers($this->settings);
-      $this->webhooks = new VindiWebhooks($this->settings);
-      $this->frontend_files_loader = new FrontendFilesLoader();
-      $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
-      $this->vindi_status_notifier = new VindiProductStatus($this->settings);
-      $this->interest_price_handler = new InterestPriceHandler();
-      $this->product_metabox = new ProductsMetabox();
-      $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
+    $this->settings = new VindiSettings();
+    $this->controllers = new VindiControllers($this->settings);
+    $this->webhooks = new VindiWebhooks($this->settings);
+    $this->frontend_files_loader = new FrontendFilesLoader();
+    $this->subscription_status_handler = new VindiSubscriptionStatusHandler($this->settings);
+    $this->vindi_status_notifier = new VindiProductStatus($this->settings);
+    $this->interest_price_handler = new InterestPriceHandler();
+    $this->product_metabox = new ProductsMetabox();
+    $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
 
 
-      /**
-       * Add Gateway to Woocommerce
-       */
-      add_filter('woocommerce_payment_gateways', array(&$this, 'add_gateway'));
+    /**
+     * Add Gateway to Woocommerce
+     */
+    add_filter('woocommerce_payment_gateways', array(&$this, 'add_gateway'));
 
-      /**
-       * Register webhook handler
-       */
-      add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
-        $this->webhooks, 'handle'
-      ));
+    /**
+     * Register webhook handler
+     */
+    add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
+      $this->webhooks, 'handle'
+    ));
 
-      add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
-      add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_in_cart_update'], 10, 4);
-      add_filter('woocommerce_add_to_cart_validation', [$this, 'disallow_subscription_with_single_product_in_cart'], 10, 4);
-      add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
-      add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
-      add_action('wp_ajax_nopriv_renew_pix_charge', [$this, 'renew_pix_charge']);
-      do_action('woocommerce_set_cart_cookies', true);
+    add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
+    add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_in_cart_update'], 10, 4);
+    add_filter('woocommerce_add_to_cart_validation', [$this, 'disallow_subscription_with_single_product_in_cart'], 10, 4);
+    add_filter('woocommerce_cart_needs_payment', [$this, 'filter_woocommerce_cart_needs_payment'], 10, 2);
+    add_action('wp_ajax_renew_pix_charge', [$this, 'renew_pix_charge']);
+    add_action('wp_ajax_nopriv_renew_pix_charge', [$this, 'renew_pix_charge']);
+    do_action('woocommerce_set_cart_cookies', true);
   }
 
   /**
@@ -190,12 +190,12 @@ class WcVindiPayment extends AbstractInstance
    */
   public function add_gateway($methods)
   {
-      $methods[] = new VindiCreditGateway($this->settings, $this->controllers);
-      $methods[] = new VindiBankSlipGateway($this->settings, $this->controllers);
-      $methods[] = new VindiPixGateway($this->settings, $this->controllers);
-      $methods[] = new VindiBolepixGateway($this->settings, $this->controllers);
+    $methods[] = new VindiCreditGateway($this->settings, $this->controllers);
+    $methods[] = new VindiBankSlipGateway($this->settings, $this->controllers);
+    $methods[] = new VindiPixGateway($this->settings, $this->controllers);
+    $methods[] = new VindiBolepixGateway($this->settings, $this->controllers);
 
-      return $methods;
+    return $methods;
   }
 
   /**

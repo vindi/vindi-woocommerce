@@ -639,20 +639,13 @@ class VindiPaymentProcessor
     protected function apply_remainder($remainder, $full_price, &$new_order_item)
     {
         if ($remainder > 0) {
-            if ($remainder <= $full_price) {
-                $new_order_item['discounts'][] = array(
-                    'discount_type' => 'amount',
-                    'amount' => $remainder,
-                    'cycles' => 1
-                );
-                $remainder = 0;
-            } else {
-                $new_order_item['discounts'][] = array(
-                    'discount_type' => 'amount',
-                    'amount' => $full_price,
-                    'cycles' => 1
-                );
-            }
+            $amount_to_apply = min($remainder, $full_price);
+            $new_order_item['discounts'][] = array(
+                'discount_type' => 'amount',
+                'amount' => $amount_to_apply,
+                'cycles' => 1
+            );
+            $remainder -= $amount_to_apply;
         }
         return $remainder;
     }
@@ -1038,15 +1031,16 @@ class VindiPaymentProcessor
     protected function config_discount_cycles($coupon, $plan_cycles = 0)
     {
         $cycle_count = get_post_meta($coupon->get_id(), 'cycle_count', true);
-
+    
         if ($coupon->get_discount_type() == 'recurring_percent') {
-            $cycle_count = WC_Subscriptions_Coupon::get_coupon_limit($coupon->get_id());
+            $subscriptions_coupon = new WC_Subscriptions_Coupon();
+            $cycle_count = $subscriptions_coupon->get_coupon_limit($coupon->get_id());
         }
-
+    
         if ($cycle_count == 0) {
             return null;
         }
-
+    
         return $this->get_plan_length($cycle_count, $plan_cycles);
     }
 
