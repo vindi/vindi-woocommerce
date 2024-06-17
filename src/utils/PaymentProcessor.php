@@ -948,7 +948,9 @@ class VindiPaymentProcessor
 
             foreach ($coupons as $coupon) {
                 if ($this->coupon_supports_product($order_item, $coupon)) {
-            $product_item['discounts'][] = $this->build_discount_item_for_subscription($coupon, $order_item, $plan_cycles);
+                    $product_item['discounts'][] = $this->build_discount_item_for_subscription($coupon,
+                    $order_item,
+                    $plan_cycles);
                 }
             }
         }

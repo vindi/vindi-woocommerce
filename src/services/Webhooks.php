@@ -119,11 +119,11 @@ class VindiWebhooks
                 $response = ['message' => 'Fatura emitida corretamente', 'status' => 200];
             } elseif ($this->handle_trial_period($renew_infos['wc_subscription_id'])) {
                 $response = ['message' => 'O estado da assinatura passou para "Em espera"', 'status' => 200];
-          }
+            }
         } catch (\Exception $e) {
             $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
             $response = ['message' => 'Erro durante o processamento da fatura.', 'status' => 500];
-      }
+        }
     
         return wp_send_json(['message' => $response['message']], $response['status']);
     }
