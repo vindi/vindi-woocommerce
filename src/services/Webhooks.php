@@ -134,31 +134,6 @@ class VindiWebhooks
       return wp_send_json(['message' => $response['message']], $response['status']);
   }
   
-    private function handle_subscription_renewal($renew_infos, $data)
-  {
-        if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'], $renew_infos['cycle'])) {
-            $this->subscription_renew($renew_infos);
-            $this->update_next_payment($data);
-            return true;
-        }
-        return false;
-    }
-  
-    private function handle_trial_period($subscription_id)
-  {
-        $clean_subscription_id = $this->find_subscription_by_id($subscription_id);
-        $subscription = wcs_get_subscription($clean_subscription_id);
-        if ($subscription->get_trial_period() > 0 && $subscription->get_status() == "active") {
-            $parent_id = $subscription->get_parent_id();
-            $order = new WC_Order($parent_id);
-            $order->update_status('pending', 'Período de teste vencido');
-            $subscription->update_status('on-hold');
-            return true;
-        }
-        return false;
-    }
-  
-
   /**
    * Process subscription_renew event from webhook
    * @param $renew_infos array
