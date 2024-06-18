@@ -169,7 +169,7 @@ class VindiWebhooks
 
     // We've already processed the renewal
     remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
-  }
+    }
 
   /**
    * Process bill_paid event from webhook
@@ -399,14 +399,14 @@ class VindiWebhooks
     public function find_subscription_by_id($id_item)
   {
     // Webhooks Ids has "WC-" prefix
-    $sanitized_id = explode('WC-', $id_item);
+      $sanitized_id = explode('WC-', $id_item);
     $subscription = wcs_get_subscription(end($sanitized_id));
 
     if (empty($subscription))
-      throw new Exception(sprintf(__('Assinatura #%s não encontrada!', VINDI), $id_item), 2);
+        throw new Exception(sprintf(__('Assinatura #%s não encontrada!', VINDI), $id_item), 2);
 
     return $subscription;
-  }
+    }
 
   /**
    * @param int id
@@ -561,7 +561,7 @@ class VindiWebhooks
       $subscription->update_dates(array('next_payment' => $next_payment));
       $subscription->update_dates(array('end_date' => $end_date));
     }
-  }
+   }
 
   private function format_date($date)
   {
