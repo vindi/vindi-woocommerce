@@ -16,7 +16,10 @@ class WebhooksHelpers
 
     public function handleSubscriptionRenewal($renewInfos, $data)
     {
-        if (!$this->vindiWebhooks->subscriptionHasOrderInCycle($renewInfos['vindi_subscription_id'], $renewInfos['cycle'])) {
+        $vindiId = $renewInfos['vindi_subscription_id'];
+        $cycle = $renewInfos['cycle'];
+        $hasOrder = $this->vindiWebhooks->subscriptionHasOrderInCycle($vindiId, $cycle);
+        if (!$hasOrder) {
             $this->vindiWebhooks->subscriptionRenew($renewInfos);
             $this->vindiWebhooks->updateNextPayment($data);
             return true;
