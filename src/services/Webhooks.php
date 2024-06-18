@@ -105,33 +105,33 @@ class VindiWebhooks
    */
     private function bill_created($data)
     {
-        $response = ['message' => 'Não foi possível emitir a fatura', 'status' => 422];
+      $response = ['message' => 'Não foi possível emitir a fatura', 'status' => 422];
       try {
           if (empty($data->bill->subscription)) {
-                return;
+              return;
           }
 
-            $renewInfos = [
-              'wc_subscription_id' => $data->bill->subscription->code,
-              'vindi_subscription_id' => $data->bill->subscription->id,
-              'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
-              'cycle' => $data->bill->period->cycle,
-              'bill_status' => $data->bill->status,
-              'bill_id' => $data->bill->id,
-              'bill_print_url' => $data->bill->charges[0]->print_url
-            ];
+          $renewInfos = [
+            'wc_subscription_id' => $data->bill->subscription->code,
+            'vindi_subscription_id' => $data->bill->subscription->id,
+            'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
+            'cycle' => $data->bill->period->cycle,
+            'bill_status' => $data->bill->status,
+            'bill_id' => $data->bill->id,
+            'bill_print_url' => $data->bill->charges[0]->print_url
+          ];
 
-            if ($this->webhooksHelpers->handle_subscription_renewal($renewInfos, $data)) {
-                $response = ['message' => 'Fatura emitida corretamente', 'status' => 200];
-            } elseif ($this->webhooksHelpers->handle_trial_period($renewInfos['wc_subscription_id'])) {
-                $response = ['message' => 'O estado da assinatura passou para "Em espera"', 'status' => 200];
-            }
-            } catch (\Exception $e) {
-            $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
-            $response = ['message' => 'Erro durante o processamento da fatura.', 'status' => 500];
+          if ($this->webhooksHelpers->handle_subscription_renewal($renewInfos, $data)) {
+              $response = ['message' => 'Fatura emitida corretamente', 'status' => 200];
+          } elseif ($this->webhooksHelpers->handle_trial_period($renewInfos['wc_subscription_id'])) {
+              $response = ['message' => 'O estado da assinatura passou para "Em espera"', 'status' => 200];
           }
+      } catch (\Exception $e) {
+          $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
+          $response = ['message' => 'Erro durante o processamento da fatura.', 'status' => 500];
+      }
 
-        return wp_send_json(['message' => $response['message']], $response['status']);
+      return wp_send_json(['message' => $response['message']], $response['status']);
     }
   
   /**
