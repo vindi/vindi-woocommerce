@@ -14,7 +14,7 @@ class WebhooksHelpers
         $this->vindiWebhooks = $vindiWebhooks;
     }
 
-    public function handleSubscriptionRenewal($renewInfos, $data)
+    public function handle_subscription_renewal($renewInfos, $data)
     {
         $vindiId = $renewInfos['vindi_subscription_id'];
         $cycle = $renewInfos['cycle'];
@@ -27,7 +27,7 @@ class WebhooksHelpers
         return false;
     }
 
-    public function handleTrialPeriod($subscriptionId)
+    public function handle_trial_period($subscriptionId)
     {
         $cleanSubscriptionId = $this->vindiWebhooks->find_subscription_by_id($subscriptionId);
         $subscription = wcs_get_subscription($cleanSubscriptionId);
