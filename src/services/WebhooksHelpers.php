@@ -18,10 +18,10 @@ class WebhooksHelpers
     {
         $vindiId = $renewInfos['vindi_subscription_id'];
         $cycle = $renewInfos['cycle'];
-        $hasOrder = $this->vindiWebhooks->subscriptionHasOrderInCycle($vindiId, $cycle);
+        $hasOrder = $this->vindiWebhooks->subscription_has_order_in_cycle($vindiId, $cycle);
         if (!$hasOrder) {
-            $this->vindiWebhooks->subscriptionRenew($renewInfos);
-            $this->vindiWebhooks->updateNextPayment($data);
+            $this->vindiWebhooks->subscription_renew($renewInfos);
+            $this->vindiWebhooks->update_next_payment($data);
             return true;
         }
         return false;
@@ -29,7 +29,7 @@ class WebhooksHelpers
 
     public function handleTrialPeriod($subscriptionId)
     {
-        $cleanSubscriptionId = $this->vindiWebhooks->findSubscriptionById($subscriptionId);
+        $cleanSubscriptionId = $this->vindiWebhooks->find_subscription_by_id($subscriptionId);
         $subscription = wcs_get_subscription($cleanSubscriptionId);
         if ($subscription->get_trial_period() > 0 && $subscription->get_status() == "active") {
             $parentId = $subscription->get_parent_id();

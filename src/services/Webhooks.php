@@ -138,7 +138,7 @@ class VindiWebhooks
    * Process subscription_renew event from webhook
    * @param $renew_infos array
    */
-  private function subscription_renew($renew_infos)
+  public function subscription_renew($renew_infos)
   {
     $subscription = $this->find_subscription_by_id($renew_infos['wc_subscription_id']);
 
@@ -396,7 +396,7 @@ class VindiWebhooks
    * @param int id
    * @return WC_Subscription
    */
-  private function find_subscription_by_id($id)
+  public function find_subscription_by_id($id)
   {
     // Webhooks Ids has "WC-" prefix
     $sanitized_id = explode('WC-', $id);
@@ -493,7 +493,7 @@ class VindiWebhooks
    *
    * @return boolean
    */
-    private function subscription_has_order_in_cycle($subscription_id, $cycle)
+    public function subscription_has_order_in_cycle($subscription_id, $cycle)
     {
     $query = $this->query_order_by_metas(array(
       array(
@@ -527,7 +527,7 @@ class VindiWebhooks
    *
    * @param $data object
    */
-  private function update_next_payment($data)
+  public function update_next_payment($data)
   {
     // let's find the subscription in the API
     // we need this step because the actual next billing date does not come from the /bill webhook

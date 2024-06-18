@@ -134,6 +134,8 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/i18n/Languages.php';
         require_once plugin_dir_path(__FILE__) . '/services/VindiHelpers.php';
         require_once plugin_dir_path(__FILE__) . '/services/Webhooks.php';
+        require_once plugin_dir_path(__FILE__) . '/services/WebhooksHelpers.php';
+
 
         // Loading Abstract Method and Utils
         require_once plugin_dir_path(__FILE__) . '/utils/PaymentGateway.php';
