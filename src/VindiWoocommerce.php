@@ -377,8 +377,6 @@ class WcVindiPayment extends AbstractInstance
     
         return $is_subscription !== $new_product_subscription;
     }
-
 }
-
 
 add_action('plugins_loaded', array(WcVindiPayment::class, 'get_instance'));

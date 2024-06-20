@@ -34,7 +34,7 @@ class WebhooksHelpers
         $subscription = wcs_get_subscription($cleanSubscriptionId);
         $now = new DateTime();
         $endTrial = new DateTime();
-        $endTrial->setTimestamp($subscription->get_time( 'trial_end' ));
+        $endTrial->setTimestamp($subscription->get_time('trial_end'));
         if ($endTrial > $now && $subscription->get_status() == "active") {
             $parentId = $subscription->get_parent_id();
             $order = new WC_Order($parentId);
