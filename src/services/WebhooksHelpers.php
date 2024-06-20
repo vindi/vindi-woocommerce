@@ -2,6 +2,7 @@
 
 namespace VindiPaymentGateways;
 
+use DateTime;
 use WC_Order;
 use Exception;
 
@@ -31,7 +32,10 @@ class WebhooksHelpers
     {
         $cleanSubscriptionId = $this->vindiWebhooks->find_subscription_by_id($subscriptionId);
         $subscription = wcs_get_subscription($cleanSubscriptionId);
-        if ($subscription->get_trial_period() > 0 && $subscription->get_status() == "active") {
+        $now = new DateTime();
+        $endTrial = new DateTime();
+        $endTrial->setTimestamp($subscription->get_time( 'trial_end' ));
+        if ($endTrial > $now && $subscription->get_status() == "active") {
             $parentId = $subscription->get_parent_id();
             $order = new WC_Order($parentId);
             $order->update_status('pending', 'Período de teste vencido');

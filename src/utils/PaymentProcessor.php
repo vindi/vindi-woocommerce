@@ -2,6 +2,7 @@
 
 namespace VindiPaymentGateways;
 
+use DateTime;
 use WC_Order;
 use Exception;
 use WC_Product;
@@ -543,7 +544,6 @@ class VindiPaymentProcessor
         }
 
         $order_items[] = $this->build_interest_rate_item($order_items);
-
         return $order_items;
     }
 

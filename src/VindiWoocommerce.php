@@ -377,6 +377,7 @@ class WcVindiPayment extends AbstractInstance
     
         return $is_subscription !== $new_product_subscription;
     }
+
 }
 
 
