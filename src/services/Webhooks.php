@@ -20,12 +20,18 @@ class VindiWebhooks
   private $routes;
 
   /**
+   * @var WebhooksHelper
+   */
+    private $webhooksHelpers;
+
+  /**
    * @param VindiSettings $vindi_settings
    */
     public function __construct(VindiSettings $vindi_settings)
     {
       $this->vindi_settings = $vindi_settings;
       $this->routes = $vindi_settings->routes;
+        $this->webhooksHelpers = new WebhooksHelpers($this);
     }
 
   /**
@@ -99,36 +105,40 @@ class VindiWebhooks
    */
     private function bill_created($data)
     {
+        $response = ['message' => 'Não foi possível emitir a fatura', 'status' => 422];
         try {
             if (empty($data->bill->subscription)) {
                 return;
             }
-            $renew_infos = [
-                'wc_subscription_id' => $data->bill->subscription->code,
-                'vindi_subscription_id' => $data->bill->subscription->id,
-                'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
-                'cycle' => $data->bill->period->cycle,
-                'bill_status' => $data->bill->status,
-                'bill_id' => $data->bill->id,
-                'bill_print_url' => $data->bill->charges[0]->print_url
+
+            $renewInfos = [
+              'wc_subscription_id' => $data->bill->subscription->code,
+              'vindi_subscription_id' => $data->bill->subscription->id,
+              'plan_name' => str_replace('[WC] ', '', $data->bill->subscription->plan->name),
+              'cycle' => $data->bill->period->cycle,
+              'bill_status' => $data->bill->status,
+              'bill_id' => $data->bill->id,
+              'bill_print_url' => $data->bill->charges[0]->print_url
             ];
-            if (!$this->subscription_has_order_in_cycle($renew_infos['vindi_subscription_id'], $renew_infos['cycle'])) {
-                $this->subscription_renew($renew_infos);
-                $this->update_next_payment($data);
-                return wp_send_json(['message' => 'Fatura emitida corretamente'], 200);
+
+            if ($this->webhooksHelpers->handle_subscription_renewal($renewInfos, $data)) {
+                $response = ['message' => 'Fatura emitida corretamente', 'status' => 200];
+            } elseif ($this->webhooksHelpers->handle_trial_period($renewInfos['wc_subscription_id'])) {
+                $response = ['message' => 'O estado da assinatura passou para "Em espera"', 'status' => 200];
             }
-            return wp_send_json(['message' => 'Não foi possível emitir a fatura'], 422);
         } catch (\Exception $e) {
             $this->handle_exception('bill_created', $e->getMessage(), $data->bill->id);
-            return wp_send_json(['message' => 'Erro durante o processamento da fatura.'], 500);
+            $response = ['message' => 'Erro durante o processamento da fatura.', 'status' => 500];
         }
-    }
 
+        return wp_send_json(['message' => $response['message']], $response['status']);
+    }
+  
   /**
    * Process subscription_renew event from webhook
    * @param $renew_infos array
    */
-  private function subscription_renew($renew_infos)
+    public function subscription_renew($renew_infos)
   {
     $subscription = $this->find_subscription_by_id($renew_infos['wc_subscription_id']);
 
@@ -159,7 +169,7 @@ class VindiWebhooks
 
     // We've already processed the renewal
     remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
-  }
+    }
 
   /**
    * Process bill_paid event from webhook
@@ -386,17 +396,17 @@ class VindiWebhooks
    * @param int id
    * @return WC_Subscription
    */
-  private function find_subscription_by_id($id)
+    public function find_subscription_by_id($id_item)
   {
     // Webhooks Ids has "WC-" prefix
-    $sanitized_id = explode('WC-', $id);
+        $sanitized_id = explode('WC-', $id_item);
     $subscription = wcs_get_subscription(end($sanitized_id));
 
     if (empty($subscription))
-      throw new Exception(sprintf(__('Assinatura #%s não encontrada!', VINDI), $id), 2);
+        throw new Exception(sprintf(__('Assinatura #%s não encontrada!', VINDI), $id_item), 2);
 
     return $subscription;
-  }
+    }
 
   /**
    * @param int id
@@ -483,7 +493,7 @@ class VindiWebhooks
    *
    * @return boolean
    */
-    private function subscription_has_order_in_cycle($subscription_id, $cycle)
+    public function subscription_has_order_in_cycle($subscription_id, $cycle)
     {
     $query = $this->query_order_by_metas(array(
       array(
@@ -517,7 +527,7 @@ class VindiWebhooks
    *
    * @param $data object
    */
-  private function update_next_payment($data)
+    public function update_next_payment($data)
   {
     // let's find the subscription in the API
     // we need this step because the actual next billing date does not come from the /bill webhook
@@ -551,7 +561,7 @@ class VindiWebhooks
       $subscription->update_dates(array('next_payment' => $next_payment));
       $subscription->update_dates(array('end_date' => $end_date));
     }
-  }
+    }
 
   private function format_date($date)
   {
