@@ -667,7 +667,15 @@ class VindiPaymentProcessor
             foreach ($order_items as $key => $order_item) {
                 $product = $order_item->get_product();
                 $order_items[$key]['type'] = 'product';
-                $order_items[$key]['vindi_id'] = $this->routes->findProductByCode('WC-' . $product->get_id())['id'];
+                $product_id = $product->get_id();
+                if($this->is_variable($product)){
+                    $product_id = $order_item['product_id'];
+                }
+                $vindi_id = get_post_meta($product_id,'vindi_product_id',true);
+                if(!$vindi_id){
+                    $vindi_id = $this->routes->findProductByCode('WC-' . $product_id)['id'];
+                }
+                $order_items[$key]['vindi_id'] = $vindi_id;
                 $order_items[$key]['price'] = (float) $order_items[$key]['subtotal'] / $order_items[$key]['qty'];
             }
             return $order_items;
