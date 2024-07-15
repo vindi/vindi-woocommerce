@@ -664,12 +664,7 @@ class VindiPaymentProcessor
     protected function build_product_from_order_item($order_type, $order_items)
     {
         if ('bill' === $order_type) {
-            foreach ($order_items as $key => $order_item) {
-                $product = $order_item->get_product();
-                $order_items[$key]['type'] = 'product';
-                $order_items[$key]['vindi_id'] = $this->routes->findProductByCode('WC-' . $product->get_id())['id'];
-                $order_items[$key]['price'] = (float) $order_items[$key]['subtotal'] / $order_items[$key]['qty'];
-            }
+            $order_items = $this->build_product_from_order_item_bill($order_items);
             return $order_items;
         }
 
@@ -688,6 +683,25 @@ class VindiPaymentProcessor
             $order_items['price'] = (float) $matching_item['subtotal'] / $matching_item['qty'];
         } else {
             $order_items['price'] = (float) $order_items['subtotal'] / $order_items['qty'];
+        }
+        return $order_items;
+    }
+
+    protected function build_product_from_order_item_bill($order_items)
+    {
+        foreach ($order_items as $key => $order_item) {
+            $product = $order_item->get_product();
+            $order_items[$key]['type'] = 'product';
+            $product_id = $product->get_id();
+            if ($this->is_variable($product)) {
+                $product_id = $order_item['product_id'];
+            }
+            $vindi_id = get_post_meta($product_id, 'vindi_product_id', true);
+            if (!$vindi_id) {
+                $vindi_id = $this->routes->findProductByCode('WC-' . $product_id)['id'];
+            }
+            $order_items[$key]['vindi_id'] = $vindi_id;
+            $order_items[$key]['price'] = (float) $order_items[$key]['subtotal'] / $order_items[$key]['qty'];
         }
         return $order_items;
     }
