@@ -124,7 +124,8 @@ class WcVindiPayment extends AbstractInstance
         add_action('woocommerce_pay_order_before_payment', [$this, 'add_billing_fields'], 10, 1);
         add_action('woocommerce_before_pay_action', [$this, 'save_billing_fields'], 10, 1);
         add_action( 'wcs_after_parent_order_setup_cart', [$this, 'set_payment_gateway']);
-
+        add_filter('manage_edit-shop_order_columns', [$this,'custom_shop_order_columns'], 20);
+        add_action('manage_shop_order_posts_custom_column', [$this,'custom_shop_order_column_data'], 10, 1);
     }
 
     /**
@@ -626,6 +627,37 @@ class WcVindiPayment extends AbstractInstance
         $gateway = filter_input(INPUT_GET, 'vindi-gateway', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
         WC()->session->set('vindi-payment-link',$isPaymentLink);
         WC()->session->set('vindi-gateway',$gateway);
+    }
+
+    public function custom_shop_order_columns($columns)
+    {
+        $new_columns = array();
+        foreach ($columns as $key => $column) {
+            $new_columns[$key] = $column;
+            if ($key === 'order_status' || $key === 'Status') {
+                $new_columns['vindi_payment_link'] = __('Link de Pagamento', 'vindi-payment-gateway');
+            }
+        }
+        return $new_columns;
+    }
+
+    function custom_shop_order_column_data($column)
+    {
+        global $post;
+        $template_path = plugin_dir_path(__FILE__) . 'templates/admin-payment-link-button.php';
+        if (!$template_path) {
+            return;
+        }
+        $link_payment = '';
+        if ($column === 'vindi_payment_link') {
+            $order = wc_get_order($post->ID);
+            if (count($order->get_items()) > 0) {
+                $order_status = $order->get_status();
+                $gateway = $order->get_payment_method();
+                $link_payment = $this->build_payment_link($order, $gateway);
+                include $template_path;
+            }
+        }
     }
 }
 

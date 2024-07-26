@@ -112,7 +112,7 @@ jQuery(document).ready(function($) {
       e.preventDefault();
     });
   }
-
+  
   const btnCopyPost = document.querySelector('#buttonCopyPost');
   btnCopyPost.addEventListener("click", function (e) {
     e.preventDefault();
@@ -131,5 +131,4 @@ jQuery(document).ready(function($) {
       console.log('Link de pagamento não encontrado ou está desabilitado.');
     }
   });
-
 });
