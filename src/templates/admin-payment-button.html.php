@@ -13,7 +13,7 @@
     </div>
     <div>
         <?php if (!$has_item) : ?>
-            <span>
+            <span class="notificationPaymentLink">
                 <?php
                 echo esc_html__(
                     'O pedido tem que ter pelo menos um item',
@@ -23,7 +23,7 @@
             </span>
         <?php endif; ?>
         <?php if (!$has_subscription) : ?>
-            <span>
+            <span class="notificationPaymentLink">
                 <?php
                 echo esc_html__(
                     'O pedido possui uma assinatura, por favor para criar pedidos com assinaturas acessar o link:',
