@@ -53,29 +53,54 @@ class CheckoutGateways
             'vindi-pix',
         ];
 
+        $isPaymentLink = $this->get_payment_link_status();
+        $gateway = $this->get_gateway();
+
+        if ($isPaymentLink) {
+            $gateways = $this->filter_available_gateways($gateways, $available);
+            if ($gateway && isset($gateways[$gateway])) {
+                return [$gateway => $gateways[$gateway]];
+            }
+        }
+        return $gateways;
+    }
+
+    private function get_payment_link_status()
+    {
         $isPaymentLink = '';
-        $gateway = '';
 
         if (WC()->session) {
             $isPaymentLink = WC()->session->get('vindi-payment-link');
-            $gateway = WC()->session->get('vindi-gateway');
         }
+
         if (!$isPaymentLink) {
             $isPaymentLink = filter_input(INPUT_GET, 'vindi-payment-link') ?? false;
         }
+
+        return $isPaymentLink;
+    }
+
+    private function get_gateway()
+    {
+        $gateway = '';
+
+        if (WC()->session) {
+            $gateway = WC()->session->get('vindi-gateway');
+        }
+
         if (!$gateway) {
             $gateway = filter_input(INPUT_GET, 'vindi-gateway') ?? false;
         }
 
-        if ($isPaymentLink) {
-            $items = array_diff(array_keys($gateways), $available);
-            foreach ($items as $item) {
-                if (isset($gateways[$item])) {
-                    unset($gateways[$item]);
-                }
-            }
-            if ($gateway && in_array($gateway, array_keys($gateways))) {
-                return [$gateway => $gateways[$gateway]];
+        return $gateway;
+    }
+
+    private function filter_available_gateways($gateways, $available)
+    {
+        $items = array_diff(array_keys($gateways), $available);
+        foreach ($items as $item) {
+            if (isset($gateways[$item])) {
+                unset($gateways[$item]);
             }
         }
         return $gateways;
@@ -84,16 +109,16 @@ class CheckoutGateways
     public function add_billing_fields()
     {
         $template_path = WP_PLUGIN_DIR . '/vindi-payment-gateway/src/templates/fields-order-pay-checkout.php';
-        if(!$template_path){
+        if (!$template_path) {
             return;
         }
 
-        $orderId = absint( get_query_var('order-pay') );
+        $orderId = absint(get_query_var('order-pay'));
 
         $isPaymentLink = filter_input(INPUT_GET, 'vindi-payment-link') ?? false;
 
         if ($isPaymentLink) {
-            $order = wc_get_order( $orderId );
+            $order = wc_get_order($orderId);
             $fields = WC()->checkout->get_checkout_fields('billing');
             include $template_path;
         }
@@ -106,7 +131,21 @@ class CheckoutGateways
             return;
         }
 
-        $fields = [
+        $fields = $this->get_billing_fields();
+
+        try {
+            $this->validate_required_fields();
+            $this->update_billing_fields($order, $fields);
+            $order->save();
+            $this->auto_create_user_for_order($order);
+        } catch (Exception $err) {
+            wc_add_notice($err->getMessage(), 'error');
+        }
+    }
+
+    private function get_billing_fields()
+    {
+        return [
             'first_name',
             'last_name',
             'persontype',
@@ -124,31 +163,33 @@ class CheckoutGateways
             'phone',
             'email'
         ];
+    }
 
-        try {
-            $this->validate_required_fields();
-
-            foreach ($fields as $key) {
-                $field = filter_input(INPUT_POST, "billing_$key", FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? false;
-                if ($field) {
-                    if (method_exists($order, "set_billing_$key")) {
-                        $order->{"set_billing_$key"}($field);
-                    } else {
-                        $order->update_meta_data("_billing_$key", $field);
-                    }
-
-                    if (method_exists($order, "set_shipping_$key")) {
-                        $order->{"set_shipping_$key"}($field);
-                    }
-                }
+    private function update_billing_fields($order, $fields)
+    {
+        foreach ($fields as $key) {
+            $field = filter_input(INPUT_POST, "billing_$key", FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? false;
+            if ($field) {
+                $this->set_order_billing_field($order, $key, $field);
+                $this->set_order_shipping_field($order, $key, $field);
             }
-
-            $order->save();
-            $this->auto_create_user_for_order($order);
-        } catch (Exception $err) {
-            wc_add_notice($err->getMessage(), 'error');
         }
+    }
 
+    private function set_order_billing_field($order, $key, $field)
+    {
+        if (method_exists($order, "set_billing_$key")) {
+            $order->{"set_billing_$key"}($field);
+        } else {
+            $order->update_meta_data("_billing_$key", $field);
+        }
+    }
+
+    private function set_order_shipping_field($order, $key, $field)
+    {
+        if (method_exists($order, "set_shipping_$key")) {
+            $order->{"set_shipping_$key"}($field);
+        }
     }
 
     public function validate_required_fields()
