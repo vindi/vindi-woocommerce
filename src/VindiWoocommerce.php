@@ -129,7 +129,6 @@ class WcVindiPayment extends AbstractInstance
         $this->interest_price_handler = new InterestPriceHandler();
         $this->product_metabox = new ProductsMetabox();
         $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
-        $this->initialize_dependencies();
 
         /**
          * Add Gateway to Woocommerce
@@ -161,42 +160,27 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/services/VindiHelpers.php';
         require_once plugin_dir_path(__FILE__) . '/services/Webhooks.php';
         require_once plugin_dir_path(__FILE__) . '/services/WebhooksHelpers.php';
-
-        //Validators
-        require_once plugin_dir_path(__FILE__) . '/validators/WCCartSubscriptionLimiter.php';
-        require_once plugin_dir_path(__FILE__) . '/validators/WCFilterCartNeedsPayment.php';
-
         // Loading Abstract Method and Utils
         require_once plugin_dir_path(__FILE__) . '/utils/PaymentGateway.php';
         require_once plugin_dir_path(__FILE__) . '/utils/Conversions.php';
         require_once plugin_dir_path(__FILE__) . '/utils/RedirectCheckout.php';
         require_once plugin_dir_path(__FILE__) . '/utils/PostMeta.php';
-
         require_once plugin_dir_path(__FILE__) . '/includes/admin/CouponsMetaBox.php';
         require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductsMetabox.php';
         require_once plugin_dir_path(__FILE__) . '/includes/admin/Settings.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/admin/WcVindiColumns.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/admin/ButtonPaymentLink.php';
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/CreditPayment.php';
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/BankSlipPayment.php';
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/PixPayment.php';
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/BolepixPayment.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/gateways/RenewPixCharge.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/checkout/CheckoutGateways.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/checkout/WCSOrderSetup.php';
         require_once plugin_dir_path(__FILE__) . '/utils/SubscriptionStatusHandler.php';
         require_once plugin_dir_path(__FILE__) . '/utils/InterestPriceHandler.php';
-
         require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductStatus.php';
-
         // Routes import
         require_once plugin_dir_path(__FILE__) . '/routes/RoutesApi.php';
-
         // Controllers
         require_once plugin_dir_path(__FILE__) . '/controllers/index.php';
-
         require_once plugin_dir_path(__FILE__) . '/utils/PaymentProcessor.php';
-        require_once plugin_dir_path(__FILE__) . '/utils/WCSRenewalDisable.php';
+        $this->initialize_dependencies();
     }
 
     public static function getPath()
@@ -233,16 +217,20 @@ class WcVindiPayment extends AbstractInstance
 
         return $methods;
     }
-    
-    public function initialize_dependencies(){
-        $this->custom_shop_order_columns = new WcVindiColumns();
-        $this->add_button_payment = new ButtonPaymentLink();
-        $this->subscription_limiter = new WCCartSubscriptionLimiter();
-        $this->gateway_filters_checkout = new CheckoutGateways();
-        $this->parent_order_setup = new OrderSetup();
-        $this->filter_cart_needs_payment = new FilterCartNeedsPayment();
-        $this->renew_pix_charge = new RenewPixCharge();
+
+    public function initialize_dependencies()
+    {
+        require_once plugin_dir_path(__FILE__) . '/includes/gateways/RenewPixCharge.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/checkout/CheckoutGateways.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/checkout/WCSOrderSetup.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/admin/WcVindiColumns.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/admin/ButtonPaymentLink.php';
+        //Validators
+        require_once plugin_dir_path(__FILE__) . '/validators/WCCartSubscriptionLimiter.php';
+        require_once plugin_dir_path(__FILE__) . '/validators/WCFilterCartNeedsPayment.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/WCSRenewalDisable.php';
     }
+
 }
 
 add_action('plugins_loaded', array(WcVindiPayment::class, 'get_instance'));
