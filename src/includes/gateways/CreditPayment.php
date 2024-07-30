@@ -2,8 +2,6 @@
 
 namespace VindiPaymentGateways;
 
-use WC_Subscriptions_Cart;
-
 if (!defined('ABSPATH')) {
   exit;
 }
@@ -46,7 +44,6 @@ class VindiCreditGateway extends VindiPaymentGateway
 
   public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
   {
-
     global $woocommerce;
 
     $this->id                   = 'vindi-credit-card';
@@ -129,20 +126,7 @@ class VindiCreditGateway extends VindiPaymentGateway
         'type'        => 'select',
         'description' => __('Número máximo de parcelas para vendas avulsas. Deixe em 1x para desativar o parcelamento.', VINDI),
         'default'     => '1',
-        'options'     => array(
-          '1'  => '1x',
-          '2'  => '2x',
-          '3'  => '3x',
-          '4'  => '4x',
-          '5'  => '5x',
-          '6'  => '6x',
-          '7'  => '7x',
-          '8'  => '8x',
-          '9'  => '9x',
-          '10' => '10x',
-          '11' => '11x',
-          '12' => '12x',
-        ),
+        'options'     => array('1'  => '1x','2'  => '2x','3'  => '3x','4'  => '4x','5'  => '5x','6'  => '6x','7'  => '7x','8'  => '8x','9'  => '9x','10' => '10x','11' => '11x','12' => '12x'),
       ),
       'enable_interest_rate' => array(
         'title'       => __('Habilitar juros', VINDI),
@@ -280,7 +264,6 @@ class VindiCreditGateway extends VindiPaymentGateway
     }
     return $this->get_installments();
   }
-
 
   private function build_user_payment_profile()
   {
