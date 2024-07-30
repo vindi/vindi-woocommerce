@@ -30,7 +30,7 @@
                     'vindi-payment-gateway'
                 );
                 ?>
-                <a href="<?php echo $teste; ?>" target="_blank">Assinaturas</a>
+                <a href="<?php echo $urlShopSubscription; ?>" target="_blank">Assinaturas</a>
             </span>
         <?php endif; ?>
     </div>
