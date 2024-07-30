@@ -146,38 +146,24 @@ class VindiCreditGateway extends VindiPaymentGateway
   public function payment_fields()
   {
     $cart = $this->vindi_settings->woocommerce->cart;
-    $order_id = filter_input(INPUT_GET, 'order_id', FILTER_SANITIZE_NUMBER_INT) ?? absint( get_query_var('order-pay'));
+    $order_id = filter_input(INPUT_GET, 'order_id', FILTER_SANITIZE_NUMBER_INT) ?? absint(get_query_var('order-pay'));
 
-    if ($order_id && $_GET['pay_for_order'] == 'true') {
-      $order = wc_get_order($order_id);
-      $total = $order->get_total();
-
-      foreach( $order->get_items('fee') as $item_id => $item_fee ) {
-        if ($item_fee->get_name() == __('Juros', VINDI)) {
-          $total -= $item_fee->get_total();
-        }
-      }
-
-    }else{
-      $total = $this->get_cart_total($cart);
-    }
+    $total = $this->calculate_total($order_id, $cart);
 
     $installments = $this->build_cart_installments($total);
 
     $user_payment_profile = $this->build_user_payment_profile();
     $payment_methods = $this->routes->getPaymentMethods();
 
-    if ($payment_methods === false || empty($payment_methods) || !count($payment_methods['credit_card'])) {
+    if ($this->check_payment_methods($payment_methods)) {
       _e(
         'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
         VINDI
       );
       return;
     }
-    $is_trial = false;
-    if (isset($this->is_trial) && $this->is_trial == $this->vindi_settings->get_is_active_sandbox()) {
-      $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
-    }
+
+    $is_trial = $this->check_is_trial();
 
     $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
       'installments',
@@ -185,6 +171,38 @@ class VindiCreditGateway extends VindiPaymentGateway
       'user_payment_profile',
       'payment_methods'
     ));
+  }
+
+  private function calculate_total($order_id, $cart)
+  {
+    if ($order_id && $_GET['pay_for_order'] == 'true') {
+      $order = wc_get_order($order_id);
+      $total = $order->get_total();
+
+      foreach ($order->get_items('fee') as $item_id => $item_fee) {
+        if ($item_fee->get_name() == __('Juros', VINDI)) {
+          $total -= $item_fee->get_total();
+        }
+      }
+    } else {
+      $total = $this->get_cart_total($cart);
+    }
+
+    return $total;
+  }
+
+  private function check_payment_methods($payment_methods)
+  {
+    return $payment_methods === false || empty($payment_methods) || !count($payment_methods['credit_card']);
+  }
+
+  private function check_is_trial()
+  {
+    $is_trial = false;
+    if (isset($this->is_trial) && $this->is_trial == $this->vindi_settings->get_is_active_sandbox()) {
+      $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
+    }
+    return $is_trial;
   }
 
   public function build_cart_installments($total)
