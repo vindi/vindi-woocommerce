@@ -136,11 +136,8 @@ class VindiCreditGateway extends VindiPaymentGateway
   {
     $cart = $this->vindi_settings->woocommerce->cart;
     $order_id = filter_input(INPUT_GET, 'order_id', FILTER_SANITIZE_NUMBER_INT) ?? absint(get_query_var('order-pay'));
-
     $total = $this->calculate_total($order_id, $cart);
-
     $installments = $this->build_cart_installments($total);
-
     $user_payment_profile = $this->build_user_payment_profile();
     $payment_methods = $this->routes->getPaymentMethods();
 
@@ -169,7 +166,6 @@ class VindiCreditGateway extends VindiPaymentGateway
     } else {
       $total = $this->get_cart_total($cart);
     }
-
     return $total;
   }
 
@@ -215,7 +211,6 @@ class VindiCreditGateway extends VindiPaymentGateway
         $installments[$times] = $this->get_cart_installments($times, $total);
       }
     }
-
     return $installments;
   }
 
@@ -248,12 +243,7 @@ class VindiCreditGateway extends VindiPaymentGateway
 
   public function verify_user_payment_profile()
   {
-    $old_payment_profile = (int) filter_input(
-      INPUT_POST,
-      'vindi-old-cc-data-check',
-      FILTER_SANITIZE_NUMBER_INT
-    );
-
+    $old_payment_profile = (int) filter_input(INPUT_POST,'vindi-old-cc-data-check',FILTER_SANITIZE_NUMBER_INT);
     return 1 === $old_payment_profile;
   }
 
@@ -277,7 +267,6 @@ class VindiCreditGateway extends VindiPaymentGateway
     if ($this->is_single_order()) {
       $order_max_times = floor($order_total / $this->smallest_installment);
       $max_times = empty($order_max_times) ? 1 : $order_max_times;
-
       return min($this->max_installments, $max_times, $this->get_installments());
     }
     return $this->get_installments();
@@ -289,21 +278,17 @@ class VindiCreditGateway extends VindiPaymentGateway
     $user_vindi_id = get_user_meta(wp_get_current_user()->ID, 'vindi_customer_id', true);
     $payment_profile = WC()->session->get('current_payment_profile');
     $current_customer = WC()->session->get('current_customer');
-
     if (!isset($payment_profile) || ($current_customer['code'] ?? null) != $user_vindi_id) {
       $payment_profile = $this->routes->getPaymentProfile($user_vindi_id);
     }
-
     if (($payment_profile['type'] ?? null) !== 'PaymentProfile::CreditCard') {
       return $user_payment_profile;
     }
-
     if (false === empty($payment_profile)) {
       $user_payment_profile['holder_name']     = $payment_profile['holder_name'];
       $user_payment_profile['payment_company'] = $payment_profile['payment_company']['code'];
       $user_payment_profile['card_number']     = sprintf('**** **** **** %s', $payment_profile['card_number_last_four']);
     }
-
     WC()->session->set('current_payment_profile', $payment_profile);
     return $user_payment_profile;
   }
@@ -312,9 +297,7 @@ class VindiCreditGateway extends VindiPaymentGateway
   {
     if ($this->is_single_order())
       return $this->installments;
-
     $installments = 0;
-
     foreach ($this->vindi_settings->woocommerce->cart->cart_contents as $item) {
       $plan_id = $item['data']->get_meta('vindi_plan_id');
 
