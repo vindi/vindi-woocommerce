@@ -22,7 +22,7 @@
                 ?>
             </span>
         <?php endif; ?>
-        <?php if (!$has_subscription && $has_item) : ?>
+        <?php if ($has_subscription && $has_item) : ?>
             <span class="notificationPaymentLink">
                 <?php
                 echo esc_html__(

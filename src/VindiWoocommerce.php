@@ -129,13 +129,7 @@ class WcVindiPayment extends AbstractInstance
         $this->interest_price_handler = new InterestPriceHandler();
         $this->product_metabox = new ProductsMetabox();
         $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
-        $this->custom_shop_order_columns = new WcVindiColumns();
-        $this->add_button_payment = new ButtonPaymentLink();
-        $this->subscription_limiter = new WCCartSubscriptionLimiter();
-        $this->gateway_filters_checkout = new CheckoutGateways();
-        $this->parent_order_setup = new OrderSetup();
-        $this->filter_cart_needs_payment = new FilterCartNeedsPayment();
-        $this->renew_pix_charge = new RenewPixCharge();
+        $this->initialize_dependencies();
 
         /**
          * Add Gateway to Woocommerce
@@ -239,7 +233,16 @@ class WcVindiPayment extends AbstractInstance
 
         return $methods;
     }
-
+    
+    public function initialize_dependencies(){
+        $this->custom_shop_order_columns = new WcVindiColumns();
+        $this->add_button_payment = new ButtonPaymentLink();
+        $this->subscription_limiter = new WCCartSubscriptionLimiter();
+        $this->gateway_filters_checkout = new CheckoutGateways();
+        $this->parent_order_setup = new OrderSetup();
+        $this->filter_cart_needs_payment = new FilterCartNeedsPayment();
+        $this->renew_pix_charge = new RenewPixCharge();
+    }
 }
 
 add_action('plugins_loaded', array(WcVindiPayment::class, 'get_instance'));
