@@ -8,9 +8,7 @@ if (!defined('ABSPATH')) {
 
 /**
  * Vindi Payment Credit Card Gateway class.
- *
  * Extended by individual payment gateways to handle payments.
- *
  * @class   VindiCreditGateway
  * @extends VindiPaymentGateway
  */
@@ -59,13 +57,11 @@ class VindiCreditGateway extends VindiPaymentGateway
 
     $this->init_form_fields();
     $this->init_settings();
-
     $this->smallest_installment = $this->get_option('smallest_installment');
     $this->installments = $this->get_option('installments');
     $this->verify_method = $this->get_option('verify_method');
     $this->enable_interest_rate = $this->get_option('enable_interest_rate');
     $this->interest_rate = $this->get_option('interest_rate');
-
     parent::__construct($vindi_settings, $controllers);
   }
 
@@ -80,7 +76,6 @@ class VindiCreditGateway extends VindiPaymentGateway
 
   public function init_form_fields()
   {
-
     $this->form_fields = array(
       'enabled' => array(
         'title'   => __('Habilitar/Desabilitar', VINDI),
@@ -152,10 +147,7 @@ class VindiCreditGateway extends VindiPaymentGateway
     $is_trial = $this->check_is_trial();
 
     $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
-      'installments',
-      'is_trial',
-      'user_payment_profile',
-      'payment_methods'
+      'installments','is_trial','user_payment_profile','payment_methods'
     ));
   }
 
