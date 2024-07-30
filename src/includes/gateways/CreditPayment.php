@@ -165,18 +165,29 @@ class VindiCreditGateway extends VindiPaymentGateway
   private function calculate_total($order_id, $cart)
   {
     if ($order_id && $_GET['pay_for_order'] == 'true') {
-      $order = wc_get_order($order_id);
-      $total = $order->get_total();
-
-      foreach ($order->get_items('fee') as $item_id => $item_fee) {
-        if ($item_fee->get_name() == __('Juros', VINDI)) {
-          $total -= $item_fee->get_total();
-        }
-      }
+      $total = $this->calculate_order_total($order_id);
     } else {
       $total = $this->get_cart_total($cart);
     }
 
+    return $total;
+  }
+
+  private function calculate_order_total($order_id)
+  {
+    $order = wc_get_order($order_id);
+    $total = $order->get_total();
+    $total = $this->subtract_fees($order, $total);
+    return $total;
+  }
+
+  private function subtract_fees($order, $total)
+  {
+    foreach ($order->get_items('fee') as $item_id => $item_fee) {
+      if ($item_fee->get_name() == __('Juros', VINDI)) {
+        $total -= $item_fee->get_total();
+      }
+    }
     return $total;
   }
 
