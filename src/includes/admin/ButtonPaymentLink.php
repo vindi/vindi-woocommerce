@@ -19,36 +19,55 @@ class ButtonPaymentLink
     public function button_link_payment($order)
     {
         $template_path = WP_PLUGIN_DIR . '/vindi-payment-gateway/src/templates/admin-payment-button.html.php';
-        $has_item = false;
-        $has_subscription = false;
-        $order_status = $order->get_status();
 
         if (!$template_path) {
             return;
         }
 
-        if (count($order->get_items()) > 0) {
-            $order_type = get_post_type($order->get_id());
-            $gateway = $order->get_payment_method();
-            $has_subscription = $this->has_subscription($order);
-            if ($order_type == 'shop_subscription') {
-                $parent_order = $order->get_parent();
-                if ($parent_order) {
-                    $parent_order_id = $parent_order->get_id();
-                    $order = wc_get_order($parent_order_id);
-                    $has_subscription = true;
-                }
-            }
+        $order_data = $this->get_order_data($order);
 
-            if ($order->get_checkout_payment_url()) {
-                $link_payment = $this->build_payment_link($order, $gateway);
-            }
-            $order_status = $order->get_status();
-            $has_item = true;
-            $urlAdmin = get_admin_url();
-            $urlShopSubscription = "{$urlAdmin}edit.php?post_type=shop_subscription";
+        if ($order_data['has_item']) {
+            include $template_path;
         }
-        include $template_path;
+    }
+
+    private function get_order_data($order)
+    {
+        $order_data = [
+            'has_item' => false,
+            'has_subscription' => false,
+            'order_status' => $order->get_status(),
+            'link_payment' => null,
+            'urlAdmin' => get_admin_url(),
+            'urlShopSubscription' => null
+        ];
+
+        if (count($order->get_items()) > 0) {
+            $order_data['has_subscription'] = $this->has_subscription($order);
+            $order_data = $this->handle_shop_subscription($order, $order_data);
+            if ($order->get_checkout_payment_url()) {
+                $order_data['link_payment'] = $this->build_payment_link($order, $order->get_payment_method());
+            }
+            $order_data['order_status'] = $order->get_status();
+            $order_data['has_item'] = true;
+            $order_data['urlShopSubscription'] = "{$order_data['urlAdmin']}edit.php?post_type=shop_subscription";
+        }
+
+        return $order_data;
+    }
+
+    private function handle_shop_subscription($order, $order_data)
+    {
+        if (get_post_type($order->get_id()) == 'shop_subscription') {
+            $parent_order = $order->get_parent();
+            if ($parent_order) {
+                $parent_order_id = $parent_order->get_id();
+                $order = wc_get_order($parent_order_id);
+                $order_data['has_subscription'] = true;
+            }
+        }
+
+        return $order_data;
     }
 
     public function has_subscription($order)
