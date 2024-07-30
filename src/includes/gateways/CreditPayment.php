@@ -52,20 +52,9 @@ class VindiCreditGateway extends VindiPaymentGateway
     $this->method_description   = __('Aceitar pagamentos via cartão de crédito utilizando a Vindi.', VINDI);
     $this->has_fields           = true;
 
-    $this->supports             = array(
-      'subscriptions',
-      'products',
-      'subscription_cancellation',
-      'subscription_reactivation',
-      'subscription_suspension',
-      'subscription_amount_changes',
-      'subscription_payment_method_change',
-      'subscription_payment_method_change_customer',
-      'subscription_payment_method_change_admin',
-      'subscription_date_changes',
-      'multiple_subscriptions',
-      'refunds',
-      'pre-orders'
+    $this->supports             = array('subscriptions','products','subscription_cancellation','subscription_reactivation',
+      'subscription_suspension','subscription_amount_changes','subscription_payment_method_change','subscription_payment_method_change_customer',
+      'subscription_payment_method_change_admin','subscription_date_changes','multiple_subscriptions','refunds','pre-orders'
     );
 
     $this->init_form_fields();
