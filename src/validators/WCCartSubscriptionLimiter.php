@@ -19,13 +19,14 @@ class WCCartSubscriptionLimiter
 
     public function limit_same_subscriptions($passed, $product_id, $quantity)
     {
+        $subscriptions_product = new WC_Subscriptions_Product();
         $product = wc_get_product($product_id);
 
         if ($product->is_virtual()) {
             return $passed;
         }
 
-        if (WC_Subscriptions_Product::is_subscription($product_id)) {
+        if ($subscriptions_product->is_subscription($product_id)) {
             $subscription_count = $this->get_subscription_count($product_id);
 
             if ($subscription_count + $quantity > 1) {
@@ -51,11 +52,10 @@ class WCCartSubscriptionLimiter
         return $subscription_count;
     }
 
-    public function limit_duplicate_subscriptions_cart_update($passed, $cart_item_key, $values, $quantity)
+    public function limit_duplicate_subscriptions_cart_update($passed, $_cart_item_key, $values, $quantity)
     {
         $product_id = $values['product_id'];
         $product = wc_get_product($product_id);
-
         if ($this->is_virtual_product($product)) {
             return $passed;
         }
@@ -74,7 +74,8 @@ class WCCartSubscriptionLimiter
 
     public function subscription_exceeds_limit($product_id, $quantity)
     {
-        if (WC_Subscriptions_Product::is_subscription($product_id)) {
+        $subscriptions_product = new WC_Subscriptions_Product();
+        if ($subscriptions_product->is_subscription($product_id)) {
             $subscription_count = $this->count_subscriptions_in_cart($product_id);
 
             if ($subscription_count >= 1 && $quantity > 1) {
@@ -98,7 +99,7 @@ class WCCartSubscriptionLimiter
         return $subscription_count;
     }
 
-    public function disallow_subscription_single_product_cart($passed, $product_id, $quantity)
+    public function disallow_subscription_single_product_cart($passed, $product_id)
     {
         $product = wc_get_product($product_id);
 
@@ -118,15 +119,16 @@ class WCCartSubscriptionLimiter
     public function is_cart_mixed_with_subscription($product_id)
     {
         $cart = WC()->cart->get_cart();
+        $subscriptions_product = new WC_Subscriptions_Product();
         if (empty($cart)) {
             return false;
         }
 
         $is_subscription = false;
-        $new_product_subscription = WC_Subscriptions_Product::is_subscription($product_id);
+        $new_product_subscription = $subscriptions_product->is_subscription($product_id);
 
         foreach ($cart as $cart_item) {
-            if (WC_Subscriptions_Product::is_subscription($cart_item['data']->get_id())) {
+            if ($subscriptions_product->is_subscription($cart_item['data']->get_id())) {
                 $is_subscription = true;
                 break;
             }
