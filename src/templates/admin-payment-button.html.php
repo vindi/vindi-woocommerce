@@ -1,4 +1,4 @@
-<?php if (in_array($status, ['pending', 'auto-draft'])) : ?>
+<?php if (in_array($orde_status, ['pending', 'auto-draft'])) : ?>
     <div style="display: flex;gap: 6px; width: 100%;">
         <div style="display: flex;gap: 6px; width: 100%;">
             <?php $is_disabled = ($has_item) ? 'enable' : 'disabled'; ?>
@@ -28,7 +28,7 @@
                 ?>
             </span>
         <?php endif; ?>
-        <?php if ($has_sub && $has_item) : ?>
+        <?php if (!$has_sub && $has_item) : ?>
             <span class="notificationPaymentLink">
                 <?php
                 echo esc_html__(
