@@ -132,8 +132,8 @@ class VindiCreditGateway extends VindiPaymentGateway
     public function payment_fields()
     {
         $cart = $this->vindi_settings->woocommerce->cart;
-        $order_id = filter_input(INPUT_GET, 'order_id', FILTER_SANITIZE_NUMBER_INT) ?? absint(get_query_var('order-pay'));
-        $total = $this->calculate_total($order_id, $cart);
+        $ordeId = filter_input(INPUT_GET, 'order_id', FILTER_SANITIZE_NUMBER_INT) ?? absint(get_query_var('order-pay'));
+        $total = $this->calculate_total($ordeId, $cart);
         $installments = $this->build_cart_installments($total);
         $user_payment_profile = $this->build_user_payment_profile();
         $payment_methods = $this->routes->getPaymentMethods();
