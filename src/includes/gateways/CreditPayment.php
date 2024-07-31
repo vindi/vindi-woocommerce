@@ -18,30 +18,30 @@ class VindiCreditGateway extends VindiPaymentGateway
   /**
    * @var VindiSettings
    */
-  public $vindi_settings;
+    public $vindi_settings;
 
   /**
    * @var VindiControllers
    */
-  public $controllers;
+    public $controllers;
 
   /**
    * @var int
    */
-  private $max_installments = 12;
+    private $max_installments = 12;
 
   /**
    * @var int
    */
-  public $interest_rate;
+    public $interest_rate;
 
-  public $smallest_installment;
-  public $installments;
-  public $verify_method;
-  public $enable_interest_rate;
+    public $smallest_installment;
+    public $installments;
+    public $verify_method;
+    public $enable_interest_rate;
 
-  public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
-  {
+    public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
+    {
     global $woocommerce;
 
     $this->id                   = 'vindi-credit-card';
@@ -50,9 +50,11 @@ class VindiCreditGateway extends VindiPaymentGateway
     $this->method_description   = __('Aceitar pagamentos via cartão de crédito utilizando a Vindi.', VINDI);
     $this->has_fields           = true;
 
-    $this->supports             = array('subscriptions','products','subscription_cancellation','subscription_reactivation',
-      'subscription_suspension','subscription_amount_changes','subscription_payment_method_change','subscription_payment_method_change_customer',
-      'subscription_payment_method_change_admin','subscription_date_changes','multiple_subscriptions','refunds','pre-orders'
+        $this->supports             = array('subscriptions','products','subscription_cancellation',
+        'subscription_reactivation','subscription_suspension','subscription_amount_changes',
+        'subscription_payment_method_change','subscription_payment_method_change_customer',
+        'subscription_payment_method_change_admin','subscription_date_changes','multiple_subscriptions',
+        'refunds','pre-orders'
     );
 
     $this->init_form_fields();
@@ -69,61 +71,62 @@ class VindiCreditGateway extends VindiPaymentGateway
    * Should return payment type for payment processing.
    * @return string
    */
-  public function type()
-  {
+    public function type()
+    {
     return 'cc';
   }
 
-  public function init_form_fields()
-  {
+   public function init_form_fields()
+    {
     $this->form_fields = array(
-      'enabled' => array(
+        'enabled' => array(
         'title'   => __('Habilitar/Desabilitar', VINDI),
         'label'   => __('Habilitar pagamento via Cartão de Crédito com a Vindi', VINDI),
         'type'    => 'checkbox',
         'default' => 'no',
-      ),
-      'title' => array(
+        ),
+        'title' => array(
         'title'       => __('Título', VINDI),
         'type'        => 'text',
         'description' => __('Título que o cliente verá durante o processo de pagamento.', VINDI),
         'default'     => __('Cartão de Crédito', VINDI),
-      ),
-      'verify_method' => array(
+        ),
+        'verify_method' => array(
         'title'       => __('Transação de Verificação', VINDI),
         'type'        => 'checkbox',
         'description' => __(' Realiza a transação de verificação em todos os novos pedidos. (Taxas adicionais por verificação poderão ser cobradas).', VINDI),
         'default'     => 'no',
-      ),
-      'single_charge' => array(
+        ),
+        'single_charge' => array(
         'title' => __('Vendas Avulsas', VINDI),
         'type'  => 'title',
-      ),
-      'smallest_installment' => array(
+        ),
+        'smallest_installment' => array(
         'title'       => __('Valor mínimo da parcela', VINDI),
         'type'        => 'text',
         'description' => __('Valor mínimo da parcela, não deve ser inferior a R$ 5,00.', VINDI),
         'default'     => '5',
-      ),
-      'installments' => array(
+        ),
+        'installments' => array(
         'title'       => __('Número máximo de parcelas', VINDI),
         'type'        => 'select',
         'description' => __('Número máximo de parcelas para vendas avulsas. Deixe em 1x para desativar o parcelamento.', VINDI),
         'default'     => '1',
-        'options'     => array('1'  => '1x','2'  => '2x','3'  => '3x','4'  => '4x','5'  => '5x','6'  => '6x','7'  => '7x','8'  => '8x','9'  => '9x','10' => '10x','11' => '11x','12' => '12x'),
-      ),
-      'enable_interest_rate' => array(
+        'options'     => array('1'  => '1x','2'  => '2x','3'  => '3x','4'  => '4x',
+        '5'  => '5x','6'  => '6x','7'  => '7x','8'  => '8x','9'  => '9x','10' => '10x','11' => '11x','12' => '12x'),
+        ),
+        'enable_interest_rate' => array(
         'title'       => __('Habilitar juros', VINDI),
         'type'        => 'checkbox',
         'description' => __('Habilitar juros no parcelamento do pedido.', VINDI),
         'default'     => 'no',
-      ),
-      'interest_rate' => array(
+        ),
+        'interest_rate' => array(
         'title'       => __('Taxa de juros ao mês (%)', VINDI),
         'type'        => 'text',
         'description' => __('Taxa de juros que será adicionada aos pagamentos parcelados.', VINDI),
         'default'     => '0.1',
-      )
+        )
     );
   }
 
@@ -153,10 +156,10 @@ class VindiCreditGateway extends VindiPaymentGateway
 
   private function calculate_total($order_id, $cart)
   {
-      if ($order_id && isset($_GET['pay_for_order']) && $_GET['pay_for_order'] === 'true') {
-          return $this->calculate_order_total($order_id);
-      }
-      return $this->get_cart_total($cart);
+    if ($order_id && isset($_GET['pay_for_order']) && filter_var($_GET['pay_for_order'], FILTER_VALIDATE_BOOLEAN) === true) {
+      return $this->calculate_order_total($order_id);
+    }
+    return $this->get_cart_total($cart);
   }
 
   private function calculate_order_total($order_id)

@@ -67,9 +67,10 @@ class ButtonPaymentLink
 
     public function has_subscription($order)
     {
+        $subscriptions_product = new WC_Subscriptions_Product();
         $order_items = $order->get_items();
         foreach ($order_items as $order_item) {
-            if (WC_Subscriptions_Product::is_subscription($order_item->get_product_id())
+            if ($subscriptions_product->is_subscription($order_item->get_product_id())
             && $order->get_created_via() == 'subscription') {
                 return true;
             }

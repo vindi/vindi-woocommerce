@@ -3,12 +3,12 @@
 namespace VindiPaymentGateways;
 
 use WC_Subscriptions_Product;
+
 class WCCartSubscriptionLimiter
 {
     public function __construct()
     {
         $this->init_hooks();
-
     }
 
     private function init_hooks()
