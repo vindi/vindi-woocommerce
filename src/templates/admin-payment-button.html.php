@@ -1,10 +1,10 @@
-<?php if (in_array($order_data['order_status'], ['pending', 'auto-draft'])) : ?>
+<?php if (in_array($status, ['pending', 'auto-draft'])) : ?>
     <div style="display: flex;gap: 6px; width: 100%;">
         <div style="display: flex;gap: 6px; width: 100%;">
-            <?php $is_disabled = ($order_data['has_item']) ? 'enable' : 'disabled'; ?>
-            <a class="buttonPaymentLink <?php echo $is_disabled; ?>" 
-            target="<?php echo $order_data['has_item'] ? esc_attr('_blank') : ''; ?>" 
-            href="<?php echo $order_data['has_item'] ? esc_url($order_data['link_payment']) : '#'; ?>">
+            <?php $is_disabled = ($has_item) ? 'enable' : 'disabled'; ?>
+            <a class="buttonPaymentLink <?php echo $is_disabled; ?>"
+            target="<?php echo $has_item ? esc_attr('_blank') : ''; ?>"
+            href="<?php echo $has_item ? esc_url($link_payment) : '#'; ?>">
                 <img style="width: 15px;"
                 src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>"
                 alt="Logo Vindi">
@@ -18,7 +18,7 @@
         </div>
     </div>
     <div>
-        <?php if (!$order_data['has_item']) : ?>
+        <?php if (!$has_item) : ?>
             <span class="notificationPaymentLink">
                 <?php
                 echo esc_html__(
@@ -28,7 +28,7 @@
                 ?>
             </span>
         <?php endif; ?>
-        <?php if ($order_data['has_subscription'] && $order_data['has_item']) : ?>
+        <?php if ($has_sub && $has_item) : ?>
             <span class="notificationPaymentLink">
                 <?php
                 echo esc_html__(
@@ -36,7 +36,7 @@
                     'vindi-payment-gateway'
                 );
                 ?>
-                <a href="<?php echo $order_data['$urlShopSubscription']; ?>" target="_blank">Assinaturas</a>
+                <a href="<?php echo $urlShopSubscription; ?>" target="_blank">Assinaturas</a>
             </span>
         <?php endif; ?>
     </div>

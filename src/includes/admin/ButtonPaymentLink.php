@@ -22,7 +22,14 @@ class ButtonPaymentLink
         $order_data = $this->get_order_data($order);
 
         if ($order_data['has_item']) {
-            include $template_path;
+            $has_item = $order_data['has_item'];
+            $has_sub = $order_data['has_subscription'];
+            $status = $order_data['order_status'];
+            $link_payment = $order_data['link_payment'];
+            $urlAdmin =  $order_data['urlAdmin'];
+            $urlShopSubscription =  $order_data['urlShopSubscription'];
+            $variables = compact('has_item','has_sub','status','link_payment','urlAdmin','urlShopSubscription');
+            $this->include_template_with_variables($template_path, $variables);
         }
     }
 
@@ -92,5 +99,11 @@ class ButtonPaymentLink
         $orderKey = $order->get_order_key();
 
         return "{$url}order-pay/{$orderId}/?pay_for_order=true&key={$orderKey}&vindi-payment-link=true{$gateway}";
+    }
+
+    private function include_template_with_variables($template_path, $variables)
+    {
+        extract($variables);
+        include $template_path;
     }
 }
