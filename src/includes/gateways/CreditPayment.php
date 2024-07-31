@@ -139,11 +139,9 @@ class VindiCreditGateway extends VindiPaymentGateway
         $payment_methods = $this->routes->getPaymentMethods();
 
         if ($this->check_payment_methods($payment_methods)) {
-            _e('Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
-            VINDI
-          );
+            _e('Estamos problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.', VINDI);
       return;
-    }
+        }
 
         $is_trial = $this->check_is_trial();
 
@@ -153,7 +151,7 @@ class VindiCreditGateway extends VindiPaymentGateway
         'user_payment_profile',
         'payment_methods'
     ));
-  }
+    }
 
     private function calculate_total($order_id, $cart)
     {
@@ -225,9 +223,9 @@ class VindiCreditGateway extends VindiPaymentGateway
             $total = $recurring->total;
         }
         foreach ($cart->get_fees() as $index => $fee) {
-          if ($fee->name == __('Juros', VINDI)) {
-              $total -= $fee->amount;
-          }
+            if ($fee->name == __('Juros', VINDI)) {
+                $total -= $fee->amount;
+            }
         }
         return $total;
     }
