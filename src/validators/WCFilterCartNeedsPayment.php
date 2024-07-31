@@ -29,7 +29,7 @@ class FilterCartNeedsPayment
         $subscriptions_product = new WC_Subscriptions_Product();
         $items = $cart->get_cart();
         foreach ($items as $item) {
-            if ( class_exists('WC_Subscriptions_Product')
+            if (class_exists('WC_Subscriptions_Product')
                 && $subscriptions_product->get_trial_length($item['product_id']) > 0
             ) {
                 return true;

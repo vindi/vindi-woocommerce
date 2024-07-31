@@ -2,10 +2,6 @@
 
 namespace VindiPaymentGateways;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class RenewPixCharge
 {
     public function __construct()

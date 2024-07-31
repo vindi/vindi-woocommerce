@@ -65,7 +65,7 @@ class VindiCreditGateway extends VindiPaymentGateway
     $this->enable_interest_rate = $this->get_option('enable_interest_rate');
     $this->interest_rate = $this->get_option('interest_rate');
     parent::__construct($vindi_settings, $controllers);
-  }
+    }
 
   /**
    * Should return payment type for payment processing.
@@ -74,9 +74,9 @@ class VindiCreditGateway extends VindiPaymentGateway
     public function type()
     {
     return 'cc';
-  }
+    }
 
-   public function init_form_fields()
+    public function init_form_fields()
     {
     $this->form_fields = array(
         'enabled' => array(
@@ -128,186 +128,188 @@ class VindiCreditGateway extends VindiPaymentGateway
         'default'     => '0.1',
         )
     );
-  }
+    }
 
-  public function payment_fields()
-  {
-    $cart = $this->vindi_settings->woocommerce->cart;
-    $order_id = filter_input(INPUT_GET, 'order_id', FILTER_SANITIZE_NUMBER_INT) ?? absint(get_query_var('order-pay'));
-    $total = $this->calculate_total($order_id, $cart);
-    $installments = $this->build_cart_installments($total);
-    $user_payment_profile = $this->build_user_payment_profile();
-    $payment_methods = $this->routes->getPaymentMethods();
+    public function payment_fields()
+    {
+        $cart = $this->vindi_settings->woocommerce->cart;
+        $order_id = filter_input(INPUT_GET, 'order_id', FILTER_SANITIZE_NUMBER_INT) ?? absint(get_query_var('order-pay'));
+        $total = $this->calculate_total($order_id, $cart);
+        $installments = $this->build_cart_installments($total);
+        $user_payment_profile = $this->build_user_payment_profile();
+        $payment_methods = $this->routes->getPaymentMethods();
 
-    if ($this->check_payment_methods($payment_methods)) {
-      _e(
-        'Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
-        VINDI
-      );
+        if ($this->check_payment_methods($payment_methods)) {
+            _e('Estamos enfrentando problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.',
+            VINDI
+          );
       return;
     }
 
-    $is_trial = $this->check_is_trial();
+        $is_trial = $this->check_is_trial();
 
     $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
-      'installments','is_trial','user_payment_profile','payment_methods'
+        'installments',
+        'is_trial',
+        'user_payment_profile',
+        'payment_methods'
     ));
   }
 
-  private function calculate_total($order_id, $cart)
-  {
-    if ($order_id && isset($_GET['pay_for_order']) && filter_var($_GET['pay_for_order'], FILTER_VALIDATE_BOOLEAN) === true) {
-      return $this->calculate_order_total($order_id);
+    private function calculate_total($order_id, $cart)
+    {
+        if ($order_id && isset($_GET['pay_for_order']) 
+        && filter_var($_GET['pay_for_order'], FILTER_VALIDATE_BOOLEAN) === true) {
+            return $this->calculate_order_total($order_id);
     }
-    return $this->get_cart_total($cart);
-  }
-
-  private function calculate_order_total($order_id)
-  {
-    $order = wc_get_order($order_id);
-    $total = $order->get_total();
-    $total = $this->subtract_fees($order, $total);
-    return $total;
-  }
-
-  private function subtract_fees($order, $total)
-  {
-    foreach ($order->get_items('fee') as $item_fee) {
-      if ($item_fee->get_name() == __('Juros', VINDI)) {
-        $total -= $item_fee->get_total();
-      }
-    }
-    return $total;
-  }
-
-  private function check_payment_methods($payment_methods)
-  {
-    return $payment_methods === false || empty($payment_methods) || !count($payment_methods['credit_card']);
-  }
-
-  private function check_is_trial()
-  {
-    $is_trial = false;
-    if (isset($this->is_trial) && $this->is_trial == $this->vindi_settings->get_is_active_sandbox()) {
-      $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
-    }
-    return $is_trial;
-  }
-
-  public function build_cart_installments($total)
-  {
-    $max_times = $this->get_order_max_installments($total);
-    $installments = [];
-
-    if ($max_times > 1) {
-      for ($times = 1; $times <= $max_times; $times++) {
-        $installments[$times] = $this->get_cart_installments($times, $total);
-      }
-    }
-    return $installments;
-  }
-
-  public function get_cart_installments($times, $total)
-  {
-    if ($this->is_interest_rate_enabled()) {
-      return ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
+        return $this->get_cart_total($cart);
     }
 
-    return ceil($total / $times * 100) / 100;
-  }
-
-  public function get_cart_total($cart)
-  {
-    $total = $cart->total;
-    $recurring = end($cart->recurring_carts);
-
-    if (floatval($cart->total) == 0 && is_object($recurring)) {
-      $total = $recurring->total;
+    private function calculate_order_total($order_id)
+    {
+        $order = wc_get_order($order_id);
+        $total = $order->get_total();
+        $total = $this->subtract_fees($order, $total);
+        return $total;
     }
 
-    foreach ($cart->get_fees() as $index => $fee) {
-      if ($fee->name == __('Juros', VINDI)) {
-        $total -= $fee->amount;
-      }
+    private function subtract_fees($order, $total)
+    {
+        foreach ($order->get_items('fee') as $item_fee) {
+            if ($item_fee->get_name() == __('Juros', VINDI)) {
+                $total -= $item_fee->get_total();
+            }
+        }
+        return $total;
     }
 
-    return $total;
-  }
-
-  public function verify_user_payment_profile()
-  {
-    $old_payment_profile = (int) filter_input(INPUT_POST,'vindi-old-cc-data-check',FILTER_SANITIZE_NUMBER_INT);
-    return 1 === $old_payment_profile;
-  }
-
-  public function verify_method()
-  {
-    return 'yes' === $this->verify_method;
-  }
-
-  public function is_interest_rate_enabled()
-  {
-    return 'yes' === $this->enable_interest_rate;
-  }
-
-  public function get_interest_rate()
-  {
-    return floatval($this->interest_rate);
-  }
-
-  protected function get_order_max_installments($order_total)
-  {
-    if ($this->is_single_order()) {
-      $order_max_times = floor($order_total / $this->smallest_installment);
-      $max_times = empty($order_max_times) ? 1 : $order_max_times;
-      return min($this->max_installments, $max_times, $this->get_installments());
+    private function check_payment_methods($payment_methods)
+    {
+        return $payment_methods === false || empty($payment_methods) || !count($payment_methods['credit_card']);
     }
-    return $this->get_installments();
-  }
 
-  private function build_user_payment_profile()
-  {
-    $user_payment_profile = array();
-    $user_vindi_id = get_user_meta(wp_get_current_user()->ID, 'vindi_customer_id', true);
-    $payment_profile = WC()->session->get('current_payment_profile');
-    $current_customer = WC()->session->get('current_customer');
-    if (!isset($payment_profile) || ($current_customer['code'] ?? null) != $user_vindi_id) {
-      $payment_profile = $this->routes->getPaymentProfile($user_vindi_id);
+    private function check_is_trial()
+    {
+        $is_trial = false;
+        if (isset($this->is_trial) && $this->is_trial == $this->vindi_settings->get_is_active_sandbox()) {
+            $is_trial = $this->routes->isMerchantStatusTrialOrSandbox();
+        }
+        return $is_trial;
     }
-    if (($payment_profile['type'] ?? null) !== 'PaymentProfile::CreditCard') {
-      return $user_payment_profile;
+
+    public function build_cart_installments($total)
+    {
+        $max_times = $this->get_order_max_installments($total);
+        $installments = [];
+
+        if ($max_times > 1) {
+            for ($times = 1; $times <= $max_times; $times++) {
+                $installments[$times] = $this->get_cart_installments($times, $total);
+            }
+        }
+        return $installments;
     }
-    if (false === empty($payment_profile)) {
-      $user_payment_profile['holder_name']     = $payment_profile['holder_name'];
-      $user_payment_profile['payment_company'] = $payment_profile['payment_company']['code'];
-      $user_payment_profile['card_number']     = sprintf('**** **** **** %s', $payment_profile['card_number_last_four']);
+
+    public function get_cart_installments($times, $total)
+    {
+        if ($this->is_interest_rate_enabled()) {
+            return ($total * (1 + (($this->get_interest_rate() / 100) * ($times - 1)))) / $times;
+        }
+        return ceil($total / $times * 100) / 100;
     }
-    WC()->session->set('current_payment_profile', $payment_profile);
-    return $user_payment_profile;
-  }
 
-  protected function get_installments()
-  {
-    if ($this->is_single_order())
-      return $this->installments;
-    $installments = 0;
-    foreach ($this->vindi_settings->woocommerce->cart->cart_contents as $item) {
-      $plan_id = $item['data']->get_meta('vindi_plan_id');
+    public function get_cart_total($cart)
+    {
+        $total = $cart->total;
+        $recurring = end($cart->recurring_carts);
 
-      if (!empty($plan_id)) {
-        $plan = $this->routes->getPlan($plan_id);
+        if (floatval($cart->total) == 0 && is_object($recurring)) {
+            $total = $recurring->total;
+        }
 
-        if ($installments == 0) {
-          $installments = $plan['installments'];
-        } elseif ($plan['installments'] < $installments) {
-          $installments = $plan['installments'];
+        foreach ($cart->get_fees() as $index => $fee) {
+          if ($fee->name == __('Juros', VINDI)) {
+              $total -= $fee->amount;
+          }
+        }
+
+        return $total;
+    }
+
+    public function verify_user_payment_profile()
+    {
+        $old_payment_profile = (int) filter_input(INPUT_POST, 'vindi-old-cc-data-check', FILTER_SANITIZE_NUMBER_INT);
+        return 1 === $old_payment_profile;
+    }
+
+    public function verify_method()
+    {
+        return 'yes' === $this->verify_method;
+    }
+
+    public function is_interest_rate_enabled()
+    {
+        return 'yes' === $this->enable_interest_rate;
+    }
+
+    public function get_interest_rate()
+    {
+        return floatval($this->interest_rate);
+    }
+
+    protected function get_order_max_installments($order_total)
+    {
+        if ($this->is_single_order()) {
+            $order_max_times = floor($order_total / $this->smallest_installment);
+            $max_times = empty($order_max_times) ? 1 : $order_max_times;
+            return min($this->max_installments, $max_times, $this->get_installments());
+        }
+        return $this->get_installments();
+    }
+
+    private function build_user_payment_profile()
+    {
+        $user_payment_profile = array();
+        $user_vindi_id = get_user_meta(wp_get_current_user()->ID, 'vindi_customer_id', true);
+        $payment_profile = WC()->session->get('current_payment_profile');
+        $current_customer = WC()->session->get('current_customer');
+        if (!isset($payment_profile) || ($current_customer['code'] ?? null) != $user_vindi_id) {
+            $payment_profile = $this->routes->getPaymentProfile($user_vindi_id);
+        }
+        if (($payment_profile['type'] ?? null) !== 'PaymentProfile::CreditCard') {
+            return $user_payment_profile;
+        }
+        if (false === empty($payment_profile)) {
+            $user_payment_profile['holder_name']     = $payment_profile['holder_name'];
+            $user_payment_profile['payment_company'] = $payment_profile['payment_company']['code'];
+            $user_payment_profile['card_number']     = sprintf('**** **** **** %s', $payment_profile['card_number_last_four']);
+        }
+        WC()->session->set('current_payment_profile', $payment_profile);
+        return $user_payment_profile;
+    }
+
+    protected function get_installments()
+    {
+      if ($this->is_single_order())
+        return $this->installments;
+      $installments = 0;
+      foreach ($this->vindi_settings->woocommerce->cart->cart_contents as $item) {
+          $plan_id = $item['data']->get_meta('vindi_plan_id');
+
+        if (!empty($plan_id)) {
+            $plan = $this->routes->getPlan($plan_id);
+
+          if ($installments == 0) {
+              $installments = $plan['installments'];
+          } elseif ($plan['installments'] < $installments) {
+              $installments = $plan['installments'];
+          }
         }
       }
-    }
 
-    if ($installments != 0)
-      return $installments;
-    else
-      return 1;
-  }
+      if ($installments != 0)
+        return $installments;
+      else
+        return 1;
+    }
 }

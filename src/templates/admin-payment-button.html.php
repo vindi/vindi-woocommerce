@@ -2,12 +2,18 @@
     <div style="display: flex;gap: 6px; width: 100%;">
         <div style="display: flex;gap: 6px; width: 100%;">
             <?php $is_disabled = ($order_data['has_item']) ? 'enable' : 'disabled'; ?>
-            <a class="buttonPaymentLink <?php echo $is_disabled; ?>" target="<?php echo $order_data['has_item'] ? esc_attr('_blank') : ''; ?>" href="<?php echo $order_data['has_item'] ? esc_url($order_data['link_payment']) : '#'; ?>">
-                <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>" alt="Copy icon">
+            <a class="buttonPaymentLink <?php echo $is_disabled; ?>" 
+            target="<?php echo $order_data['has_item'] ? esc_attr('_blank') : ''; ?>" 
+            href="<?php echo $order_data['has_item'] ? esc_url($order_data['link_payment']) : '#'; ?>">
+                <img style="width: 15px;"
+                src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>"
+                alt="Logo Vindi">
                 <span><?php echo esc_html__('Link de pagamento', 'vindi-payment-gateway'); ?></span>
             </a>
             <a class="buttonCopy" id="buttonCopyPost">
-                <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/copy.svg'; ?>" alt="Copy icon">
+                <img style="width: 15px;" 
+                src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/copy.svg'; ?>" 
+                alt="Icone Copiar">
             </a>
         </div>
     </div>
