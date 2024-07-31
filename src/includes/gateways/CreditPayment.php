@@ -50,11 +50,10 @@ class VindiCreditGateway extends VindiPaymentGateway
     $this->method_description   = __('Aceitar pagamentos via cartão de crédito utilizando a Vindi.', VINDI);
     $this->has_fields           = true;
 
-        $this->supports             = array('subscriptions','products','subscription_cancellation',
-        'subscription_reactivation','subscription_suspension','subscription_amount_changes',
-        'subscription_payment_method_change','subscription_payment_method_change_customer',
-        'subscription_payment_method_change_admin','subscription_date_changes','multiple_subscriptions',
-        'refunds','pre-orders'
+        $this->supports = array('subscriptions','products','subscription_cancellation','subscription_reactivation',
+        'subscription_suspension','subscription_amount_changes','subscription_payment_method_change',
+        'subscription_payment_method_change_customer','subscription_payment_method_change_admin',
+        'subscription_date_changes','multiple_subscriptions','refunds','pre-orders'
     );
 
     $this->init_form_fields();
@@ -158,10 +157,11 @@ class VindiCreditGateway extends VindiPaymentGateway
 
     private function calculate_total($order_id, $cart)
     {
-        if ($order_id && isset($_GET['pay_for_order']) 
-        && filter_var($_GET['pay_for_order'], FILTER_VALIDATE_BOOLEAN) === true) {
+        $pay_for_order = filter_input(INPUT_GET, 'pay_for_order', FILTER_VALIDATE_BOOLEAN);
+
+        if ($pay_for_order === true) {
             return $this->calculate_order_total($order_id);
-    }
+        }
         return $this->get_cart_total($cart);
     }
 
@@ -201,7 +201,6 @@ class VindiCreditGateway extends VindiPaymentGateway
     {
         $max_times = $this->get_order_max_installments($total);
         $installments = [];
-
         if ($max_times > 1) {
             for ($times = 1; $times <= $max_times; $times++) {
                 $installments[$times] = $this->get_cart_installments($times, $total);
@@ -222,17 +221,14 @@ class VindiCreditGateway extends VindiPaymentGateway
     {
         $total = $cart->total;
         $recurring = end($cart->recurring_carts);
-
         if (floatval($cart->total) == 0 && is_object($recurring)) {
             $total = $recurring->total;
         }
-
         foreach ($cart->get_fees() as $index => $fee) {
           if ($fee->name == __('Juros', VINDI)) {
               $total -= $fee->amount;
           }
         }
-
         return $total;
     }
 

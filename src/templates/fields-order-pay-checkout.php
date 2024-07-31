@@ -8,9 +8,7 @@
                 <?php if (is_callable(array($order, 'get_' . $key))) : ?>
                     <?php woocommerce_form_field($key, $field, $order->{"get_$key"}('edit')); ?>
                 <?php else : ?>
-                    <?php woocommerce_form_field(
-                        $key, array_merge($field, ['required' => true]), $order->get_meta('_' . $key)
-                        ); ?>
+        <?php woocommerce_form_field($key, array_merge($field, ['required' => true]), $order->get_meta('_' . $key)); ?>
                 <?php endif ?>
             <?php endforeach; ?>
         </div>
