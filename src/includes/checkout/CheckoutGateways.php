@@ -4,10 +4,6 @@ namespace VindiPaymentGateways;
 
 use Exception;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class CheckoutGateways
 {
     public function __construct()
@@ -30,7 +26,9 @@ class CheckoutGateways
                 $username = strtolower($billing_first_name . '_' . $billing_last_name . '_' . $suffix);
                 $suffix++;
             }
-        } else {
+        }
+
+        if (!isset($username)) {
             $username = current(explode('@', $billing_email));
         }
 
@@ -109,7 +107,7 @@ class CheckoutGateways
     public function add_billing_fields()
     {
         $template_path = WP_PLUGIN_DIR . '/vindi-payment-gateway/src/templates/fields-order-pay-checkout.php';
-        if (!$template_path) {
+        if (!file_exists($template_path)) {
             return;
         }
 
@@ -120,8 +118,14 @@ class CheckoutGateways
         if ($isPaymentLink) {
             $order = wc_get_order($orderId);
             $fields = WC()->checkout->get_checkout_fields('billing');
-            include $template_path;
+            $this->include_template_with_variables($template_path, compact('order', 'fields'));
         }
+    }
+
+    private function include_template_with_variables($template_path, $variables)
+    {
+        extract($variables);
+        include $template_path;
     }
 
     public function save_billing_fields($order)
@@ -178,11 +182,12 @@ class CheckoutGateways
 
     private function set_order_billing_field($order, $key, $field)
     {
-        if (method_exists($order, "set_billing_$key")) {
-            $order->{"set_billing_$key"}($field);
-        } else {
-            $order->update_meta_data("_billing_$key", $field);
+        $method = "set_billing_$key";
+        if (method_exists($order, $method)) {
+            $order->$method($field);
+            return;
         }
+        $order->update_meta_data("_billing_$key", $field);
     }
 
     private function set_order_shipping_field($order, $key, $field)

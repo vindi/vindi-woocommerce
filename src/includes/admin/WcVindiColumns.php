@@ -2,10 +2,6 @@
 
 namespace VindiPaymentGateways;
 
-if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
-}
-
 class WcVindiColumns
 {
     public function __construct()
@@ -40,22 +36,28 @@ class WcVindiColumns
     public function custom_shop_order_column_data($column)
     {
         global $post;
-        $plugin_dir = WP_PLUGIN_DIR . '/vindi-payment-gateway/src/templates/admin-payment-link-button.php';
+        $template_path = WP_PLUGIN_DIR . '/vindi-payment-gateway/src/templates/admin-payment-link-button.php';
 
-        if (!$plugin_dir) {
+        if (!$template_path) {
             return;
         }
 
-        $link_payment = '';
         if ($column === 'vindi_payment_link') {
             $order = wc_get_order($post->ID);
             if (count($order->get_items()) > 0) {
                 $order_status = $order->get_status();
                 $gateway = $order->get_payment_method();
                 $link_payment = $this->build_payment_link($order, $gateway);
-                include $plugin_dir;
+                $variables = compact('link_payment', 'order_status', 'order', 'gateway');
+                $this->include_template_with_variables($template_path, $variables);
             }
         }
+    }
+
+    private function include_template_with_variables($template_path, $variables)
+    {
+        extract($variables);
+        include $template_path;
     }
 
     /*

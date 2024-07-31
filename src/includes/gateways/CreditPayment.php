@@ -153,12 +153,10 @@ class VindiCreditGateway extends VindiPaymentGateway
 
   private function calculate_total($order_id, $cart)
   {
-    if ($order_id && $_GET['pay_for_order'] == 'true') {
-      $total = $this->calculate_order_total($order_id);
-    } else {
-      $total = $this->get_cart_total($cart);
-    }
-    return $total;
+      if ($order_id && isset($_GET['pay_for_order']) && $_GET['pay_for_order'] === 'true') {
+          return $this->calculate_order_total($order_id);
+      }
+      return $this->get_cart_total($cart);
   }
 
   private function calculate_order_total($order_id)
@@ -171,7 +169,7 @@ class VindiCreditGateway extends VindiPaymentGateway
 
   private function subtract_fees($order, $total)
   {
-    foreach ($order->get_items('fee') as $item_id => $item_fee) {
+    foreach ($order->get_items('fee') as $item_fee) {
       if ($item_fee->get_name() == __('Juros', VINDI)) {
         $total -= $item_fee->get_total();
       }

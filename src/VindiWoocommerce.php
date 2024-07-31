@@ -230,7 +230,6 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/validators/WCFilterCartNeedsPayment.php';
         require_once plugin_dir_path(__FILE__) . '/utils/WCSRenewalDisable.php';
     }
-
 }
 
 add_action('plugins_loaded', array(WcVindiPayment::class, 'get_instance'));

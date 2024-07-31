@@ -4,10 +4,6 @@ namespace VindiPaymentGateways;
 
 use WC_Subscriptions_Product;
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class FilterCartNeedsPayment
 {
     public function __construct()
@@ -30,11 +26,12 @@ class FilterCartNeedsPayment
 
     private function cart_has_trial($cart)
     {
+        $subscriptions_product = new WC_Subscriptions_Product();
         $items = $cart->get_cart();
         foreach ($items as $item) {
-            if (
+            if(
                 class_exists('WC_Subscriptions_Product')
-                && WC_Subscriptions_Product::get_trial_length($item['product_id']) > 0
+                && $subscriptions_product->get_trial_length($item['product_id']) > 0
             ) {
                 return true;
             }

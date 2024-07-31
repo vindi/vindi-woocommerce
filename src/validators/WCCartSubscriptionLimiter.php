@@ -3,14 +3,15 @@
 namespace VindiPaymentGateways;
 
 use WC_Subscriptions_Product;
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class WCCartSubscriptionLimiter
 {
     public function __construct()
+    {
+        $this->init_hooks();
+
+    }
+
+    private function init_hooks()
     {
         add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
         add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_cart_update'], 10, 4);
@@ -54,6 +55,7 @@ class WCCartSubscriptionLimiter
 
     public function limit_duplicate_subscriptions_cart_update($passed, $_cart_item_key, $values, $quantity)
     {
+        unset($_cart_item_key);
         $product_id = $values['product_id'];
         $product = wc_get_product($product_id);
         if ($this->is_virtual_product($product)) {

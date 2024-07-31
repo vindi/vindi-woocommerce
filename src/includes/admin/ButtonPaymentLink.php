@@ -4,11 +4,6 @@ namespace VindiPaymentGateways;
 
 use WC_Subscriptions_Product;
 
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class ButtonPaymentLink
 {
     public function __construct()
@@ -27,11 +22,6 @@ class ButtonPaymentLink
         $order_data = $this->get_order_data($order);
 
         if ($order_data['has_item']) {
-            $has_item = $order_data['has_item'];
-            $link_payment = $order_data['link_payment'];
-            $has_subscription = $order_data['has_subscription'];
-            $order_status = $order_data['order_status'];
-            $urlShopSubscription = $order_data['urlShopSubscription'];
             include $template_path;
         }
     }
@@ -79,7 +69,8 @@ class ButtonPaymentLink
     {
         $order_items = $order->get_items();
         foreach ($order_items as $order_item) {
-            if (WC_Subscriptions_Product::is_subscription($order_item->get_product_id()) && $order->get_created_via() == 'subscription') {
+            if (WC_Subscriptions_Product::is_subscription($order_item->get_product_id())
+            && $order->get_created_via() == 'subscription') {
                 return true;
             }
         }
