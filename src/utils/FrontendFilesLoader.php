@@ -22,10 +22,14 @@ class FrontendFilesLoader {
     wp_register_style('vindi_woocommerce_admin_style', plugins_url('/assets/css/admin.css', plugin_dir_path(__FILE__)), array(), VINDI_VERSION);
     wp_enqueue_style('vindi_woocommerce_admin_style');
         wp_enqueue_script("vindi_products", plugins_url('/assets/js/product.js', plugin_dir_path(__FILE__)));
-    wp_register_script('vindi_woocommerce_edit_js', plugins_url('/assets/js/editpost.js', plugin_dir_path(__FILE__)), array('jquery'), VINDI_VERSION, true);
-    wp_enqueue_script('vindi_woocommerce_edit_js');
-
+        wp_register_script(
+            'vindi_woocommerce_edit_js',
+            plugins_url(
+                '/assets/js/editpost.js',
+                plugin_dir_path(__FILE__)), array('jquery'), VINDI_VERSION, true);
+        wp_enqueue_script('vindi_woocommerce_edit_js');
   }
+  
     public static function frontendFiles()
     {
         wp_register_script(
