@@ -24,11 +24,11 @@ class ButtonPaymentLink
         if ($order) {
             $has_item = $order_data['has_item'];
             $has_sub = $order_data['has_subscription'];
-            $orde_status = $order_data['order_status'];
+            $status = $order_data['order_status'];
             $link_payment = $order_data['link_payment'];
             $urlAdmin =  $order_data['urlAdmin'];
             $urlShopSubscription =  $order_data['urlShopSubscription'];
-            $variables = compact('has_item', 'has_sub', 'orde_status', 'link_payment', 'urlAdmin', 'urlShopSubscription');
+            $variables = compact('has_item', 'has_sub', 'status', 'link_payment', 'urlAdmin', 'urlShopSubscription');
             $this->include_template_with_variables($template_path, $variables);
         }
     }
