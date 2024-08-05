@@ -25,10 +25,13 @@ class ButtonPaymentLink
             $has_item = $order_data['has_item'];
             $has_sub = $order_data['has_subscription'];
             $status = $order_data['order_status'];
-            $link_payment = $order_data['link_payment'];
+            $link= $order_data['link_payment'];
             $urlAdmin =  $order_data['urlAdmin'];
-            $urlShopSubscription =  $order_data['urlShopSubscription'];
-            $variables = compact('has_item', 'has_sub', 'status', 'link_payment', 'urlAdmin', 'urlShopSubscription');
+            $urlSub =  $order_data['urlShopSubscription'];
+            $type = get_post_type($order->get_id());
+            $created = $order->get_created_via();
+            $parent = $order_data['parent'];
+            $variables = compact('has_item', 'has_sub', 'status', 'link', 'urlAdmin', 'urlSub', 'type','created','parent');
             $this->include_template_with_variables($template_path, $variables);
         }
     }
@@ -41,14 +44,15 @@ class ButtonPaymentLink
             'order_status' => $order->get_status(),
             'link_payment' => null,
             'urlAdmin' => get_admin_url(),
-            'urlShopSubscription' => null
+            'urlShopSubscription' => null,
+            'parent' => false
         ];
         if (count($order->get_items()) > 0) {
             $order_data['has_subscription'] = $this->has_subscription($order);
-            $order_data = $this->handle_shop_subscription($order, $order_data);
             if ($order->get_checkout_payment_url()) {
                 $order_data['link_payment'] = $this->build_payment_link($order, $order->get_payment_method());
             }
+            $order_data = $this->handle_shop_subscription($order, $order_data);
             $order_data['order_status'] = $order->get_status();
             $order_data['has_item'] = true;
             $order_data['urlShopSubscription'] = "{$order_data['urlAdmin']}edit.php?post_type=shop_subscription";
@@ -64,7 +68,9 @@ class ButtonPaymentLink
             if ($parent_order) {
                 $parent_order_id = $parent_order->get_id();
                 $order = wc_get_order($parent_order_id);
+                $order_data['link_payment'] = $this->build_payment_link($order, $order->get_payment_method());
                 $order_data['has_subscription'] = true;
+                $order_data['parent'] = true;
             }
         }
 
@@ -76,8 +82,7 @@ class ButtonPaymentLink
         $subscriptions_product = new WC_Subscriptions_Product();
         $order_items = $order->get_items();
         foreach ($order_items as $order_item) {
-            if ($subscriptions_product->is_subscription($order_item->get_product_id())
-            && $order->get_created_via() == 'subscription') {
+            if ($subscriptions_product->is_subscription($order_item->get_product_id())) {
                 return true;
             }
         }

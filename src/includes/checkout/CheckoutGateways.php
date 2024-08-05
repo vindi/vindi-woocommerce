@@ -19,26 +19,30 @@ class CheckoutGateways
         $billing_first_name = $order->get_billing_first_name();
         $billing_last_name = $order->get_billing_last_name();
 
-        if (email_exists($billing_email)) {
+        if ($user_id = $this->set_user_id($billing_email)) {
+            $order->set_customer_id($user_id);
+            $order->save();
+        } else {
             $username = strtolower($billing_first_name . '_' . $billing_last_name);
+            $username = str_replace(' ', '_', $username);
             $suffix = 1;
             while (username_exists($username)) {
                 $username = strtolower($billing_first_name . '_' . $billing_last_name . '_' . $suffix);
                 $suffix++;
             }
-        }
 
-        if (!isset($username)) {
-            $username = current(explode('@', $billing_email));
-        }
+            if (!isset($username)) {
+                $username = current(explode('@', $billing_email));
+            }
 
-        if ($username) {
-            $password = wp_generate_password(12, false);
-            $user_id = wp_create_user($username, $password, $billing_email);
-            $order->set_customer_id($user_id);
-            $order->save();
-            wp_set_current_user($user_id);
-            wp_set_auth_cookie($user_id);
+            if ($username) {
+                $password = wp_generate_password(12, false);
+                $user_id = wp_create_user($username, $password, $billing_email);
+                wp_set_current_user($user_id);
+                wp_set_auth_cookie($user_id);
+                $order->set_customer_id($user_id);
+                $order->save();
+            }
         }
     }
 
@@ -241,5 +245,14 @@ class CheckoutGateways
         if ($person === '2' && !$cnpj) {
             throw new Exception((__('CNPJ', 'vindi-payment-gateway')));
         }
+    }
+
+    private function set_user_id($userEmail)
+    {
+        $user = get_user_by('email', $userEmail);
+        if ($user) {
+            return $user->ID;
+        }
+        return null;
     }
 }

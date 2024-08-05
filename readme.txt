@@ -1,9 +1,9 @@
 === Vindi WooCommerce 2 ===
-Contributors: apiki, aguiart0, laertejr, rodasistemas, cleberbonifacio
+Contributors: apiki, aguiart0, laertejr
 Plugin Name: Vindi WooCommerce
 Plugin URI: https://github.com/vindi/vindi-woocommerce
 Website Link: https://www.vindi.com.br
-Tags: vindi, subscriptions, pagamento-recorrente, cobranca-recorrente, cobrança-recorrente, recurring, site-de-assinatura, assinaturas, faturamento-recorrente, recorrencia, assinatura, woocommerce-subscriptions, vindi-woocommerce, vindi-payment-gateway
+Tags: vindi, cobrança-recorrente, vindi-woocommerce, assinaturas, woocommerce-subscriptions
 Author URI: https://vindi.com.br/ | https://mentores.com.br
 Author: Vindi | Mentores Digital
 Requires at least: 4.4
@@ -11,7 +11,7 @@ Tested up to: 6.4
 WC requires at least: 3.0.0
 WC tested up to: 8.6.1
 Requires PHP: 5.6
-Stable Tag: 1.3.3
+Stable Tag: 1.3.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,13 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.3.4 - 31/07/2024 =
+-Lançamento da versão de patch.
+- **Adição:** Implementação de botão para gerar link de pagamento utilizando métodos da Vindi.
+- **Adição:** Inclusão de botão para copiar o link de pagamento com métodos da Vindi.
+- **Adição:** Criação automática de usuário após o pagamento realizado através do botão de link de pagamento da Vindi.
+- **Melhoria:** Refatoração e otimização do código.
+
 = 1.3.3 - 05/07/2024 =
 -Lançamento da versão de patch.
 - **Correção:** Estava sendo enviado o ID do produto variável em vez do ID do produto.

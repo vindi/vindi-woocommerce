@@ -2,6 +2,8 @@
 
 namespace VindiPaymentGateways;
 
+use WC_Subscriptions_Product;
+
 class WcVindiColumns
 {
     public function __construct()
@@ -21,7 +23,7 @@ class WcVindiColumns
         $new_columns = array();
         foreach ($columns as $key => $column) {
             $new_columns[$key] = $column;
-            if ($key === 'order_status' || $key === 'Status') {
+            if ($key === 'order_status' || $key === 'status') {
                 $new_columns['vindi_payment_link'] = __('Link de Pagamento', 'vindi-payment-gateway');
             }
         }
@@ -36,7 +38,7 @@ class WcVindiColumns
     public function custom_shop_order_column_data($column)
     {
         global $post;
-        $template_path = WP_PLUGIN_DIR . '/vindi-payment-gateway/src/templates/admin-payment-link-button.php';
+        $template_path = WP_PLUGIN_DIR . '/vindi-payment-gateway/src/templates/admin-payment-link-button-column.php';
 
         if (!$template_path) {
             return;
@@ -45,10 +47,13 @@ class WcVindiColumns
         if ($column === 'vindi_payment_link') {
             $order = wc_get_order($post->ID);
             if (count($order->get_items()) > 0) {
-                $order_status = $order->get_status();
+                $status = $order->get_status();
                 $gateway = $order->get_payment_method();
-                $link_payment = $this->build_payment_link($order, $gateway);
-                $variables = compact('link_payment', 'order_status', 'order', 'gateway');
+                $url_payment = $this->build_payment_link($order, $gateway);
+                $post_type = $order->get_created_via();
+                $has_sub = $this->has_subscription($order);
+                $has_item = true;
+                $variables = compact('url_payment', 'status', 'gateway', 'post_type', 'has_sub', 'has_item');
                 $this->include_template_with_variables($template_path, $variables);
             }
         }
@@ -74,5 +79,17 @@ class WcVindiColumns
         $orderKey = $order->get_order_key();
 
         return "{$url}order-pay/{$orderId}/?pay_for_order=true&key={$orderKey}&vindi-payment-link=true{$gateway}";
+    }
+
+    public function has_subscription($order)
+    {
+        $subscriptions_product = new WC_Subscriptions_Product();
+        $order_items = $order->get_items();
+        foreach ($order_items as $order_item) {
+            if ($subscriptions_product->is_subscription($order_item->get_product_id())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
