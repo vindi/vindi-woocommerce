@@ -3,12 +3,18 @@
         <div style="display: flex;gap: 6px; width: 100%;margin-top: 6px;">
             <?php $is_disabled = (($created == 'admin' && $has_sub && $has_item) ||
                 ($created !== 'admin' && !$has_sub && !$has_item)) ? 'disabled' : 'enable'; ?>
-            <a class="buttonPaymentLink <?php echo $is_disabled; ?>" target="<?php echo $has_item ? esc_attr('_blank') : ''; ?>" href="<?php echo $is_disabled == 'enable' ? esc_url($link) : '#'; ?>">
-                <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>" alt="Logo Vindi">
+            <a class="buttonPaymentLink <?php echo $is_disabled; ?>"
+            target="<?php echo $has_item ? esc_attr('_blank') : ''; ?>"
+            href="<?php echo $is_disabled == 'enable' ? esc_url($link) : '#'; ?>">
+                <img style="width: 15px;"
+                src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>"
+                alt="Logo Vindi">
                 <span><?php echo esc_html__('Link de pagamento', 'vindi-payment-gateway'); ?></span>
             </a>
             <a class="buttonCopy" id="buttonCopyPost">
-                <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/copy.svg'; ?>" alt="Icone Copiar">
+                <img style="width: 15px;"
+                src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/copy.svg'; ?>"
+                alt="Icone Copiar">
             </a>
         </div>
         <div>
@@ -34,16 +40,22 @@
                 </span>
             <?php endif; ?>
         </div>
-    <? else : ?>
+    <?php else : ?>
         <div style="display: flex;gap: 6px; width: 100%;margin-top: 6px;">
             <div style="display: flex;gap: 6px; width: 100%;">
                 <?php $is_disabled = ($has_sub && $has_item && $parent) ? 'enable' : 'disabled'; ?>
-                <a class="buttonPaymentLink <?php echo $is_disabled; ?>" target="<?php echo $has_item ? esc_attr('_blank') : ''; ?>" href="<?php echo $is_disabled == 'enable' ? esc_url($link) : '#'; ?>">
-                    <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>" alt="Logo Vindi">
+                <a class="buttonPaymentLink <?php echo $is_disabled; ?>"
+                target="<?php echo $has_item ? esc_attr('_blank') : ''; ?>"
+                href="<?php echo $is_disabled == 'enable' ? esc_url($link) : '#'; ?>">
+                    <img style="width: 15px;"
+                    src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>"
+                    alt="Logo Vindi">
                     <span><?php echo esc_html__('Link de pagamento', 'vindi-payment-gateway'); ?></span>
                 </a>
                 <a class="buttonCopy" id="buttonCopyPost">
-                    <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/copy.svg'; ?>" alt="Icone Copiar">
+                    <img style="width: 15px;"
+                    src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/copy.svg'; ?>"
+                    alt="Icone Copiar">
                 </a>
             </div>
         </div>

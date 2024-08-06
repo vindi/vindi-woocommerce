@@ -12,7 +12,7 @@ class FrontendFilesLoader {
   function __construct() {
     add_action('wp_enqueue_scripts', array($this, 'frontendFiles'));
     add_action('admin_enqueue_scripts', array($this, 'adminFiles'));
-    add_action('wp_enqueue_scripts', [$this, 'enqueue_inputmask_scripts']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_inputmask_scripts']);
   }
 
   public static function adminFiles()
@@ -96,9 +96,10 @@ class FrontendFilesLoader {
         );
         wp_enqueue_script('vindi_woocommerce_brands_js');
     }
-    function enqueue_inputmask_scripts() {
-        wp_enqueue_script('inputmask', 'https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js', array('jquery'), '5.0.8', true);
-        
+    public function enqueue_inputmask_scripts()
+    {
+        $cdnInput = 'https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js';
+        wp_enqueue_script('inputmask', $cdnInput, array('jquery'), '5.0.8', true);
         wp_add_inline_script('inputmask', '
             jQuery(document).ready(function($) {
                 $("#billing_phone").inputmask("(99) 99999-9999");
