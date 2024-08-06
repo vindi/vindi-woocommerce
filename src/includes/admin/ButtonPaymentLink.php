@@ -26,14 +26,25 @@ class ButtonPaymentLink
             $sub = $order_data['has_subscription'];
             $status = $order_data['order_status'];
             $link= $order_data['link_payment'];
-            $urlAdmin =  $order_data['urlAdmin'];
-            $urlSub =  $order_data['urlShopSubscription'];
+            $shop =  $order_data['urlShopSubscription'];
             $type = get_post_type($order->get_id());
             $created = $order->get_created_via();
             $parent = $order_data['parent'];
-            $variables = compact('item', 'sub', 'status', 'link', 'urlAdmin', 'urlSub', 'type', 'created', 'parent');
+            $disable = $this->should_disable($created,$sub,$item);
+            $variables = compact('item', 'sub', 'status', 'link', 'shop', 'type', 'created', 'parent', 'disable');
             $this->include_template_with_variables($template_path, $variables);
         }
+    }
+    
+    private function should_disable($created, $has_sub, $has_item)
+    {
+        if ($created == 'admin' && $has_sub && $has_item) {
+            return true;
+        }
+        if ($created !== 'admin' && !$has_sub && !$has_item) {
+            return true;
+        }
+        return false;
     }
 
     private function get_order_data($order)
@@ -55,7 +66,7 @@ class ButtonPaymentLink
             $order_data = $this->handle_shop_subscription($order, $order_data);
             $order_data['order_status'] = $order->get_status();
             $order_data['has_item'] = true;
-            $order_data['urlShopSubscription'] = "{$order_data['urlAdmin']}edit.php?post_type=shop_subscription";
+            $order_data['urlShopSubscription'] = "{$order_data['urlAdmin']}post-new.php?post_type=shop_subscription";
         }
 
         return $order_data;

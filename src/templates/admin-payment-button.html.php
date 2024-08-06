@@ -2,9 +2,7 @@
     <?php if ($type == 'shop_order') : ?>
         <div style="display: flex;gap: 6px; width: 100%;margin-top: 6px;">
             <?php
-            $is_sub_and_item = ($sub && $item);
-            $is_not_sub_and_item = (!$sub && !$item);
-            $is_disabled = ($is_sub_and_item || $is_not_sub_and_item) ? 'disabled' : 'enable';
+            $is_disabled = ($disable) ? 'disabled' : 'enable';
             ?>
             <a class="buttonPaymentLink <?php echo $is_disabled; ?>"
             target="<?php echo $item ? esc_attr('_blank') : ''; ?>"
@@ -39,7 +37,7 @@
                         'vindi-payment-gateway'
                     );
                     ?>
-                    <a href="<?php echo $urlSub; ?>" target="_blank">Assinaturas</a>
+                    <a href="<?php echo $shop; ?>" target="_blank">Assinaturas</a>
                 </span>
             <?php endif; ?>
         </div>
