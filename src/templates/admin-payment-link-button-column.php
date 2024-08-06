@@ -4,7 +4,9 @@
         <a class="btnCopyPostLink" id="copyLinkPostEdit"
         href="<?php echo $url_payment ?>"
         target="_blank">
-            <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>" alt="Copy icon">
+            <img style="width: 15px;"
+            src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>"
+            alt="Copy icon">
             <span><?php echo esc_html__('Copiar Link', 'vindi-payment-gateway'); ?></span>
         </a>
     <?php endif; ?>

@@ -1,24 +1,21 @@
 <?php if (in_array($status, ['pending', 'auto-draft'])) : ?>
     <?php if ($type == 'shop_order') : ?>
         <div style="display: flex;gap: 6px; width: 100%;margin-top: 6px;">
-            <?php $is_disabled = (($created == 'admin' && $has_sub && $has_item) ||
-                ($created !== 'admin' && !$has_sub && !$has_item)) ? 'disabled' : 'enable'; ?>
-            <a class="buttonPaymentLink <?php echo $is_disabled; ?>"
-            target="<?php echo $has_item ? esc_attr('_blank') : ''; ?>"
-            href="<?php echo $is_disabled == 'enable' ? esc_url($link) : '#'; ?>">
-                <img style="width: 15px;"
-                src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>"
-                alt="Logo Vindi">
+            <?php
+            $is_sub_and_item = ($created == 'admin' && $sub && $item);
+            $is_not_sub_and_item = ($created !== 'admin' && !$sub && !$item);
+            $is_disabled = ($is_sub_and_item || $is_not_sub_and_item) ? 'disabled' : 'enable';
+            ?>
+            <a class="buttonPaymentLink <?php echo $is_disabled; ?>" target="<?php echo $item ? esc_attr('_blank') : ''; ?>" href="<?php echo $is_disabled == 'enable' ? esc_url($link) : '#'; ?>">
+                <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>" alt="Logo Vindi">
                 <span><?php echo esc_html__('Link de pagamento', 'vindi-payment-gateway'); ?></span>
             </a>
             <a class="buttonCopy" id="buttonCopyPost">
-                <img style="width: 15px;"
-                src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/copy.svg'; ?>"
-                alt="Icone Copiar">
+                <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/copy.svg'; ?>" alt="Icone Copiar">
             </a>
         </div>
         <div>
-            <?php if (!$has_item) : ?>
+            <?php if (!$item) : ?>
                 <span class="notificationPaymentLink">
                     <?php
                     echo esc_html__(
@@ -28,7 +25,7 @@
                     ?>
                 </span>
             <?php endif; ?>
-            <?php if ($created == 'admin' && $has_sub && $has_item) : ?>
+            <?php if ($created == 'admin' && $sub && $item) : ?>
                 <span class="notificationPaymentLink">
                     <?php
                     echo esc_html__(
@@ -43,24 +40,18 @@
     <?php else : ?>
         <div style="display: flex;gap: 6px; width: 100%;margin-top: 6px;">
             <div style="display: flex;gap: 6px; width: 100%;">
-                <?php $is_disabled = ($has_sub && $has_item && $parent) ? 'enable' : 'disabled'; ?>
-                <a class="buttonPaymentLink <?php echo $is_disabled; ?>"
-                target="<?php echo $has_item ? esc_attr('_blank') : ''; ?>"
-                href="<?php echo $is_disabled == 'enable' ? esc_url($link) : '#'; ?>">
-                    <img style="width: 15px;"
-                    src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>"
-                    alt="Logo Vindi">
+                <?php $is_disabled = ($sub && $item && $parent) ? 'enable' : 'disabled'; ?>
+                <a class="buttonPaymentLink <?php echo $is_disabled; ?>" target="<?php echo $item ? esc_attr('_blank') : ''; ?>" href="<?php echo $is_disabled == 'enable' ? esc_url($link) : '#'; ?>">
+                    <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>" alt="Logo Vindi">
                     <span><?php echo esc_html__('Link de pagamento', 'vindi-payment-gateway'); ?></span>
                 </a>
                 <a class="buttonCopy" id="buttonCopyPost">
-                    <img style="width: 15px;"
-                    src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/copy.svg'; ?>"
-                    alt="Icone Copiar">
+                    <img style="width: 15px;" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/copy.svg'; ?>" alt="Icone Copiar">
                 </a>
             </div>
         </div>
         <div>
-            <?php if (!$has_item) : ?>
+            <?php if (!$item) : ?>
                 <span class="notificationPaymentLink">
                     <?php
                     echo esc_html__(
@@ -70,7 +61,7 @@
                     ?>
                 </span>
             <?php endif; ?>
-            <?php if ($has_item && !$has_sub) : ?>
+            <?php if ($item && !$sub) : ?>
                 <span class="notificationPaymentLink">
                     <?php
                     echo esc_html__(

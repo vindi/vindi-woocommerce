@@ -22,8 +22,8 @@ class ButtonPaymentLink
         $order_data = $this->get_order_data($order);
 
         if ($order) {
-            $has_item = $order_data['has_item'];
-            $has_sub = $order_data['has_subscription'];
+            $item = $order_data['has_item'];
+            $sub = $order_data['has_subscription'];
             $status = $order_data['order_status'];
             $link= $order_data['link_payment'];
             $urlAdmin =  $order_data['urlAdmin'];
@@ -31,7 +31,7 @@ class ButtonPaymentLink
             $type = get_post_type($order->get_id());
             $created = $order->get_created_via();
             $parent = $order_data['parent'];
-            $variables = compact('has_item', 'has_sub', 'status', 'link', 'urlAdmin', 'urlSub', 'type','created','parent');
+            $variables = compact('item', 'sub', 'status', 'link', 'urlAdmin', 'urlSub', 'type', 'created', 'parent');
             $this->include_template_with_variables($template_path, $variables);
         }
     }
