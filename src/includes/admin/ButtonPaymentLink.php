@@ -30,7 +30,7 @@ class ButtonPaymentLink
             $type = get_post_type($order->get_id());
             $created = $order->get_created_via();
             $parent = $order_data['parent'];
-            $disable = $this->should_disable($created,$sub,$item);
+            $disable = $this->should_disable($created, $sub, $item);
             $variables = compact('item', 'sub', 'status', 'link', 'shop', 'type', 'created', 'parent', 'disable');
             $this->include_template_with_variables($template_path, $variables);
         }
