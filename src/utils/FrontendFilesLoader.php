@@ -12,16 +12,20 @@ class FrontendFilesLoader {
   function __construct() {
     add_action('wp_enqueue_scripts', array($this, 'frontendFiles'));
     add_action('admin_enqueue_scripts', array($this, 'adminFiles'));
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_inputmask_scripts']);
   }
 
   public static function adminFiles()
   {
+        $dir_path = plugins_url('/assets/js/editpost.js', plugin_dir_path(__FILE__));
     wp_register_script('jquery-mask', plugins_url('/assets/js/jquery.mask.min.js', plugin_dir_path(__FILE__)), array('jquery'), VINDI_VERSION, true);
     wp_register_script('vindi_woocommerce_admin_js', plugins_url('/assets/js/admin.js', plugin_dir_path(__FILE__)), array('jquery', 'jquery-mask'), VINDI_VERSION, true);
     wp_enqueue_script('vindi_woocommerce_admin_js');
     wp_register_style('vindi_woocommerce_admin_style', plugins_url('/assets/css/admin.css', plugin_dir_path(__FILE__)), array(), VINDI_VERSION);
     wp_enqueue_style('vindi_woocommerce_admin_style');
         wp_enqueue_script("vindi_products", plugins_url('/assets/js/product.js', plugin_dir_path(__FILE__)));
+        wp_register_script('vindi_woocommerce_edit_js', $dir_path, array('jquery'), VINDI_VERSION, true);
+        wp_enqueue_script('vindi_woocommerce_edit_js');
   }
     public static function frontendFiles()
     {
@@ -91,5 +95,16 @@ class FrontendFilesLoader {
             true
         );
         wp_enqueue_script('vindi_woocommerce_brands_js');
+    }
+    public function enqueue_inputmask_scripts()
+    {
+        $cdnInput = 'https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js';
+        wp_enqueue_script('inputmask', $cdnInput, array('jquery'), '5.0.8', true);
+        wp_add_inline_script('inputmask', '
+            jQuery(document).ready(function($) {
+                $("#billing_phone").inputmask("(99) 99999-9999");
+                $("#billing_postcode").inputmask("99999-999");
+            });
+        ');
     }
 }
