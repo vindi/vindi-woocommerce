@@ -71,8 +71,8 @@ class CheckoutGateways
         ];
 
         $hasSessionParams = false;
-        $isPaymentLink = filter_input(INPUT_GET, 'vindi-payment-link') ?? false;
-        $gateway = filter_input(INPUT_GET, 'vindi-gateway') ?? false;
+        $isPaymentLink = $this->get_payment_link_param();
+        $gateway = $this->get_gateway_param();
 
         $this->verify_session_params($hasSessionParams, $isPaymentLink, $gateway);
 
@@ -90,17 +90,32 @@ class CheckoutGateways
         return $gateways;
     }
 
+    private function get_payment_link_param()
+    {
+        return filter_input(INPUT_GET, 'vindi-payment-link') ?? false;
+    }
+
+    private function get_gateway_param()
+    {
+        return filter_input(INPUT_GET, 'vindi-gateway') ?? false;
+    }
+
     private function is_subscription_context()
     {
         $cart = WC()->cart->get_cart();
         if (!empty($cart)) {
-            foreach ($cart as $key => $item) {
-                if (isset($item['subscription_renewal']) || isset($item['subscription_initial_payment'])) {
-                    return true;
-                }
+            return $this->has_subscription_item($cart);
+        }
+        return false;
+    }
+
+    private function has_subscription_item($cart)
+    {
+        foreach ($cart as $item) {
+            if (isset($item['subscription_renewal']) || isset($item['subscription_initial_payment'])) {
+                return true;
             }
         }
-
         return false;
     }
 
