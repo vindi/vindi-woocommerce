@@ -33,7 +33,7 @@ class GenerateUser
 
         return $user_id;
     }
-    
+
     private function set_user_id($userEmail)
     {
         $user = get_user_by('email', $userEmail);
@@ -60,5 +60,4 @@ class GenerateUser
 
         return $username;
     }
-    
 }
