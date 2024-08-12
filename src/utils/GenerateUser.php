@@ -60,4 +60,5 @@ class GenerateUser
 
         return $username;
     }
+    
 }

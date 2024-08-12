@@ -5,7 +5,6 @@ namespace VindiPaymentGateways;
 use Exception;
 use VindiPaymentGateways\GenerateUser;
 
-
 class CheckoutGateways
 {
     public function __construct()
