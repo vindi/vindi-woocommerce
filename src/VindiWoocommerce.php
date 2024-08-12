@@ -112,6 +112,11 @@ class WcVindiPayment extends AbstractInstance
      */
     private $renew_pix_charge;
 
+    /**
+     * @var VindiPaymentGateway\GenerateUser;
+     */
+    private $generate_user;
+
     public function __construct()
     {
 
@@ -136,6 +141,7 @@ class WcVindiPayment extends AbstractInstance
         $this->parent_order_setup = new OrderSetup();
         $this->filter_cart_needs_payment = new FilterCartNeedsPayment();
         $this->renew_pix_charge = new RenewPixCharge();
+        $this->generate_user = new GenerateUser();
         
         /**
          * Add Gateway to Woocommerce
@@ -236,6 +242,8 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/validators/WCCartSubscriptionLimiter.php';
         require_once plugin_dir_path(__FILE__) . '/validators/WCFilterCartNeedsPayment.php';
         require_once plugin_dir_path(__FILE__) . '/utils/WCSRenewalDisable.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/GenerateUser.php';
+
     }
 }
 
