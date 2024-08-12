@@ -127,4 +127,8 @@ jQuery(document).ready(function ($) {
       console.log('Link de pagamento não encontrado ou está desabilitado.');
     }
   });
+
+  const newTextOrder = document.querySelector('.wc-order-data-row');
+  newTextOrder.append('O valor pode variar de acordo com a Taxa da assinatura')
+
 });

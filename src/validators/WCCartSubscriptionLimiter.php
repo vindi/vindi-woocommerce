@@ -15,7 +15,7 @@ class WCCartSubscriptionLimiter
     {
         add_filter('woocommerce_add_to_cart_validation', [$this, 'limit_same_subscriptions'], 10, 3);
         add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_cart_update'], 10, 4);
-        add_filter('woocommerce_add_to_cart_validation', [$this, 'disallow_subscription_single_product_cart'], 10, 4);
+        add_filter('woocommerce_add_to_cart_validation', [$this, 'disallow_subscription_single_product_cart'], 10, 2);
     }
 
     public function limit_same_subscriptions($passed, $product_id, $quantity)
@@ -105,7 +105,7 @@ class WCCartSubscriptionLimiter
     {
         $product = wc_get_product($product_id);
 
-        if ($product->is_virtual()) {
+        if ($this->is_virtual_product($product)) {
             return $passed;
         }
 
