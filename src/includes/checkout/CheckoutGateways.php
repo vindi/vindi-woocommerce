@@ -71,17 +71,13 @@ class CheckoutGateways
         ];
 
         $hasSessionParams = false;
-        $isPaymentLink = $this->get_payment_link_param();
-        $gateway = $this->get_gateway_param();
+        $isPaymentLink = filter_input(INPUT_GET, 'vindi-payment-link') ?? false;
+        $gateway = filter_input(INPUT_GET, 'vindi-gateway') ?? false;
 
         $this->verify_session_params($hasSessionParams, $isPaymentLink, $gateway);
 
         if ($isPaymentLink) {
-            if ($hasSessionParams && !$this->is_subscription_context()) {
-                WC()->session->set('vindi-payment-link', '');
-                WC()->session->set('vindi-gateway', '');
-                return $gateways;
-            }
+            $this->clear_session($hasSessionParams, $gateways);
             $gateways = $this->filter_available_gateways($gateways, $available);
             if ($gateway && isset($gateways[$gateway])) {
                 return [$gateway => $gateways[$gateway]];
@@ -90,14 +86,13 @@ class CheckoutGateways
         return $gateways;
     }
 
-    private function get_payment_link_param()
+    private function clear_session($hasSessionParams,$gateways)
     {
-        return filter_input(INPUT_GET, 'vindi-payment-link') ?? false;
-    }
-
-    private function get_gateway_param()
-    {
-        return filter_input(INPUT_GET, 'vindi-gateway') ?? false;
+        if ($hasSessionParams && !$this->is_subscription_context()) {
+            WC()->session->set('vindi-payment-link', '');
+            WC()->session->set('vindi-gateway', '');
+            return $gateways;
+        }
     }
 
     private function is_subscription_context()
