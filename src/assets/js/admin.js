@@ -128,7 +128,4 @@ jQuery(document).ready(function ($) {
     }
   });
 
-  const newTextOrder = document.querySelector('.wc-order-data-row');
-  newTextOrder.append('O valor pode variar de acordo com a Taxa da assinatura')
-
 });

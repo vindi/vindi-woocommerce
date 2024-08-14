@@ -6,6 +6,7 @@ if (! defined('ABSPATH')) {
   die();
 	exit; // Exit if accessed directly
 }
+use WC_Subscriptions_Product;
 
 class FrontendFilesLoader {
 
@@ -13,6 +14,7 @@ class FrontendFilesLoader {
     add_action('wp_enqueue_scripts', array($this, 'frontendFiles'));
     add_action('admin_enqueue_scripts', array($this, 'adminFiles'));
         add_action('wp_enqueue_scripts', [$this, 'enqueue_inputmask_scripts']);
+        add_action('add_meta_boxes', array($this, 'check_for_subscription_in_order'));
   }
 
   public static function adminFiles()
@@ -96,6 +98,7 @@ class FrontendFilesLoader {
         );
         wp_enqueue_script('vindi_woocommerce_brands_js');
     }
+
     public function enqueue_inputmask_scripts()
     {
         $cdnInput = 'https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js';
@@ -106,5 +109,29 @@ class FrontendFilesLoader {
                 $("#billing_postcode").inputmask("99999-999");
             });
         ');
+    }
+
+    public function check_for_subscription_in_order() {
+        global $post;
+    
+        if ($post->post_type === 'shop_order' || $post->post_type === 'shop_subscription') {
+            $order = wc_get_order($post->ID);
+            $has_subscription = false;
+            $subscriptions_product = new WC_Subscriptions_Product();
+
+            foreach ($order->get_items() as $item_id => $item) {
+                if ($subscriptions_product->is_subscription($item->get_product())) {
+                    $has_subscription = true;
+                    break;
+                }
+            }
+    
+            wp_register_script('notification-js', plugins_url('/assets/js/notification.js', plugin_dir_path(__FILE__)), array('jquery'), VINDI_VERSION, true);
+            wp_enqueue_script('notification-js');
+    
+            wp_localize_script('notification-js', 'orderData', array(
+                'hasSubscription' => $has_subscription
+            ));
+        }
     }
 }
