@@ -111,34 +111,43 @@ class FrontendFilesLoader {
         ');
     }
 
-    public function check_for_subscription_in_order() 
+    public function check_for_subscription_in_order()
     {
         global $post;
     
         if ($this->is_shop_order_or_subscription($post)) {
-            $order = wc_get_order($post->ID);
-            $has_subscription = false;
-            $subscriptions_product = new WC_Subscriptions_Product();
-
-            foreach ($order->get_items() as $item) {
-                if ($subscriptions_product->is_subscription($item->get_product())) {
-                    $has_subscription = true;
-                    break;
-                }
-            }
-
-            $dir_path = plugins_url('/assets/js/notification.js', plugin_dir_path(__FILE__));
-            wp_register_script('notification-js', $dir_path, array('jquery'), VINDI_VERSION, true);
-            wp_enqueue_script('notification-js');
-    
-            wp_localize_script('notification-js', 'orderData', array(
-                'hasSubscription' => $has_subscription
-            ));
+            $has_subscription = $this->order_has_subscription($post->ID);
+            $this->enqueue_notification_script($has_subscription);
         }
     }
     
     private function is_shop_order_or_subscription($post)
     {
         return $post->post_type === 'shop_order' || $post->post_type === 'shop_subscription';
+    }
+
+    private function order_has_subscription($order_id)
+    {
+        $order = wc_get_order($order_id);
+        $subscriptions_product = new WC_Subscriptions_Product();
+        
+        foreach ($order->get_items() as $item) {
+            if ($subscriptions_product->is_subscription($item->get_product())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private function enqueue_notification_script($has_subscription)
+    {
+        $dir_path = plugins_url('/assets/js/notification.js', plugin_dir_path(__FILE__));
+        wp_register_script('notification-js', $dir_path, array('jquery'), VINDI_VERSION, true);
+        wp_enqueue_script('notification-js');
+        
+        wp_localize_script('notification-js', 'orderData', array(
+            'hasSubscription' => $has_subscription
+        ));
     }
 }
