@@ -128,4 +128,16 @@ jQuery(document).ready(function ($) {
     }
   });
 
+  const url = new URLSearchParams(location.href);
+  if (url.has("vindi-payment-link")) {
+    const addresses = document.querySelectorAll(".edit_address");
+
+    addresses.forEach((address) => {
+      address.style.display = "block";
+    });
+
+    if (url.has("gateway")) {
+      this.updateLinkGateway(url.get("gateway"));
+    }
+  }
 });

@@ -1,6 +1,6 @@
 <?php if (in_array($status, ['pending', 'auto-draft'])) : ?>
     <?php if ($type == 'shop_order') : ?>
-        <div style="display: flex;gap: 6px; width: 100%;margin-top: 6px;">
+        <div style="display:flex;gap:6px;width:100%;margin-top:6px;padding-top:10px;">
             <?php
             $is_disabled = ($disable) ? 'disabled' : 'enable';
             ?>
@@ -10,7 +10,7 @@
                 <img style="width: 15px;"
                 src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>"
                 alt="Logo Vindi">
-                <span><?php echo esc_html__('Link de pagamento', 'vindi-payment-gateway'); ?></span>
+                <span><?php echo esc_html__('Ver link de pagamento', 'vindi-payment-gateway'); ?></span>
             </a>
             <a class="buttonCopy" id="buttonCopyPost">
                 <img style="width: 15px;"
@@ -51,7 +51,7 @@
                     <img style="width: 15px;"
                     src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'assets/images/logo-white.svg'; ?>"
                     alt="Logo Vindi">
-                    <span><?php echo esc_html__('Link de pagamento', 'vindi-payment-gateway'); ?></span>
+                    <span><?php echo esc_html__('Ver link de pagamento', 'vindi-payment-gateway'); ?></span>
                 </a>
                 <a class="buttonCopy" id="buttonCopyPost">
                     <img style="width: 15px;"

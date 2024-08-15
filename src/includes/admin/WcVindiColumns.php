@@ -73,12 +73,10 @@ class WcVindiColumns
     */
     public function build_payment_link($order, $gateway)
     {
-        $url = wc_get_checkout_url();
+        $url = get_site_url();
         $gateway = $gateway ? "&vindi-gateway={$gateway}" : '';
         $orderId = $order->get_id();
-        $orderKey = $order->get_order_key();
-
-        return "{$url}order-pay/{$orderId}/?pay_for_order=true&key={$orderKey}&vindi-payment-link=true{$gateway}";
+        return "{$url}/wp-admin/post.php?post={$orderId}&action=edit&vindi-payment-link=true";
     }
 
     public function has_subscription($order)

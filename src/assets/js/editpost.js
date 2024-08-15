@@ -1,15 +1,14 @@
 jQuery(document).ready(function ($) {
-    const copyLinkPostEditButtons = document.querySelectorAll('.btnCopyPostLink');
-    copyLinkPostEditButtons.forEach(button => {
-        button.addEventListener('click', function (e) {
-            e.preventDefault();
-            const link = e.currentTarget.href;
-            const tempInput = document.createElement('input');
-            tempInput.value = link;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-        });
-    });
+    let url = window.location.href;
+    let side = document.querySelector(".page-title-action");
+    if (side && (url.includes("post_type=shop_order") || url.includes("action=edit"))) {
+        let button = document.createElement('a');
+        button.className = 'button button-primary';
+        button.style.marginLeft = '10px';
+        button.style.marginTop = '10px';
+        button.setAttribute("target", "_blank");
+        button.innerText = "Gerar Link de Pagamento";
+        button.setAttribute("href", `${location.origin}/wp-admin/post-new.php?post_type=shop_order&vindi-payment-link=true`);
+        side.after(button);
+    }
 })
