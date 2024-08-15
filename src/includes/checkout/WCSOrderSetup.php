@@ -8,8 +8,8 @@ class OrderSetup
     {
         add_action('template_redirect', [$this, 'set_payment_gateway']);
         add_filter('woocommerce_payment_gateways', [$this, 'restrict_payment_gateways_for_vindi_payment_link']);
-
     }
+
     public function set_payment_gateway()
     {
         $isPaymentLink = filter_input(INPUT_GET, 'vindi-payment-link', FILTER_VALIDATE_BOOLEAN) ?? false;
@@ -26,7 +26,7 @@ class OrderSetup
 
     public function restrict_payment_gateways_for_vindi_payment_link($available_gateways)
     {
-        if (is_admin() && isset($_GET['vindi-payment-link'])) {
+        if ($this->is_vindi_payment_link()) {
             $allowed_gateways = [
                 'vindi-bank-slip',
                 'vindi-bolepix',
@@ -34,7 +34,7 @@ class OrderSetup
                 'vindi-pix',
             ];
 
-            foreach ($available_gateways as $gateway_id => $gateway) {
+            foreach ($available_gateways as $gateway_id) {
                 if (!in_array($gateway_id, $allowed_gateways)) {
                     unset($available_gateways[$gateway_id]);
                 }
@@ -42,5 +42,10 @@ class OrderSetup
         }
 
         return $available_gateways;
+    }
+
+    private function is_vindi_payment_link()
+    {
+        return is_admin() && isset($_GET['vindi-payment-link']);
     }
 }
