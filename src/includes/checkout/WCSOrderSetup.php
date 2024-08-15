@@ -27,12 +27,7 @@ class OrderSetup
     public function restrict_payment_gateways_for_vindi_payment_link($available_gateways)
     {
         if ($this->is_vindi_payment_link()) {
-            $allowed_gateways = [
-                'vindi-bank-slip',
-                'vindi-bolepix',
-                'vindi-credit-card',
-                'vindi-pix',
-            ];
+            $allowed_gateways = $this->get_allowed_gateways();
 
             foreach ($available_gateways as $gateway_id) {
                 if (!in_array($gateway_id, $allowed_gateways)) {
@@ -46,6 +41,17 @@ class OrderSetup
 
     private function is_vindi_payment_link()
     {
-        return is_admin() && isset($_GET['vindi-payment-link']);
+        $isPaymentLink = filter_input(INPUT_GET, 'vindi-payment-link') ?? false;
+        return is_admin() && $isPaymentLink;
+    }
+
+    private function get_allowed_gateways()
+    {
+        return [
+            'vindi-bank-slip',
+            'vindi-bolepix',
+            'vindi-credit-card',
+            'vindi-pix',
+        ];
     }
 }
