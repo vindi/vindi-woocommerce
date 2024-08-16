@@ -28,12 +28,7 @@ class OrderSetup
     {
         if ($this->is_vindi_payment_link()) {
             $allowed_gateways = $this->get_allowed_gateways();
-
-            foreach ($available_gateways as $gateway_id) {
-                if (!in_array($gateway_id, $allowed_gateways)) {
-                    unset($available_gateways[$gateway_id]);
-                }
-            }
+            $available_gateways = $this->filter_gateways($available_gateways, $allowed_gateways);
         }
 
         return $available_gateways;
@@ -53,5 +48,12 @@ class OrderSetup
             'vindi-credit-card',
             'vindi-pix',
         ];
+    }
+
+    private function filter_gateways($available_gateways, $allowed_gateways)
+    {
+        return array_filter($available_gateways, function ($gateway_id) use ($allowed_gateways) {
+            return in_array($gateway_id, $allowed_gateways);
+        }, ARRAY_FILTER_USE_KEY);
     }
 }
