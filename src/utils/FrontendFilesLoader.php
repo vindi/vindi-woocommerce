@@ -15,6 +15,8 @@ class FrontendFilesLoader {
     add_action('admin_enqueue_scripts', array($this, 'adminFiles'));
         add_action('wp_enqueue_scripts', [$this, 'enqueue_inputmask_scripts']);
         add_action('add_meta_boxes', array($this, 'check_for_subscription_in_order'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_payment_link_generator_script'));
+
   }
 
   public static function adminFiles()
@@ -114,7 +116,6 @@ class FrontendFilesLoader {
     public function check_for_subscription_in_order()
     {
         global $post;
-    
         if ($this->is_shop_order_or_subscription($post)) {
             $has_subscription = $this->order_has_subscription($post->ID);
             $this->enqueue_notification_script($has_subscription);
@@ -148,6 +149,18 @@ class FrontendFilesLoader {
         
         wp_localize_script('notification-js', 'orderData', array(
             'hasSubscription' => $has_subscription
+        ));
+    }
+
+    public function enqueue_payment_link_generator_script()
+    {
+        $post = get_post_type();
+        $dir_path = plugins_url('/assets/js/edit.js', plugin_dir_path(__FILE__));
+        wp_register_script('edit-js', $dir_path, array('jquery'), VINDI_VERSION, true);
+        wp_enqueue_script('edit-js');
+        
+        wp_localize_script('edit-js', 'orderData', array(
+            'typePost' => $post
         ));
     }
 }

@@ -1,7 +1,6 @@
 jQuery(document).ready(function ($) {
-    let url = window.location.href;
     let side = document.querySelector(".page-title-action");
-    if (side && (url.includes("post_type=shop_order") || url.includes("action=edit"))) {
+    if (side && orderData.typePost == "shop_order") {
         let button = document.createElement('a');
         button.className = 'button button-primary';
         button.style.marginLeft = '10px';

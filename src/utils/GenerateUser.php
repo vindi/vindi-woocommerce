@@ -2,6 +2,8 @@
 
 namespace VindiPaymentGateways;
 
+use WC_Customer;
+
 class GenerateUser
 {
     public function auto_create_user_for_order($order)
@@ -11,6 +13,7 @@ class GenerateUser
         $billing_last_name = $order->get_billing_last_name();
 
         $user_id = $this->get_or_create_user($billing_email, $billing_first_name, $billing_last_name);
+        $this->set_customer_data($user_id, $order);
 
         if ($user_id) {
             $order->set_customer_id($user_id);
@@ -32,6 +35,23 @@ class GenerateUser
         wp_set_auth_cookie($user_id);
 
         return $user_id;
+    }
+
+    private function set_customer_data($customer_id, $order)
+    {
+        $customer = new WC_Customer($customer_id);
+
+        $billing_neighborhood = get_post_meta($order->get_id(), '_billing_neighborhood', true);
+        
+        $customer->set_billing_country($order->get_billing_country());
+        $customer->set_billing_postcode($order->get_billing_postcode());
+        $customer->set_billing_address_1($order->get_billing_address_1());
+        $customer->set_billing_address_2($order->get_billing_address_2() . ' ' . $billing_neighborhood);
+        $customer->set_billing_city($order->get_billing_city());
+        $customer->set_billing_state($order->get_billing_state());
+        $customer->set_billing_phone($order->get_billing_phone());
+        $customer->save();
+
     }
 
     private function set_user_id($userEmail)

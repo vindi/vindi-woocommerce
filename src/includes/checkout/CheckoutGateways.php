@@ -119,7 +119,6 @@ class CheckoutGateways
         }
 
         $fields = $this->get_billing_fields();
-
         try {
             $this->validate_required_fields();
             $this->update_billing_fields($order, $fields);
@@ -143,8 +142,8 @@ class CheckoutGateways
             'country',
             'postcode',
             'address_1',
-            'number',
             'address_2',
+            'number',
             'neighborhood',
             'city',
             'state',
@@ -176,9 +175,12 @@ class CheckoutGateways
 
     private function set_order_shipping_field($order, $key, $field)
     {
-        if (method_exists($order, "set_shipping_$key")) {
-            $order->{"set_shipping_$key"}($field);
+        $method = "set_shipping_$key";
+        if (method_exists($order, $method)) {
+            $order->$method($field);
+            return;
         }
+        $order->update_meta_data("_shipping_$key", $field);
     }
 
     public function validate_required_fields()
