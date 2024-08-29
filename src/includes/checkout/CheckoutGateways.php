@@ -123,8 +123,6 @@ class CheckoutGateways
             $this->validate_required_fields();
             $this->update_billing_fields($order, $fields);
             $order->save();
-            $generate_user = new GenerateUser();
-            $generate_user->auto_create_user_for_order($order);
         } catch (Exception $err) {
             wc_add_notice($err->getMessage(), 'error');
         }

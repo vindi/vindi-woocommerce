@@ -40,18 +40,28 @@ class GenerateUser
     private function set_customer_data($customer_id, $order)
     {
         $customer = new WC_Customer($customer_id);
-
+    
+        $billing_address_2 = $order->get_billing_address_2();
         $billing_neighborhood = get_post_meta($order->get_id(), '_billing_neighborhood', true);
-        
+    
+        if (!empty($billing_address_2) && !empty($billing_neighborhood)) {
+            $full_address_2 = $billing_address_2 . ' - ' . $billing_neighborhood;
+        } elseif (!empty($billing_address_2)) {
+            $full_address_2 = $billing_address_2;
+        } elseif (!empty($billing_neighborhood)) {
+            $full_address_2 = $billing_neighborhood;
+        } else {
+            $full_address_2 = '';
+        }
+    
         $customer->set_billing_country($order->get_billing_country());
         $customer->set_billing_postcode($order->get_billing_postcode());
         $customer->set_billing_address_1($order->get_billing_address_1());
-        $customer->set_billing_address_2($order->get_billing_address_2() . ' ' . $billing_neighborhood);
+        $customer->set_billing_address_2($full_address_2);
         $customer->set_billing_city($order->get_billing_city());
         $customer->set_billing_state($order->get_billing_state());
         $customer->set_billing_phone($order->get_billing_phone());
         $customer->save();
-
     }
 
     private function set_user_id($userEmail)

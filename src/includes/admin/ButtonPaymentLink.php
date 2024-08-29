@@ -25,26 +25,38 @@ class ButtonPaymentLink
             $item = $order_data['has_item'];
             $sub = $order_data['has_subscription'];
             $status = $order_data['order_status'];
-            $link= $order_data['link_payment'];
+            $link = $order_data['link_payment'];
             $shop =  $order_data['urlShopSubscription'];
             $type = get_post_type($order->get_id());
             $created = $order->get_created_via();
             $parent = $order_data['parent'];
-            $disable = $this->should_disable($created, $sub, $item);
-            $variables = compact('item', 'sub', 'status', 'link', 'shop', 'type', 'created', 'parent', 'disable');
+            $disable = $this->should_disable($created, $sub, $item, $order);
+            $hasClient = $order->get_customer_id();
+            $variables = compact('item', 'sub', 'status', 'link', 'shop', 'type', 'created', 'parent', 'disable', 'hasClient');
             $this->include_template_with_variables($template_path, $variables);
         }
     }
-    
-    private function should_disable($created, $has_sub, $has_item)
+
+    private function should_disable($created, $has_sub, $has_item, $order)
     {
-        if ($created == 'admin' && $has_sub && $has_item) {
-            return true;
+        $posttype = get_post_type();
+        $hasClient = $order->get_customer_id();
+        if ($posttype == 'shop_order' &&  $hasClient) {
+            if ($has_item) {
+                if ($has_sub && $created == "admin") {
+                    return false;
+                }
+                return true;
+            }
         }
-        if ($created !== 'admin' && !$has_sub && !$has_item) {
-            return true;
+        if ($posttype == 'shop_subscription' &&  $hasClient) {
+            if ($has_item) {
+                if ($has_sub && $created == "admin") {
+                    return true;
+                }
+                return false;
+            }
         }
-        return false;
     }
 
     private function get_order_data($order)
