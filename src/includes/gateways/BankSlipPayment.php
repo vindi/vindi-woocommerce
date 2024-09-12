@@ -156,12 +156,17 @@ class VindiBankSlipGateway extends VindiPaymentGateway
       }
       
         if ($order->get_payment_method() == 'vindi-bank-slip' || $paymentMethod == 'bank_slip') {
-            if (!$order->is_paid() && !$order->has_status('cancelled')) {
-                $this->vindi_settings->get_template(
-                    'bankslip-download.html.php',
-                    compact('vindi_order', 'order_to_iterate')
-                );
-            }
+            $this->show_bank_slip_template($order);
         }
     }
+
+  private function show_bank_slip_template($order)
+  {
+      if (!$order->is_paid() && !$order->has_status('cancelled')) {
+          $this->vindi_settings->get_template(
+              'bankslip-download.html.php',
+              compact('vindi_order', 'order_to_iterate')
+          );
+      }
+  }
 }

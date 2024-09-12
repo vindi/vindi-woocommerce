@@ -24,25 +24,30 @@ class RenewPixCharge
             $charge = $routes->renewCharge($charge_id);
 
             if (isset($charge['status']) && isset($charge['last_transaction']['gateway_response_fields'])) {
-                $last_transaction = $charge['last_transaction']['gateway_response_fields'];
-                $payment_method = $charge['last_transaction']['payment_method'];
-
                 $subscription = $vindi_order[$subscription_id];
-                $bill = [
-                    'id' => $subscription['bill']['id'],
-                    'status' => $subscription['bill']['status'],
-                    'charge_id' => $charge['id'],
-                    'vindi_url' => $subscription['bill']['url'],
-                    'payment_method' =>  $payment_method['code'],
-                    'pix_expiration' => $last_transaction['max_days_to_keep_waiting_payment'],
-                    'pix_code' => $last_transaction['qrcode_original_path'],
-                    'pix_qr' => $last_transaction['qrcode_path'],
-                ];
-
+                $bill = $this->create_bill_array($subscription, $charge);
                 $vindi_order[$subscription_id]['bill'] = $bill;
                 $order->update_meta_data('vindi_order', $vindi_order);
                 $order->save();
             }
         }
+    }
+
+    public function create_bill_array($subscription, $charge)
+    {
+        $last_transaction = $charge['last_transaction']['gateway_response_fields'];
+        $payment_method = $charge['last_transaction']['payment_method'];
+        $bill = [
+            'id' => $subscription['bill']['id'],
+            'status' => $subscription['bill']['status'],
+            'charge_id' => $charge['id'],
+            'vindi_url' => $subscription['bill']['url'],
+            'payment_method' =>  $payment_method['code'],
+            'pix_expiration' => $last_transaction['max_days_to_keep_waiting_payment'],
+            'pix_code' => $last_transaction['qrcode_original_path'],
+            'pix_qr' => $last_transaction['qrcode_path'],
+        ];
+
+        return $bill;
     }
 }

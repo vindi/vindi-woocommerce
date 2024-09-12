@@ -97,10 +97,7 @@ class VindiCreditGateway extends VindiPaymentGateway
         'description' => __(' Realiza a transação de verificação em todos os novos pedidos. (Taxas adicionais por verificação poderão ser cobradas).', VINDI),
         'default'     => 'no',
         ),
-        'single_charge' => array(
-        'title' => __('Vendas Avulsas', VINDI),
-        'type'  => 'title',
-        ),
+        'single_charge' => array('title' => __('Vendas Avulsas', VINDI), 'type'  => 'title'),
         'smallest_installment' => array(
         'title'       => __('Valor mínimo da parcela', VINDI),
         'type'        => 'text',
@@ -116,9 +113,7 @@ class VindiCreditGateway extends VindiPaymentGateway
         '5'  => '5x','6'  => '6x','7'  => '7x','8'  => '8x','9'  => '9x','10' => '10x','11' => '11x','12' => '12x'),
         ),
         'enable_interest_rate' => array(
-        'title'       => __('Habilitar juros', VINDI),
-        'type'        => 'checkbox',
-        'description' => __('Habilitar juros no parcelamento do pedido.', VINDI),
+        'title'       => __('Habilitar juros', VINDI),'type'=> 'checkbox', 'description' => __('Habilitar juros no parcelamento do pedido.', VINDI),
         'default'     => 'no',
         ),
         'interest_rate' => array(
@@ -331,12 +326,17 @@ class VindiCreditGateway extends VindiPaymentGateway
         }
 
         if ($order->get_payment_method() == 'credit_card' || $paymentMethod == 'credit_card') {
-            if (!$order->is_paid() && !$order->has_status('cancelled')) {
-                $this->vindi_settings->get_template(
-                    'credit-card-download.html.php',
-                    compact('vindi_order', 'order_to_iterate', 'order_id')
-                );
-            }
+            $this->show_credit_card_template($order);
+        }
+    }
+
+    private function show_credit_card_template($order)
+    {
+        if (!$order->is_paid() && !$order->has_status('cancelled')) {
+            $this->vindi_settings->get_template(
+                'credit-card-download.html.php',
+                compact('vindi_order', 'order_to_iterate')
+            );
         }
     }
 }
