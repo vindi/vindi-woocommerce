@@ -86,11 +86,11 @@ class VindiBolepixGateway extends VindiPaymentGateway
     # Issue: https://github.com/vindi/vindi-woocommerce/issues/75
     public function bolepix_quantity_to_render($order)
     {
-        if (!isset($order[0])) {
-            return $order;
-        }
+        $filtered_order = array_filter($order, function ($value) {
+            return !empty($value) && is_array($value);
+        });
 
-        return $order[0];
+        return $filtered_order;
     }
 
     public function payment_fields()
@@ -133,9 +133,14 @@ class VindiBolepixGateway extends VindiPaymentGateway
         $vindi_order = [];
         $order_to_iterate = 0;
 
-        if ($order->get_payment_method() == 'vindi-bolepix') {
+        if ($order->get_meta('vindi_order', true)) {
             $vindi_order = $order->get_meta('vindi_order', true);
             $order_to_iterate = $this->bolepix_quantity_to_render($vindi_order);
+            $first_key = key($order_to_iterate);
+            $paymentMethod = $order_to_iterate[$first_key]['bill']['payment_method'] ?? null;
+        }
+
+        if ($order->get_payment_method() == 'vindi-bolepix' || $paymentMethod == 'pix_bank_slip') {
             if (!$order->is_paid() && !$order->has_status('cancelled')) {
                 $this->vindi_settings->get_template(
                     'bolepix-download.html.php',

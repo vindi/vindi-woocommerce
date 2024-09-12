@@ -110,6 +110,7 @@ class VindiWebhooks
             if (empty($data->bill->subscription)) {
                 return;
             }
+            $this->vindi_settings->logger->log('Vindi Data bill '.print_r($data->bill,true));
 
             $renewInfos = [
               'wc_subscription_id' => $data->bill->subscription->code,
@@ -118,8 +119,15 @@ class VindiWebhooks
               'cycle' => $data->bill->period->cycle,
               'bill_status' => $data->bill->status,
               'bill_id' => $data->bill->id,
-              'bill_print_url' => $data->bill->charges[0]->print_url
+              'bill_print_url' => $data->bill->charges[0]->print_url,
+              'charge_id' => $data->bill->charges[0]->id,
+              'payment_method' => $data->bill->charges[0]->payment_method->code,
+              'vindi_url' => $data->bill->url,
+              'pix_expiration' => $data->bill->charges[0]->last_transaction->gateway_response_fields->max_days_to_keep_waiting_payment,
+              'pix_code' => $data->bill->charges[0]->last_transaction->gateway_response_fields->qrcode_original_path,
+              'pix_qr' => $data->bill->charges[0]->last_transaction->gateway_response_fields->qrcode_path,
             ];
+            $this->vindi_settings->logger->log('Vindi renewInfos '.print_r($renewInfos,true));
 
             if ($this->webhooksHelpers->handle_subscription_renewal($renewInfos, $data)) {
                 $response = ['message' => 'Fatura emitida corretamente', 'status' => 200];
@@ -162,10 +170,18 @@ class VindiWebhooks
       'id' => $renew_infos['bill_id'],
       'status' => $renew_infos['bill_status'],
       'bank_slip_url' => $renew_infos['bill_print_url'],
+      'charge_id' => $renew_infos['charge_id'],
+      'vindi_url' => $renew_infos['vindi_url'],
+      'payment_method' => $renew_infos['payment_method'],
+      'pix_expiration' =>$renew_infos['pix_expiration'],
+      'pix_code' => $renew_infos['pix_code'],
+      'pix_qr' =>$renew_infos['pix_qr']
     );
         $order->update_meta_data('vindi_order', $order_post_meta);
         $order->save();
     $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
+    $this->vindi_settings->logger->log('Vindi order meta #'.print_r($order_post_meta,true));
+    $this->vindi_settings->logger->log('Array renew infos #'.print_r($renew_infos,true));
 
     // We've already processed the renewal
     remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');

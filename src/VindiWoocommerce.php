@@ -155,6 +155,9 @@ class WcVindiPayment extends AbstractInstance
             $this->webhooks, 'handle'
         ));
 
+        add_filter('woocommerce_my_account_my_orders_actions', [$this,'customize_order_actions'], 10, 2);
+
+
         do_action('woocommerce_set_cart_cookies', true);
     }
 
@@ -243,6 +246,15 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/validators/WCFilterCartNeedsPayment.php';
         require_once plugin_dir_path(__FILE__) . '/utils/WCSRenewalDisable.php';
         require_once plugin_dir_path(__FILE__) . '/utils/GenerateUser.php';
+    }
+
+    function customize_order_actions($actions, $order)
+    {
+        if ($order->has_status(array('pending', 'on-hold')) && $order->get_meta('vindi_order', true)) {
+            unset($actions['pay']);
+            return $actions;
+        }
+        return $actions;
     }
 }
 

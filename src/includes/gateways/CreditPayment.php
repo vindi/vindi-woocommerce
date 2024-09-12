@@ -58,6 +58,7 @@ class VindiCreditGateway extends VindiPaymentGateway
 
     $this->init_form_fields();
     $this->init_settings();
+    add_action('woocommerce_view_order', array(&$this, 'show_credit_card_download'), -10, 1);
     $this->smallest_installment = $this->get_option('smallest_installment');
     $this->installments = $this->get_option('installments');
     $this->verify_method = $this->get_option('verify_method');
@@ -305,5 +306,37 @@ class VindiCreditGateway extends VindiPaymentGateway
         return $installments;
       else
         return 1;
+    }
+
+    public function credit_card_to_render($order)
+    {
+        $filtered_order = array_filter($order, function ($value) {
+            return !empty($value) && is_array($value);
+        });
+
+        return $filtered_order;
+    }
+
+    public function show_credit_card_download($order_id)
+    {
+        $order = wc_get_order($order_id);
+        $vindi_order = [];
+        $order_to_iterate = 0;
+
+        if ($order->get_meta('vindi_order', true)) {
+            $vindi_order = $order->get_meta('vindi_order', true);
+            $order_to_iterate = $this->credit_card_to_render($vindi_order);
+            $first_key = key($order_to_iterate);
+            $paymentMethod = $order_to_iterate[$first_key]['bill']['payment_method'] ?? null;
+        }
+
+        if ($order->get_payment_method() == 'credit_card' || $paymentMethod == 'credit_card') {
+            if (!$order->is_paid() && !$order->has_status('cancelled')) {
+                $this->vindi_settings->get_template(
+                    'credit-card-download.html.php',
+                    compact('vindi_order', 'order_to_iterate', 'order_id')
+                );
+            }
+        }
     }
 }

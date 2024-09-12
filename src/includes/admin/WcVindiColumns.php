@@ -43,9 +43,10 @@ class WcVindiColumns
         if (!$template_path) {
             return;
         }
+        $order = wc_get_order($post->ID);
+        $is_renewal = get_post_meta($post->ID, '_subscription_renewal', true);
 
-        if ($column === 'vindi_payment_link') {
-            $order = wc_get_order($post->ID);
+        if ($column === 'vindi_payment_link' && empty($is_renewal)) {
             if (count($order->get_items()) > 0) {
                 $status = $order->get_status();
                 $gateway = $order->get_payment_method();

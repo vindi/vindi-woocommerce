@@ -102,11 +102,12 @@ class VindiBankSlipGateway extends VindiPaymentGateway
     # Issue: https://github.com/vindi/vindi-woocommerce/issues/75
     public function bank_slip_quantity_to_render($order)
     {
-        if (isset($order[0])) {
-            return $order[0];
-        }
-        return $order;
-    }
+      $filtered_order = array_filter($order, function($value) {
+          return !empty($value) && is_array($value);
+      });
+  
+      return $filtered_order;
+  }
 
   public function payment_fields()
   {
@@ -146,9 +147,15 @@ class VindiBankSlipGateway extends VindiPaymentGateway
     public function show_bank_slip_download($order_id)
     {
         $order = wc_get_order($order_id);
-        if ($order->get_payment_method() == 'vindi-bank-slip') {
+
+        if ($order->get_meta('vindi_order', true)) {
             $vindi_order = $order->get_meta('vindi_order', true);
             $order_to_iterate = $this->bank_slip_quantity_to_render($vindi_order);
+            $first_key = key($order_to_iterate);
+            $paymentMethod = $order_to_iterate[$first_key]['bill']['payment_method'] ?? null;
+      }
+      
+        if ($order->get_payment_method() == 'vindi-bank-slip' || $paymentMethod == 'bank_slip') {
             if (!$order->is_paid() && !$order->has_status('cancelled')) {
                 $this->vindi_settings->get_template(
                     'bankslip-download.html.php',

@@ -20,8 +20,9 @@ class ButtonPaymentLink
         }
 
         $order_data = $this->get_order_data($order);
-
-        if ($order) {
+        $is_renewal = get_post_meta($order->get_id(), '_subscription_renewal', true);
+        
+        if ($order && empty($is_renewal)) {
             $item = $order_data['has_item'];
             $sub = $order_data['has_subscription'];
             $status = $order_data['order_status'];

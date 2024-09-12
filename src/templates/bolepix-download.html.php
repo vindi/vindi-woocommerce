@@ -48,7 +48,7 @@ if (!defined('ABSPATH')) {
                                        data-code="<?php echo esc_attr($subscription['bill']['pix_code']); ?>">
                                         <?php _e('Copiar código PIX', VINDI); ?>
                                     </a>
-                                    <a class="download_button" 
+                                    <a class="download_button"
                                        href="<?php echo esc_url($subscription['bill']['bank_slip_url']); ?>"
                                        target="_blank">
                                         <?php _e('Baixar boleto', VINDI); ?>
