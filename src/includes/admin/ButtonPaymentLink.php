@@ -42,22 +42,36 @@ class ButtonPaymentLink
     {
         $posttype = get_post_type();
         $hasClient = $order->get_customer_id();
-        if ($posttype == 'shop_order' &&  $hasClient) {
-            if ($has_item) {
-                if ($has_sub && $created == "admin") {
-                    return false;
-                }
-                return true;
-            }
+    
+        if (!$hasClient || !$has_item) {
+            return false;
         }
-        if ($posttype == 'shop_subscription' &&  $hasClient) {
-            if ($has_item) {
-                if ($has_sub && $created == "admin") {
-                    return true;
-                }
-                return false;
-            }
+    
+        if ($posttype == 'shop_order') {
+            return $this->evaluate_shop_order($has_sub, $created);
         }
+    
+        if ($posttype == 'shop_subscription') {
+            return $this->evaluate_shop_subscription($has_sub, $created);
+        }
+    
+        return false;
+    }
+    
+    private function evaluate_shop_order($has_sub, $created)
+    {
+        if ($has_sub && $created == "admin") {
+            return false;
+        }
+        return true;
+    }
+    
+    private function evaluate_shop_subscription($has_sub, $created)
+    {
+        if ($has_sub && $created == "admin") {
+            return true;
+        }
+        return false;
     }
 
     private function get_order_data($order)
