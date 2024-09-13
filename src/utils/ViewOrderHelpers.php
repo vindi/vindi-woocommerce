@@ -2,7 +2,7 @@
 
 namespace VindiPaymentGateways;
 
-class VindiViewOrderHelpers 
+class VindiViewOrderHelpers
 {
 
     public function clean_order_data($order)
@@ -18,5 +18,4 @@ class VindiViewOrderHelpers
     {
         return $payment_methods === false || empty($payment_methods) || !count($payment_methods['credit_card']);
     }
-
 }

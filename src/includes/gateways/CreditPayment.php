@@ -5,7 +5,6 @@ namespace VindiPaymentGateways;
 use VindiPaymentGateways\VindiFieldsArray;
 use VindiPaymentGateways\VindiViewOrderHelpers;
 
-
 if (!defined('ABSPATH')) {
   exit;
 }
@@ -62,7 +61,7 @@ class VindiCreditGateway extends VindiPaymentGateway
 
     $this->init_form_fields();
     $this->init_settings();
-    add_action('woocommerce_view_order', array(&$this, 'show_credit_card_download'), -10, 1);
+            add_action('woocommerce_view_order', array(&$this, 'show_credit_card_download'), -10, 1);
     $this->smallest_installment = $this->get_option('smallest_installment');
     $this->installments = $this->get_option('installments');
     $this->verify_method = $this->get_option('verify_method');
@@ -275,7 +274,7 @@ class VindiCreditGateway extends VindiPaymentGateway
         }
 
         if ($order->get_payment_method() == 'credit_card' || $paymentMethod == 'credit_card') {
-           $this->show_credit_card_template($order, $vindi_order, $order_to_iterate);
+            $this->show_credit_card_template($order, $vindi_order, $order_to_iterate);
         }
     }
 
