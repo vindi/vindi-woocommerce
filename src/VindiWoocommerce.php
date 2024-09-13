@@ -142,6 +142,7 @@ class WcVindiPayment extends AbstractInstance
         $this->filter_cart_needs_payment = new FilterCartNeedsPayment();
         $this->renew_pix_charge = new RenewPixCharge();
         $this->generate_user = new GenerateUser();
+
         
         /**
          * Add Gateway to Woocommerce
@@ -188,6 +189,10 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/BankSlipPayment.php';
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/PixPayment.php';
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/BolepixPayment.php';
+
+        require_once plugin_dir_path(__FILE__) . '/utils/FieldsArray.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/ViewOrderHelpers.php';
+
         require_once plugin_dir_path(__FILE__) . '/utils/SubscriptionStatusHandler.php';
         require_once plugin_dir_path(__FILE__) . '/utils/InterestPriceHandler.php';
         require_once plugin_dir_path(__FILE__) . '/includes/admin/ProductStatus.php';

@@ -1,6 +1,8 @@
 <?php
 
 namespace VindiPaymentGateways;
+use VindiPaymentGateways\VindiViewOrderHelpers;
+
 
 if (!defined('ABSPATH')) {
   exit;
@@ -156,11 +158,11 @@ class VindiBankSlipGateway extends VindiPaymentGateway
       }
       
         if ($order->get_payment_method() == 'vindi-bank-slip' || $paymentMethod == 'bank_slip') {
-            $this->show_bank_slip_template($order);
+            $this->show_bank_slip_template($order, $vindi_order, $order_to_iterate);
         }
     }
 
-  private function show_bank_slip_template($order)
+  private function show_bank_slip_template($order, $vindi_order, $order_to_iterate)
   {
       if (!$order->is_paid() && !$order->has_status('cancelled')) {
           $this->vindi_settings->get_template(

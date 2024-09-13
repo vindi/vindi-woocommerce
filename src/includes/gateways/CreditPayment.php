@@ -2,6 +2,10 @@
 
 namespace VindiPaymentGateways;
 
+use VindiPaymentGateways\VindiFieldsArray;
+use VindiPaymentGateways\VindiViewOrderHelpers;
+
+
 if (!defined('ABSPATH')) {
   exit;
 }
@@ -78,51 +82,8 @@ class VindiCreditGateway extends VindiPaymentGateway
 
     public function init_form_fields()
     {
-    $this->form_fields = array(
-        'enabled' => array(
-        'title'   => __('Habilitar/Desabilitar', VINDI),
-        'label'   => __('Habilitar pagamento via Cartão de Crédito com a Vindi', VINDI),
-        'type'    => 'checkbox',
-        'default' => 'no',
-        ),
-        'title' => array(
-        'title'       => __('Título', VINDI),
-        'type'        => 'text',
-        'description' => __('Título que o cliente verá durante o processo de pagamento.', VINDI),
-        'default'     => __('Cartão de Crédito', VINDI),
-        ),
-        'verify_method' => array(
-        'title'       => __('Transação de Verificação', VINDI),
-        'type'        => 'checkbox',
-        'description' => __(' Realiza a transação de verificação em todos os novos pedidos. (Taxas adicionais por verificação poderão ser cobradas).', VINDI),
-        'default'     => 'no',
-        ),
-        'single_charge' => array('title' => __('Vendas Avulsas', VINDI), 'type'  => 'title'),
-        'smallest_installment' => array(
-        'title'       => __('Valor mínimo da parcela', VINDI),
-        'type'        => 'text',
-        'description' => __('Valor mínimo da parcela, não deve ser inferior a R$ 5,00.', VINDI),
-        'default'     => '5',
-        ),
-        'installments' => array(
-        'title'       => __('Número máximo de parcelas', VINDI),
-        'type'        => 'select',
-        'description' => __('Número máximo de parcelas para vendas avulsas. Deixe em 1x para desativar o parcelamento.', VINDI),
-        'default'     => '1',
-        'options'     => array('1'  => '1x','2'  => '2x','3'  => '3x','4'  => '4x',
-        '5'  => '5x','6'  => '6x','7'  => '7x','8'  => '8x','9'  => '9x','10' => '10x','11' => '11x','12' => '12x'),
-        ),
-        'enable_interest_rate' => array(
-        'title'       => __('Habilitar juros', VINDI),'type'=> 'checkbox', 'description' => __('Habilitar juros no parcelamento do pedido.', VINDI),
-        'default'     => 'no',
-        ),
-        'interest_rate' => array(
-        'title'       => __('Taxa de juros ao mês (%)', VINDI),
-        'type'        => 'text',
-        'description' => __('Taxa de juros que será adicionada aos pagamentos parcelados.', VINDI),
-        'default'     => '0.1',
-        )
-    );
+        $fields = new VindiFieldsArray();
+        $this->form_fields = $fields->fields_array();
     }
 
     public function payment_fields()
@@ -133,8 +94,9 @@ class VindiCreditGateway extends VindiPaymentGateway
         $installments = $this->build_cart_installments($total);
         $user_payment_profile = $this->build_user_payment_profile();
         $payment_methods = $this->routes->getPaymentMethods();
+        $credit_card_to_render = new VindiViewOrderHelpers();
 
-        if ($this->check_payment_methods($payment_methods)) {
+        if ($credit_card_to_render->check_payment_methods($payment_methods)) {
             _e('Estamos problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.', VINDI);
       return;
         }
@@ -175,11 +137,6 @@ class VindiCreditGateway extends VindiPaymentGateway
             }
         }
         return $total;
-    }
-
-    private function check_payment_methods($payment_methods)
-    {
-        return $payment_methods === false || empty($payment_methods) || !count($payment_methods['credit_card']);
     }
 
     private function check_is_trial()
@@ -303,15 +260,6 @@ class VindiCreditGateway extends VindiPaymentGateway
         return 1;
     }
 
-    public function credit_card_to_render($order)
-    {
-        $filtered_order = array_filter($order, function ($value) {
-            return !empty($value) && is_array($value);
-        });
-
-        return $filtered_order;
-    }
-
     public function show_credit_card_download($order_id)
     {
         $order = wc_get_order($order_id);
@@ -319,18 +267,19 @@ class VindiCreditGateway extends VindiPaymentGateway
         $order_to_iterate = 0;
 
         if ($order->get_meta('vindi_order', true)) {
+            $credit_card_to_render = new VindiViewOrderHelpers();
             $vindi_order = $order->get_meta('vindi_order', true);
-            $order_to_iterate = $this->credit_card_to_render($vindi_order);
+            $order_to_iterate = $credit_card_to_render->clean_order_data($vindi_order);
             $first_key = key($order_to_iterate);
             $paymentMethod = $order_to_iterate[$first_key]['bill']['payment_method'] ?? null;
         }
 
         if ($order->get_payment_method() == 'credit_card' || $paymentMethod == 'credit_card') {
-            $this->show_credit_card_template($order);
+           $this->show_credit_card_template($order, $vindi_order, $order_to_iterate);
         }
     }
 
-    private function show_credit_card_template($order)
+    private function show_credit_card_template($order, $vindi_order, $order_to_iterate)
     {
         if (!$order->is_paid() && !$order->has_status('cancelled')) {
             $this->vindi_settings->get_template(
