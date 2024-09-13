@@ -17,7 +17,6 @@ class WCCartSubscriptionLimiter
         add_filter('woocommerce_update_cart_validation', [$this, 'limit_duplicate_subscriptions_cart_update'], 10, 4);
         add_filter('woocommerce_add_to_cart_validation', [$this, 'disallow_subscription_single_product_cart'], 10, 2);
         add_filter('woocommerce_checkout_fields', [$this, 'customize_billing_neighborhood_field']);
-
     }
 
     public function limit_same_subscriptions($passed, $product_id, $quantity)

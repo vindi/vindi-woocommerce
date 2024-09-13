@@ -141,11 +141,11 @@ class VindiBolepixGateway extends VindiPaymentGateway
         }
 
         if ($order->get_payment_method() == 'vindi-bolepix' || $paymentMethod == 'pix_bank_slip') {
-            $this->show_bolepix_template($order);
+            $this->show_bolepix_template($order, $vindi_order, $order_to_iterate);
         }
     }
 
-    private function show_bolepix_template($order)
+    private function show_bolepix_template($order, $vindi_order, $order_to_iterate)
     {
         if (!$order->is_paid() && !$order->has_status('cancelled')) {
             $this->vindi_settings->get_template(

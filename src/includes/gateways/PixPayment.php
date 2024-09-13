@@ -140,11 +140,11 @@ class VindiPixGateway extends VindiPaymentGateway
         }
 
         if ($order->get_payment_method() == 'vindi-pix' || $paymentMethod == 'pix') {
-            $this->show_pix_template($order);
+            $this->show_pix_template($order, $vindi_order, $order_to_iterate);
         }
     }
 
-    private function show_pix_template($order)
+    private function show_pix_template($order, $vindi_order, $order_to_iterate)
     {
         if (!$order->is_paid() && !$order->has_status('cancelled')) {
             $this->vindi_settings->get_template(
