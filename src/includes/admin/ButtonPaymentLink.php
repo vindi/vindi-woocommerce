@@ -33,8 +33,9 @@ class ButtonPaymentLink
             $parent = $order_data['parent'];
             $disable = $this->should_disable($created, $sub, $item, $order);
             $hasClient = $order->get_customer_id();
-            $variables = compact('item', 'sub', 'status', 'link', 'shop', 'type', 'created', 'parent', 'disable', 'hasClient');
-            $this->include_template_with_variables($template_path, $variables);
+            $order_info = compact('type', 'created', 'parent', 'disable', 'hasClient');
+            $variables = compact('item', 'sub', 'status', 'link', 'shop');
+            $this->include_template_with_variables($template_path, $variables,$order_info);
         }
     }
 
@@ -143,9 +144,9 @@ class ButtonPaymentLink
         return "{$url}order-pay/{$orderId}/?pay_for_order=true&key={$orderKey}&vindi-payment-link=true{$gateway}";
     }
 
-    private function include_template_with_variables($template_path, $variables)
+    private function include_template_with_variables($template_path, $variables,$order_info)
     {
-        extract($variables);
+        extract(array_merge($variables, $order_info));
         include $template_path;
     }
 }

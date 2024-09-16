@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
         </div>
         <div class="charges">
             <?php foreach ($order_to_iterate as $sub) : ?>
-				<?php if (isset($sub['product']) && !in_array($sub['bill']['status'], ['paid', 'canceled'])) : ?>
+                <?php if (isset($sub['product']) && !in_array($sub['bill']['status'], ['paid', 'canceled'])) : ?>
                     <div class="charge">
                         <span class="product_title">
                             <?php echo $sub['product']; ?>
@@ -32,14 +32,15 @@ if (!defined('ABSPATH')) {
                     </div>
                 <?php else : ?>
                     <?php foreach ($sub as $item) : ?>
-						<?php if (isset($item['product']) && !in_array($item['bill']['status'], ['paid', 'canceled'])) : ?>
+                        <?php $status = in_array($item['bill']['status'], ['paid', 'canceled'])?>
+                        <?php if (isset($item['product']) && !$status) : ?>
                             <div class="charge">
                                 <span class="product_title">
                                     <?php echo $item['product']; ?>
                                 </span>
                                 <a class="download_button"
 								href="<?php echo esc_url($item['bill']['vindi_url']); ?>"
-								target="_blank">
+                                target="_blank">
                                     <?php _e('Acessar link', VINDI); ?>
                                 </a>
                             </div>
