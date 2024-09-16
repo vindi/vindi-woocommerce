@@ -12,12 +12,11 @@ class CreditHelpers
         if (floatval($cart->total) == 0 && is_object($recurring)) {
             $total = $recurring->total;
         }
-        foreach ($cart->get_fees() as $index => $fee) {
+        foreach ($cart->get_fees() as $fee) {
             if ($fee->name == __('Juros', VINDI)) {
                 $total -= $fee->amount;
             }
         }
         return $total;
     }
-
 }
