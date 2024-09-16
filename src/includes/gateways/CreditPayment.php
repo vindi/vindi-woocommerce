@@ -4,6 +4,7 @@ namespace VindiPaymentGateways;
 
 use VindiPaymentGateways\VindiFieldsArray;
 use VindiPaymentGateways\VindiViewOrderHelpers;
+use VindiPaymentGateways\CreditHelpers;
 
 if (!defined('ABSPATH')) {
   exit;
@@ -117,7 +118,8 @@ class VindiCreditGateway extends VindiPaymentGateway
         if ($pay_for_order === true) {
             return $this->calculate_order_total($order_id);
         }
-        return $this->get_cart_total($cart);
+        $credit_payment_helpers = new CreditHelpers();
+        return $credit_payment_helpers->get_cart_total($cart);
     }
 
     private function calculate_order_total($order_id)
@@ -167,20 +169,6 @@ class VindiCreditGateway extends VindiPaymentGateway
         return ceil($total / $times * 100) / 100;
     }
 
-    public function get_cart_total($cart)
-    {
-        $total = $cart->total;
-        $recurring = end($cart->recurring_carts);
-        if (floatval($cart->total) == 0 && is_object($recurring)) {
-            $total = $recurring->total;
-        }
-        foreach ($cart->get_fees() as $index => $fee) {
-            if ($fee->name == __('Juros', VINDI)) {
-                $total -= $fee->amount;
-            }
-        }
-        return $total;
-    }
 
     public function verify_user_payment_profile()
     {

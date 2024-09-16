@@ -253,6 +253,7 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/utils/GenerateUser.php';
         require_once plugin_dir_path(__FILE__) . '/utils/FieldsArray.php';
         require_once plugin_dir_path(__FILE__) . '/utils/ViewOrderHelpers.php';
+        require_once plugin_dir_path(__FILE__) . '/utils/CreditPaymentHelpers.php';
         require_once plugin_dir_path(__FILE__) . '/utils/OrderActionsCustomizer.php';
     }
 }
