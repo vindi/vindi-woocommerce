@@ -20,7 +20,7 @@ class FrontendFilesLoader {
 
   public static function adminFiles()
   {
-        $dir_path = plugins_url('/assets/js/editpost.js', plugin_dir_path(__FILE__));
+        // $dir_path = plugins_url('/assets/js/editpost.js', plugin_dir_path(__FILE__));
     wp_register_script('jquery-mask', plugins_url('/assets/js/jquery.mask.min.js', plugin_dir_path(__FILE__)), array('jquery'), VINDI_VERSION, true);
     wp_register_script('vindi_woocommerce_admin_js', plugins_url('/assets/js/admin.js', plugin_dir_path(__FILE__)), array('jquery', 'jquery-mask'), VINDI_VERSION, true);
     wp_enqueue_script('vindi_woocommerce_admin_js');
