@@ -16,5 +16,5 @@ class OrderActionsRemover
             return $actions;
         }
         return $actions;
-    }    
+    }
 }
