@@ -18,21 +18,21 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
         <div class="charges">
-            <?php foreach ($order_to_iterate as $subscription) : ?>
-                <?php if (is_array($subscription) && array_key_exists('product', $subscription) && !in_array($subscription['bill']['status'], array('paid', 'canceled'))) : ?>
+            <?php foreach ($order_to_iterate as $sub) : ?>
+				<?php if (isset($sub['product']) && !in_array($sub['bill']['status'], ['paid', 'canceled'])) : ?>
                     <div class="charge">
                         <span class="product_title">
-                            <?php echo $subscription['product']; ?>
+                            <?php echo $sub['product']; ?>
                         </span>
                         <a class="download_button"
-						href="<?php echo esc_url($subscription['bill']['vindi_url']); ?>"
-						target="_blank">
+                        href="<?php echo esc_url($sub['bill']['vindi_url']); ?>"
+                        target="_blank">
                             <?php _e('Acessar link', VINDI); ?>
                         </a>
                     </div>
                 <?php else : ?>
-                    <?php foreach ($subscription as $item) : ?>
-                        <?php if (is_array($item) && array_key_exists('product', $item) && !in_array($item['bill']['status'], array('paid', 'canceled'))) : ?>
+                    <?php foreach ($sub as $item) : ?>
+						<?php if (isset($item['product']) && !in_array($item['bill']['status'], ['paid', 'canceled'])) : ?>
                             <div class="charge">
                                 <span class="product_title">
                                     <?php echo $item['product']; ?>

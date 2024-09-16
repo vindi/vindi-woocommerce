@@ -16,7 +16,6 @@ class FrontendFilesLoader {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_inputmask_scripts']);
         add_action('add_meta_boxes', array($this, 'check_for_subscription_in_order'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_payment_link_generator_script'));
-
   }
 
   public static function adminFiles()
