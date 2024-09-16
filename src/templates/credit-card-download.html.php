@@ -39,7 +39,7 @@ if (!defined('ABSPATH')) {
                                     <?php echo $item['product']; ?>
                                 </span>
                                 <a class="download_button"
-								href="<?php echo esc_url($item['bill']['vindi_url']); ?>"
+                                href="<?php echo esc_url($item['bill']['vindi_url']); ?>"
                                 target="_blank">
                                     <?php _e('Acessar link', VINDI); ?>
                                 </a>

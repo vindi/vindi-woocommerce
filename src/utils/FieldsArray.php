@@ -15,7 +15,7 @@ class VindiFieldsArray
             'installments' => array(
             'title'       => __('Número máximo de parcelas', VINDI),
             'type'        => 'select',
-            'description' => __('Número máximo de parcelas para vendas avulsas.' .
+            'description' => __('Número máximo de parcelas para vendas avulsas.'.
                 'Deixe em 1x para desativar o parcelamento.', VINDI
             ),
             'default'     => '1',
