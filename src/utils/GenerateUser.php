@@ -43,15 +43,14 @@ class GenerateUser
     
         $billing_address_2 = $order->get_billing_address_2();
         $billing_neighborhood = get_post_meta($order->get_id(), '_billing_neighborhood', true);
-    
+        $full_address_2 = '';
+
         if (!empty($billing_address_2) && !empty($billing_neighborhood)) {
             $full_address_2 = $billing_address_2 . ' - ' . $billing_neighborhood;
         } elseif (!empty($billing_address_2)) {
             $full_address_2 = $billing_address_2;
         } elseif (!empty($billing_neighborhood)) {
             $full_address_2 = $billing_neighborhood;
-        } else {
-            $full_address_2 = '';
         }
     
         $customer->set_billing_country($order->get_billing_country());

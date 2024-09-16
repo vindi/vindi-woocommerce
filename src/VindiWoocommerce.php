@@ -117,6 +117,11 @@ class WcVindiPayment extends AbstractInstance
      */
     private $generate_user;
 
+    /**
+     * @var VindiPaymentGateway\OrderActionsRemover;
+     */
+    private $actions_remover;
+
     public function __construct()
     {
 
@@ -142,6 +147,7 @@ class WcVindiPayment extends AbstractInstance
         $this->filter_cart_needs_payment = new FilterCartNeedsPayment();
         $this->renew_pix_charge = new RenewPixCharge();
         $this->generate_user = new GenerateUser();
+        $this->actions_remover = new OrderActionsRemover();
 
         
         /**
@@ -155,9 +161,6 @@ class WcVindiPayment extends AbstractInstance
         add_action('woocommerce_api_' . self::WC_API_CALLBACK, array(
             $this->webhooks, 'handle'
         ));
-
-        add_filter('woocommerce_my_account_my_orders_actions', [$this,'customize_order_actions'], 10, 2);
-
 
         do_action('woocommerce_set_cart_cookies', true);
     }
@@ -250,15 +253,8 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/utils/GenerateUser.php';
         require_once plugin_dir_path(__FILE__) . '/utils/FieldsArray.php';
         require_once plugin_dir_path(__FILE__) . '/utils/ViewOrderHelpers.php';
-    }
+        require_once plugin_dir_path(__FILE__) . '/utils/OrderActionsCustomizer.php';
 
-    function customize_order_actions($actions, $order)
-    {
-        if ($order->has_status(array('pending', 'on-hold')) && $order->get_meta('vindi_order', true)) {
-            unset($actions['pay']);
-            return $actions;
-        }
-        return $actions;
     }
 }
 
