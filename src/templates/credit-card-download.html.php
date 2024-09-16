@@ -19,24 +19,27 @@ if (!defined('ABSPATH')) {
         </div>
         <div class="charges">
             <?php foreach ($order_to_iterate as $subscription) : ?>
-                <?php if (is_array($subscription) && array_key_exists('product', $subscription)
-				&& !in_array($subscription['bill']['status'], array('paid', 'canceled'))): ?>
+                <?php if (is_array($subscription) && array_key_exists('product', $subscription) && !in_array($subscription['bill']['status'], array('paid', 'canceled'))) : ?>
                     <div class="charge">
                         <span class="product_title">
                             <?php echo $subscription['product']; ?>
                         </span>
-                        <a class="download_button" href="<?php echo esc_url($subscription['bill']['vindi_url']); ?>" target="_blank">
+                        <a class="download_button"
+						href="<?php echo esc_url($subscription['bill']['vindi_url']); ?>"
+						target="_blank">
                             <?php _e('Acessar link', VINDI); ?>
                         </a>
                     </div>
-                <?php else: ?>
-                    <?php foreach ($subscription as $item): ?>
-                        <?php if (is_array($item) && array_key_exists('product', $item) && !in_array($item['bill']['status'], array('paid', 'canceled'))): ?>
+                <?php else : ?>
+                    <?php foreach ($subscription as $item) : ?>
+                        <?php if (is_array($item) && array_key_exists('product', $item) && !in_array($item['bill']['status'], array('paid', 'canceled'))) : ?>
                             <div class="charge">
                                 <span class="product_title">
                                     <?php echo $item['product']; ?>
                                 </span>
-                                <a class="download_button" href="<?php echo esc_url($item['bill']['vindi_url']); ?>" target="_blank">
+                                <a class="download_button"
+								href="<?php echo esc_url($item['bill']['vindi_url']); ?>"
+								target="_blank">
                                     <?php _e('Acessar link', VINDI); ?>
                                 </a>
                             </div>
