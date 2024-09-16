@@ -8,8 +8,8 @@ class WcVindiColumns
 {
     public function __construct()
     {
-        add_filter('manage_edit-shop_order_columns', [$this, 'custom_shop_order_columns'], 20);
-        add_action('manage_shop_order_posts_custom_column', [$this, 'custom_shop_order_column_data'], 10, 1);
+        // add_filter('manage_edit-shop_order_columns', [$this, 'custom_shop_order_columns'], 20);
+        // add_action('manage_shop_order_posts_custom_column', [$this, 'custom_shop_order_column_data'], 10, 1);
     }
 
     /**
