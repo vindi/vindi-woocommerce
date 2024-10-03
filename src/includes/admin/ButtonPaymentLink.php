@@ -8,7 +8,7 @@ class ButtonPaymentLink
 {
     public function __construct()
     {
-        // add_action('woocommerce_admin_order_data_after_shipping_address', [$this, 'button_link_payment'], 20, 4);
+        add_action('woocommerce_admin_order_data_after_shipping_address', [$this, 'button_link_payment'], 20, 4);
     }
 
     public function button_link_payment($order)
