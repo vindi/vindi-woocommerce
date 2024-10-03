@@ -145,7 +145,6 @@ class FrontendFilesLoader {
         $dir_path = plugins_url('/assets/js/notification.js', plugin_dir_path(__FILE__));
         wp_register_script('notification-js', $dir_path, array('jquery'), VINDI_VERSION, true);
         wp_enqueue_script('notification-js');
-        error_log(var_export($has_subscription,true));
         wp_localize_script('notification-js', 'orderItem', array(
             'hasSubscription' => $has_subscription
         ));
