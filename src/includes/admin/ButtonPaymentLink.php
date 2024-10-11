@@ -20,10 +20,10 @@ class ButtonPaymentLink
         }
 
         $order_data = $this->get_order_data($order);
-        $is_renewal = get_post_meta($order->get_id(), '_subscription_renewal', true);
-        
-        if ($order && empty($is_renewal)) {
+
+        if ($order) {
             $item = $order_data['has_item'];
+            $single =  $order_data['has_single_product'];
             $sub = $order_data['has_subscription'];
             $status = $order_data['order_status'];
             $link = $order_data['link_payment'];
@@ -31,34 +31,34 @@ class ButtonPaymentLink
             $type = get_post_type($order->get_id());
             $created = $order->get_created_via();
             $parent = $order_data['parent'];
-            $disable = $this->should_disable($created, $sub, $item, $order);
+            $disable = $this->should_disable($created, $sub, $item, $order, $order_data);
             $hasClient = $order->get_customer_id();
             $order_info = compact('type', 'created', 'parent', 'disable', 'hasClient');
-            $variables = compact('item', 'sub', 'status', 'link', 'shop');
+            $variables = compact('item', 'sub', 'status', 'link', 'shop', 'single');
             $this->include_template_with_variables($template_path, $variables, $order_info);
         }
     }
 
-    private function should_disable($created, $has_sub, $has_item, $order)
+    private function should_disable($created, $has_sub, $has_item, $order, $order_data)
     {
         $posttype = get_post_type();
         $hasClient = $order->get_customer_id();
-    
+
         if (!$hasClient || !$has_item) {
             return false;
         }
-    
+
         if ($posttype == 'shop_order') {
             return $this->evaluate_shop_order($has_sub, $created);
         }
-    
+
         if ($posttype == 'shop_subscription') {
-            return $this->evaluate_shop_subscription($has_sub, $created);
+            return $this->evaluate_shop_subscription($has_sub, $created, $order_data);
         }
-    
+
         return false;
     }
-    
+
     private function evaluate_shop_order($has_sub, $created)
     {
         if ($has_sub && $created == "admin") {
@@ -66,10 +66,10 @@ class ButtonPaymentLink
         }
         return true;
     }
-    
-    private function evaluate_shop_subscription($has_sub, $created)
+
+    private function evaluate_shop_subscription($has_sub, $created, $order_data)
     {
-        if ($has_sub && $created == "admin") {
+        if ($has_sub && $created == "admin" && !$order_data['has_single_product']) {
             return true;
         }
         return false;
@@ -80,6 +80,7 @@ class ButtonPaymentLink
         $order_data = [
             'has_item' => false,
             'has_subscription' => false,
+            'has_single_product' => false,
             'order_status' => $order->get_status(),
             'link_payment' => null,
             'urlAdmin' => get_admin_url(),
@@ -88,6 +89,8 @@ class ButtonPaymentLink
         ];
         if (count($order->get_items()) > 0) {
             $order_data['has_subscription'] = $this->has_subscription($order);
+            $order_data['has_single_product'] = $this->has_single_product($order);
+
             if ($order->get_checkout_payment_url()) {
                 $order_data['link_payment'] = $this->build_payment_link($order, $order->get_payment_method());
             }
@@ -128,6 +131,18 @@ class ButtonPaymentLink
         return false;
     }
 
+    private function has_single_product($order)
+    {
+        $subscriptions_product = new WC_Subscriptions_Product();
+        $order_items = $order->get_items();
+        foreach ($order_items as $order_item) {
+            if(!$subscriptions_product->is_subscription($order_item->get_product_id())){
+                return true;
+            }
+        }
+        return false;
+    }
+
     /*
     * Build the payment link (Dummy function for illustration).
     * @param WC_Order $order The order object.
@@ -140,6 +155,12 @@ class ButtonPaymentLink
         $gateway = $gateway ? "&vindi-gateway={$gateway}" : '';
         $orderId = $order->get_id();
         $orderKey = $order->get_order_key();
+        $is_renewal = get_post_meta($order->get_id(), '_subscription_renewal', true);
+
+        if($is_renewal){
+            $url = get_site_url();
+            return "{$url}/my-account/view-order/{$orderId}";
+        }
 
         return "{$url}order-pay/{$orderId}/?pay_for_order=true&key={$orderKey}&vindi-payment-link=true{$gateway}";
     }

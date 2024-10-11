@@ -56,7 +56,7 @@
     <?php else : ?>
         <div style="display: flex;gap: 6px; width: 100%;margin-top: 6px;">
             <div style="display: flex;gap: 6px; width: 100%;">
-                <?php $is_disabled = ($sub && $item && $parent) ? 'enable' : 'disabled'; ?>
+                <?php $is_disabled = ($disable) ? 'enable' : 'disabled'; ?>
                 <a class="buttonPaymentLink <?php echo $is_disabled; ?>"
                     target="<?php echo $item ? esc_attr('_blank') : ''; ?>"
                     href="<?php echo $is_disabled == 'enable' ? esc_url($link) : '#'; ?>">
@@ -83,7 +83,10 @@
                     ?>
                 </span>
             <?php endif; ?>
-            <?php if ($item && !$sub) : ?>
+            <?php if ($single && $sub) : ?>
+            <?php error_log(var_export($single,true)); ?>
+            <?php error_log(var_export($sub,true)); ?>
+
                 <span class="notificationPaymentLink">
                     <?php
                     echo esc_html__(
