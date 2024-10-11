@@ -84,9 +84,6 @@
                 </span>
             <?php endif; ?>
             <?php if ($single && $sub) : ?>
-            <?php error_log(var_export($single,true)); ?>
-            <?php error_log(var_export($sub,true)); ?>
-
                 <span class="notificationPaymentLink">
                     <?php
                     echo esc_html__(

@@ -31,7 +31,7 @@ class ButtonPaymentLink
             $type = get_post_type($order->get_id());
             $created = $order->get_created_via();
             $parent = $order_data['parent'];
-            $disable = $this->should_disable($created, $sub, $item, $order, $order_data);
+            $disable = $this->should_disable($created, $sub, $order, $order_data);
             $hasClient = $order->get_customer_id();
             $order_info = compact('type', 'created', 'parent', 'disable', 'hasClient');
             $variables = compact('item', 'sub', 'status', 'link', 'shop', 'single');
@@ -39,10 +39,11 @@ class ButtonPaymentLink
         }
     }
 
-    private function should_disable($created, $has_sub, $has_item, $order, $order_data)
+    private function should_disable($created, $has_sub, $order, $order_data)
     {
         $posttype = get_post_type();
         $hasClient = $order->get_customer_id();
+        $has_item = $order_data['has_item'];
 
         if (!$hasClient || !$has_item) {
             return false;
@@ -136,7 +137,7 @@ class ButtonPaymentLink
         $subscriptions_product = new WC_Subscriptions_Product();
         $order_items = $order->get_items();
         foreach ($order_items as $order_item) {
-            if(!$subscriptions_product->is_subscription($order_item->get_product_id())){
+            if (!$subscriptions_product->is_subscription($order_item->get_product_id())) {
                 return true;
             }
         }
@@ -157,7 +158,7 @@ class ButtonPaymentLink
         $orderKey = $order->get_order_key();
         $is_renewal = get_post_meta($order->get_id(), '_subscription_renewal', true);
 
-        if($is_renewal){
+        if ($is_renewal) {
             $url = get_site_url();
             return "{$url}/my-account/view-order/{$orderId}";
         }
