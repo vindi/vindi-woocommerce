@@ -3,7 +3,6 @@
 namespace VindiPaymentGateways;
 
 use Exception;
-use VindiPaymentGateways\GenerateUser;
 
 class CheckoutGateways
 {
@@ -30,20 +29,23 @@ class CheckoutGateways
         $this->verify_session_params($hasSessionParams, $isPaymentLink, $gateway);
 
         if ($isPaymentLink) {
-            $this->clear_session($hasSessionParams, $gateways);
             $gateways = $this->filter_available_gateways($gateways, $available);
             if ($gateway && isset($gateways[$gateway])) {
+                $this->clear_session($hasSessionParams, $gateways);
                 return [$gateway => $gateways[$gateway]];
             }
         }
+        $this->clear_session($hasSessionParams, $gateways);
         return $gateways;
     }
 
     private function clear_session($hasSessionParams, $gateways)
     {
-        if ($hasSessionParams && !$this->is_subscription_context()) {
-            WC()->session->set('vindi-payment-link', '');
-            WC()->session->set('vindi-gateway', '');
+        $isPaymentLink = $_COOKIE['vindi-payment-link'] ?? false;
+
+        if ($isPaymentLink && $hasSessionParams && !$this->is_subscription_context()) {
+            setcookie('vindi-payment-link', '', time() - 1800, '/');
+            setcookie('vindi-gateway', '', time() - 1800, '/');
             return $gateways;
         }
     }
@@ -70,8 +72,8 @@ class CheckoutGateways
     private function verify_session_params(&$hasSessionParams, &$isPaymentLink, &$gateway)
     {
         if (!$isPaymentLink && WC()->session) {
-            $isPaymentLink = WC()->session->get('vindi-payment-link');
-            $gateway = WC()->session->get('vindi-gateway');
+            $isPaymentLink = $_COOKIE['vindi-payment-link'] ?? false;
+            $gateway = $_COOKIE['vindi-gateway'] ?? '';
             $hasSessionParams = true;
         }
     }

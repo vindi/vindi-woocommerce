@@ -6,22 +6,35 @@ class OrderSetup
 {
     public function __construct()
     {
-        add_action('template_redirect', [$this, 'set_payment_gateway']);
+        add_action('wp_login', [$this, 'set_cokkies_after_login']);
+        add_action('template_redirect', [$this, 'set_cokkies_after_login']);
+        add_filter('woocommerce_login_redirect', [$this, 'preserve_vindi_cookies_after_login'], 10, 2);
         add_filter('woocommerce_payment_gateways', [$this, 'restrict_payment_gateways_for_vindi_payment_link']);
     }
 
-    public function set_payment_gateway()
+    public function set_cokkies_after_login()
     {
         $isPaymentLink = filter_input(INPUT_GET, 'vindi-payment-link', FILTER_VALIDATE_BOOLEAN) ?? false;
         $gateway = filter_input(INPUT_GET, 'vindi-gateway', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-
         if ($isPaymentLink) {
-            WC()->session->set('vindi-payment-link', $isPaymentLink);
+            setcookie('vindi-payment-link', $isPaymentLink, time() + 3600, '/');
         }
 
         if ($gateway) {
-            WC()->session->set('vindi-gateway', $gateway);
+            setcookie('vindi-gateway', $gateway, time() + 3600, '/');
         }
+    }
+
+    function preserve_vindi_cookies_after_login($redirect_to, $user)
+    {
+        if (isset($_COOKIE['vindi-payment-link']) || isset($_COOKIE['vindi-gateway'])) {
+            $redirect_to = add_query_arg(array(
+                'vindi-payment-link' => $_COOKIE['vindi-payment-link'] ?? '',
+                'vindi-gateway' => $_COOKIE['vindi-gateway'] ?? '',
+            ), $redirect_to);
+        }
+
+        return $redirect_to;
     }
 
     public function restrict_payment_gateways_for_vindi_payment_link($available_gateways)
