@@ -39,6 +39,10 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.3.5 - 05/11/2024 =
+-Lançamento da versão de patch.
+- **Melhoria:** Parâmetros agora são armazenados em cookies para maior persistência de dados.
+
 = 1.3.4 - 31/07/2024 =
 -Lançamento da versão de patch.
 - **Adição:** Implementação de botão para gerar link de pagamento utilizando métodos da Vindi.
