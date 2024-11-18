@@ -127,15 +127,16 @@ class CustomerController
   function update($user_id, $order = null)
   {
     $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id', true);
-      if (!empty($vindi_customer_id)) {
-          $vindiUser = $this->routes->findCustomerById($vindi_customer_id);
-      } else {
-          $vindiUser = $this->routes->findCustomerByCode($user_id);
-          if (!empty($vindiUser['id'])) {
-            $vindi_customer_id = $vindiUser['id'];
-            update_user_meta($user_id, 'vindi_customer_id', $vindi_customer_id);
-          }
+    if (!empty($vindi_customer_id)) {
+      $vindiUser = $this->routes->findCustomerById($vindi_customer_id);
+    }
+    if (empty($vindi_customer_id)) {
+      $vindiUser = $this->routes->findCustomerByCode($user_id);
+      if (!empty($vindiUser['id'])) {
+        $vindi_customer_id = $vindiUser['id'];
+        update_user_meta($user_id, 'vindi_customer_id', $vindi_customer_id);
       }
+    }
     if (empty($vindi_customer_id)) {
       return $this->create($user_id, $order);
     }
@@ -182,7 +183,8 @@ class CustomerController
         if ($this->vindi_settings->send_nfe_information()) {
           $metadata['inscricao_estadual'] = $order->get_meta('_billing_ie');
         }
-      } else {
+      }
+      if('2' !== $order->get_meta('_billing_persontype')) {
         $cpf_or_cnpj = $order->get_meta('_billing_cpf');
         $this->vindi_settings->logger->log(sprintf('Order cpf -> %s', $cpf_or_cnpj));
         $this->vindi_settings->logger->log(sprintf('Customer cpf -> %s', $customer->get_meta('billing_cpf')));
