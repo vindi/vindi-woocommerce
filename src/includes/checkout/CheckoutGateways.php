@@ -41,7 +41,7 @@ class CheckoutGateways
 
     private function clear_session($hasSessionParams, $gateways)
     {
-        $isPaymentLink = $_COOKIE['vindi-payment-link'] ?? false;
+        $isPaymentLink = filter_input(INPUT_COOKIE, 'vindi-payment-link');
 
         if ($isPaymentLink && $hasSessionParams && !$this->is_subscription_context()) {
             setcookie('vindi-payment-link', '', time() - 1800, '/');
@@ -72,8 +72,8 @@ class CheckoutGateways
     private function verify_session_params(&$hasSessionParams, &$isPaymentLink, &$gateway)
     {
         if (!$isPaymentLink && WC()->session) {
-            $isPaymentLink = $_COOKIE['vindi-payment-link'] ?? false;
-            $gateway = $_COOKIE['vindi-gateway'] ?? '';
+            $isPaymentLink = filter_input(INPUT_COOKIE, 'vindi-payment-link') ?? false;
+            $gateway = filter_input(INPUT_COOKIE, 'vindi-gateway') ?? '';
             $hasSessionParams = true;
         }
     }

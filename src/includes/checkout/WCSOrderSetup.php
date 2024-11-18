@@ -25,12 +25,15 @@ class OrderSetup
         }
     }
 
-    function preserve_vindi_cookies_after_login($redirect_to, $user)
+    public function preserve_vindi_cookies_after_login($redirect_to)
     {
-        if (isset($_COOKIE['vindi-payment-link']) || isset($_COOKIE['vindi-gateway'])) {
+        $isPaymentLink = filter_input(INPUT_COOKIE, 'vindi-payment-link');
+        $isVindiGateway = filter_input(INPUT_COOKIE, 'vindi-gateway');
+
+        if (isset($isPaymentLink) || isset($isVindiGateway)) {
             $redirect_to = add_query_arg(array(
-                'vindi-payment-link' => $_COOKIE['vindi-payment-link'] ?? '',
-                'vindi-gateway' => $_COOKIE['vindi-gateway'] ?? '',
+                'vindi-payment-link' => $isPaymentLink,
+                'vindi-gateway' => $isVindiGateway,
             ), $redirect_to);
         }
 

@@ -209,17 +209,17 @@ class VindiRoutes
    * @version 1.0.0
    * @return array
    */
-  public function findCustomerByCode($id)
-  {
-    $response = $this->api->request(sprintf(
-      'customers?query=code=WC-USER-%s',
-      filter_var($id, FILTER_SANITIZE_NUMBER_INT)
-    ), 'GET');
+    public function findCustomerByCode($user_id)
+    {
+        $response = $this->api->request(sprintf(
+          'customers?query=code=WC-USER-%s',
+          filter_var($user_id, FILTER_SANITIZE_NUMBER_INT)
+        ), 'GET');
 
-    $userExists = isset($response['customers'][0]['id']) ? $response['customers'][0] : false;
+        $userExists = isset($response['customers'][0]['id']) ? $response['customers'][0] : false;
 
-    return $userExists;
-  }
+        return $userExists;
+    }
 
   /**
    * @param $data (plan_id, customer_id, payment_method_code, product_items[{product_id}])
