@@ -129,7 +129,7 @@ class CustomerController
     $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id', true);
         if (!empty($vindi_customer_id)) {
           $vindiUser = $this->routes->findCustomerById($vindi_customer_id);
-      }
+        }
     if (empty($vindi_customer_id)) {
             $vindiUser = $this->routes->findCustomerByCode($user_id);
             if (!empty($vindiUser['id'])) {
