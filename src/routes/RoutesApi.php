@@ -212,7 +212,7 @@ class VindiRoutes
     public function findCustomerByCode($user_id)
     {
         $response = $this->api->request(sprintf(
-          'customers?query=code=WC-USER-%s',
+            'customers?query=code=WC-USER-%s',
           filter_var($user_id, FILTER_SANITIZE_NUMBER_INT)
         ), 'GET');
 

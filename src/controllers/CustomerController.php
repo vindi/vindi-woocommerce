@@ -127,7 +127,7 @@ class CustomerController
   function update($user_id, $order = null)
   {
     $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id', true);
-      if (!empty($vindi_customer_id)) {
+        if (!empty($vindi_customer_id)) {
           $vindiUser = $this->routes->findCustomerById($vindi_customer_id);
       }
     if (empty($vindi_customer_id)) {
@@ -194,7 +194,7 @@ class CustomerController
           $metadata['carteira_de_identidade'] = $order->get_meta('_billing_rg');
         }
         $this->vindi_settings->logger->log(sprintf('Order rg -> %s', $order->get_meta('_billing_rg')));
-      }
+            }
     }
     $updatedUser = $this->routes->updateCustomer(
       $vindi_customer_id,
