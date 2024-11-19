@@ -470,9 +470,10 @@ class VindiWebhooks
       ),
     ));
 
-    if (false === $query->have_posts())
-        throw new Exception(sprintf(__('Pedido #%s do ciclo #%s não encontrado!', VINDI), $subscription_id, $cycle), 2);
-
+    if (false === $query->have_posts()){
+        $msg = sprintf(__('Pedido #%s ciclo #%s não encontrado!', VINDI), $subscription_id, $cycle);
+        throw new Exception($msg, 2);
+      }
     return wc_get_order($query->post->ID);
     }
 
