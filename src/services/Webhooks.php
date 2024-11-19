@@ -149,6 +149,9 @@ class VindiWebhooks
     $order_post_meta[$subscription_id]['cycle'] = $renew_infos['cycle'];
     $order_post_meta[$subscription_id]['product'] = $renew_infos['plan_name'];
         $order_post_meta[$subscription_id]['bill'] = $this->webhooksHelpers->make_array_bill($renew_infos);
+        if($renew_infos['bill_status'] === 'paid'){
+            $order->payment_complete();
+        }
         $order->update_meta_data('vindi_order', $order_post_meta);
         $order->save();
     $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
@@ -468,7 +471,7 @@ class VindiWebhooks
     ));
 
     if (false === $query->have_posts())
-      throw new Exception(sprintf(__('Pedido da assinatura #%s para o ciclo #%s não encontrado!', VINDI), $subscriptionn_id, $cycle), 2);
+      throw new Exception(sprintf(__('Pedido da assinatura #%s para o ciclo #%s não encontrado!', VINDI), $subscription_id, $cycle), 2);
 
     return wc_get_order($query->post->ID);
     }
