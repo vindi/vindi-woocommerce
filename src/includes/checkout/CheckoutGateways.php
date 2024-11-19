@@ -15,7 +15,6 @@ class CheckoutGateways
         add_filter('woocommerce_get_checkout_url', [$this, 'preserve_params_after_email_verify'], 10, 2);
         add_filter('wp_redirect', [$this, 'preserve_params_after_subscription_redirect'], 10, 2);
         add_filter('wc-checkout_params', [$this, 'preserve_params_on_ajax'], 10, 2);
-
     }
 
     public function filter_checkout_gateways($gateways)
