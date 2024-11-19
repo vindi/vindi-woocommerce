@@ -41,7 +41,7 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 == Changelog ==
 = 1.3.5 - 05/11/2024 =
 -Lançamento da versão de patch.
-- **Melhoria:** Parâmetros agora são armazenados em cookies para garantir maior persistência dos dados entre sessões.
+- **Melhoria:** Parâmetros agora são passados para a url e ajax para garantir maior persistência dos dados entre sessões.
 - **Melhoria:** Nova rota de API implementada para recuperação do Vindi ID caso seja perdido no banco de dados.
 - **Fix:** Assinaturas com cancelamentos pendentes não geram mais faturas de forma indevida.
 
