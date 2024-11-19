@@ -470,13 +470,13 @@ class VindiWebhooks
       ),
     ));
 
-    if (false === $query->have_posts()) {
-        throw new Exception(sprintf(
-        __('Pedido da assinatura #%s para o ciclo #%s não encontrado!', VINDI),
-        $subscription_id,
-        $cycle),
-        2);
-      }
+        if (false === $query->have_posts()) {
+            throw new Exception(sprintf(
+            __('Pedido da assinatura #%s para o ciclo #%s não encontrado!', VINDI),
+            $subscription_id,
+            $cycle),
+            2);
+          }
 
     return wc_get_order($query->post->ID);
     }
