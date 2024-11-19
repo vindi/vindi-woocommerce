@@ -98,11 +98,6 @@ class WcVindiPayment extends AbstractInstance
     private $gateway_filters_checkout;
 
     /**
-     * @var VindiPaymentGateway\OrderSetup
-     */
-    private $parent_order_setup;
-
-    /**
      * @var VindiPaymentGateway\FilterCartNeedsPayment
      */
     private $filter_cart_needs_payment;
@@ -143,7 +138,6 @@ class WcVindiPayment extends AbstractInstance
         $this->add_button_payment = new ButtonPaymentLink();
         $this->subscription_limiter = new WCCartSubscriptionLimiter();
         $this->gateway_filters_checkout = new CheckoutGateways();
-        $this->parent_order_setup = new OrderSetup();
         $this->filter_cart_needs_payment = new FilterCartNeedsPayment();
         $this->renew_pix_charge = new RenewPixCharge();
         $this->generate_user = new GenerateUser();
@@ -243,7 +237,6 @@ class WcVindiPayment extends AbstractInstance
     {
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/RenewPixCharge.php';
         require_once plugin_dir_path(__FILE__) . '/includes/checkout/CheckoutGateways.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/checkout/WCSOrderSetup.php';
         require_once plugin_dir_path(__FILE__) . '/includes/admin/WcVindiColumns.php';
         require_once plugin_dir_path(__FILE__) . '/includes/admin/ButtonPaymentLink.php';
         //Validators

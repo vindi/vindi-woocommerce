@@ -11,6 +11,11 @@ class CheckoutGateways
         add_filter('woocommerce_available_payment_gateways', [$this, 'filter_checkout_gateways'], 10, 1);
         add_action('woocommerce_pay_order_before_payment', [$this, 'add_billing_fields'], 10, 1);
         add_action('woocommerce_before_pay_action', [$this, 'save_billing_fields'], 10, 1);
+        add_filter('woocommerce_get_checkout_payment_url', [$this, 'preserve_params_after_email_verify'], 10, 2);
+        add_filter('woocommerce_get_checkout_url', [$this, 'preserve_params_after_email_verify'], 10, 2);
+        add_filter('wp_redirect', [$this, 'preserve_params_after_subscription_redirect'], 10, 2);
+        add_filter('wc-checkout_params', [$this, 'preserve_params_on_ajax'], 10, 2);
+
     }
 
     public function filter_checkout_gateways($gateways)
@@ -22,60 +27,16 @@ class CheckoutGateways
             'vindi-pix',
         ];
 
-        $hasSessionParams = false;
         $isPaymentLink = filter_input(INPUT_GET, 'vindi-payment-link') ?? false;
         $gateway = filter_input(INPUT_GET, 'vindi-gateway') ?? false;
-
-        $this->verify_session_params($hasSessionParams, $isPaymentLink, $gateway);
 
         if ($isPaymentLink) {
             $gateways = $this->filter_available_gateways($gateways, $available);
             if ($gateway && isset($gateways[$gateway])) {
-                $this->clear_session($hasSessionParams, $gateways);
                 return [$gateway => $gateways[$gateway]];
             }
         }
-        $this->clear_session($hasSessionParams, $gateways);
         return $gateways;
-    }
-
-    private function clear_session($hasSessionParams, $gateways)
-    {
-        $isPaymentLink = filter_input(INPUT_COOKIE, 'vindi-payment-link');
-
-        if ($isPaymentLink && $hasSessionParams && !$this->is_subscription_context()) {
-            setcookie('vindi-payment-link', '', time() - 1800, '/');
-            setcookie('vindi-gateway', '', time() - 1800, '/');
-            return $gateways;
-        }
-    }
-
-    private function is_subscription_context()
-    {
-        $cart = WC()->cart->get_cart();
-        if (!empty($cart)) {
-            return $this->has_subscription_item($cart);
-        }
-        return false;
-    }
-
-    private function has_subscription_item($cart)
-    {
-        foreach ($cart as $item) {
-            if (isset($item['subscription_renewal']) || isset($item['subscription_initial_payment'])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private function verify_session_params(&$hasSessionParams, &$isPaymentLink, &$gateway)
-    {
-        if (!$isPaymentLink && WC()->session) {
-            $isPaymentLink = filter_input(INPUT_COOKIE, 'vindi-payment-link') ?? false;
-            $gateway = filter_input(INPUT_COOKIE, 'vindi-gateway') ?? '';
-            $hasSessionParams = true;
-        }
     }
 
     private function filter_available_gateways($gateways, $available)
@@ -227,5 +188,57 @@ class CheckoutGateways
         if ($person === '2' && !$cnpj) {
             throw new Exception((__('CNPJ', 'vindi-payment-gateway')));
         }
+    }
+    private function get_payment_link_params(): array
+    {
+        $isPaymentLink = filter_input(INPUT_GET, 'vindi-payment-link') ?? false;
+        $gateway = filter_input(INPUT_GET, 'vindi-gateway') ?? false;
+
+        $args = [];
+        if ($isPaymentLink) {
+            $args['vindi-payment-link'] = $isPaymentLink;
+        }
+        if ($gateway) {
+            $args['vindi-gateway'] = $gateway;
+        }
+
+        return $args;
+    }
+
+    public function preserve_params_after_email_verify($url)
+    {
+        $args = $this->get_payment_link_params();
+
+        if (empty($args)) {
+            return $url;
+        }
+
+        return add_query_arg($args, $url);
+    }
+
+    public function preserve_params_after_subscription_redirect($location)
+    {
+        if (strpos($location, 'wcs_redirect') === false || strpos($location, 'wcs_redirect_id') === false) {
+            return $location;
+        }
+
+        $args = $this->get_payment_link_params();
+
+        if (empty($args)) {
+            return $location;
+        }
+
+        return add_query_arg($args, $location);
+    }
+
+    public function preserve_params_on_ajax($params)
+    {
+        $args = $this->get_payment_link_params();
+
+        if (!empty($args)) {
+            $params['wc_ajax_url'] = rawurldecode(add_query_arg($args, $params['wc_ajax_url']));
+        }
+
+        return $params;
     }
 }
