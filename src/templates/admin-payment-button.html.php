@@ -87,10 +87,11 @@
                 <span class="notificationPaymentLink">
                     <?php
                     echo esc_html__(
-                        'O pedido tem que ter apenas assinaturas',
+                        'O pedido pode ter apenas assinaturas, para criar pedidos com produtos simples acessar o link:',
                         'vindi-payment-gateway'
                     );
                     ?>
+                    <a href="<?php echo $shopSingle; ?>" target="_blank">Pedidos</a>
                 </span>
             <?php endif; ?>
         </div>
