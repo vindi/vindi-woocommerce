@@ -42,4 +42,5 @@ class OrderSetup
             return in_array($gateway_id, $allowed_gateways);
         }, ARRAY_FILTER_USE_KEY);
     }
+    
 }
