@@ -269,6 +269,90 @@ class VindiPaymentProcessor
         }
     }
 
+    private function existSubscription($subscription_id)
+    {
+        $response = $this->routes->getSubscription($subscription_id);
+
+        if (!$response) {
+            return false;
+        }
+        return true;
+    }
+
+    public function change_method_payment($subscription_id){
+        $payment_method = isset($_POST['payment_method']) ? $_POST['payment_method'] : '';
+
+        switch ($payment_method) {
+            case 'vindi-credit-card':
+                $fields = [
+                    'vindi_cc_fullname' => '',
+                    'vindi_cc_number' => '',
+                    'vindi_cc_cvc' => '',
+                    'vindi_cc_paymentcompany' => 'unknown',
+                    'vindi_cc_monthexpiry' => '',
+                    'vindi_cc_yearexpiry' => '',
+                    'vindi_cc_installments' => 1,
+                ];
+
+                foreach ($fields as $key => &$default) {
+                    $default = isset($_POST[$key]) ? sanitize_text_field($_POST[$key]) : $default;
+                }
+                $customer = $this->order->get_user();
+                $user_vindi_id = get_user_meta($customer->ID, 'vindi_customer_id', true);
+
+                $payment_profile = [
+                    'customer_id' =>$user_vindi_id,
+                    'holder_name' => $fields['vindi_cc_fullname'],
+                    'card_expiration' => filter_var($fields['vindi_cc_monthexpiry'], FILTER_SANITIZE_NUMBER_INT) . '/' .
+                        filter_var($fields['vindi_cc_yearexpiry'], FILTER_SANITIZE_NUMBER_INT),
+                    'card_number' => filter_var($fields['vindi_cc_number'], FILTER_SANITIZE_NUMBER_INT),
+                    'card_cvv' => filter_var($fields['vindi_cc_cvc'], FILTER_SANITIZE_NUMBER_INT),
+                    "payment_method_code" => "credit_card",
+                    'payment_company_code' => $fields['vindi_cc_paymentcompany'],
+                ];
+                $payment_response = $this->routes->createCustomerPaymentProfile($payment_profile);
+                if($payment_response){
+                    $payment_data = [
+                        "payment_method_code" => "credit_card",
+                        "payment_profile" => [
+                            "id" => $payment_response["id"]
+                        ]
+                    ];
+                }
+
+                break;
+
+            case 'vindi-bank-slip':
+                $payment_data = [
+                    "payment_method_code" => "bank_slip"
+                ];
+                break;
+
+            case 'vindi-pix':
+                $payment_data = [
+                    "payment_method_code" => "pix"
+                ];
+                break;
+
+            case 'vindi-bolepix':
+                $payment_data = [
+                    "payment_method_code" => "pix_bank_slip"
+                ];
+                break;
+
+            default:
+                break;
+        }
+
+        if (isset($payment_data)) {
+            $update_response = $this->routes->updateSubscription($subscription_id, $payment_data);
+            if ($update_response) {
+                return $update_response;
+            }
+        }
+        return false;
+    }
+
     /**
      * Process current order.
      *
@@ -278,6 +362,12 @@ class VindiPaymentProcessor
      */
     public function process_order()
     {
+        $subscription_id =  $this->order->get_meta('vindi_subscription_id');
+        if ($this->existSubscription($subscription_id)) {
+            $this->change_method_payment($subscription_id);
+            return;
+        }
+
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
@@ -1048,16 +1138,13 @@ class VindiPaymentProcessor
     protected function config_discount_cycles($coupon, $plan_cycles = 0)
     {
         $cycle_count = get_post_meta($coupon->get_id(), 'cycle_count', true);
-    
         if ($coupon->get_discount_type() == 'recurring_percent') {
             $subscriptions_coupon = new WC_Subscriptions_Coupon();
             $cycle_count = $subscriptions_coupon->get_coupon_limit($coupon->get_id());
         }
-    
         if ($cycle_count == 0) {
             return null;
         }
-    
         return $this->get_plan_length($cycle_count, $plan_cycles);
     }
 
