@@ -279,59 +279,12 @@ class VindiPaymentProcessor
         return true;
     }
 
-    public function change_method_payment($subscription_id){
-        $payment_method = isset($_POST['payment_method']) ? $_POST['payment_method'] : '';
+    public function change_method_payment($subscription_id) {
+        $payment_method = filter_input(INPUT_POST, 'payment_method', FILTER_SANITIZE_STRING);
 
         switch ($payment_method) {
             case 'vindi-credit-card':
-                $customer = $this->order->get_user();
-                $user_vindi_id = get_user_meta($customer->ID, 'vindi_customer_id', true);
-                $old_payment_profile = $this->routes->getPaymentProfile($user_vindi_id);
-
-                if (isset($old_payment_profile["id"]) && empty($_POST['vindi_cc_number'])) {
-                    $payment_data = [
-                        "payment_method_code" => "credit_card",
-                        "payment_profile" => [
-                            "id" => $old_payment_profile["id"]
-                        ]
-                    ];
-                    break;
-                }
-
-                $fields = [
-                    'vindi_cc_fullname' => '',
-                    'vindi_cc_number' => '',
-                    'vindi_cc_cvc' => '',
-                    'vindi_cc_paymentcompany' => 'unknown',
-                    'vindi_cc_monthexpiry' => '',
-                    'vindi_cc_yearexpiry' => '',
-                    'vindi_cc_installments' => 1,
-                ];
-
-                foreach ($fields as $key => &$default) {
-                    $default = isset($_POST[$key]) ? sanitize_text_field($_POST[$key]) : $default;
-                }
-
-                $payment_profile = [
-                    'customer_id' =>$user_vindi_id,
-                    'holder_name' => $fields['vindi_cc_fullname'],
-                    'card_expiration' => filter_var($fields['vindi_cc_monthexpiry'], FILTER_SANITIZE_NUMBER_INT) . '/' .
-                        filter_var($fields['vindi_cc_yearexpiry'], FILTER_SANITIZE_NUMBER_INT),
-                    'card_number' => filter_var($fields['vindi_cc_number'], FILTER_SANITIZE_NUMBER_INT),
-                    'card_cvv' => filter_var($fields['vindi_cc_cvc'], FILTER_SANITIZE_NUMBER_INT),
-                    "payment_method_code" => "credit_card",
-                    'payment_company_code' => $fields['vindi_cc_paymentcompany'],
-                ];
-                $payment_response = $this->routes->createCustomerPaymentProfile($payment_profile);
-                if($payment_response){
-                    $payment_data = [
-                        "payment_method_code" => "credit_card",
-                        "payment_profile" => [
-                            "id" => $payment_response["id"]
-                        ]
-                    ];
-                }
-
+                $payment_data = $this->change_methodo_credit_card();
                 break;
 
             case 'vindi-bank-slip':
@@ -359,12 +312,72 @@ class VindiPaymentProcessor
         if (isset($payment_data)) {
             $update_response = $this->routes->updateSubscription($subscription_id, $payment_data);
             if ($update_response) {
-                wc_add_notice(__('O método de pagamento foi alterado com sucesso!', 'vindi-payment-gateway'), 'success');
+                wc_add_notice(__('O método de pagamento foi alterado!', 'vindi-payment-gateway'), 'success');
                 return $update_response;
             }
         }
 
         return false;
+    }
+
+    private function change_methodo_credit_card()
+    {
+        $customer = $this->order->get_user();
+        $user_vindi_id = get_user_meta($customer->ID, 'vindi_customer_id', true);
+        $old_payment_profile = $this->routes->getPaymentProfile($user_vindi_id);
+
+        if (isset($old_payment_profile["id"]) && !filter_input(INPUT_POST, 'vindi_cc_number')) {
+            return [
+                "payment_method_code" => "credit_card",
+                "payment_profile" => [
+                    "id" => $old_payment_profile["id"]
+                ]
+            ];
+        }
+
+        $fields = $this->fields_credit_card();
+
+        foreach ($fields as $key => &$value) {
+            $value = filter_input(INPUT_POST, $key) !== null
+                ? filter_input(INPUT_POST, $key)
+                : $value;
+        }
+
+        $payment_profile = $this->build_payment_profile($user_vindi_id, $fields);
+        $payment_response = $this->routes->createCustomerPaymentProfile($payment_profile);
+        if ($payment_response) {
+            return [
+                "payment_method_code" => "credit_card",
+                "payment_profile" => [
+                    "id" => $payment_response["id"]
+                ]
+            ];
+        }
+    }
+
+    private function fields_credit_card(){
+        return [
+            'vindi_cc_fullname' => '',
+            'vindi_cc_number' => '',
+            'vindi_cc_cvc' => '',
+            'vindi_cc_paymentcompany' => '',
+            'vindi_cc_monthexpiry' => '',
+            'vindi_cc_yearexpiry' => '',
+            'vindi_cc_installments' => 1,
+        ];
+    }
+
+    private function build_payment_profile($user_vindi_id, $fields){
+        return [
+            'customer_id' => $user_vindi_id,
+            'holder_name' => $fields['vindi_cc_fullname'],
+            'card_expiration' => filter_var($fields['vindi_cc_monthexpiry'], FILTER_SANITIZE_NUMBER_INT) . '/' .
+                filter_var($fields['vindi_cc_yearexpiry'], FILTER_SANITIZE_NUMBER_INT),
+            'card_number' => filter_var($fields['vindi_cc_number'], FILTER_SANITIZE_NUMBER_INT),
+            'card_cvv' => filter_var($fields['vindi_cc_cvc'], FILTER_SANITIZE_NUMBER_INT),
+            "payment_method_code" => "credit_card",
+            'payment_company_code' => $fields['vindi_cc_paymentcompany'],
+        ]
     }
 
     /**

@@ -200,7 +200,7 @@ if (isset($id)) {
       <input name="vindi_cc_yearexpiry" type="hidden">
     </div>
   </div>
-  <?php if (empty($_GET['change_payment_method'])) : ?>
+  <?php if (!filter_input(INPUT_GET, 'change_payment_method')) : ?>
     <?php if (isset($installments) && !empty($installments)) : ?>
     <p class="form-row form-row-wide">
       <label for="vindi_cc_installments"><?php _e("Número de Parcelas", VINDI); ?>
