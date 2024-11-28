@@ -1150,7 +1150,7 @@ class VindiPaymentProcessor
         $product = $order_item->get_product();
         if ($this->is_subscription_type($product) || $this->is_variable($product)) {
             $data['plan_id'] = $this->get_plan_from_order_item($order_item);
-            $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->get_id();
+            $wc_subscription_id = VindiHelpers::get_matching_subscription($this->order, $order_item)->id;
             $data['code'] = strpos($wc_subscription_id, 'WC') > 0 ? $wc_subscription_id : 'WC-' . $wc_subscription_id;
         }
         $data['product_items'] = $this->get_build_products($data, $order_item);

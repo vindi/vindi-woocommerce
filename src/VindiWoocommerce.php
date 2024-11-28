@@ -243,7 +243,7 @@ class WcVindiPayment extends AbstractInstance
     {
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/RenewPixCharge.php';
         require_once plugin_dir_path(__FILE__) . '/includes/checkout/CheckoutGateways.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/checkout/WCSOrderSetup.php';
+        require_once plugin_dir_path(__FILE__) . '/includes/checkout/WcsOrderSetup.php';
         require_once plugin_dir_path(__FILE__) . '/includes/admin/WcVindiColumns.php';
         require_once plugin_dir_path(__FILE__) . '/includes/admin/ButtonPaymentLink.php';
         //Validators

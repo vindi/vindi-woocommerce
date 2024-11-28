@@ -127,15 +127,20 @@ class CustomerController
   function update($user_id, $order = null)
   {
     $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id', true);
-    // Check meta Vindi ID
+        if (!empty($vindi_customer_id)) {
+          $vindiUser = $this->routes->findCustomerById($vindi_customer_id);
+        }
     if (empty($vindi_customer_id)) {
-
+            $vindiUser = $this->routes->findCustomerByCode($user_id);
+            if (!empty($vindiUser['id'])) {
+                  $vindi_customer_id = $vindiUser['id'];
+                  update_user_meta($user_id, 'vindi_customer_id', $vindi_customer_id);
+            }
+    }
+    if (empty($vindi_customer_id)) {
       return $this->create($user_id, $order);
     }
-    // Check user exists in Vindi
-    $vindiUser = $this->routes->findCustomerById($vindi_customer_id);
     if (!$vindiUser) {
-
       return $this->create($user_id);
     }
     $customer = new WC_Customer($user_id);
@@ -164,16 +169,13 @@ class CustomerController
                 }
       $phones[] = $landline;
     }
-
     $name = (!$user['first_name']) ? $user['display_name'] : $user['first_name'] . ' ' . $user['last_name'];
     $notes = null;
     $cpf_or_cnpj = null;
     $metadata = null;
-
     if ($order && method_exists($order, 'needs_payment')) {
       $metadata = array();
       if ('2' === $order->get_meta('_billing_persontype')) {
-        // Pessoa jurídica
         $name = $order->get_billing_company();
         $cpf_or_cnpj = $order->get_meta('_billing_cnpj');
         $notes = sprintf('Nome: %s %s', $order->get_billing_first_name(), $order->get_billing_last_name());
@@ -181,8 +183,8 @@ class CustomerController
         if ($this->vindi_settings->send_nfe_information()) {
           $metadata['inscricao_estadual'] = $order->get_meta('_billing_ie');
         }
-      } else {
-        // Pessoa física
+      }
+            if ('2' !== $order->get_meta('_billing_persontype')) {
         $cpf_or_cnpj = $order->get_meta('_billing_cpf');
         $this->vindi_settings->logger->log(sprintf('Order cpf -> %s', $cpf_or_cnpj));
         $this->vindi_settings->logger->log(sprintf('Customer cpf -> %s', $customer->get_meta('billing_cpf')));
@@ -192,10 +194,8 @@ class CustomerController
           $metadata['carteira_de_identidade'] = $order->get_meta('_billing_rg');
         }
         $this->vindi_settings->logger->log(sprintf('Order rg -> %s', $order->get_meta('_billing_rg')));
-      }
+            }
     }
-
-    // Update customer profile
     $updatedUser = $this->routes->updateCustomer(
       $vindi_customer_id,
       array(

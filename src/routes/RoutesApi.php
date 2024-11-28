@@ -203,6 +203,25 @@ class VindiRoutes
   }
 
   /**
+   * Check if exists user in Vindi by code with id
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+    public function findCustomerByCode($user_id)
+    {
+        $response = $this->api->request(sprintf(
+            'customers?query=code=WC-USER-%s',
+          filter_var($user_id, FILTER_SANITIZE_NUMBER_INT)
+        ), 'GET');
+
+        $userExists = isset($response['customers'][0]['id']) ? $response['customers'][0] : false;
+
+        return $userExists;
+    }
+
+  /**
    * @param $data (plan_id, customer_id, payment_method_code, product_items[{product_id}])
    *
    * @return array

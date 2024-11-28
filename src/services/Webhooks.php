@@ -141,20 +141,23 @@ class VindiWebhooks
       ));
     }
 
-    WC_Subscriptions_Manager::prepare_renewal($subscription->id);
-    $order_id = $subscription->get_last_order();
-    $order = $this->find_order_by_id($order_id);
-    $subscription_id = $renew_infos['vindi_subscription_id'];
+        WC_Subscriptions_Manager::prepare_renewal($subscription->id);
+        $order_id = $subscription->get_last_order();
+        $order = $this->find_order_by_id($order_id);
+        $subscription_id = $renew_infos['vindi_subscription_id'];
         $order_post_meta = array($order->get_meta('vindi_order', true));
-    $order_post_meta[$subscription_id]['cycle'] = $renew_infos['cycle'];
-    $order_post_meta[$subscription_id]['product'] = $renew_infos['plan_name'];
+        $order_post_meta[$subscription_id]['cycle'] = $renew_infos['cycle'];
+        $order_post_meta[$subscription_id]['product'] = $renew_infos['plan_name'];
         $order_post_meta[$subscription_id]['bill'] = $this->webhooksHelpers->make_array_bill($renew_infos);
+        if ($renew_infos['bill_status'] === 'paid') {
+            $order->payment_complete();
+        }
         $order->update_meta_data('vindi_order', $order_post_meta);
         $order->save();
-    $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
+        $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
 
-    // We've already processed the renewal
-    remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
+        // We've already processed the renewal
+        remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
     }
 
   /**
@@ -467,9 +470,10 @@ class VindiWebhooks
       ),
     ));
 
-    if (false === $query->have_posts())
-      throw new Exception(sprintf(__('Pedido da assinatura #%s para o ciclo #%s não encontrado!', VINDI), $subscriptionn_id, $cycle), 2);
-
+        if (false === $query->have_posts()) {
+            $msg = sprintf(__('Pedido #%s ciclo #%s não encontrado!', VINDI), $subscription_id, $cycle);
+            throw new Exception($msg, 2);
+        }
     return wc_get_order($query->post->ID);
     }
 

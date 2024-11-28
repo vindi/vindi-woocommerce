@@ -28,13 +28,14 @@ class ButtonPaymentLink
             $status = $order_data['order_status'];
             $link = $order_data['link_payment'];
             $shop =  $order_data['urlShopSubscription'];
+            $shopSingle =  $order_data['urlShop'];
             $type = get_post_type($order->get_id());
             $created = $order->get_created_via();
             $parent = $order_data['parent'];
             $disable = $this->should_disable($created, $sub, $order, $order_data);
             $hasClient = $order->get_customer_id();
             $order_info = compact('type', 'created', 'parent', 'disable', 'hasClient');
-            $variables = compact('item', 'sub', 'status', 'link', 'shop', 'single');
+            $variables = compact('item', 'sub', 'status', 'link', 'shop', 'single', 'shopSingle');
             $this->include_template_with_variables($template_path, $variables, $order_info);
         }
     }
@@ -86,6 +87,7 @@ class ButtonPaymentLink
             'link_payment' => null,
             'urlAdmin' => get_admin_url(),
             'urlShopSubscription' => null,
+            'urlShop' => null,
             'parent' => false
         ];
         if (count($order->get_items()) > 0) {
@@ -95,10 +97,12 @@ class ButtonPaymentLink
             if ($order->get_checkout_payment_url()) {
                 $order_data['link_payment'] = $this->build_payment_link($order, $order->get_payment_method());
             }
+            $urlAdmin = $order_data['urlAdmin'];
             $order_data = $this->handle_shop_subscription($order, $order_data);
             $order_data['order_status'] = $order->get_status();
             $order_data['has_item'] = true;
-            $order_data['urlShopSubscription'] = "{$order_data['urlAdmin']}post-new.php?post_type=shop_subscription";
+            $order_data['urlShopSubscription'] = "{$urlAdmin}post-new.php?post_type=shop_subscription";
+            $order_data['urlShop'] = "{$urlAdmin}post-new.php?post_type=shop_order&vindi-payment-link=true";
         }
 
         return $order_data;

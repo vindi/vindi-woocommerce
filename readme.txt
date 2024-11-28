@@ -11,7 +11,7 @@ Tested up to: 6.4
 WC requires at least: 3.0.0
 WC tested up to: 8.6.1
 Requires PHP: 5.6
-Stable Tag: 1.3.4
+Stable Tag: 1.3.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,12 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.3.5 - 05/11/2024 =
+-Lançamento da versão de patch.
+- **Melhoria:** Parâmetros agora são passados para a url e ajax para garantir maior persistência dos dados entre sessões.
+- **Melhoria:** Nova rota de API implementada para recuperação do Vindi ID caso seja perdido no banco de dados.
+- **Fix:** Assinaturas com cancelamentos pendentes não geram mais faturas de forma indevida.
+
 = 1.3.4 - 31/07/2024 =
 -Lançamento da versão de patch.
 - **Adição:** Implementação de botão para gerar link de pagamento utilizando métodos da Vindi.

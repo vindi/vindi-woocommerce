@@ -55,7 +55,8 @@ class VindiSubscriptionStatusHandler
                 break;
             case 'pending-cancel':
                 if (!$this->vindi_settings->dependencies->is_wc_memberships_active()) {
-                    $wc_subscription->update_status('cancelled');
+                    $wc_subscription->update_status('pending-cancel');
+                    $this->cancelled_status($wc_subscription);
                 }
                 break;
         }
