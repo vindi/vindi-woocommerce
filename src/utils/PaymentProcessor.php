@@ -359,7 +359,7 @@ class VindiPaymentProcessor
         if (isset($payment_data)) {
             $update_response = $this->routes->updateSubscription($subscription_id, $payment_data);
             if ($update_response) {
-                wc_add_notice(__('Metodo de pagamento alterado com sucesso!', 'vindi-payment-gateway'),'success');
+                wc_add_notice(__('O método de pagamento foi alterado com sucesso!', 'vindi-payment-gateway'), 'success');
                 return $update_response;
             }
         }
