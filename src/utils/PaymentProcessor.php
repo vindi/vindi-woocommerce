@@ -279,7 +279,8 @@ class VindiPaymentProcessor
         return true;
     }
 
-    public function change_method_payment($subscription_id) {
+    public function change_method_payment($subscription_id)
+    {
         $payment_method = filter_input(INPUT_POST, 'payment_method', FILTER_SANITIZE_STRING);
 
         switch ($payment_method) {
@@ -355,7 +356,8 @@ class VindiPaymentProcessor
         }
     }
 
-    private function fields_credit_card(){
+    private function fields_credit_card()
+    {
         return [
             'vindi_cc_fullname' => '',
             'vindi_cc_number' => '',
@@ -367,7 +369,8 @@ class VindiPaymentProcessor
         ];
     }
 
-    private function build_payment_profile($user_vindi_id, $fields){
+    private function build_payment_profile($user_vindi_id, $fields)
+    {
         return [
             'customer_id' => $user_vindi_id,
             'holder_name' => $fields['vindi_cc_fullname'],
