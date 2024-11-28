@@ -39,6 +39,10 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.3.6 - 05/11/2024 =
+-Lançamento da versão de patch.
+- **Correção:** Alteração no método de pagamento para assinaturas ativas.
+
 = 1.3.5 - 05/11/2024 =
 -Lançamento da versão de patch.
 - **Melhoria:** Parâmetros agora são passados para a url e ajax para garantir maior persistência dos dados entre sessões.

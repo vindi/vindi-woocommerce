@@ -282,8 +282,24 @@ class VindiPaymentProcessor
     public function change_method_payment($subscription_id){
         $payment_method = isset($_POST['payment_method']) ? $_POST['payment_method'] : '';
 
+
+
         switch ($payment_method) {
             case 'vindi-credit-card':
+                $customer = $this->order->get_user();
+                $user_vindi_id = get_user_meta($customer->ID, 'vindi_customer_id', true);
+                $old_payment_profile = $this->routes->getPaymentProfile($user_vindi_id);
+
+                if (isset($old_payment_profile["id"]) && !isset($_POST['vindi_cc_number'])) {
+                    $payment_data = [
+                        "payment_method_code" => "credit_card",
+                        "payment_profile" => [
+                            "id" => $old_payment_profile["id"]
+                        ]
+                    ];
+                    break;
+                }
+
                 $fields = [
                     'vindi_cc_fullname' => '',
                     'vindi_cc_number' => '',
@@ -297,8 +313,6 @@ class VindiPaymentProcessor
                 foreach ($fields as $key => &$default) {
                     $default = isset($_POST[$key]) ? sanitize_text_field($_POST[$key]) : $default;
                 }
-                $customer = $this->order->get_user();
-                $user_vindi_id = get_user_meta($customer->ID, 'vindi_customer_id', true);
 
                 $payment_profile = [
                     'customer_id' =>$user_vindi_id,
@@ -347,9 +361,11 @@ class VindiPaymentProcessor
         if (isset($payment_data)) {
             $update_response = $this->routes->updateSubscription($subscription_id, $payment_data);
             if ($update_response) {
+                wc_add_notice(__('Metodo de pagamento alterado com sucesso!', 'vindi-payment-gateway'),'sucess');
                 return $update_response;
             }
         }
+
         return false;
     }
 
