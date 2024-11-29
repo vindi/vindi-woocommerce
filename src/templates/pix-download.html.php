@@ -83,7 +83,6 @@ if (!defined('ABSPATH')) {
                                                 align-items: center;
                                                 justify-content: end;
                                                 position: relative;
-                                                right: 75px;">
                                         <a id="copy_vindi_pix_code"
                                             class="download_button copy_vindi_line"
                                             data-code="<?php echo esc_attr($subscription['bill']['pix_code']); ?>">
