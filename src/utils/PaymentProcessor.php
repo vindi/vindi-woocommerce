@@ -375,7 +375,8 @@ class VindiPaymentProcessor
     public function process_order()
     {
         $subscription_id =  $this->order->get_meta('vindi_subscription_id');
-        if ($this->exist_subscription($subscription_id)) {
+        $subscription_exists = $this->exist_subscription($subscription_id);
+        if ($subscription_exists) {
             return;
         }
         $this->check_trial_and_single_product();
@@ -408,24 +409,19 @@ class VindiPaymentProcessor
         }
 
         $this->check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period);
-
         foreach ($subscription_products as $subscription_order_item) {
             if (empty($subscription_order_item))
                 continue;
-
             try {
                 $subscription = $this->create_subscription($customer['id'], $subscription_order_item);
                 $subscription_id = $subscription['id'];
                 $wc_subscription_id = $subscription['wc_id'];
-
                 array_push($subscriptions_ids, $subscription_id);
                 array_push($wc_subscriptions_ids, $wc_subscription_id);
-
                 $subscription_bill = $subscription['bill'];
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
                 $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->get_name();
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
-
                 $bills[] = $subscription['bill'];
                 $message = $this->cancel_if_denied_bill_status($subscription['bill']);
                 if ($message) {
