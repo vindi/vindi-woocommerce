@@ -269,14 +269,7 @@ class VindiPaymentProcessor
         }
     }
 
-    /**
-     * Checks if a subscription exists based on the provided subscription ID.
-     *
-     * @param int $subscription_id The ID of the subscription to check.
-     * @return bool True if the subscription exists, false otherwise.
-     */
-
-    private function exist_subscription($subscription_id)
+    private function existSubscription($subscription_id)
     {
         $response = $this->routes->getSubscription($subscription_id);
 
@@ -286,15 +279,9 @@ class VindiPaymentProcessor
         return true;
     }
 
-    /**
-     * Changes the payment method for a subscription.
-     *
-     * @param int $subscription_id The ID of the subscription to update.
-     * @return array|false The response from the update request if successful, false otherwise.
-     */
     public function change_method_payment($subscription_id)
     {
-        $payment_method = filter_input(INPUT_POST, 'payment_method');
+        $payment_method = filter_input(INPUT_POST, 'payment_method', FILTER_SANITIZE_STRING);
 
         switch ($payment_method) {
             case 'vindi-credit-card':
@@ -334,11 +321,6 @@ class VindiPaymentProcessor
         return false;
     }
 
-    /**
-     * Updates the payment method to a credit card.
-     *
-     * @return array|null An array with the updated credit card payment profile, or null if unsuccessful.
-     */
     private function change_payment_to_credit_card()
     {
         $customer = $this->order->get_user();
@@ -374,11 +356,6 @@ class VindiPaymentProcessor
         }
     }
 
-    /**
-     * Retrieves the default fields required for credit card payment.
-     *
-     * @return array An associative array with the default credit card fields.
-     */
     private function fields_credit_card()
     {
         return [
@@ -392,13 +369,6 @@ class VindiPaymentProcessor
         ];
     }
 
-    /**
-     * Builds a payment profile for a customer using the provided fields.
-     *
-     * @param int $user_vindi_id The ID of the customer in the Vindi system.
-     * @param array $fields The credit card fields to include in the profile.
-     * @return array An associative array representing the payment profile.
-     */
     private function build_payment_profile($user_vindi_id, $fields)
     {
         return [
@@ -423,7 +393,7 @@ class VindiPaymentProcessor
     public function process_order()
     {
         $subscription_id =  $this->order->get_meta('vindi_subscription_id');
-        if ($this->exist_subscription($subscription_id)) {
+        if ($this->existSubscription($subscription_id)) {
             $this->change_method_payment($subscription_id);
             return;
         }
