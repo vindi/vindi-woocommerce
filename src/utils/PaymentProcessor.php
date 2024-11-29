@@ -374,21 +374,34 @@ class VindiPaymentProcessor
      */
     public function process_order()
     {
-        $subscription_id =  $this->order->get_meta('vindi_subscription_id');
-        $subscription_exists = $this->exist_subscription($subscription_id);
-        if ($subscription_exists) {
+        $subscription_id = $this->order->get_meta('vindi_subscription_id');
+        if ($this->exist_subscription($subscription_id)) {
             return;
         }
+
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
-        $bills = [];
-        $order_post_meta = [];
+
+        list($bill_products, $subscription_products, $subscriptions_grouped_by_period) = $this->categorize_order_items($order_items);
+
+        $this->check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period);
+
+        list($subscriptions_ids, $wc_subscriptions_ids, $bills, $order_post_meta) = $this->process_subscription_products($customer, $subscription_products);
+
+        if (!empty($bill_products)) {
+            $this->process_bill_products($customer, $bill_products, $subscriptions_ids, $bills, $order_post_meta);
+        }
+
+        $this->finalize_order($order_post_meta, $bills);
+    }
+
+    private function categorize_order_items($order_items)
+    {
         $bill_products = [];
         $subscription_products = [];
-        $subscriptions_ids = [];
-        $wc_subscriptions_ids = [];
-        $subscriptions_grouped_by_period = array();
+        $subscriptions_grouped_by_period = [];
+
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
 
@@ -402,22 +415,33 @@ class VindiPaymentProcessor
                 $period = get_post_meta($product_id, '_subscription_period', true);
                 $interval = get_post_meta($product_id, '_subscription_period_interval', true);
                 $subscriptions_grouped_by_period[$period . $interval][] = $order_item;
-                array_push($subscription_products, $order_item);
-                continue;
+                $subscription_products[] = $order_item;
+            } else {
+                $bill_products[] = $order_item;
             }
-            array_push($bill_products, $order_item);
         }
 
-        $this->check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period);
+        return [$bill_products, $subscription_products, $subscriptions_grouped_by_period];
+    }
+
+    private function process_subscription_products($customer, $subscription_products)
+    {
+        $subscriptions_ids = [];
+        $wc_subscriptions_ids = [];
+        $bills = [];
+        $order_post_meta = [];
+
         foreach ($subscription_products as $subscription_order_item) {
-            if (empty($subscription_order_item))
+            if (empty($subscription_order_item)) {
                 continue;
+            }
+
             try {
                 $subscription = $this->create_subscription($customer['id'], $subscription_order_item);
                 $subscription_id = $subscription['id'];
                 $wc_subscription_id = $subscription['wc_id'];
-                array_push($subscriptions_ids, $subscription_id);
-                array_push($wc_subscriptions_ids, $wc_subscription_id);
+                $subscriptions_ids[] = $subscription_id;
+                $wc_subscriptions_ids[] = $wc_subscription_id;
                 $subscription_bill = $subscription['bill'];
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
                 $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->get_name();
@@ -429,36 +453,41 @@ class VindiPaymentProcessor
                 }
 
                 update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
-                continue;
             } catch (Exception $err) {
                 $message = $err->getMessage();
                 $this->cancel_subscriptions_and_order($wc_subscriptions_ids, $subscriptions_ids, $message);
             }
         }
 
-        if (!empty($bill_products)) {
-            try {
-                $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
-                $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
-                $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
-                $bills[] = $single_payment_bill;
-                $message = $this->cancel_if_denied_bill_status($single_payment_bill);
-                if ($message) {
-                    $this->order->update_status('cancelled', __($message, VINDI));
+        return [$subscriptions_ids, $wc_subscriptions_ids, $bills, $order_post_meta];
+    }
 
-                    if ($subscriptions_ids) {
-                        $this->suspend_subscriptions($subscriptions_ids);
-                    }
+    private function process_bill_products($customer, $bill_products, $subscriptions_ids, $bills, &$order_post_meta)
+    {
+        try {
+            $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
+            $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
+            $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
+            $bills[] = $single_payment_bill;
+            $message = $this->cancel_if_denied_bill_status($single_payment_bill);
+            if ($message) {
+                $this->order->update_status('cancelled', __($message, VINDI));
 
-                    $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
-                    $this->abort(__($message, VINDI), true);
+                if ($subscriptions_ids) {
+                    $this->suspend_subscriptions($subscriptions_ids);
                 }
-            } catch (Exception $err) {
-                $this->logger->log(sprintf('Deu erro na criação da conta %s', $single_payment_bill));
-                $this->abort(__('Não foi possível criar o pedido.', VINDI), true);
-            }
-        }
 
+                $this->cancel_bills($bills, __('Algum pagamento do pedido não pode ser processado', VINDI));
+                $this->abort(__($message, VINDI), true);
+            }
+        } catch (Exception $err) {
+            $this->logger->log(sprintf('Deu erro na criação da conta %s', $single_payment_bill));
+            $this->abort(__('Não foi possível criar o pedido.', VINDI), true);
+        }
+    }
+
+    private function finalize_order($order_post_meta, $bills)
+    {
         $this->order->update_meta_data('vindi_order', $order_post_meta);
         $this->order->save();
         WC()->session->__unset('current_payment_profile');
