@@ -464,14 +464,7 @@ class VindiPaymentProcessor
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
             if ($this->is_subscription_type($product)) {
-                $product_id = $product->get_id();
-                if ($this->is_variable($product)) {
-                    $product_id = $order_item['variation_id'];
-                }
-                $period = get_post_meta($product_id, '_subscription_period', true);
-                $interval = get_post_meta($product_id, '_subscription_period_interval', true);
-                $subscriptions_grouped_by_period[$period . $interval][] = $order_item;
-                $subscription_products[] = $order_item;
+                $this->process_subscription_item($order_item, $subscriptions_grouped_by_period, $subscription_products);
                 continue;
             }
             $bill_products[] = $order_item;
@@ -482,6 +475,19 @@ class VindiPaymentProcessor
             'subscription_products' => $subscription_products,
             'bill_products' => $bill_products,
         ];
+    }
+
+    private function process_subscription_item($order_item, &$subscriptions_grouped_by_period, &$subscription_products)
+    {
+        $product = $order_item->get_product();
+        $product_id = $product->get_id();
+        if ($this->is_variable($product)) {
+            $product_id = $order_item['variation_id'];
+        }
+        $period = get_post_meta($product_id, '_subscription_period', true);
+        $interval = get_post_meta($product_id, '_subscription_period_interval', true);
+        $subscriptions_grouped_by_period[$period . $interval][] = $order_item;
+        $subscription_products[] = $order_item;
     }
 
     private function check_trial_and_single_product()
