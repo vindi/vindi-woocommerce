@@ -269,14 +269,15 @@ class VindiPaymentProcessor
         }
     }
 
-    private function existSubscription($subscription_id)
+    private function exist_subscription($subscription_id)
     {
         $response = $this->routes->getSubscription($subscription_id);
 
-        if (!$response) {
-            return false;
+        if ($response) {
+            $this->change_method_payment($subscription_id);
+            return;
         }
-        return true;
+        return;
     }
 
     public function change_method_payment($subscription_id)
@@ -374,11 +375,7 @@ class VindiPaymentProcessor
     public function process_order()
     {
         $subscription_id =  $this->order->get_meta('vindi_subscription_id');
-        if ($this->existSubscription($subscription_id)) {
-            $this->change_method_payment($subscription_id);
-            return;
-        }
-
+        $this->exist_subscription($subscription_id);
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
