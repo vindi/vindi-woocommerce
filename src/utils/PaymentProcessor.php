@@ -321,11 +321,8 @@ class VindiPaymentProcessor
         }
 
         $fields = $this->fields_credit_card();
-
         foreach ($fields as $key => &$value) {
-            $value = filter_input(INPUT_POST, $key) !== null
-                ? filter_input(INPUT_POST, $key)
-                : $value;
+            $value = filter_input(INPUT_POST, $key) !== null ? filter_input(INPUT_POST, $key) : $value;
         }
 
         $payment_profile = $this->build_payment_profile($user_vindi_id, $fields);
