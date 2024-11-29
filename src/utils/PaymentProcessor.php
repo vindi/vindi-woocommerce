@@ -275,9 +275,9 @@ class VindiPaymentProcessor
 
         if ($response) {
             $this->change_method_payment($subscription_id);
-            return;
+            return true;
         }
-        return;
+        return false;
     }
 
     public function change_method_payment($subscription_id)
@@ -375,7 +375,9 @@ class VindiPaymentProcessor
     public function process_order()
     {
         $subscription_id =  $this->order->get_meta('vindi_subscription_id');
-        $this->exist_subscription($subscription_id);
+        if ($this->exist_subscription($subscription_id)) {
+            return;
+        }
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
