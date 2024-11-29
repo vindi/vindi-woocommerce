@@ -381,7 +381,6 @@ class VindiPaymentProcessor
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
-
         $bills = [];
         $order_post_meta = [];
         $bill_products = [];
@@ -389,7 +388,6 @@ class VindiPaymentProcessor
         $subscriptions_ids = [];
         $wc_subscriptions_ids = [];
         $subscriptions_grouped_by_period = array();
-
         foreach ($order_items as $order_item) {
             $product = $order_item->get_product();
 
