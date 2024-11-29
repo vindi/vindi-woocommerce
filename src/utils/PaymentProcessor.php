@@ -281,43 +281,27 @@ class VindiPaymentProcessor
 
     public function change_method_payment($subscription_id)
     {
-        $payment_method = filter_input(INPUT_POST, 'payment_method', FILTER_SANITIZE_STRING);
-
-        switch ($payment_method) {
-            case 'vindi-credit-card':
-                $payment_data = $this->change_payment_to_credit_card();
-                break;
-
-            case 'vindi-bank-slip':
-                $payment_data = [
-                    "payment_method_code" => "bank_slip"
-                ];
-                break;
-
-            case 'vindi-pix':
-                $payment_data = [
-                    "payment_method_code" => "pix"
-                ];
-                break;
-
-            case 'vindi-bolepix':
-                $payment_data = [
-                    "payment_method_code" => "pix_bank_slip"
-                ];
-                break;
-
-            default:
-                break;
+        $payment_method = filter_input(INPUT_POST, 'payment_method');
+    
+        $payment_methods = [
+            'vindi-credit-card' => $this->change_payment_to_credit_card(),
+            'vindi-bank-slip'   => ["payment_method_code" => "bank_slip"],
+            'vindi-pix'         => ["payment_method_code" => "pix"],
+            'vindi-bolepix'     => ["payment_method_code" => "pix_bank_slip"],
+        ];
+    
+        if (!isset($payment_methods[$payment_method])) {
+            return false;
         }
-
-        if (isset($payment_data)) {
-            $update_response = $this->routes->updateSubscription($subscription_id, $payment_data);
-            if ($update_response) {
-                wc_add_notice(__('O método de pagamento foi alterado!', 'vindi-payment-gateway'), 'success');
-                return $update_response;
-            }
+    
+        $payment_data = $payment_methods[$payment_method];
+        $update_response = $this->routes->updateSubscription($subscription_id, $payment_data);
+    
+        if ($update_response) {
+            wc_add_notice(__('O método de pagamento foi alterado!', 'vindi-payment-gateway'), 'success');
+            return $update_response;
         }
-
+    
         return false;
     }
 
