@@ -41,8 +41,7 @@ if (!defined('ABSPATH')) {
                                             flex-direction: column;
                                             align-items: end;
                                             justify-content: end;
-                                            position: relative;
-                                            right: 75px;">
+                                            position: relative;">
                                     <a id="copy_vindi_bolepix_code"
                                        class="download_button copy_vindi_line"
                                        data-code="<?php echo esc_attr($subscription['bill']['pix_code']); ?>">
