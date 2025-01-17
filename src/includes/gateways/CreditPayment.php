@@ -7,7 +7,7 @@ use VindiPaymentGateways\VindiViewOrderHelpers;
 use VindiPaymentGateways\CreditHelpers;
 
 if (!defined('ABSPATH')) {
-  exit;
+    exit;
 }
 
 /**
@@ -19,24 +19,24 @@ if (!defined('ABSPATH')) {
 
 class VindiCreditGateway extends VindiPaymentGateway
 {
-  /**
-   * @var VindiSettings
-   */
+    /**
+     * @var VindiSettings
+     */
     public $vindi_settings;
 
-  /**
-   * @var VindiControllers
-   */
+    /**
+     * @var VindiControllers
+     */
     public $controllers;
 
-  /**
-   * @var int
-   */
+    /**
+     * @var int
+     */
     private $max_installments = 12;
 
-  /**
-   * @var int
-   */
+    /**
+     * @var int
+     */
     public $interest_rate;
 
     public $smallest_installment;
@@ -46,38 +46,48 @@ class VindiCreditGateway extends VindiPaymentGateway
 
     public function __construct(VindiSettings $vindi_settings, VindiControllers $controllers)
     {
-    global $woocommerce;
+        global $woocommerce;
 
-    $this->id                   = 'vindi-credit-card';
-    $this->icon                 = apply_filters('vindi_woocommerce_credit_card_icon', '');
-    $this->method_title         = __('Vindi - Cartão de Crédito', VINDI);
-    $this->method_description   = __('Aceitar pagamentos via cartão de crédito utilizando a Vindi.', VINDI);
-    $this->has_fields           = true;
+        $this->id                   = 'vindi-credit-card';
+        $this->icon                 = apply_filters('vindi_woocommerce_credit_card_icon', '');
+        $this->method_title         = __('Vindi - Cartão de Crédito', VINDI);
+        $this->method_description   = __('Aceitar pagamentos via cartão de crédito utilizando a Vindi.', VINDI);
+        $this->has_fields           = true;
 
-        $this->supports = array('subscriptions','products','subscription_cancellation','subscription_reactivation',
-        'subscription_suspension','subscription_amount_changes','subscription_payment_method_change',
-        'subscription_payment_method_change_customer','subscription_payment_method_change_admin',
-        'subscription_date_changes','multiple_subscriptions','refunds','pre-orders'
-    );
+        $this->supports = array(
+            'subscriptions',
+            'products',
+            'subscription_cancellation',
+            'subscription_reactivation',
+            'subscription_suspension',
+            'subscription_amount_changes',
+            'subscription_payment_method_change',
+            'subscription_payment_method_change_customer',
+            'subscription_payment_method_change_admin',
+            'subscription_date_changes',
+            'multiple_subscriptions',
+            'refunds',
+            'pre-orders'
+        );
 
-    $this->init_form_fields();
-    $this->init_settings();
-            add_action('woocommerce_view_order', array(&$this, 'show_credit_card_download'), -10, 1);
-    $this->smallest_installment = $this->get_option('smallest_installment');
-    $this->installments = $this->get_option('installments');
-    $this->verify_method = $this->get_option('verify_method');
-    $this->enable_interest_rate = $this->get_option('enable_interest_rate');
-    $this->interest_rate = $this->get_option('interest_rate');
-    parent::__construct($vindi_settings, $controllers);
+        $this->init_form_fields();
+        $this->init_settings();
+        add_action('woocommerce_view_order', array(&$this, 'show_credit_card_download'), -10, 1);
+        $this->smallest_installment = $this->get_option('smallest_installment');
+        $this->installments = $this->get_option('installments');
+        $this->verify_method = $this->get_option('verify_method');
+        $this->enable_interest_rate = $this->get_option('enable_interest_rate');
+        $this->interest_rate = $this->get_option('interest_rate');
+        parent::__construct($vindi_settings, $controllers);
     }
 
-  /**
-   * Should return payment type for payment processing.
-   * @return string
-   */
+    /**
+     * Should return payment type for payment processing.
+     * @return string
+     */
     public function type()
     {
-    return 'cc';
+        return 'cc';
     }
 
     public function init_form_fields()
@@ -98,17 +108,17 @@ class VindiCreditGateway extends VindiPaymentGateway
 
         if ($credit_card_to_render->check_payment_methods($payment_methods)) {
             _e('Estamos problemas técnicos no momento. Tente novamente mais tarde ou entre em contato.', VINDI);
-      return;
+            return;
         }
 
         $is_trial = $this->check_is_trial();
 
-    $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
-        'installments',
-        'is_trial',
-        'user_payment_profile',
-        'payment_methods'
-    ));
+        $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
+            'installments',
+            'is_trial',
+            'user_payment_profile',
+            'payment_methods'
+        ));
     }
 
     private function calculate_total($order_id, $cart)
@@ -153,7 +163,7 @@ class VindiCreditGateway extends VindiPaymentGateway
     {
         $max_times = $this->get_order_max_installments($total);
         $installments = [];
-        if ($max_times > 1) {
+        if ($max_times >= 1) {
             for ($times = 1; $times <= $max_times; $times++) {
                 $installments[$times] = $this->get_cart_installments($times, $total);
             }
@@ -224,27 +234,29 @@ class VindiCreditGateway extends VindiPaymentGateway
 
     protected function get_installments()
     {
-      if ($this->is_single_order())
-        return $this->installments;
-      $installments = 0;
-      foreach ($this->vindi_settings->woocommerce->cart->cart_contents as $item) {
-          $plan_id = $item['data']->get_meta('vindi_plan_id');
-
-        if (!empty($plan_id)) {
-            $plan = $this->routes->getPlan($plan_id);
-
-          if ($installments == 0) {
-              $installments = $plan['installments'];
-          } elseif ($plan['installments'] < $installments) {
-              $installments = $plan['installments'];
-          }
+        if ($this->is_single_order()) {
+            return $this->installments;
         }
-      }
+        $installments = 0;
+        foreach ($this->vindi_settings->woocommerce->cart->cart_contents as $item) {
+            $plan_id = $item['data']->get_meta('vindi_plan_id');
 
-      if ($installments != 0)
-        return $installments;
-      else
-        return 1;
+            if (!empty($plan_id)) {
+                $plan = $this->routes->getPlan($plan_id);
+
+                if ($installments == 0) {
+                    $installments = $plan['installments'];
+                } elseif ($plan['installments'] < $installments) {
+                    $installments = $plan['installments'];
+                }
+            }
+        }
+
+        if ($installments != 0) {
+            return $installments;
+        } else {
+            return 1;
+        }
     }
 
     public function show_credit_card_download($order_id)

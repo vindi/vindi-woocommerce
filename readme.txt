@@ -11,7 +11,7 @@ Tested up to: 6.4
 WC requires at least: 3.0.0
 WC tested up to: 8.6.1
 Requires PHP: 5.6
-Stable Tag: 1.3.6
+Stable Tag: 1.3.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,10 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.3.7 - 01/01/2025 =
+-Lançamento da versão de patch.
+- **Melhoria:** Adição de uma nova rota para validar a existência do usuário.
+
 = 1.3.6 - 05/11/2024 =
 -Lançamento da versão de patch.
 - **Correção:** Alteração no método de pagamento para assinaturas ativas.
