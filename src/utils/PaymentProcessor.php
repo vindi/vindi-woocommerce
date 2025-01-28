@@ -344,9 +344,6 @@ class VindiPaymentProcessor
 
         if (!empty($bill_products)) {
             try {
-                error_log(var_export($customer,true));
-                error_log(var_export($customer['id'],true));
-
                 $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
                 $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
                 $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
@@ -1032,7 +1029,7 @@ class VindiPaymentProcessor
         } elseif (strpos($discount_type, 'fixed') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = (float) $amount;
-        } elseif (strpos($discount_type, 'percent') !== false ||strpos($discount_type, 'recurring_percent') !== false) {
+        } elseif (strpos($discount_type, 'percent') !== false || strpos($discount_type, 'recurring_percent') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = abs($amount / 100 * ($order_item['price'] * $order_item['quantity']));
         }
@@ -1051,16 +1048,16 @@ class VindiPaymentProcessor
     protected function config_discount_cycles($coupon, $plan_cycles = 0)
     {
         $cycle_count = get_post_meta($coupon->get_id(), 'cycle_count', true);
-    
+
         if ($coupon->get_discount_type() == 'recurring_percent') {
             $subscriptions_coupon = new WC_Subscriptions_Coupon();
             $cycle_count = $subscriptions_coupon->get_coupon_limit($coupon->get_id());
         }
-    
+
         if ($cycle_count == 0) {
             return null;
         }
-    
+
         return $this->get_plan_length($cycle_count, $plan_cycles);
     }
 
