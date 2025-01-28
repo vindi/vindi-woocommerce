@@ -107,7 +107,7 @@ class VindiPaymentProcessor
         $current_user = $this->order->get_user();
         $vindi_customer = [];
 
-        if ($current_user->ID) {
+        if ($current_user && $current_user->ID) {
             $vindi_customer = $this->controllers->customers->update($current_user->ID, $this->order);
         }
 
@@ -344,6 +344,9 @@ class VindiPaymentProcessor
 
         if (!empty($bill_products)) {
             try {
+                error_log(var_export($customer,true));
+                error_log(var_export($customer['id'],true));
+
                 $single_payment_bill = $this->create_bill($customer['id'], $bill_products);
                 $order_post_meta['single_payment']['product'] = 'Produtos Avulsos';
                 $order_post_meta['single_payment']['bill'] = $this->create_bill_meta_for_order($single_payment_bill);
