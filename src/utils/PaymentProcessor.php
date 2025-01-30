@@ -1029,7 +1029,7 @@ class VindiPaymentProcessor
         } elseif (strpos($discount_type, 'fixed') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = (float) $amount;
-        } elseif (strpos($discount_type, 'percent') !== false || strpos($discount_type, 'recurring_percent') !== false) {
+        } elseif (strpos($discount_type, 'percent') !== false ||strpos($discount_type, 'recurring_percent') !== false) {
             $discount_item['discount_type'] = 'amount';
             $discount_item['amount'] = abs($amount / 100 * ($order_item['price'] * $order_item['quantity']));
         }
