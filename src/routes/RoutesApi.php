@@ -221,6 +221,25 @@ class VindiRoutes
         return $userExists;
     }
 
+   /**
+   * Check if exists user in Vindi by code with email
+   *
+   * @since 1.0.0
+   * @version 1.0.0
+   * @return array
+   */
+  public function findCustomerByEmail($user_email)
+  {
+        $response = $this->api->request(sprintf(
+            'customers?query=email=%s',
+          filter_var($user_email, FILTER_SANITIZE_EMAIL)
+        ), 'GET');
+
+        $userExists = isset($response['customers'][0]['id']) ? $response['customers'][0] : false;
+
+        return $userExists;
+  }
+
   /**
    * @param $data (plan_id, customer_id, payment_method_code, product_items[{product_id}])
    *
@@ -284,6 +303,23 @@ class VindiRoutes
 
 		return false;
   }
+
+    /**
+	 * @param int   $subscription_id
+	 *
+	 * @return array|bool|mixed
+	 */
+    public function updateSubscription($subscription_id, $payment_data)
+    {
+        $subscription = filter_var($subscription_id, FILTER_SANITIZE_NUMBER_INT);
+        $response = $this->api->request("subscriptions/" . $subscription, 'PUT', $payment_data);
+    
+        if ($response && isset($response['subscription'])) {
+            return $response['subscription'];
+        }
+    
+        return false;
+    }
 
   /**
    * @param string $subscription_id
@@ -358,8 +394,8 @@ class VindiRoutes
 
   public function findOrCreateProduct($name, $code)
   {
-    $name = sanitize_text_field($name);
-    $code = sanitize_text_field($code);
+    $name = substr(sanitize_text_field($name), 0, 250);
+    $code = substr(sanitize_text_field($code), 0, 250);
     $product = $this->findProductByCode($code);
 
     if (false === $product)
