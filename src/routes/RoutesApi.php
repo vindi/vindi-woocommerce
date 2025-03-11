@@ -285,6 +285,23 @@ class VindiRoutes
 		return false;
   }
 
+    /**
+	 * @param int   $subscription_id
+	 *
+	 * @return array|bool|mixed
+	 */
+    public function updateSubscription($subscription_id, $payment_data)
+    {
+        $subscription = filter_var($subscription_id, FILTER_SANITIZE_NUMBER_INT);
+        $response = $this->api->request("subscriptions/" . $subscription, 'PUT', $payment_data);
+    
+        if ($response && isset($response['subscription'])) {
+            return $response['subscription'];
+        }
+    
+        return false;
+    }
+
   /**
    * @param string $subscription_id
    *

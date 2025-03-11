@@ -269,6 +269,102 @@ class VindiPaymentProcessor
         }
     }
 
+    private function exist_subscription($subscription_id)
+    {
+        $response = $this->routes->getSubscription($subscription_id);
+
+        if ($response) {
+            $this->change_method_payment($subscription_id);
+            return true;
+        }
+        return false;
+    }
+
+    public function change_method_payment($subscription_id)
+    {
+        $payment_method = filter_input(INPUT_POST, 'payment_method');
+    
+        $payment_methods = [
+            'vindi-credit-card' => $this->change_payment_to_credit_card(),
+            'vindi-bank-slip'   => ["payment_method_code" => "bank_slip"],
+            'vindi-pix'         => ["payment_method_code" => "pix"],
+            'vindi-bolepix'     => ["payment_method_code" => "pix_bank_slip"],
+        ];
+    
+        if (!isset($payment_methods[$payment_method])) {
+            return false;
+        }
+    
+        $payment_data = $payment_methods[$payment_method];
+        $update_response = $this->routes->updateSubscription($subscription_id, $payment_data);
+    
+        if ($update_response) {
+            wc_add_notice(__('O método de pagamento foi alterado!', 'vindi-payment-gateway'), 'success');
+            return $update_response;
+        }
+    
+        return false;
+    }
+
+    private function change_payment_to_credit_card()
+    {
+        $customer = $this->order->get_user();
+        $user_vindi_id = get_user_meta($customer->ID, 'vindi_customer_id', true);
+        $old_payment_profile = $this->routes->getPaymentProfile($user_vindi_id);
+
+        if (isset($old_payment_profile["id"]) && !filter_input(INPUT_POST, 'vindi_cc_number')) {
+            return [
+                "payment_method_code" => "credit_card",
+                "payment_profile" => [
+                    "id" => $old_payment_profile["id"]
+                ]
+            ];
+        }
+
+        $fields = $this->fields_credit_card();
+        foreach ($fields as $key => &$value) {
+            $value = filter_input(INPUT_POST, $key) !== null ? filter_input(INPUT_POST, $key) : $value;
+        }
+
+        $payment_profile = $this->build_payment_profile($user_vindi_id, $fields);
+        $payment_response = $this->routes->createCustomerPaymentProfile($payment_profile);
+        if ($payment_response) {
+            return [
+                "payment_method_code" => "credit_card",
+                "payment_profile" => [
+                    "id" => $payment_response["id"]
+                ]
+            ];
+        }
+    }
+
+    private function fields_credit_card()
+    {
+        return [
+            'vindi_cc_fullname' => '',
+            'vindi_cc_number' => '',
+            'vindi_cc_cvc' => '',
+            'vindi_cc_paymentcompany' => '',
+            'vindi_cc_monthexpiry' => '',
+            'vindi_cc_yearexpiry' => '',
+            'vindi_cc_installments' => 1,
+        ];
+    }
+
+    private function build_payment_profile($user_vindi_id, $fields)
+    {
+        return [
+            'customer_id' => $user_vindi_id,
+            'holder_name' => $fields['vindi_cc_fullname'],
+            'card_expiration' => filter_var($fields['vindi_cc_monthexpiry'], FILTER_SANITIZE_NUMBER_INT) . '/' .
+                filter_var($fields['vindi_cc_yearexpiry'], FILTER_SANITIZE_NUMBER_INT),
+            'card_number' => filter_var($fields['vindi_cc_number'], FILTER_SANITIZE_NUMBER_INT),
+            'card_cvv' => filter_var($fields['vindi_cc_cvc'], FILTER_SANITIZE_NUMBER_INT),
+            "payment_method_code" => "credit_card",
+            'payment_company_code' => $fields['vindi_cc_paymentcompany'],
+        ];
+    }
+
     /**
      * Process current order.
      *
@@ -278,10 +374,14 @@ class VindiPaymentProcessor
      */
     public function process_order()
     {
+        $subscription_id =  $this->order->get_meta('vindi_subscription_id');
+        $subscription_exists = $this->exist_subscription($subscription_id);
+        if ($subscription_exists) {
+            return;
+        }
         $this->check_trial_and_single_product();
         $customer = $this->get_customer();
         $order_items = $this->order->get_items();
-
         $bills = [];
         $order_post_meta = [];
         $bill_products = [];
@@ -290,44 +390,25 @@ class VindiPaymentProcessor
         $wc_subscriptions_ids = [];
         $subscriptions_grouped_by_period = array();
 
-        foreach ($order_items as $order_item) {
-            $product = $order_item->get_product();
-
-            if ($this->is_subscription_type($product)) {
-                $product_id = $product->get_id();
-
-                if ($this->is_variable($product)) {
-                    $product_id = $order_item['variation_id'];
-                }
-
-                $period = get_post_meta($product_id, '_subscription_period', true);
-                $interval = get_post_meta($product_id, '_subscription_period_interval', true);
-                $subscriptions_grouped_by_period[$period . $interval][] = $order_item;
-                array_push($subscription_products, $order_item);
-                continue;
-            }
-            array_push($bill_products, $order_item);
-        }
+        $grouped_items = $this->group_order_items_by_subscription($order_items);
+        $subscriptions_grouped_by_period = $grouped_items['subscriptions_grouped_by_period'];
+        $subscription_products = $grouped_items['subscription_products'];
+        $bill_products = $grouped_items['bill_products'];
 
         $this->check_multiple_subscriptions_of_same_period($subscriptions_grouped_by_period);
-
         foreach ($subscription_products as $subscription_order_item) {
             if (empty($subscription_order_item))
                 continue;
-
             try {
                 $subscription = $this->create_subscription($customer['id'], $subscription_order_item);
                 $subscription_id = $subscription['id'];
                 $wc_subscription_id = $subscription['wc_id'];
-
                 array_push($subscriptions_ids, $subscription_id);
                 array_push($wc_subscriptions_ids, $wc_subscription_id);
-
                 $subscription_bill = $subscription['bill'];
                 $order_post_meta[$subscription_id]['cycle'] = $subscription['current_period']['cycle'];
                 $order_post_meta[$subscription_id]['product'] = $subscription_order_item->get_product()->get_name();
                 $order_post_meta[$subscription_id]['bill'] = $this->create_bill_meta_for_order($subscription_bill);
-
                 $bills[] = $subscription['bill'];
                 $message = $this->cancel_if_denied_bill_status($subscription['bill']);
                 if ($message) {
@@ -372,6 +453,41 @@ class VindiPaymentProcessor
         remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
 
         return $this->finish_payment($bills);
+    }
+
+    private function group_order_items_by_subscription($order_items)
+    {
+        $subscriptions_grouped_by_period = [];
+        $subscription_products = [];
+        $bill_products = [];
+
+        foreach ($order_items as $order_item) {
+            $product = $order_item->get_product();
+            if ($this->is_subscription_type($product)) {
+                $this->process_subscription_item($order_item, $subscriptions_grouped_by_period, $subscription_products);
+                continue;
+            }
+            $bill_products[] = $order_item;
+        }
+
+        return [
+            'subscriptions_grouped_by_period' => $subscriptions_grouped_by_period,
+            'subscription_products' => $subscription_products,
+            'bill_products' => $bill_products,
+        ];
+    }
+
+    private function process_subscription_item($order_item, &$subscriptions_grouped_by_period, &$subscription_products)
+    {
+        $product = $order_item->get_product();
+        $product_id = $product->get_id();
+        if ($this->is_variable($product)) {
+            $product_id = $order_item['variation_id'];
+        }
+        $period = get_post_meta($product_id, '_subscription_period', true);
+        $interval = get_post_meta($product_id, '_subscription_period_interval', true);
+        $subscriptions_grouped_by_period[$period . $interval][] = $order_item;
+        $subscription_products[] = $order_item;
     }
 
     private function check_trial_and_single_product()
@@ -1053,11 +1169,10 @@ class VindiPaymentProcessor
             $subscriptions_coupon = new WC_Subscriptions_Coupon();
             $cycle_count = $subscriptions_coupon->get_coupon_limit($coupon->get_id());
         }
-
+      
         if ($cycle_count == 0) {
             return null;
         }
-
         return $this->get_plan_length($cycle_count, $plan_cycles);
     }
 

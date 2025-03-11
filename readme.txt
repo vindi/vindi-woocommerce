@@ -11,7 +11,7 @@ Tested up to: 6.4
 WC requires at least: 3.0.0
 WC tested up to: 8.6.1
 Requires PHP: 5.6
-Stable Tag: 1.3.6
+Stable Tag: 1.3.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,10 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.3.7 - 05/11/2024 =
+-Lançamento da versão de patch.
+- **Correção:** Alteração no método de pagamento para assinaturas ativas.
+
 = 1.3.6 - 28/01/2025 =
 -Lançamento da versão de patch.
 - **Remoção:** Os botões de links de pagamentos removidos
@@ -54,8 +58,6 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 -Lançamento da versão de patch.
 - **Adição:** Implementação de botão para gerar link de pagamento utilizando métodos da Vindi.
 - **Adição:** Inclusão de botão para copiar o link de pagamento com métodos da Vindi.
-- **Adição:** Remoção do botão pagar no my order para itens de renovação.
-- **Adição:** Novos campos de meta value adicionados para os assinatura de renovação de renovação
 - **Melhoria:** Refatoração e otimização do código.
 
 = 1.3.3 - 05/07/2024 =
