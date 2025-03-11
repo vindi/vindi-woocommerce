@@ -394,8 +394,8 @@ class VindiRoutes
 
   public function findOrCreateProduct($name, $code)
   {
-    $name = sanitize_text_field($name);
-    $code = sanitize_text_field($code);
+    $name = substr(sanitize_text_field($name), 0, 250);
+    $code = substr(sanitize_text_field($code), 0, 250);
     $product = $this->findProductByCode($code);
 
     if (false === $product)
