@@ -102,32 +102,6 @@ jQuery(document).ready(function ($) {
 
   vindi_meta_boxes_coupon_actions.init();
 
-  const btnPaymentLink = document.querySelector('.buttonPaymentLink');
-  if (btnPaymentLink.classList.contains('disabled')) {
-    btnPaymentLink.addEventListener('click', function (e) {
-      e.preventDefault();
-    });
-  }
-
-  const btnCopyPost = document.querySelector('#buttonCopyPost');
-  btnCopyPost.addEventListener("click", function (e) {
-    e.preventDefault();
-    let paymentLink = document.querySelector('.buttonPaymentLink.enable');
-    if (paymentLink) {
-      let hrefValue = paymentLink.getAttribute('href');
-      let tempInput = document.createElement('input');
-      tempInput.value = hrefValue;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      tempInput.setSelectionRange(0, 99999);
-      document.execCommand('copy');
-      document.body.removeChild(tempInput);
-      console.log('Link copiado.');
-    } else {
-      console.log('Link de pagamento não encontrado ou está desabilitado.');
-    }
-  });
-
   const url = new URLSearchParams(location.href);
   if (url.has("vindi-payment-link")) {
     const addresses = document.querySelectorAll(".edit_address");
