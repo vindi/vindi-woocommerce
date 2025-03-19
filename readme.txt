@@ -43,6 +43,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 -Lançamento da versão de patch.
 - **Correção:** Alteração no método de pagamento para assinaturas ativas.
 
+= 1.3.6 - 28/01/2025 =
+-Lançamento da versão de patch.
+- **Remoção:** Os botões de links de pagamentos removidos
+- **Remoção:** Email com link de pagamento removido
+
 = 1.3.5 - 05/11/2024 =
 -Lançamento da versão de patch.
 - **Melhoria:** Parâmetros agora são passados para a url e ajax para garantir maior persistência dos dados entre sessões.

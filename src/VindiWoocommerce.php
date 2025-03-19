@@ -78,16 +78,6 @@ class WcVindiPayment extends AbstractInstance
     private $wcs_renewal_disable;
 
     /**
-     * @var VindiPaymentGateway\WcVindiColumns
-     */
-    private $custom_shop_order_columns;
-
-    /**
-     * @var VindiPaymentGateway\ButtonPaymentLink
-     */
-    private $add_button_payment;
-
-    /**
      * @var VindiPaymentGateway\WCCartSubscriptionLimiter
      */
     private $subscription_limiter;
@@ -139,8 +129,6 @@ class WcVindiPayment extends AbstractInstance
         $this->interest_price_handler = new InterestPriceHandler();
         $this->product_metabox = new ProductsMetabox();
         $this->wcs_renewal_disable = new VindiWCSRenewalDisable();
-        $this->custom_shop_order_columns = new WcVindiColumns();
-        $this->add_button_payment = new ButtonPaymentLink();
         $this->subscription_limiter = new WCCartSubscriptionLimiter();
         $this->gateway_filters_checkout = new CheckoutGateways();
         $this->parent_order_setup = new OrderSetup();
@@ -244,8 +232,6 @@ class WcVindiPayment extends AbstractInstance
         require_once plugin_dir_path(__FILE__) . '/includes/gateways/RenewPixCharge.php';
         require_once plugin_dir_path(__FILE__) . '/includes/checkout/CheckoutGateways.php';
         require_once plugin_dir_path(__FILE__) . '/includes/checkout/WcsOrderSetup.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/admin/WcVindiColumns.php';
-        require_once plugin_dir_path(__FILE__) . '/includes/admin/ButtonPaymentLink.php';
         //Validators
         require_once plugin_dir_path(__FILE__) . '/validators/WCCartSubscriptionLimiter.php';
         require_once plugin_dir_path(__FILE__) . '/validators/WCFilterCartNeedsPayment.php';
