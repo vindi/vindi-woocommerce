@@ -107,7 +107,7 @@ class VindiPaymentProcessor
         $current_user = $this->order->get_user();
         $vindi_customer = [];
 
-        if ($current_user->ID) {
+        if ($current_user && $current_user->ID) {
             $vindi_customer = $this->controllers->customers->update($current_user->ID, $this->order);
         }
 
