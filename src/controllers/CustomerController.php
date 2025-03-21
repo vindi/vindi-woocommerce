@@ -127,16 +127,30 @@ class CustomerController
   function update($user_id, $order = null)
   {
     $vindi_customer_id = get_user_meta($user_id, 'vindi_customer_id', true);
-        if (!empty($vindi_customer_id)) {
-          $vindiUser = $this->routes->findCustomerById($vindi_customer_id);
-        }
-    if (empty($vindi_customer_id)) {
-            $vindiUser = $this->routes->findCustomerByCode($user_id);
-            if (!empty($vindiUser['id'])) {
-                  $vindi_customer_id = $vindiUser['id'];
-                  update_user_meta($user_id, 'vindi_customer_id', $vindi_customer_id);
-            }
+ 
+    if (!empty($vindi_customer_id)) {
+      $vindiUser = $this->routes->findCustomerById($vindi_customer_id);
     }
+    if (empty($vindi_customer_id) || empty($vindiUser)) {
+      $vindiUser = $this->routes->findCustomerByCode($user_id);
+      if (!empty($vindiUser['id'])) {
+        $vindi_customer_id = $vindiUser['id'];
+        update_user_meta($user_id, 'vindi_customer_id', $vindi_customer_id);
+      }
+    }
+
+    if (empty($vindi_customer_id) || empty($vindiUser)) {
+      $user = get_user_by('id', $user_id);
+      if ($user) {
+        $email = $user->user_email;
+        $vindiUser = $this->routes->findCustomerByEmail($email);
+        if (!empty($vindiUser['id'])) {
+          $vindi_customer_id = $vindiUser['id'];
+          update_user_meta($user_id, 'vindi_customer_id', $vindi_customer_id);
+        }
+      }
+    }
+
     if (empty($vindi_customer_id)) {
       return $this->create($user_id, $order);
     }

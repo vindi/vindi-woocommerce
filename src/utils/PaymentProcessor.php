@@ -1164,12 +1164,10 @@ class VindiPaymentProcessor
     protected function config_discount_cycles($coupon, $plan_cycles = 0)
     {
         $cycle_count = get_post_meta($coupon->get_id(), 'cycle_count', true);
-
         if ($coupon->get_discount_type() == 'recurring_percent') {
             $subscriptions_coupon = new WC_Subscriptions_Coupon();
             $cycle_count = $subscriptions_coupon->get_coupon_limit($coupon->get_id());
         }
-      
         if ($cycle_count == 0) {
             return null;
         }
