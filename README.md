@@ -1,5 +1,7 @@
 # Vindi Woocommerce 2
 
+Teste
+
 Gateway de pagamentos recorrentes para Wordpress | Woocommerce.
 
 ![Banner](./assets/banner.png)
