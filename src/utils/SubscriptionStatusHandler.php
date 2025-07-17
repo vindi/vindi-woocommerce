@@ -105,8 +105,15 @@ class VindiSubscriptionStatusHandler
      */
     public function get_wc_subscription_id($subscription_id)
     {
-        return get_post_meta($subscription_id, 'vindi_subscription_id', true) ? :
-            get_post_meta($subscription_id, 'vindi_wc_subscription_id', true);
+
+        $subscription = wcs_get_subscription($subscription_id);
+        if ($subscription) {
+            $vindi_subscription_id = $subscription->get_meta('vindi_subscription_id', true);
+            if (!empty($vindi_subscription_id)) {
+                return $vindi_subscription_id;
+            }
+            return $subscription->get_meta('vindi_wc_subscription_id', true);
+        }
     }
 
     public function get_vindi_subscription_id($wc_subscription)

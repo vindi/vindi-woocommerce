@@ -112,7 +112,6 @@ class VindiCreditGateway extends VindiPaymentGateway
         }
 
         $is_trial = $this->check_is_trial();
-
         $this->vindi_settings->get_template('creditcard-checkout.html.php', compact(
             'installments',
             'is_trial',
@@ -237,17 +236,21 @@ class VindiCreditGateway extends VindiPaymentGateway
         if ($this->is_single_order()) {
             return $this->installments;
         }
+
         $installments = 0;
         foreach ($this->vindi_settings->woocommerce->cart->cart_contents as $item) {
-            $plan_id = $item['data']->get_meta('vindi_plan_id');
+            $product = $item['data'];
+            $product_id = $product->get_id();
 
-            if (!empty($plan_id)) {
-                $plan = $this->routes->getPlan($plan_id);
+            $product_installments = $product->get_meta("vindi_max_credit_installments_$product_id", true);
+
+            if (!empty($product_installments)) {
+                $product_installments = intval($product_installments);
 
                 if ($installments == 0) {
-                    $installments = $plan['installments'];
-                } elseif ($plan['installments'] < $installments) {
-                    $installments = $plan['installments'];
+                    $installments = $product_installments;
+                } elseif ($product_installments < $installments) {
+                    $installments = $product_installments;
                 }
             }
         }

@@ -7,11 +7,11 @@ Tags: vindi, cobrança-recorrente, vindi-woocommerce, assinaturas, woocommerce-s
 Author URI: https://vindi.com.br/ | https://mentores.com.br
 Author: Vindi | Mentores Digital
 Requires at least: 4.4
-Tested up to: 6.4
+Tested up to: 6.8
 WC requires at least: 3.0.0
 WC tested up to: 8.6.1
 Requires PHP: 5.6
-Stable Tag: 1.3.7
+Stable Tag: 1.3.9
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,14 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.3.9 - 05/06/2025 =
+-Lançamento da versão de patch.
+- **Melhoria:** Adaptando o plugin para HPos.
+
+= 1.3.8 - 24/04/2025 =
+-Lançamento da versão de patch.
+- **Correção:** Alteração no test up de 6.4 para 6.8.
+
 = 1.3.7 - 05/11/2024 =
 -Lançamento da versão de patch.
 - **Correção:** Alteração no método de pagamento para assinaturas ativas.

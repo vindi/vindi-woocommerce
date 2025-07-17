@@ -24,7 +24,7 @@ class CouponsMetaBox {
         $arr = array(
             'id'      => 'cycle_count',
             'label'   => __('Número de ciclos do cupom', VINDI),
-            'value'   => get_post_meta($coupon_id, 'cycle_count')[0],
+            'value'   => $coupon->get_meta('cycle_count', true),
             'options' => array(
               '0'  => 'Todos os ciclos',
               '1'  => '1 ciclo',

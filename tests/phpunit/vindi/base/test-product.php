@@ -58,7 +58,8 @@ class Vindi_Test_Product_Controller extends Vindi_Test_Base
     $product_controller = new ProductController($settings);
 
     $product = WC_Helper_Product::create_simple_product();
-    delete_post_meta($product->get_id(), 'vindi_product_id');
+    $product->delete_meta_data('vindi_product_id');
+    $product->save();
 
     $createdProduct = $product_controller->create($product->get_id(), '', '', true);
     $this->assertEquals($createdProduct, $this->mock_data);

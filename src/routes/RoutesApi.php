@@ -52,7 +52,6 @@ class VindiRoutes
    */
   public function createPlan($data)
   {
-
     $response = $this->api->request('plans', 'POST', $data);
 
     return $response['plan'];
