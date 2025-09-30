@@ -3,7 +3,7 @@
 <?php if (!$gateway->vindi_settings->check_ssl()): ?>
   <div class="error">
     <p>
-      <strong><?php _e('Vindi WooCommerce Desabilitado', VINDI); ?></strong>:
+      <strong><?php _e('Vindi Hub Desabilitado', VINDI); ?></strong>:
       <?php printf(__('É necessário um <strong> Certificado SSL </strong> para ativar este método de pagamento em modo de produção. Por favor, verifique se um certificado SSL está instalado em seu servidor !')); ?>
     </p>
   </div>

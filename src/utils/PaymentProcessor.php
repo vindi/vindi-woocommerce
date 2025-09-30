@@ -415,7 +415,12 @@ class VindiPaymentProcessor
                     throw new Exception($message);
                 }
 
-                update_post_meta($wc_subscription_id, 'vindi_subscription_id', $subscription_id);
+                $subscription_obj = wcs_get_subscription( $wc_subscription_id );
+                if ( $subscription_obj && is_a( $subscription_obj, 'WC_Subscription' ) ) {
+                    $subscription_obj->update_meta_data( 'vindi_subscription_id', $subscription_id );
+                    $subscription_obj->save();
+                }
+                
                 continue;
             } catch (Exception $err) {
                 $message = $err->getMessage();
@@ -480,12 +485,12 @@ class VindiPaymentProcessor
     private function process_subscription_item($order_item, &$subscriptions_grouped_by_period, &$subscription_products)
     {
         $product = $order_item->get_product();
-        $product_id = $product->get_id();
         if ($this->is_variable($product)) {
             $product_id = $order_item['variation_id'];
+            $product = wc_get_product($product_id);
         }
-        $period = get_post_meta($product_id, '_subscription_period', true);
-        $interval = get_post_meta($product_id, '_subscription_period_interval', true);
+        $period = $product->get_meta('_subscription_period', true);
+        $interval = $product->get_meta('_subscription_period_interval', true);
         $subscriptions_grouped_by_period[$period . $interval][] = $order_item;
         $subscription_products[] = $order_item;
     }
@@ -579,7 +584,7 @@ class VindiPaymentProcessor
         }
 
         if ($product) {
-            $cycles = (int) get_post_meta($product->get_id(), '_subscription_length', true);
+            $cycles = (int) $product->get_meta('_subscription_length', true);
         }
         return $cycles > 0 ? $cycles : null;
     }
@@ -593,7 +598,7 @@ class VindiPaymentProcessor
      */
     private function is_one_time_shipping($product)
     {
-        return get_post_meta($product->get_id(), '_subscription_one_time_shipping', true) == 'yes';
+        return $product->get_meta('_subscription_one_time_shipping', true) == 'yes';
     }
 
     /**
@@ -812,7 +817,7 @@ class VindiPaymentProcessor
             if ($this->is_variable($product)) {
                 $product_id = $order_item['product_id'];
             }
-            $vindi_id = get_post_meta($product_id, 'vindi_product_id', true);
+            $vindi_id = $product->get_meta('vindi_product_id', true);
             if (!$vindi_id) {
                 $vindi_id = $this->routes->findProductByCode('WC-' . $product_id)['id'];
             }
@@ -1163,7 +1168,7 @@ class VindiPaymentProcessor
      */
     protected function config_discount_cycles($coupon, $plan_cycles = 0)
     {
-        $cycle_count = get_post_meta($coupon->get_id(), 'cycle_count', true);
+        $cycle_count = $coupon->get_meta('cycle_count', true);
         if ($coupon->get_discount_type() == 'recurring_percent') {
             $subscriptions_coupon = new WC_Subscriptions_Coupon();
             $cycle_count = $subscriptions_coupon->get_coupon_limit($coupon->get_id());
@@ -1226,12 +1231,13 @@ class VindiPaymentProcessor
         $product = $order_item->get_product();
 
         if (isset($order_item['variation_id']) && $order_item['variation_id'] != 0) {
-            $vindi_plan = get_post_meta($order_item['variation_id'], 'vindi_plan_id', true);
+            $product_variation = wc_get_product($order_item['variation_id']);
+            $vindi_plan = $product_variation ? $product_variation->get_meta('vindi_plan_id', true) : null;
             if (empty($vindi_plan) || !is_numeric($vindi_plan) || is_null($vindi_plan) || $vindi_plan == 0) {
-                $vindi_plan = get_post_meta($product->get_id(), 'vindi_plan_id', true);
+                $vindi_plan = $product->get_meta('vindi_plan_id', true);
             }
         } else {
-            $vindi_plan = get_post_meta($product->get_id(), 'vindi_plan_id', true);
+            $vindi_plan = $product->get_meta('vindi_plan_id', true);
         }
 
         if ($this->is_subscription_type($product) and !empty($vindi_plan)) {
@@ -1494,7 +1500,7 @@ class VindiPaymentProcessor
 
         $product = $order_item->get_product();
         $product_id = $order_item->get_id();
-        $vindi_product_id = get_post_meta($product, 'vindi_product_id', true);
+        $vindi_product_id = $product->get_meta('vindi_product_id', true);
 
         if (!$vindi_product_id) {
             $vindi_product = 63;

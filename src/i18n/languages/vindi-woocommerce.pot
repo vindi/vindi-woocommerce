@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Vindi WooCommerce\n"
+"Project-Id-Version: Vindi Hub\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/vindi-plugin\n"
 "POT-Creation-Date: 2020-06-22 17:57:53+00:00\n"
 "MIME-Version: 1.0\n"
@@ -337,7 +337,7 @@ msgstr ""
 
 #: templates/admin-gateway-settings.html.php:6
 #: templates/admin-settings.html.php:6
-msgid "Vindi WooCommerce Desabilitado"
+msgid "Vindi Hub Desabilitado"
 msgstr ""
 
 #: templates/admin-gateway-settings.html.php:7
@@ -574,12 +574,12 @@ msgstr ""
 
 #: views/missing-critical-dependency.php:15
 msgid ""
-"O Plugin Vindi WooCommerce depende da versão %s+ do %s para funcionar! Como "
+"O Plugin Vindi Hub depende da versão %s+ do %s para funcionar! Como "
 "a versão atual do %s é mais antiga, o plugin foi DESATIVADO!"
 msgstr ""
 
 #: views/missing-dependency.php:15
-msgid "O Plugin Vindi WooCommerce depende da versão %s do %s para funcionar!"
+msgid "O Plugin Vindi Hub depende da versão %s do %s para funcionar!"
 msgstr ""
 
 #: views/product-status.php:15

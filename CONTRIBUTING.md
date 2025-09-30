@@ -1,4 +1,4 @@
-# Contribuindo para o Vindi-Woocommerce
+# Contribuindo para o Vindi Hub
 
 :clap::grin: Antes de mais nada, muito obrigado por sua contribuição  :thumbsup:
 

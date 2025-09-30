@@ -14,7 +14,7 @@ class FrontendFilesLoader {
     add_action('wp_enqueue_scripts', array($this, 'frontendFiles'));
     add_action('admin_enqueue_scripts', array($this, 'adminFiles'));
         add_action('wp_enqueue_scripts', [$this, 'enqueue_inputmask_scripts']);
-        add_action('add_meta_boxes', array($this, 'check_for_subscription_in_order'));
+        add_action('add_meta_boxes', array($this, 'checkForSubscriptionInOrder'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_payment_link_generator_script'));
   }
 
@@ -112,23 +112,35 @@ class FrontendFilesLoader {
         ');
     }
 
-    public function check_for_subscription_in_order()
+    public function checkForSubscriptionInOrder()
     {
+        global $current_screen;
         global $post;
-        if ($this->is_shop_order_or_subscription($post)) {
-            $has_subscription = $this->order_has_subscription($post->ID);
-            $this->enqueue_notification_script($has_subscription);
+        
+        $post_type = isset($post) && isset($post->post_type) ? $post->post_type : null;
+        $screen_post_type = isset($current_screen) && isset($current_screen->post_type) ? $current_screen->post_type : null;
+        
+        if ($this->is_shop_order_or_subscription($post_type) || $this->is_shop_order_or_subscription($screen_post_type)) {
+            $post_id = isset($post) && isset($post->ID) ? $post->ID : (isset($_GET['id']) ? $_GET['id'] : null);
+            
+            if ($post_id) {
+                $has_subscription = $this->order_has_subscription($post_id);
+                $this->enqueue_notification_script($has_subscription);
+            }
         }
     }
     
     private function is_shop_order_or_subscription($post)
     {
-        return $post->post_type === 'shop_order' || $post->post_type === 'shop_subscription';
+        return $post === 'shop_order' || $post === 'shop_subscription';
     }
-
     private function order_has_subscription($order_id)
     {
         $order = wc_get_order($order_id);
+        if (!$order) {
+            return false;
+        }
+        
         $subscriptions_product = new WC_Subscriptions_Product();
         
         foreach ($order->get_items() as $item) {
@@ -150,15 +162,18 @@ class FrontendFilesLoader {
         ));
     }
 
-    public function enqueue_payment_link_generator_script()
+    public function enqueue_payment_link_generator_script($hook)
     {
-        $post = get_post_type();
-        $dir_path = plugins_url('/assets/js/edit.js', plugin_dir_path(__FILE__));
-        wp_register_script('edit-js', $dir_path, array('jquery'), VINDI_VERSION, true);
-        wp_enqueue_script('edit-js');
-        
-        wp_localize_script('edit-js', 'orderData', array(
-            'typePost' => $post
-        ));
+        global $current_screen;
+    
+        if ($current_screen->post_type === 'shop_order') {
+            $dir_path = plugins_url('/assets/js/editpost.js', plugin_dir_path(__FILE__));
+            wp_register_script('edit-js', $dir_path, array('jquery'), VINDI_VERSION, true);
+            wp_enqueue_script('edit-js');
+            wp_localize_script('edit-js', 'orderData', array(
+                'isOrderPage' => true,
+                'hpos' => isset($_GET['page']) && $_GET['page'] === 'wc-orders'
+            ));
+        }
     }
 }

@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 <div class="vindi-alert notice vindi-error">
   <p>
     <?php echo sprintf(
-      __('O Plugin Vindi WooCommerce depende da versão %s+ do %s para funcionar! Como a versão atual do %s é mais antiga, o plugin foi DESATIVADO!', VINDI),
+      __('O Plugin Vindi Hub depende da versão %s+ do %s para funcionar! Como a versão atual do %s é mais antiga, o plugin foi DESATIVADO!', VINDI),
       $version,
       $name,
       $name

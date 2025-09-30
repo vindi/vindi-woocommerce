@@ -1,6 +1,7 @@
 <?php
 
 namespace VindiPaymentGateways;
+use WP_Query;
 
 class PostMeta
 {
@@ -12,27 +13,28 @@ class PostMeta
      */
     public function check_vindi_item_id($post_id, $meta)
     {
-        global $wpdb;
-        $vindi_id = get_post_meta($post_id, $meta, true);
-
+        $product = wc_get_product($post_id);
+    
+        if (!$product) {
+            return 0;
+        }
+    
+        $vindi_id = $product->get_meta($meta, true);
+    
         if (!$vindi_id) {
             return 0;
         }
-        
-        $sql = "SELECT 
-                  post_id as id 
-                FROM {$wpdb->prefix}postmeta
-                WHERE 
-                  meta_key LIKE '$meta' AND
-                  meta_value LIKE $vindi_id
-                ";
-
-        $result = $wpdb->get_results($sql);
-
-        if (is_array($result) && !empty($result)) {
-            return count($result);
-        }
-
-        return 0;
+    
+        $args = [
+            'post_type'  => 'product',
+            'meta_key'   => $meta,
+            'meta_value' => $vindi_id,
+            'fields'     => 'ids',
+            'posts_per_page' => -1,
+        ];
+    
+        $query = new WP_Query($args);
+    
+        return count($query->posts);
     }
 }

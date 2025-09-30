@@ -28,7 +28,7 @@ No interesse de promover um ambiente aberto e acolhedor, nós, como colaboradore
 - Desvios, argumentos de tom e outras formas de jogar com os desejos das pessoas de serem gentis não são bem-vindos, especialmente em discussões sobre violações a este Código de Conduta.
 - Por favor, evite críticas não construtivas.
 - Da mesma forma, qualquer spamming, trolling, flaming, baiting ou outro comportamento de roubo de atenção não é bem-vindo.
-- Patrocinadores do vindi-woocommerce-subscriptions também estão sujeitos a este Código de Conduta. Em particular, os patrocinadores são obrigados a não usar imagens sexualizadas, atividades ou outro material que não esteja de acordo com este Código de Conduta.
+- Patrocinadores do Vindi Hub também estão sujeitos a este Código de Conduta. Em particular, os patrocinadores são obrigados a não usar imagens sexualizadas, atividades ou outro material que não esteja de acordo com este Código de Conduta.
 
 ## Nossas Responsabilidades
 
@@ -42,7 +42,7 @@ Este Código de Conduta se aplica tanto nos espaços do projeto quanto nos espa�
 
 ## Cumprimento
 
-Casos de comportamento abusivo, ofensivo ou inaceitável podem ser relatados entrando em contato com a equipe do projeto em comunidade@vindi.com.br. A equipe do projeto analisará e investigará todas as reclamações e responderá da maneira que julgar apropriada às circunstâncias. A equipe do projeto é obrigada a manter a confidencialidade em relação ao relator de um incidente. Detalhes adicionais de políticas de execução específicas podem ser publicados separadamente. Esse código de conduta delineia nossas expectativas para os participantes da comunidade vindi-woocommerce-subscriptions, bem como as etapas para relatar comportamento inaceitável. Estamos comprometidos em fornecer uma 
+Casos de comportamento abusivo, ofensivo ou inaceitável podem ser relatados entrando em contato com a equipe do projeto em comunidade@vindi.com.br. A equipe do projeto analisará e investigará todas as reclamações e responderá da maneira que julgar apropriada às circunstâncias. A equipe do projeto é obrigada a manter a confidencialidade em relação ao relator de um incidente. Detalhes adicionais de políticas de execução específicas podem ser publicados separadamente. Esse código de conduta delineia nossas expectativas para os participantes da comunidade Vindi Hub, bem como as etapas para relatar comportamento inaceitável. Estamos comprometidos em fornecer uma 
 acolhedora e inspiradora para todos e esperamos que nosso código de conduta seja honrado. Qualquer pessoa que viole este código de conduta pode ser banida da comunidade.
 
 Os mantenedores do projeto que não seguem ou aplicam o Código de Conduta de boa fé podem enfrentar repercussões temporárias ou permanentes, conforme determinado por outros membros da liderança do projeto.

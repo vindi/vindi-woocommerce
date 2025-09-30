@@ -179,7 +179,7 @@ class VindiApi
       'headers' => [
         'Authorization' => 'Basic ' . base64_encode($api_key . ':'),
         'Content-Type'  => 'application/json',
-        'User-Agent'    => sprintf('Vindi-WooCommerce/%s; %s', VINDI_VERSION, get_bloginfo('url')),
+        'User-Agent'    => sprintf('Vindi-Hub/%s; %s', VINDI_VERSION, get_bloginfo('url')),
       ],
       'method'    => $method,
       'timeout'   => 60,

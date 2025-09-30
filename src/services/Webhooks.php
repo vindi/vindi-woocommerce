@@ -6,6 +6,7 @@ use WC_Subscriptions_Manager;
 use Exception;
 use WP_Query;
 use WC_Order;
+use WC_Order_Query;
 
 class VindiWebhooks
 {
@@ -175,7 +176,7 @@ class VindiWebhooks
                 $order = $this->find_order_by_subscription_and_cycle($vindi_subscription_id, $cycle);
             }
 
-            $vindi_order = get_post_meta($order->id, 'vindi_order', true);
+            $vindi_order = $order->get_meta('vindi_order', true);
             if (!is_array($vindi_order)) {
                 return wp_send_json(['message' => 'Pedido Vindi não encontrado.'], 422);
             }
@@ -435,22 +436,27 @@ class VindiWebhooks
    *
    * @return WC_Order
    */
-    private function find_order_by_bill_id($bill_id)
+  private function find_order_by_bill_id($bill_id)
   {
-    $args = array(
-      'post_type' => 'shop_order',
-      'meta_key' => 'vindi_bill_id',
-      'meta_value' => $bill_id,
-      'post_status' => 'any',
-    );
-
-    $query = new WP_Query($args);
-
-    if (false === $query->have_posts())
-      throw new Exception(sprintf(__('Pedido com bill_id #%s não encontrado!', VINDI), $bill_id), 2);
-
-    return wc_get_order($query->post->ID);
-    }
+      $query = new WC_Order_Query(array(
+          'limit'        => 1,
+          'type'         => 'shop_order',
+          'status'       => array_keys(wc_get_order_statuses()),
+          'meta_key'     => 'vindi_bill_id',
+          'meta_value'   => $bill_id,
+          'return'       => 'ids',
+      ));
+  
+      $order_ids = $query->get_orders();
+  
+      if (empty($order_ids)) {
+          throw new Exception(
+              sprintf(__('Pedido com bill_id #%s não encontrado!', VINDI), $bill_id), 2
+          );
+      }
+  
+      return wc_get_order($order_ids[0]);
+  }
 
   /**
    * Query orders containing cycle meta
