@@ -93,7 +93,6 @@ class PlansController
   function onNewProduct($product_id, $product)
   {
 
-    error_log('onNewProduct called for product ID: ' . $product_id);
     if (!in_array($product->get_type(), $this->allowedTypes)) {
       return;
     }
@@ -107,7 +106,6 @@ class PlansController
 
   function onUpdateProduct($product_id, $product)
   {
-    error_log('onUpdateProduct called for product ID: ' . $product_id);
     if (!in_array($product->get_type(), $this->allowedTypes)) {
       return;
     }
@@ -121,7 +119,6 @@ class PlansController
 
   private function handlePlan($product_id, $product)
   {
-    error_log('Handling plan for product ID: ' . $product_id);
     // Variable Subscription
     if ($product->get_type() === 'variable-subscription') {
 
@@ -178,7 +175,6 @@ class PlansController
   function create($product_id, $product = null)
   {
     $data = $product->get_data();
-    error_log('DATA ----: ' . print_r($data, true));
 
     if (!$product) {
       $product = wc_get_product($product_id);
@@ -231,7 +227,6 @@ class PlansController
 
         $plan_interval = VindiConversions::convert_interval($interval_count, $interval_type);
         if (!is_array($plan_interval)) {
-          error_log('Vindi: intervalo inválido para variation ' . $variation['variation_id']);
           continue;
         }
 
@@ -279,58 +274,6 @@ class PlansController
         // Busca plano existente por código antes de criar
         $plan_code = 'WC-' . $data['id'];
         $existing_plan = $this->routes->findPlanByCode($plan_code);
-        error_log('=== VINDI CREATE SIMPLE PLAN ===');
-        error_log('product_id=' . $product_id);
-
-        error_log(
-          '_subscription_period=' .
-            var_export($interval_type, true)
-        );
-
-        error_log(
-          '_subscription_period_interval=' .
-            var_export($interval_count, true)
-        );
-
-        error_log(
-          'plan_installments=' .
-            var_export($plan_installments, true)
-        );
-
-        error_log(
-          '_subscription_trial_length=' .
-            var_export(
-              $product->get_meta('_subscription_trial_length'),
-              true
-            )
-        );
-
-        error_log(
-          '_subscription_trial_period=' .
-            var_export(
-              $product->get_meta('_subscription_trial_period'),
-              true
-            )
-        );
-        error_log(
-          'POST subscription_period=' .
-            var_export($_POST['_subscription_period'] ?? null, true)
-        );
-
-        error_log(
-          'POST subscription_length=' .
-            var_export($_POST['_subscription_length'] ?? null, true)
-        );
-
-        error_log(
-          'POST subscription_trial_length=' .
-            var_export($_POST['_subscription_trial_length'] ?? null, true)
-        );
-
-        error_log(
-          'POST subscription_trial_period=' .
-            var_export($_POST['_subscription_trial_period'] ?? null, true)
-        );
         if ($existing_plan && isset($existing_plan['id'])) {
           $createdPlan = $existing_plan;
         } else {
@@ -400,7 +343,6 @@ class PlansController
 
     $plan_interval = VindiConversions::convert_interval($interval_count, $interval_type);
     if (!is_array($plan_interval)) {
-      error_log('Vindi: intervalo inválido para o produto ' . $product_id);
       set_transient('vindi_product_message', 'error', 60);
       return;
     }
@@ -432,36 +374,6 @@ class PlansController
           )
         )
       );
-    error_log('=== VINDI CREATE SIMPLE PLAN ===');
-    error_log('product_id=' . $product_id);
-
-    error_log(
-      '_subscription_length=' .
-        var_export($subscription_length, true)
-    );
-
-    error_log(
-      '_subscription_period=' .
-        var_export($interval_type, true)
-    );
-
-    error_log(
-      '_subscription_period_interval=' .
-        var_export($interval_count, true)
-    );
-
-    error_log(
-      'plan_installments=' .
-        var_export($plan_installments, true)
-    );
-
-    error_log(
-      '_subscription_trial_length=' .
-        var_export(
-          $product->get_meta('_subscription_trial_length'),
-          true
-        )
-    );
 
     error_log(
       '_subscription_trial_period=' .
@@ -582,7 +494,6 @@ class PlansController
 
         $plan_interval = VindiConversions::convert_interval($interval_count, $interval_type);
         if (!is_array($plan_interval)) {
-          error_log('Vindi: intervalo inválido para variation ' . $variation['variation_id']);
           continue;
         }
 
@@ -651,7 +562,6 @@ class PlansController
 
     $plan_interval = VindiConversions::convert_interval($interval_count, $interval_type);
     if (!is_array($plan_interval)) {
-      error_log('Vindi: intervalo inválido no update do produto ' . $product_id);
       set_transient('vindi_product_message', 'error', 60);
       return;
     }

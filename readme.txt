@@ -11,7 +11,7 @@ Tested up to: 6.8
 WC requires at least: 3.0.0
 WC tested up to: 8.6.1
 Requires PHP: 5.6
-Stable Tag: 1.4.4
+Stable Tag: 1.4.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,10 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.4.5 - 22/01/2026 =
+-Lançamento da versão de patch.
+- **Correção:** Remoção de mensagens de erros.
+
 = 1.4.4 - 22/01/2026 =
 -Lançamento da versão de patch.
 - **Correção:** Falha na criação/atualização de planos e produtos na Vindi ao salvar assinaturas no admin do WooCommerce.
