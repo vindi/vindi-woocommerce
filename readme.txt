@@ -40,7 +40,7 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 
 == Changelog ==
 = 1.4.8 - 07/10/2026 =
-- **Correção crítica:** Plugin não cancela mais a assinatura na Vindi durante renovações automáticas do WooCommerce Subscriptions. O estado `on-hold` é temporário e não deve disparar `DELETE /v1/subscriptions/{id}`. (Ticket #101648738)
+- **Correção:** Plugin não cancela mais a assinatura na Vindi durante renovações automáticas do WooCommerce Subscriptions. O estado `on-hold` é temporário e não deve disparar `DELETE /v1/subscriptions/{id}`. (Ticket #101648738)
 - **Correção:** Webhooks `subscription_canceled`, `bill_canceled`, `consent_revoked` e `consent_rejected` com `created_at` mais antigo que 30 minutos são descartados com HTTP 200 para a Vindi parar de reentregar. (Ticket #101648738)
 - **Correção:** Handler de `subscription_canceled` agora consulta a Vindi antes de alterar o status no WooCommerce. Reentregas tardias (assinatura já reativada) são ignoradas. (Ticket #101648738)
 
