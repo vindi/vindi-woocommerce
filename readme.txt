@@ -11,7 +11,7 @@ Tested up to: 6.8
 WC requires at least: 3.0.0
 WC tested up to: 8.6.1
 Requires PHP: 5.6
-Stable Tag: 1.4.7
+Stable Tag: 1.4.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,11 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.4.8 - 07/10/2026 =
+- **Correção crítica:** Plugin não cancela mais a assinatura na Vindi durante renovações automáticas do WooCommerce Subscriptions. O estado `on-hold` é temporário e não deve disparar `DELETE /v1/subscriptions/{id}`. (Ticket #101648738)
+- **Correção:** Webhooks `subscription_canceled`, `bill_canceled`, `consent_revoked` e `consent_rejected` com `created_at` mais antigo que 30 minutos são descartados com HTTP 200 para a Vindi parar de reentregar. (Ticket #101648738)
+- **Correção:** Handler de `subscription_canceled` agora consulta a Vindi antes de alterar o status no WooCommerce. Reentregas tardias (assinatura já reativada) são ignoradas. (Ticket #101648738)
+
 = 1.4.7 - 24/09/2026 =
 - Lançamento da versão de patch.
 - **Correção:** Cobrança de taxas e impostos (fees) na Vindi para faturas avulsas e assinaturas.
