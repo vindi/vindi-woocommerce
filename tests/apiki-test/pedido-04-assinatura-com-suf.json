@@ -1,0 +1,53 @@
+{
+    "_comment": "Assinatura mensal (5784) com taxa de inscrição (SUF), sem trial e sem frete. SUF entra como item à parte, com cycles=1 (cobra só na primeira fatura).",
+    "_cenario": "assinatura-com-suf",
+    "order": {
+        "id": 5804,
+        "subtotal": 100.00,
+        "total": 120.00,
+        "shipping_total": 0,
+        "shipping_method": "",
+        "items": [
+            {
+                "product_id": 5784,
+                "name": "Assinatura Simples",
+                "price": 100.00,
+                "quantity": 1,
+                "is_subscription": true,
+                "has_trial": false,
+                "trial_days": 0,
+                "has_suf": true,
+                "suf_price": 20.00
+            }
+        ]
+    },
+    "vindi_ids": {
+        "customer_id": 1869180,
+        "product_id": 519552,
+        "plan_id": 106997,
+        "shipping_product_id": null,
+        "suf_product_id": 225724
+    },
+    "expected_payload": {
+        "customer_id": 1869180,
+        "payment_method_code": "credit_card",
+        "installments": 1,
+        "plan_id": "106997",
+        "code": "WC-5804",
+        "product_items": [
+            {
+                "product_id": 519552,
+                "quantity": 1,
+                "cycles": null,
+                "pricing_schema": { "price": 100, "schema_type": "per_unit" },
+                "discounts": []
+            },
+            {
+                "product_id": 225724,
+                "quantity": 1,
+                "cycles": 1,
+                "pricing_schema": { "price": 20, "schema_type": "per_unit" }
+            }
+        ]
+    }
+}

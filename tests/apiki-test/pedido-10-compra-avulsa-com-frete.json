@@ -1,0 +1,50 @@
+{
+    "_comment": "Compra avulsa com frete. Não é assinatura. Diferente do pedido 02: aqui NUNCA mexemos em WC_Subscription.",
+    "_cenario": "compra-avulsa-com-frete",
+    "order": {
+        "id": 5810,
+        "subtotal": 50.00,
+        "total": 80.00,
+        "shipping_total": 30.00,
+        "shipping_method": "flat_rate",
+        "items": [
+            {
+                "product_id": 9999,
+                "name": "Produto Avulso",
+                "price": 50.00,
+                "quantity": 1,
+                "is_subscription": false,
+                "has_trial": false,
+                "trial_days": 0,
+                "has_suf": false,
+                "suf_price": 0
+            }
+        ]
+    },
+    "vindi_ids": {
+        "customer_id": 1869180,
+        "product_id": null,
+        "plan_id": null,
+        "shipping_product_id": 232097,
+        "suf_product_id": null
+    },
+    "expected_payload": {
+        "type": "bill",
+        "customer_id": 1869180,
+        "payment_method_code": "credit_card",
+        "installments": 1,
+        "code": "WC-5810",
+        "product_items": [
+            {
+                "product_id": null,
+                "quantity": 1,
+                "pricing_schema": { "price": 50, "schema_type": "per_unit" }
+            },
+            {
+                "product_id": 232097,
+                "quantity": 1,
+                "pricing_schema": { "price": 30, "schema_type": "per_unit" }
+            }
+        ]
+    }
+}

@@ -54,7 +54,6 @@ class ProductController
 
   function onNewProduct($product_id, $product)
   {
-    error_log('onNewProduct called for product ID: ' . $product_id);
     if (in_array($product->get_type(), $this->ignoredTypes)) {
       return;
     }
@@ -103,7 +102,6 @@ class ProductController
    */
   function create($product_id, $product = null)
   {
-    error_log('Creating product with ID: ' . $product_id);
     if (!$product) {
       $product = wc_get_product($product_id);
     }
@@ -151,7 +149,6 @@ class ProductController
       $product->save_meta_data();
       set_transient('vindi_product_message', 'created', 60);
     } else {
-      error_log('Vindi: falha ao criar produto ' . $product_id . ' - resposta: ' . var_export($createdProduct, true));
       set_transient('vindi_product_message', 'error', 60);
     }
 
@@ -160,7 +157,6 @@ class ProductController
 
   function update($product_id, $product = null)
   {
-    error_log('Updating product with ID: ' . $product_id);
     if (!$product) {
       $product = wc_get_product($product_id);
     }
@@ -198,7 +194,6 @@ class ProductController
     if ($updatedProduct && isset($updatedProduct['id'])) {
       set_transient('vindi_product_message', 'updated', 60);
     } else {
-      error_log('Vindi: falha ao atualizar produto ' . $product_id . ' - resposta: ' . var_export($updatedProduct, true));
       set_transient('vindi_product_message', 'error', 60);
     }
 
