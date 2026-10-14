@@ -1,0 +1,59 @@
+{
+    "_comment": "Assinatura mensal (5784) com SUF e frete. Sem trial. Três itens: assinatura, SUF e frete. Bom teste para ordem dos itens no payload.",
+    "_cenario": "assinatura-com-frete-e-suf",
+    "order": {
+        "id": 5807,
+        "subtotal": 100.00,
+        "total": 150.00,
+        "shipping_total": 30.00,
+        "shipping_method": "flat_rate",
+        "items": [
+            {
+                "product_id": 5784,
+                "name": "Assinatura Simples",
+                "price": 100.00,
+                "quantity": 1,
+                "is_subscription": true,
+                "has_trial": false,
+                "trial_days": 0,
+                "has_suf": true,
+                "suf_price": 20.00
+            }
+        ]
+    },
+    "vindi_ids": {
+        "customer_id": 1869180,
+        "product_id": 519552,
+        "plan_id": 106997,
+        "shipping_product_id": 232097,
+        "suf_product_id": 225724
+    },
+    "expected_payload": {
+        "customer_id": 1869180,
+        "payment_method_code": "credit_card",
+        "installments": 1,
+        "plan_id": "106997",
+        "code": "WC-5807",
+        "product_items": [
+            {
+                "product_id": 519552,
+                "quantity": 1,
+                "cycles": null,
+                "pricing_schema": { "price": 100, "schema_type": "per_unit" },
+                "discounts": []
+            },
+            {
+                "product_id": 232097,
+                "quantity": 1,
+                "cycles": 1,
+                "pricing_schema": { "price": 30, "schema_type": "per_unit" }
+            },
+            {
+                "product_id": 225724,
+                "quantity": 1,
+                "cycles": 1,
+                "pricing_schema": { "price": 20, "schema_type": "per_unit" }
+            }
+        ]
+    }
+}

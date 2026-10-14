@@ -83,12 +83,89 @@ class VindiWebhooks
     $type = $body->event->type;
     $data = $body->event->data;
 
+    if ($this->is_destructive_event_stale($type, $body->event)) {
+      $max_age = $this->get_webhook_max_age_seconds();
+      $age = $this->get_event_age_seconds($body->event->created_at ?? null);
+      $sub_id = $data->subscription->id ?? 'N/A';
+      $this->vindi_settings->logger->log(sprintf(
+        __('Webhook %s descartado por idade (evento de %ss, max=%ss). Subscription Vindi #%s.', VINDI),
+        $type, $age ?? '?', $max_age, $sub_id
+      ));
+      return wp_send_json([
+        'message' => 'Evento descartado por estar fora da janela de processamento.',
+      ], 200);
+    }
+
     if (method_exists($this, $type)) {
       $this->vindi_settings->logger->log(sprintf(__('Novo Evento processado: %s', VINDI), $type));
       return $this->{$type}($data);
     }
 
     $this->vindi_settings->logger->log(sprintf(__('Evento do webhook ignorado pelo plugin: ', VINDI), $type));
+  }
+
+  /**
+   * Verifica se um evento destrutivo está fora da janela de processamento.
+   *
+   * @param string $type     Tipo do evento.
+   * @param object $event    Objeto bruto do evento (com created_at).
+   * @return bool            True se o evento deve ser descartado.
+   */
+  private function is_destructive_event_stale($type, $event)
+  {
+    $destructive_events = [
+      'subscription_canceled',
+      'bill_canceled',
+      'consent_revoked',
+      'consent_rejected',
+    ];
+
+    if (!in_array($type, $destructive_events, true)) {
+      return false;
+    }
+
+    $age = $this->get_event_age_seconds($event->created_at ?? null);
+
+    if ($age === null) {
+      return false;
+    }
+
+    return $age > $this->get_webhook_max_age_seconds();
+  }
+
+  /**
+   * Calcula a idade do evento em segundos.
+   *
+   * @param string|null $created_at Data ISO-8601 do created_at do evento.
+   * @return int|null               Idade em segundos ou null se inválida.
+   */
+  private function get_event_age_seconds($created_at)
+  {
+    if (empty($created_at)) {
+      return null;
+    }
+
+    $timestamp = strtotime($created_at);
+    if ($timestamp === false) {
+      return null;
+    }
+
+    $age = time() - $timestamp;
+    return $age >= 0 ? $age : null;
+  }
+
+  /**
+   * Janela máxima de idade aceita para eventos destrutivos (em segundos).
+   *
+   * @return int Segundos.
+   */
+  private function get_webhook_max_age_seconds()
+  {
+    $configured = defined('VINDI_WEBHOOK_MAX_AGE_SECONDS')
+      ? VINDI_WEBHOOK_MAX_AGE_SECONDS
+      : 1800;
+
+    return max(60, (int) $configured);
   }
 
   /**
@@ -154,11 +231,79 @@ class VindiWebhooks
             $order->payment_complete();
         }
         $order->update_meta_data('vindi_order', $order_post_meta);
+        $this->persist_credit_card_brand_meta($order, $order_post_meta);
         $order->save();
         $this->vindi_settings->logger->log('Novo Período criado: Pedido #'.$order->id);
 
         // We've already processed the renewal
         remove_action('woocommerce_scheduled_subscription_payment', 'WC_Subscriptions_Manager::prepare_renewal');
+    }
+
+  /**
+   * Mirror the credit card brand (and related fields) from the bill meta
+   * to dedicated order meta keys so external integrations (ERPs) can
+   * read them directly from wp_postmeta without having to deserialize
+   * the JSON stored under vindi_order.
+   *
+   * Behaviour:
+   *  - When the bill belongs to a credit card payment, the brand, last
+   *    four digits and number of installments are written as
+   *    `_vindi_credit_card_brand`, `_vindi_credit_card_last_four` and
+   *    `_vindi_credit_card_installments` respectively.
+   *  - When the bill is paid via any other method, the meta keys are
+   *    removed from the order to avoid stale data carrying over from a
+   *    previous attempt.
+   *
+   * @param WC_Order $order           The WooCommerce order being updated.
+   * @param array    $order_post_meta The order_post_meta structure stored
+   *     under the "vindi_order" meta key.
+   */
+    private function persist_credit_card_brand_meta(WC_Order $order, array $order_post_meta)
+    {
+        $brand        = '';
+        $last_four    = '';
+        $installments = null;
+        $is_credit_card = false;
+
+        foreach ($order_post_meta as $entry) {
+            if (!is_array($entry) || !isset($entry['bill']) || !is_array($entry['bill'])) {
+                continue;
+            }
+            $bill = $entry['bill'];
+            if (!empty($bill['payment_method']) && 'credit_card' === $bill['payment_method']) {
+                $is_credit_card = true;
+            }
+            if (empty($brand) && !empty($bill['brand'])) {
+                $brand = (string) $bill['brand'];
+            }
+            if (empty($last_four) && !empty($bill['card_last_four'])) {
+                $last_four = (string) $bill['card_last_four'];
+            }
+            if (null === $installments && isset($bill['installments'])) {
+                $installments = (int) $bill['installments'];
+            }
+            if (!empty($brand) && !empty($last_four) && null !== $installments && $is_credit_card) {
+                break;
+            }
+        }
+
+        if ($is_credit_card && '' !== $brand) {
+            $order->update_meta_data('_vindi_credit_card_brand', $brand);
+        } else {
+            $order->delete_meta_data('_vindi_credit_card_brand');
+        }
+
+        if ($is_credit_card && '' !== $last_four) {
+            $order->update_meta_data('_vindi_credit_card_last_four', $last_four);
+        } else {
+            $order->delete_meta_data('_vindi_credit_card_last_four');
+        }
+
+        if ($is_credit_card && null !== $installments && $installments > 0) {
+            $order->update_meta_data('_vindi_credit_card_installments', $installments);
+        } else {
+            $order->delete_meta_data('_vindi_credit_card_installments');
+        }
     }
 
   /**
@@ -300,21 +445,32 @@ class VindiWebhooks
     {
         try {
             $subscription = $this->find_subscription_by_id($data->subscription->code);
+
+            $vindi_subscription = $this->routes->getSubscription($data->subscription->id);
+            $vindi_status = $vindi_subscription['status'] ?? null;
+
+            if ($vindi_status !== 'canceled') {
+                $this->vindi_settings->logger->log(sprintf(
+                    __('Webhook subscription_canceled ignorado: status atual na Vindi é "%s" ' .
+                       '(não cancelada). Subscription Vindi #%s.', VINDI),
+                    $vindi_status ?? 'desconhecido',
+                    $data->subscription->id
+                ));
+                return wp_send_json([
+                    'mensagem' => 'Assinatura não está cancelada na Vindi — webhook ignorado.',
+                ], 200);
+            }
+
             if ($this->subscription_cancellation_not_possible($subscription, $data)) {
                 return wp_send_json(['mensagem' => 'Não foi possível cancelar a assinatura
                       devido ao seu status atual.'], 422);
             }
             if ($this->vindi_settings->dependencies->is_wc_memberships_active()) {
-                return $this->handle_pending_cancel($subscription);
+                return $this->handle_pending_cancel($subscription, $data);
             }
-            $synchronized_subscription = $this->routes->getSubscription($data->subscription->id);
-            if ($synchronized_subscription['status'] === 'canceled') {
-                $subscription->update_status('cancelled');
-                $this->vindi_settings->logger->log(sprintf(__('Assinatura cancelado.', VINDI)));
-                return wp_send_json(['mensagem' => 'Assinatura cancelado.'], 200);
-            }
-            $this->vindi_settings->logger->log(sprintf(__('Ocorreu um erro no cancelamento da assinatura', VINDI)));
-            wp_send_json(['mensagem' => 'Ocorreu erro na assinatura'], 422);
+            $subscription->update_status('cancelled');
+            $this->vindi_settings->logger->log(sprintf(__('Assinatura cancelado.', VINDI)));
+            return wp_send_json(['mensagem' => 'Assinatura cancelado.'], 200);
         } catch (\Exception $e) {
             $this->handle_exception('subscription_canceled', $e->getMessage(), $data->subscription->id);
             $response = ['mensagem' => 'Ocorreu erro no cancelamento da assinatura'];
@@ -334,8 +490,31 @@ class VindiWebhooks
           || $this->routes->hasPendingSubscriptionBills($data->subscription->id);
     }
 
-    private function handle_pending_cancel($subscription)
+    /**
+     * Aplica o status `pending-cancel` na assinatura WooCommerce.
+     *
+     * @param WC_Subscription $subscription
+     * @param object|null     $data          Payload original do webhook.
+     */
+    private function handle_pending_cancel($subscription, $data = null)
     {
+        if ($data !== null && isset($data->subscription->id)) {
+            $vindi = $this->routes->getSubscription($data->subscription->id);
+            $vindi_status = $vindi['status'] ?? null;
+
+            if ($vindi_status !== 'canceled') {
+                $this->vindi_settings->logger->log(sprintf(
+                    __('handle_pending_cancel abortado: status Vindi="%s" (não cancelada). ' .
+                       'Subscription Vindi #%s.', VINDI),
+                    $vindi_status ?? 'desconhecido',
+                    $data->subscription->id
+                ));
+                return wp_send_json([
+                    'mensagem' => 'Status Vindi diverge — event descartado.',
+                ], 200);
+            }
+        }
+
         $subscription->update_status('pending-cancel');
         $this->vindi_settings->logger->log(sprintf(__('Assinatura atualizada para cancelamento pendente.', VINDI)));
         return wp_send_json(['message' => 'Assinatura atualizada para cancelamento pendente.'], 200);

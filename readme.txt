@@ -7,11 +7,11 @@ Tags: vindi, cobrança-recorrente, vindi-woocommerce, assinaturas, woocommerce-s
 Author URI: https://vindi.com.br/ | https://mentores.com.br
 Author: Vindi | Mentores Digital
 Requires at least: 4.4
-Tested up to: 6.8
+Tested up to: 7.1.2
 WC requires at least: 3.0.0
 WC tested up to: 8.6.1
 Requires PHP: 5.6
-Stable Tag: 1.4.4
+Stable Tag: 1.4.8
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,6 +39,27 @@ Para dúvidas e suporte técnico, entre em contato com a equipe Vindi através d
 5. Configurações de pagamentos via cartão de crédito
 
 == Changelog ==
+= 1.4.8 - 07/10/2026 =
+- **Correção:** Plugin não cancela mais a assinatura na Vindi durante renovações automáticas do WooCommerce Subscriptions. O estado `on-hold` é temporário e não deve disparar `DELETE /v1/subscriptions/{id}`. (Ticket #101648738)
+- **Correção:** Webhooks `subscription_canceled`, `bill_canceled`, `consent_revoked` e `consent_rejected` com `created_at` mais antigo que 30 minutos são descartados com HTTP 200 para a Vindi parar de reentregar. (Ticket #101648738)
+- **Correção:** Handler de `subscription_canceled` agora consulta a Vindi antes de alterar o status no WooCommerce. Reentregas tardias (assinatura já reativada) são ignoradas. (Ticket #101648738)
+
+= 1.4.7 - 24/09/2026 =
+- Lançamento da versão de patch.
+- **Correção:** Cobrança de taxas e impostos (fees) na Vindi para faturas avulsas e assinaturas.
+- **Correção:** Envio do valor da taxa em assinaturas utilizando pricing_schema.
+- **Correção:** Payload de bill_items, evitando o envio simultâneo de product_id e product_code.
+
+= 1.4.6 - 31/07/2026 =
+- Lançamento da versão de patch.
+- **Correção:** Valores do fee agora são considerados no total do pedido, permitindo que plugins com valores extras sejam somados corretamente.
+- **Melhoria:** Envio adicional de dados do cartão (bandeira, últimos 4 dígitos e número de parcelas) ao ERP, em campos próprios do pedido.
+- **Correção:** Valores de assinatura com período de trial (free trial) agora respeitam a taxa de adesão e o ciclo correto, evitando cobranças duplicadas ou antecipadas.
+
+= 1.4.5 - 22/01/2026 =
+-Lançamento da versão de patch.
+- **Correção:** Remoção de mensagens de erros.
+
 = 1.4.4 - 22/01/2026 =
 -Lançamento da versão de patch.
 - **Correção:** Falha na criação/atualização de planos e produtos na Vindi ao salvar assinaturas no admin do WooCommerce.

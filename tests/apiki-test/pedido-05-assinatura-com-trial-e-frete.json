@@ -1,0 +1,57 @@
+{
+    "_comment": "Assinatura mensal (5784) com trial de 7 dias e frete. Aqui é o caso clássico onde frete migrou pra WC_Subscription: $this->order->get_shipping_method() retorna vazio e o frete é lido da subscription.",
+    "_cenario": "assinatura-com-trial-e-frete",
+    "order": {
+        "id": 5805,
+        "subtotal": 100.00,
+        "total": 130.00,
+        "shipping_total": 0,
+        "shipping_method": "",
+        "items": [
+            {
+                "product_id": 5784,
+                "name": "Assinatura Simples",
+                "price": 100.00,
+                "quantity": 1,
+                "is_subscription": true,
+                "has_trial": true,
+                "trial_days": 7,
+                "has_suf": false,
+                "suf_price": 0
+            }
+        ],
+        "_subscription": {
+            "shipping_method": "flat_rate",
+            "total_shipping": 30.00
+        }
+    },
+    "vindi_ids": {
+        "customer_id": 1869180,
+        "product_id": 519552,
+        "plan_id": 106997,
+        "shipping_product_id": 232097,
+        "suf_product_id": null
+    },
+    "expected_payload": {
+        "customer_id": 1869180,
+        "payment_method_code": "credit_card",
+        "installments": 1,
+        "plan_id": "106997",
+        "code": "WC-5805",
+        "product_items": [
+            {
+                "product_id": 519552,
+                "quantity": 1,
+                "cycles": null,
+                "pricing_schema": { "price": 100, "schema_type": "per_unit" },
+                "discounts": []
+            },
+            {
+                "product_id": 232097,
+                "quantity": 1,
+                "cycles": 1,
+                "pricing_schema": { "price": 30, "schema_type": "per_unit" }
+            }
+        ]
+    }
+}

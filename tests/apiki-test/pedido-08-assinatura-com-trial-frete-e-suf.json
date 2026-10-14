@@ -1,0 +1,63 @@
+{
+    "_comment": "Pedido kitchen-sink (modelo 5789 do log): assinatura (5784) com trial 7 dias + SUF + frete. Representa o cenário mais complexo. Reproduz o pedido real 5789 que custou R$10 em chamadas - agora testável sem gastar nada.",
+    "_cenario": "assinatura-com-trial-frete-e-suf",
+    "order": {
+        "id": 5808,
+        "subtotal": 100.00,
+        "total": 150.00,
+        "shipping_total": 0,
+        "shipping_method": "",
+        "items": [
+            {
+                "product_id": 5784,
+                "name": "Assinatura Simples",
+                "price": 100.00,
+                "quantity": 1,
+                "is_subscription": true,
+                "has_trial": true,
+                "trial_days": 7,
+                "has_suf": true,
+                "suf_price": 20.00
+            }
+        ],
+        "_subscription": {
+            "shipping_method": "flat_rate",
+            "total_shipping": 30.00
+        }
+    },
+    "vindi_ids": {
+        "customer_id": 1869180,
+        "product_id": 519552,
+        "plan_id": 106997,
+        "shipping_product_id": 232097,
+        "suf_product_id": 225724
+    },
+    "expected_payload": {
+        "customer_id": 1869180,
+        "payment_method_code": "credit_card",
+        "installments": 1,
+        "plan_id": "106997",
+        "code": "WC-5808",
+        "product_items": [
+            {
+                "product_id": 519552,
+                "quantity": 1,
+                "cycles": null,
+                "pricing_schema": { "price": 100, "schema_type": "per_unit" },
+                "discounts": []
+            },
+            {
+                "product_id": 232097,
+                "quantity": 1,
+                "cycles": 1,
+                "pricing_schema": { "price": 30, "schema_type": "per_unit" }
+            },
+            {
+                "product_id": 225724,
+                "quantity": 1,
+                "cycles": 1,
+                "pricing_schema": { "price": 20, "schema_type": "per_unit" }
+            }
+        ]
+    }
+}
